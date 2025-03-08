@@ -62,12 +62,12 @@ class InventarioMaterial extends Model
     ];
 
     public static $unidades = [
-        1 => 'Unidad',
-        2 => 'Metro',
-        3 => 'Metro Cuadrado',
-        4 => 'Metro Cubico',
-        5 => 'Galon',
-        6 => 'Litro'
+        1 => 'Unid',
+        2 => 'MT',
+        3 => 'MTex2',
+        4 => 'MTex3',
+        5 => 'Gal',
+        6 => 'Lit'
     ];
 
     public static $ClassEstado = [

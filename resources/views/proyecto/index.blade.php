@@ -1,16 +1,30 @@
 @extends('layouts.app')
 @section('content')
 
-    <div class="flex justify-between text-center border-2 p-3 rounded-lg border-gray-200 mb-3">
-        <div class="flex">
-            <span class="flex items-center text-center me-3">Normal (80%)<hr class="border-2 border-green-500 rounded-lg bg-green-500 w-20 pt-2 ml-2"></span>
-            <span class="flex items-center text-center me-3">Próximos a vencer (95%)<hr class="border-2 border-orange-400 rounded-lg bg-orange-400 w-20 pt-2 ml-2"></span>
-            <span class="flex items-center text-center">Atrasados (>> 100%)<hr class="border-2 border-red-500 rounded-lg bg-red-500 w-20 pt-2 ml-2"></span>
-        </div>
-        <x-secondary-button class="ms-4" href="{{ route('material.create')}}">
-            Crear Proyectos
-        </x-secondary-button>
+<div class="flex flex-wrap md:flex-nowrap justify-between text-center border-2 p-3 rounded-lg border-gray-200 mb-3">
+    <!-- Sección de etiquetas -->
+    <div class="flex flex-wrap gap-4 md:gap-2">
+        <span class="flex items-center text-center">
+            Normal (80%)
+            <hr class="border-2 border-green-500 rounded-lg bg-green-500 w-[50px] ml-2">
+        </span>
+        <span class="flex items-center text-center">
+            Próximos a vencer (95%)
+            <hr class="border-2 border-orange-400 rounded-lg bg-orange-400 w-[50px] ml-2">
+        </span>
+
+        <span class="flex items-center text-center">
+            Atrasados (>> 100%)
+            <hr class="border-2 border-red-500 rounded-lg bg-red-500 w-[50px] ml-2">
+        </span>
     </div>
+
+    <!-- Botón responsive -->
+    <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
+        Crear Proyectos
+    </x-secondary-button>
+</div>
+
 
     @forelse ($items as $item)
         <div class="flex border-2 rounded-lg mb-2 border-gray-300 shadow-lg shadow-black-200">
@@ -71,7 +85,7 @@
         </div>
     @endif
 
-    <script src="{{asset('js/material/index.js')}}"></script>
+    <script src="{{asset('js/protecto/index.js')}}"></script>
 
 @endsection
 

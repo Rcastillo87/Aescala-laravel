@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules;
 
 use App\Models\Proyecto;
+use App\Models\User;
 
 class ProyectoController extends Controller
 {
@@ -22,6 +19,18 @@ class ProyectoController extends Controller
         })
         ->paginate(10);
         return view('proyecto.index', compact('title', 'items', 'estado'));
+    }
+
+    public function create( ) 
+    {
+        $proyecto = null;
+        $colaUsers = User::where('id_rol', 3)->where('activo', 1)
+        ->get(['id', 'nombre_completo'])
+        ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
+        ->toArray();
+        $title = 'Crear Proyecto';
+        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
+        return view('proyecto.create', compact('title', 'proyecto', 'colaUsers', 'departamentos'));
     }
 
 }

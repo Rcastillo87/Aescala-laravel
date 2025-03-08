@@ -1,7 +1,7 @@
 <div id="accordion-open" class="mb-4 shadow-md" data-accordion="open">
         <h2 id="accordion-open-heading-1" >
             <button type="button" class="dark:bg-gray-800 flex items-center justify-between w-full p-2 font-medium rtl:text-right
-             text-gray-500 border border-b-0 border-gray-200 rounded-t-xl dark:bg-white gap-3 "
+             text-gray-500 border border-b-0 border-gray-200 rounded-t-xl gap-3 "
                     data-accordion-target="#accordion-open-body-1" aria-expanded="false"
                     aria-controls="accordion-open-body-1">
                 <span class="flex items-center text-[#242e68]">
