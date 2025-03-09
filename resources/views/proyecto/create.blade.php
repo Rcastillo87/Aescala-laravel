@@ -27,7 +27,7 @@
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="telefono_cliente" :value="__('Telefono Cliente *')" />
-                <x-text-input id="telefono_cliente" class="block mt-1 w-full" type="number" name="telefono_cliente" :value="old('telefono_cliente', $proyecto?$proyecto->telefono_cliente:'')" required/>
+                <x-text-input id="telefono_cliente" class="block mt-1 w-full" type="text" name="telefono_cliente" :value="old('telefono_cliente', $proyecto?$proyecto->telefono_cliente:'')" required/>
                 <x-input-error :messages="$errors->get('telefono_cliente')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
@@ -37,10 +37,10 @@
                 <x-input-error :messages="$errors->get('val_obra_blanca')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="val_obra_blanca_proyectoes" :value="__('Costo Material Obra Blanca')" />
-                <x-text-input id="val_obra_blanca_proyectoes" class="block mt-1 w-full" type="number" name="val_obra_blanca_proyectoes" 
-                :value="old('val_obra_blanca_proyectoes', $proyecto?$proyecto->val_obra_blanca_proyectoes:'')"/>
-                <x-input-error :messages="$errors->get('val_obra_blanca_proyectoes')" class="mt-2" />
+                <x-input-label for="val_obra_blanca_materiales" :value="__('Costo Material Obra Blanca')" />
+                <x-text-input id="val_obra_blanca_materiales" class="block mt-1 w-full" type="number" name="val_obra_blanca_materiales" 
+                :value="old('val_obra_blanca_materiales', $proyecto?$proyecto->val_obra_blanca_materiales:'')"/>
+                <x-input-error :messages="$errors->get('val_obra_blanca_materiales')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="val_obra_carpinteria" :value="__('Costo Carpinteria')" />
@@ -83,7 +83,7 @@
                         name="fec_inicio" 
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="Seleccione fecha"
-                        value="{{ old('fec_inicio') }}" 
+                        value="{{ old('fec_inicio', $proyecto?$proyecto->fec_inicio:'') }}" 
                         required 
                     />
                 </div>
@@ -105,7 +105,7 @@
                         name="fec_fin_estimado" 
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="Seleccione fecha"
-                        value="{{ old('fec_fin_estimado') }}" 
+                        value="{{ old('fec_fin_estimado', $proyecto?$proyecto->fec_fin_estimado:'') }}" 
                         required 
                     />
                 </div>
@@ -127,7 +127,7 @@
                         name="fec_fin_real" 
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="Selecciona una fecha"
-                        value="{{ old('fec_fin_real') }}"
+                        value="{{ old('fec_fin_real', $proyecto?$proyecto->fec_fin_real:'') }}"
                     />
                 </div>
                 <x-input-error :messages="$errors->get('fec_fin_real')" class="mt-2" />
@@ -136,10 +136,10 @@
                 <x-input-label for="id_user" :value="__('Colaborador Encargado *')" />
                 <x-select-input 
                     name="id_user" 
-                    id="id_user" 
+                    id="id_user"
                     :options="$colaUsers" 
                     :data="['id', 'nombre_completo']"
-                    :selected="old('id_user',$proyecto?$proyecto->id_user:'')" 
+                    :selected="old('id_user', $proyecto?$proyecto->id_user:'')" 
                     class="block mt-1 w-full" 
                     required
                 />
@@ -167,7 +167,6 @@
                 <x-select-input 
                     name="ciudad" 
                     id="ciudad"
-                    :options="[]"
                     :selected="old('ciudad',$proyecto?$proyecto->ciudad:'')" 
                     class="block mt-1 w-full" 
                     required

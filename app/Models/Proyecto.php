@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Proyecto extends Model
 {
@@ -57,6 +58,42 @@ class Proyecto extends Model
     {
         return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales;
     }
+
+    public function getDiasTranscurridosAttribute ()
+    {
+        $fecInicio = Carbon::parse($this->fec_inicio);
+        $fechaActual = Carbon::now();
+        return intval($fecInicio->diffInDays($fechaActual));
+    }
+
+    public function getDiasProcentageAttribute()
+    {
+        $fecInicio = Carbon::parse($this->fec_inicio);
+        $fecFinEstimado = Carbon::parse($this->fec_fin_estimado);
+        
+        $diasTranscurridos = $this->dias_transcurridos;
+        $diasEstimados = $fecInicio->diffInDays($fecFinEstimado);
+    
+        if ($diasEstimados == 0) {
+            return 100;
+        }
+    
+        $porcentaje = intval(($diasTranscurridos / $diasEstimados) * 100);
+        //min($porcentaje, 100);
+        return $porcentaje;
+    }
+
+    public function getFecIniAttribute()
+    {
+        $array = explode(' ', $this->fec_inicio);
+        return $array[0];
+    }
+    public function getFecfinEstAttribute()
+    {
+        $array = explode(' ', $this->fec_fin_estimado);
+        return $array[0];
+    }
+
 
     public static $estado = [
         1 => 'En Desarrollo',

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('departamento').addEventListener('change', function() {
         let deptoId = this.value;
         let ciudadSelect = document.getElementById('ciudad');
-        ciudadSelect.innerHTML = '<option value="">Seleccione una ciudad</option>';
+        ciudadSelect.innerHTML = '<option value="">-- Seleccione --</option>';
 
         if (deptoId !== "") {
             let ciudades = departamentos.find(depto => depto.id == deptoId)?.ciudades || [];
