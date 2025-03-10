@@ -33,7 +33,7 @@
                 default => 'bg-red-500',
             };
         @endphp
-        <div class="flex border-2 rounded-lg pb-1 border-gray-300 shadow-lg shadow-black-200">
+        <div class="flex border-2 rounded-lg pb-1 border-gray-300 shadow-lg shadow-black-200 mb-2">
             <div class="text-center items-center w-[130px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center">
                 <p class="text-white text-4xl font-bold">{{$item->dias_transcurridos}}</p>
                 <span class="text-white text-xl font-bold">{{$item->dias_procentage}}%</span>
@@ -47,7 +47,8 @@
                 </div>
                 <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                     <p class="text-lg text-gray-500 font-bold">Ubicacion</p>
-                    <span class="text-md text-black">{{$item->departamento}} - {{$item->ciudad}}</span>
+                    <span class="text-md text-black">{{$departamentos[intval($item['departamento'])]['departamento']}} - 
+                        {{$departamentos[intval($item['departamento'])]['ciudades'][$item['ciudad']]}}</span>
                 </div>
                 <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                     <p class="text-lg text-gray-500 font-bold">Dirrecion</p>
@@ -67,11 +68,11 @@
                 </div>
                 <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                     <p class="text-lg text-gray-500 font-bold">Total Proyecto</p>
-                    <span class="text-md text-black">{{$item->totalProyecto}}</span>
+                    <span class="text-md text-black">{{number_format($item->totalProyecto)}}$</span>
                 </div>
                 <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                     <p class="text-lg text-gray-500 font-bold">Total Valance</p>
-                    <span class="text-md text-black">{{1000}}</span>
+                    <span class="text-md text-black">{{number_format(1000)}}$</span>
                 </div>
             </div>
             <div class="flex flex-col text-center w-[100px] border-l-2 px-2 mx-2 mt-1">

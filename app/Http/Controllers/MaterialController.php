@@ -45,22 +45,21 @@ class MaterialController extends Controller
 
     public function create( ) 
     {
-        $material = null;
-        $title = 'Crear Materiales';
-        $action = 'Crear';
-        $unidades = InventarioMaterial::$unidades;
-        $tipos = InventarioMaterial::$tipo;
-        return view('material.create', compact( 'title', 'action', 'unidades', 'tipos', 'material'));
+        return $this->form();
     }
 
     public function edit($id) 
     {
-        $material = InventarioMaterial::find($id);
-        $title = 'Editar Materiales';
-        $action = 'Crear';
+        return $this->form($id);
+    }
+
+    public function form($id = null)
+    {
+        $material = $id?InventarioMaterial::find($id):null;
+        $title = $id?'Editar Materiales':'Crear Materiales';
         $unidades = InventarioMaterial::$unidades;
         $tipos = InventarioMaterial::$tipo;
-        return view('material.create', compact( 'title', 'action', 'unidades', 'tipos', 'material'));
+        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material'));
     }
 
     public function save(Request $req)

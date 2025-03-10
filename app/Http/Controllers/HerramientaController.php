@@ -44,20 +44,20 @@ class HerramientaController extends Controller
 
     public function create( ) 
     {
-        $herra = null;
-        $title = 'Crear Herramienta';
-        $action = 'Crear';
-        $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'action', 'herra', 'estado'));
+        return $this->form();
     }
 
     public function edit($id) 
     {
-        $herra = Herramienta::find($id);
-        $title = 'Crear Herramienta';
-        $action = 'Crear';
+        return $this->form($id);
+    }
+
+    public function form($id = null)
+    {
+        $herra = $id?Herramienta::find($id):null;
+        $title = $id?'Editar Herramienta':'Crear Herramienta';
         $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'action', 'herra', 'estado'));
+        return view('herramienta.create', compact('title', 'herra', 'estado'));
     }
 
     public function save(Request $req)

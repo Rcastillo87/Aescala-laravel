@@ -11,7 +11,6 @@ use App\Models\User;
 
 class ProyectoController extends Controller
 {
-
     public function index( ) 
     {
         $title = 'Lista de Proyectos';
@@ -19,33 +18,44 @@ class ProyectoController extends Controller
         $items = Proyecto::when(Request('nombre_completo'), function ($query, $nombre_completo) { 
             return $query->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%$nombre_completo%"]);
         })
+        ->orderBy('id', 'desc')
         ->paginate(10);
-        return view('proyecto.index', compact('title', 'items', 'estado'));
+        $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
+        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos'));
     }
 
-    public function create( ) 
+    public function create() 
     {
-        $proyecto = null;
-        $colaUsers = User::where('id_rol', 3)->where('activo', 1)
-        ->get(['id', 'nombre_completo'])
-        ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
-        ->toArray();
-        $title = 'Crear Proyecto';
-        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
-        return view('proyecto.create', compact('title', 'proyecto', 'colaUsers', 'departamentos'));
+        return $this->form();
     }
 
     public function edit($id)
     {
-        $proyecto = Proyecto::find($id);
-        $colaUsers = User::where('id_rol', 3)->where('activo', 1)
-        ->get(['id', 'nombre_completo'])
-        ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
-        ->toArray();
-        $title = 'Ediar Proyecto';
-        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
-        return view('proyecto.create', compact('title', 'proyecto', 'colaUsers', 'departamentos'));
+        return $this->form($id);
     }
+
+    public function form($id = null)
+    {
+        $proyecto = $id ? Proyecto::find($id) : null;
+        $colaUsers = User::where('id_rol', 3)
+            ->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
+            ->toArray();
+    
+        $title = $id ? 'Editar Proyecto' : 'Crear Proyecto';
+        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
+        $ciudades = [];
+        if ($id && $proyecto) {
+            $departamentoIndex = intval($proyecto->departamento);
+            $arayDtp = json_decode($departamentos, true);
+            if (isset($arayDtp[$departamentoIndex]['ciudades'])) {
+                $ciudades = $arayDtp[$departamentoIndex]['ciudades'];
+            }
+        }
+        return view('proyecto.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades'));
+    }
+    
 
     public function save(Request $req)
     {
@@ -75,8 +85,6 @@ class ProyectoController extends Controller
                 Rule::exists('users', 'id'),
             ],
         ]);
-
-        dd($data);
     
         $msg = ucfirst($req->id ? 'Proyecto editado con éxito' : 'Proyecto creado con éxito');
     

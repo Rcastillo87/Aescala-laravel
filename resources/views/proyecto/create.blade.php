@@ -167,7 +167,8 @@
                 <x-select-input 
                     name="ciudad" 
                     id="ciudad"
-                    :selected="old('ciudad',$proyecto?$proyecto->ciudad:'')" 
+                    :options="$ciudades"
+                    :selected="old('ciudad', $proyecto?$proyecto->ciudad:'')" 
                     class="block mt-1 w-full" 
                     required
                 />

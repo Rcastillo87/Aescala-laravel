@@ -45,7 +45,7 @@
                 Atras
             </x-secondary-button>
             <x-primary-button class="ms-4">
-                {{ __($action) }}
+                Guardar
             </x-primary-button>
         </div>
     </form>
