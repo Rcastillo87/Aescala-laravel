@@ -1,4 +1,5 @@
 function cambiarEstado(userId, estadoActual) {
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     Swal.fire({
         title: "¿Estás seguro?",
         text: (estadoActual==1) ? "¿Desea Desactivarlo?" : "¿Desea Activarlo?",
@@ -11,7 +12,7 @@ function cambiarEstado(userId, estadoActual) {
             fetch(`editStatus/${userId}`, {
                 method: "get",
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-CSRF-TOKEN": csrfToken,
                     "Content-Type": "application/json"
                 }
             })

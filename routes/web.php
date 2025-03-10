@@ -45,8 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [ProyectoController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('edit');
         Route::post('/save', [ProyectoController::class, 'save'])->name('save');
-        Route::get('/listPrestamos', [ProyectoController::class, 'listPrestamos'])->name('listPrestamos');
-        Route::post('/savePrestamo', [ProyectoController::class, 'savePrestamo'])->name('savePrestamo');
+        Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');
     });
 
     Route::prefix('material')->name('material.')->group(function () {

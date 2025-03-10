@@ -50,8 +50,8 @@ class Proyecto extends Model
 
     public function getSpanEstadoAttribute()
     {
-        return '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
-             . (self::$estado[$this->estado] ?? 'Desconocido') . '</span>';
+        return '<span class="'.(self::$ClassEstado[$this->id_estado] ?? 'default-class').'">'
+             . (self::$estado[$this->id_estado] ?? 'Desconocido') . '</span>';
     }
 
     public function getTotalProyectoAttribute ()

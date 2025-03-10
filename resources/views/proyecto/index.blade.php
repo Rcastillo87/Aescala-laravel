@@ -37,8 +37,8 @@
             <div class="text-center items-center w-[130px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center">
                 <p class="text-white text-4xl font-bold">{{$item->dias_transcurridos}}</p>
                 <span class="text-white text-xl font-bold">{{$item->dias_procentage}}%</span>
-                <small class="text-white">F In: {{$item->fecIni}}</small>
-                <small class="text-white">F Es: {{$item->fec_fin_est}}</small>
+                <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
+                <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
             </div>
             <div class="flex flex-wrap w-full">
                 <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1">
@@ -74,6 +74,10 @@
                     <p class="text-lg text-gray-500 font-bold">Total Valance</p>
                     <span class="text-md text-black">{{number_format(1000)}}$</span>
                 </div>
+                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                    <p class="text-lg text-gray-500 font-bold">Estado</p>
+                    <span class="text-md text-black">{!! $item->span_estado !!}</span>
+                </div>
             </div>
             <div class="flex flex-col text-center w-[100px] border-l-2 px-2 mx-2 mt-1">
                 <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
@@ -89,8 +93,18 @@
                         Editar
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
-
-
+                    <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
+                        onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
+                        class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                            focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 me-2">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
+                            </svg>                    
+                    </a>
+                    <div id="tooltip-hover-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                        Cambio de Estado
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,7 +120,10 @@
         </div>
     @endif
 
-    <script src="{{asset('js/protecto/index.js')}}"></script>
+    <script>
+        window.estadosProyecto = {!! json_encode($estado) !!};
+    </script>
+    <script src="{{asset('js/proyecto/index.js')}}"></script>
 
 @endsection
 

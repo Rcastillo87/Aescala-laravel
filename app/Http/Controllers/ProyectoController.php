@@ -55,17 +55,14 @@ class ProyectoController extends Controller
         }
         return view('proyecto.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades'));
     }
-    
 
     public function save(Request $req)
     {
         $data = $req->validate([
             'id' => 'nullable|integer',
             'nombre_proyecto' => 'required|string|max:200',
-
-            'departamento' => 'nullable',
-            'ciudad' => 'nullable',
-
+            'departamento' => 'required|integer',
+            'ciudad' => 'required|integer',
             'direccion' => 'required|string|min:0',
             'nombre_cliente' => 'required|string|max:100',
             'telefono_cliente' => 'required|string|max:15',
@@ -100,6 +97,14 @@ class ProyectoController extends Controller
             DB::rollBack();
             return back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
+    }
+
+    public function editStatus(Request $request, $id)
+    {
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->id_estado = $request->estado;
+        $proyecto->save();
+        return response()->json(['success' => true, 'message' => 'Estado actualizado']);
     }
 
 }
