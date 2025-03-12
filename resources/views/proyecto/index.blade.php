@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-
+@include('proyecto.filter')
 <div class="flex flex-wrap md:flex-nowrap justify-between text-center border-2 p-3 rounded-lg border-gray-200 mb-3">
     <!-- Sección de etiquetas -->
     <div class="flex flex-wrap gap-4 md:gap-2">
@@ -33,81 +33,141 @@
                 default => 'bg-red-500',
             };
         @endphp
-        <div class="flex border-2 rounded-lg pb-1 border-gray-300 shadow-lg shadow-black-200 mb-2">
-            <div class="text-center items-center w-[130px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center">
-                <p class="text-white text-4xl font-bold">{{$item->dias_transcurridos}}</p>
-                <span class="text-white text-xl font-bold">{{$item->dias_procentage}}%</span>
-                <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
-                <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
-            </div>
-            <div class="flex flex-wrap w-full">
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1">
-                    <p class="text-lg text-gray-500 font-bold">Nombre Proyecto</p>
-                    <span class="text-md text-black">{{$item->nombre_proyecto}}</span>
+        <div class=" border-2 rounded-lg pb-1 border-gray-300 shadow-lg shadow-black-200 mb-2">
+            <div class="flex flex-grow mb-2">
+                <div class="text-center items-center w-[140px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center">
+                    <p class="text-white text-4xl font-bold">{{$item->dias_transcurridos}}</p>
+                    <span class="text-white text-xl font-bold">{{$item->dias_procentage}}%</span>
+                    <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
+                    <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
                 </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Ubicacion</p>
-                    <span class="text-md text-black">{{$departamentos[intval($item['departamento'])]['departamento']}} - 
-                        {{$departamentos[intval($item['departamento'])]['ciudades'][$item['ciudad']]}}</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Dirrecion</p>
-                    <span class="text-md text-black">{{$item->direccion}}</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Contacto Cliente</p>
-                    <span class="text-md text-black">{{$item->nombre_cliente}}</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Telefono Cliente</p>
-                    <span class="text-md text-black">{{$item->telefono_cliente}}</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Colaborador Encargado</p>
-                    <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Total Proyecto</p>
-                    <span class="text-md text-black">{{number_format($item->totalProyecto)}}$</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Total Valance</p>
-                    <span class="text-md text-black">{{number_format(1000)}}$</span>
-                </div>
-                <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                    <p class="text-lg text-gray-500 font-bold">Estado</p>
-                    <span class="text-md text-black">{!! $item->span_estado !!}</span>
-                </div>
-            </div>
-            <div class="flex flex-col text-center w-[100px] border-l-2 px-2 mx-2 mt-1">
-                <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
-                <div class="flex items-center p-1 text-center">
-                    <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" href="{{ route('proyecto.edit', $item->id) }}"
-                        class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
-                               focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 me-2">
-                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
-                        </svg>
-                    </a>
-                    <div id="tooltip-hover-edit-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                        Editar
-                        <div class="tooltip-arrow" data-popper-arrow></div>
+                <div class="flex flex-wrap w-full">
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1">
+                        <p class="text-lg text-gray-500 font-bold">Nombre Proyecto</p>
+                        <span class="text-md text-black">{{$item->nombre_proyecto}}</span>
                     </div>
-                    <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
-                        onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
-                        class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
-                            focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 me-2">
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Ubicacion</p>
+                        <span class="text-md text-black">{{$departamentos[intval($item['departamento'])]['departamento']}} - 
+                            {{$departamentos[intval($item['departamento'])]['ciudades'][$item['ciudad']]}}</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Dirrecion</p>
+                        <span class="text-md text-black">{{$item->direccion}}</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Contacto Cliente</p>
+                        <span class="text-md text-black">{{$item->nombre_cliente}}</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Telefono Cliente</p>
+                        <span class="text-md text-black">{{$item->telefono_cliente}}</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Colaborador Encargado</p>
+                        <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Total Proyecto</p>
+                        <span class="text-md text-black">{{number_format($item->totalProyecto)}}$</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Total Valance</p>
+                        <span class="text-md text-black">{{number_format(1000)}}$</span>
+                    </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Estado</p>
+                        <span class="text-md text-black">{!! $item->span_estado !!}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col text-center w-[120px] border-l-2 px-2 mx-2 mt-1">
+                    <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
+                    <div class="flex items-center p-1 text-center">
+                        <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" href="{{ route('proyecto.edit', $item->id) }}"
+                            class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
+                                focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 me-2">
                             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
-                            </svg>                    
-                    </a>
-                    <div id="tooltip-hover-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                        Cambio de Estado
-                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                            </svg>
+                        </a>
+                        <div id="tooltip-hover-edit-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                            Editar
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                        <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
+                            onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
+                            class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                                focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 me-2">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
+                                </svg>                    
+                        </a>
+                        <div id="tooltip-hover-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                            Cambio de Estado
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button type="button" data-collapse-toggle="tareas" aria-expanded="false" 
+                    class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic  items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full">
+                    <div class="flex items-center justify-between text-left w-full">
+                        <span class="text-lg">ver tareas</span>
+                        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 shrink-0 transition-transform" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </button>
+                <div id="tareas" class="hidden px-6 py-3 mx-3 text-lg border-2 border-gray-200 rounded-lg" aria-hidden="true">
+                    <div class="flex justify-between text-center">
+                        <spam class="text-xl font-bold inline-flex mt-1">
+                            <svg class="w-6 h-6 text-gray-800 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h4v-4m-5 0v-4m0 4h5m-5-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v1.98935M3 11h5v4m9.4708 4.1718-.8696-1.4388-2.8164-.235-2.573-4.2573 1.4873-2.8362 1.4441 2.3893c.3865.6396 1.2183.8447 1.8579.4582.6396-.3866.8447-1.2184.4582-1.858l-1.444-2.38925h3.1353l2.6101 4.27715-1.0713 2.5847.8695 1.4388"/>
+                              </svg>
+                            Tareas
+                        </spam>
+                        <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
+                            Crear Tareas
+                        </x-secondary-button>
+                    </div>
+                    <div>
+                        <div class="mt-2 flex text-red-600 rounded-lg bg-gradient-to-t from-slate-100 p-2">
+                            <h3>No hay tareas aún en este proyecto</h3>
+                        </div>
+                    </div>
+                    <div class="hidden">
+                        <div class="mt-2 flex flex-col gap-2 border-b-4 border-gray-300">
+                            <div class="transition bg-gradient-to-t hover:from-gray-100 py-3 text-base">
+                                <div class="flex">
+                                    <p class="font-semibold text-lg">Estuco</p>
+                                    <div class="ml-auto flex gap-2 text-sm">
+                                        <span class="text-blue-600 cursor-pointer hover:text-blue-300">
+                                            Avances
+                                        </span>
+                                        <span class="text-blue-600 cursor-pointer hover:text-blue-300">Editar</span>
+                                        <span class="text-sm">En Progreso:</span>
+                                        <span class="font-bold">9.89%</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm">RELLENO Y ESTUCO</p>
+                                <div class="mt-5 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                                    <div class="h-2 rounded-full bg-red-500" style="width: 9.89%;"></div>
+                                </div>
+                                <div class="flex text-sm mt-2">
+                                    <p>Inicio: Mar 11, 2025</p>
+                                    <p class="ml-auto"></span>Final: Mar 22, 2025</p>
+                                </div>
+                                <div class="flex items-center text-base">
+                                    <small> Encargado: <strong class="text-blue-500">SEBASTIAN ERAZO PERDOMO</strong></small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     @empty
         <div class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
             No hay registros.

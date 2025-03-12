@@ -15,13 +15,28 @@ class ProyectoController extends Controller
     {
         $title = 'Lista de Proyectos';
         $estado = Proyecto::$estado;
-        $items = Proyecto::when(Request('nombre_completo'), function ($query, $nombre_completo) { 
-            return $query->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%$nombre_completo%"]);
+        $items = Proyecto::when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) { 
+            return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
+        })
+        ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
+            return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
+        })
+        ->when(Request('id_estado'), function ($query, $id_estado) { 
+            return $query->where('id_estado', $id_estado);
+        })
+        ->when(Request('id_user'), function ($query, $id_user) { 
+            return $query->where('id_user', $id_user);
         })
         ->orderBy('id', 'desc')
         ->paginate(10);
+
+        $userColab = User::where('id_rol', 3)->where('activo', 1)
+        ->get(['id', 'nombre_completo'])
+        ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
+        ->toArray();
+
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
-        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos'));
+        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab'));
     }
 
     public function create() 
