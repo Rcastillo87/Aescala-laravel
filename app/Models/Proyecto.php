@@ -4,20 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Proyecto extends Model
 {
     use HasFactory;
 
     protected $table = 'proyectos';
-
-    // Personalizar los nombres de las columnas de marca de tiempo
+    
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
     protected $fillable = [
         'nombre_proyecto',
-        'codigo_proyecto',
         'departamento',
         'ciudad',
         'direccion',
@@ -42,23 +41,6 @@ class Proyecto extends Model
         'fec_fin_real' => 'datetime'
     ];
 
-    // Relación con el modelo User
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user');
-    }
-
-    public function getSpanEstadoAttribute()
-    {
-        return '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
-             . (self::$estado[$this->estado] ?? 'Desconocido') . '</span>';
-    }
-
-    public function getTotalProyectoAttribute ()
-    {
-        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales;
-    }
-
     public static $estado = [
         1 => 'En Desarrollo',
         2 => 'Cotizado',
@@ -74,4 +56,61 @@ class Proyecto extends Model
         4 => 'span-red',
         5 => 'span-black'
     ];
+
+    public function getSpanEstadoAttribute()
+    {
+        return '<span class="'.(self::$ClassEstado[$this->id_estado] ?? 'default-class').'">'
+             . (self::$estado[$this->id_estado] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getTotalProyectoAttribute ()
+    {
+        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales;
+    }
+
+    public function getDiasTranscurridosAttribute ()
+    {
+        $fecInicio = Carbon::parse($this->fec_inicio);
+        $fechaActual = Carbon::now();
+        return intval($fecInicio->diffInDays($fechaActual));
+    }
+
+    public function getDiasProcentageAttribute()
+    {
+        $fecInicio = Carbon::parse($this->fec_inicio);
+        $fecFinEstimado = Carbon::parse($this->fec_fin_estimado);
+        
+        $diasTranscurridos = $this->dias_transcurridos;
+        $diasEstimados = $fecInicio->diffInDays($fecFinEstimado);
+    
+        if ($diasEstimados == 0) {
+            return 100;
+        }
+    
+        $porcentaje = intval(($diasTranscurridos / $diasEstimados) * 100);
+        //min($porcentaje, 100);
+        return $porcentaje;
+    }
+
+    public function getFecIniAttribute()
+    {
+        $array = explode(' ', $this->fec_inicio);
+        return $array[0];
+    }
+    public function getFecfinEstAttribute()
+    {
+        $array = explode(' ', $this->fec_fin_estimado);
+        return $array[0];
+    }
+
+    // Relación con el modelo User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function tareas()
+    {
+        return $this->hasMany(Tarea::class, 'id_proyecto', 'id');
+    }
 }

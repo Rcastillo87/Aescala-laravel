@@ -1,7 +1,6 @@
 <!-- Modal -->
 <x-modal name="my-modal" maxWidth="4xl">
     <div class="p-6">
-
         <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
             <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" 
                 data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500" 
@@ -35,7 +34,8 @@
                 <div class="flex justify-star">
                     <button
                         x-data
-                        x-on:click="$dispatch('close-modal', 'my-modal')"
+                        x-on:click="$nextTick(() => document.getElementById('profile-styled-tab').click());
+                            $dispatch('close-modal', 'my-modal')"
                         class="bg-red-500 text-white px-4 py-2 rounded"
                     >
                         Cerrar
@@ -105,7 +105,8 @@
                         <div class="flex justify-between">
                             <button
                                 x-data
-                                x-on:click="$dispatch('close-modal', 'my-modal')"
+                                x-on:click="$nextTick(() => document.getElementById('profile-styled-tab').click());
+                                $dispatch('close-modal', 'my-modal')"
                                 class="bg-red-500 text-white px-4 py-2 rounded"
                             >
                                 Cerrar
@@ -119,10 +120,5 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
     </div>
 </x-modal>

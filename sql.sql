@@ -11,3 +11,9 @@ update herramienta_prestamos set tipo_prestamo = 2 where tipo_prestamo = 'Devolu
 update database.inventario_materiales set activo = 2 where activo = 0 
 UPDATE database.inventario_materiales set tipo = 1 where tipo = 'Obra Blanca';
 UPDATE database.inventario_materiales set tipo = 2 where tipo = 'Carpinteria';
+
+UPDATE database.proyectos set departamento = 29 where departamento = 'Valle del Cauca';
+
+UPDATE database.proyectos set ciudad = 9 where ciudad = 'Cali';
+UPDATE database.proyectos set ciudad = 40 where ciudad = 'Yumbo';
+UPDATE database.proyectos set ciudad = 21 where ciudad = 'jamundí';

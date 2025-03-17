@@ -21,4 +21,10 @@
     .span-black {
         @apply bg-black text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
+
+    @layer utilities {
+        [aria-expanded="true"] svg {
+            @apply rotate-180;
+        }
+    }
 }

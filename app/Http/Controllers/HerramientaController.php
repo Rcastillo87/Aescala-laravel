@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules;
 
 use App\Models\Herramienta;
 use App\Models\HerramientaPrestamo;
@@ -34,7 +32,6 @@ class HerramientaController extends Controller
         ->paginate(10);
         $userPrestamo = User::where('id_rol', 3)->where('activo', 1)
         ->get(['id', 'nombre_completo'])
-        ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
         ->toArray();
     
         $estado = Herramienta::$estado;
@@ -46,20 +43,20 @@ class HerramientaController extends Controller
 
     public function create( ) 
     {
-        $herra = null;
-        $title = 'Crear Herramienta';
-        $action = 'Crear';
-        $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'action', 'herra', 'estado'));
+        return $this->form();
     }
 
     public function edit($id) 
     {
-        $herra = Herramienta::find($id);
-        $title = 'Crear Herramienta';
-        $action = 'Crear';
+        return $this->form($id);
+    }
+
+    public function form($id = null)
+    {
+        $herra = $id?Herramienta::find($id):null;
+        $title = $id?'Editar Herramienta':'Crear Herramienta';
         $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'action', 'herra', 'estado'));
+        return view('herramienta.create', compact('title', 'herra', 'estado'));
     }
 
     public function save(Request $req)

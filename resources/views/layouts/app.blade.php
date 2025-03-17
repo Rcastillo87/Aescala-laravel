@@ -26,7 +26,13 @@
             </main>
             @include('layouts.footer')
         </div>
-        
+        <div class="hidden">
+            span-blue
+            span-green
+            span-yellow
+            span-red
+            span-gray
+            span-black
         @if(session('success') || session('error') || session('warning'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {

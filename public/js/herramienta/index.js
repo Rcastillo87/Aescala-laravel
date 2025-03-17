@@ -1,9 +1,10 @@
 async function listPrestamos(page = 1, id) {
+    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try {
         const response = await fetch(`listPrestamos/?page=${page}&id=${id}`, {
             method: "GET",
             headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "X-CSRF-TOKEN": csrfToken,
                 "Content-Type": "application/json"
             }
         });
@@ -16,7 +17,6 @@ async function listPrestamos(page = 1, id) {
         } else {
             window.lastPrestamo = null;
         }
-
     } catch (error) {
         Swal.fire("Error", "No se pudo consultar la data.", "error");
     }

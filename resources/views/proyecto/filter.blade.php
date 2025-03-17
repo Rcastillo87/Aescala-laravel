@@ -1,7 +1,7 @@
 <div id="accordion-open" class="mb-4 shadow-md" data-accordion="open">
         <h2 id="accordion-open-heading-1" >
             <button type="button" class="dark:bg-gray-800 flex items-center justify-between w-full p-2 font-medium rtl:text-right
-             text-gray-500 border border-b-0 border-gray-200 rounded-t-xl dark:bg-white gap-3 "
+             text-gray-500 border border-b-0 border-gray-200 rounded-t-xl gap-3 "
                     data-accordion-target="#accordion-open-body-1" aria-expanded="false"
                     aria-controls="accordion-open-body-1">
                 <span class="flex items-center text-[#242e68]">
@@ -19,45 +19,36 @@
         </h2>
         <div id="accordion-open-body-1" class="hidden" aria-labelledby="accordion-open-heading-1">
             <div class="p-1 border border-b-1 border-gray-200">
-             <form method="GET" action="{{route("material.index")}}">
+             <form method="GET" action="{{route("proyecto.index")}}">
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="nombre_material" :value="__('Nombre Material')" />
-                        <x-text-input id="nombre_material" class="block mt-1 w-full" type="text" name="nombre_material" :value="Request('nombre_material')" 
+                        <x-input-label for="nombre_proyecto" :value="__('Nombre Proyecto')" />
+                        <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')" 
                          autofocus />
                     </div>
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="cantidad" :value="__('Cantidad')" />
-                        <x-text-input id="cantidad" class="block mt-1 w-full" type="number" name="cantidad" :value="Request('cantidad')" 
-                         autofocus />
-                    </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="cantidad_min" :value="__('Cantidad Minima')" />
-                        <x-text-input id="cantidad_min" class="block mt-1 w-full" type="number" name="cantidad_min" :value="Request('cantidad_min')" 
-                         autofocus />
-                    </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="valor_unidad" :value="__('Valor')" />
-                        <x-text-input id="valor_unidad" class="block mt-1 w-full" type="number" name="valor_unidad" :value="Request('valor_unidad')" 
-                         autofocus />
-                    </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="tipo" :value="__('Tipo Material')" />
+                        <x-input-label for="id_estado" :value="__('Estado Proyecto')" />
                         <x-select-input 
-                            name="tipo" 
-                            :options="$tipos" 
-                            :selected="Request('tipo')" 
-                            class="block mt-1 w-full" 
-                        />
-                    </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="estado" :value="__('Estado')" />
-                        <x-select-input 
-                            name="estado" 
+                            name="id_estado" 
                             :options="$estado" 
-                            :selected="Request('tipo')" 
+                            :selected="Request('id_estado')" 
                             class="block mt-1 w-full" 
                         />
+                    </div>
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="id_userSerch" :value="__('Encargado')" />
+                        <x-select-input 
+                            name="id_userSerch" 
+                            :data="['id', 'nombre_completo']"
+                            :options="$userColab" 
+                            :selected="Request('id_userSerch')" 
+                            class="block mt-1 w-full" 
+                        />
+                    </div>
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="nombre_cliente" :value="__('Nombre Cliente')" />
+                        <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="Request('nombre_cliente')" 
+                         autofocus />
                     </div>
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
