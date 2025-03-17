@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Tarea extends Model
 {
     use HasFactory;
 
     protected $table = 'tareas';
-
-    // Personalizar los nombres de las columnas de marca de tiempo
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
@@ -30,53 +29,73 @@ class Tarea extends Model
         'fec_fin' => 'datetime'
     ];
 
-    // Relación con el modelo Proyecto
+    protected $appends = ['fecIni', 'fechaFin'];
+
+    
+    public static $estado = [
+        1 => 'En Pausa',
+        2 => 'En Progreso',
+        3 => 'Finalizado'
+    ];
+    public static $ClassEstado = [
+        2 => 'span-yellow',
+        1 => 'span-green',
+        4 => 'span-red'
+    ];
+
+    public function getSpanEstadoAttribute()
+    {
+        return '<span class="'.(self::$ClassEstado[$this->id_tarea_estado] ?? 'default-class').'">'
+             . (self::$estado[$this->id_tarea_estado] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getDiasTranscurridosAttribute ()
+    {
+        $fecInicio = Carbon::parse($this->fec_inicio);
+        $fechaActual = Carbon::now();
+        return intval($fecInicio->diffInDays($fechaActual));
+    }
+
+    public function getDiasProcentageAttribute()
+    {
+
+        $fecInicio = Carbon::parse($this->fec_inicio);
+        $fechaActual = Carbon::now();
+        $diasTranscurridos = intval($fecInicio->diffInDays($fechaActual));
+
+        $fecFin = Carbon::parse($this->fec_fin);
+        $diasTotales = intval($fecInicio->diffInDays($fecFin));
+
+        if( $diasTotales == 0 ){
+            return 100;
+        }
+    
+        $porcentaje = intval(($diasTranscurridos / $diasTotales) * 100);
+        return $porcentaje;
+    }
+
+    public function getFecIniAttribute()
+    {
+        $array = explode(' ', $this->fec_inicio);
+        return $array[0];
+    }
+    public function getFechaFinAttribute()
+    {
+        $array = explode(' ', $this->fec_fin);
+        return $array[0];
+    }
+
+    // Relaciónes 
     public function proyecto()
     {
         return $this->belongsTo(Proyecto::class, 'id_proyecto');
     }
 
-    // Relación con el modelo User
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function getNameTareaEstadoAttribute()
-    {
-         switch ($this->id_tarea_estado) {
-             case 1:
-                 return 'En Pausa';
-                 break;
-             case 2:
-                 return 'En Progreso';
-                 break;
-             case 3:
-                 return 'Finalizado';
-                 break;
-             default:
-                 return 'No Definido';
-         }
-    }
-
-    public function getClassTareaEstadoAttribute()
-    {
-        switch ($this->id_tarea_estado) {
-            case 1:
-                return 'bg-yellow-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded';
-                break;
-            case 2:
-                return 'bg-green-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded';
-                break;
-            case 3:
-                return 'bg-red-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded';
-                break;
-            default:
-                return 'bg-gray-300 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded ';
-        }
-    }
-
-    // Relación con el modelo TareaTipo
     public function tareaTipo()
     {
         return $this->belongsTo(TareaTipo::class, 'id_tarea_tipo');

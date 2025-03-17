@@ -36,12 +36,12 @@
                         />
                     </div>
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="id_user" :value="__('Encargado')" />
+                        <x-input-label for="id_userSerch" :value="__('Encargado')" />
                         <x-select-input 
-                            name="id_user" 
+                            name="id_userSerch" 
                             :data="['id', 'nombre_completo']"
                             :options="$userColab" 
-                            :selected="Request('id_user')" 
+                            :selected="Request('id_userSerch')" 
                             class="block mt-1 w-full" 
                         />
                     </div>

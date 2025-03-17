@@ -46,6 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('edit');
         Route::post('/save', [ProyectoController::class, 'save'])->name('save');
         Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');
+        Route::post('/saveTarea', [ProyectoController::class, 'saveTarea'])->name('saveTarea');
+        Route::get('/editTarea/{id}', [ProyectoController::class, 'editTarea'])->name('editTarea');
     });
 
     Route::prefix('material')->name('material.')->group(function () {

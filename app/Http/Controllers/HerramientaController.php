@@ -32,7 +32,6 @@ class HerramientaController extends Controller
         ->paginate(10);
         $userPrestamo = User::where('id_rol', 3)->where('activo', 1)
         ->get(['id', 'nombre_completo'])
-        ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
         ->toArray();
     
         $estado = Herramienta::$estado;

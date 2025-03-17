@@ -9,7 +9,7 @@
             <hr class="border-2 bg-green-500 rounded-lg w-[55px] p-[3px] ml-1">
         </span>
         <span class="flex items-center text-center ml-2">
-            Próximos a vencer (95%)
+            Próximos a vencer (80%)
             <hr class="border-2 bg-orange-400 rounded-lg w-[55px] p-[3px] ml-1">
         </span>
 
@@ -29,7 +29,7 @@
             $porcen = $item->dias_procentage;
             $bg = match (true) {
                 $porcen <= 80 => 'bg-green-500',
-                $porcen <= 95 => 'bg-orange-400',
+                $porcen <= 100 => 'bg-orange-400',
                 default => 'bg-red-500',
             };
         @endphp
@@ -97,7 +97,7 @@
                         <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                             onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
                             class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
-                                focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 me-2">
+                                focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer me-2">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
                                 </svg>                    
@@ -110,7 +110,7 @@
                 </div>
             </div>
             <div>
-                <button type="button" data-collapse-toggle="tareas" aria-expanded="false" 
+                <button type="button" data-collapse-toggle="tareas_{{ $item->id }}" aria-expanded="false" 
                     class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic  items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full">
                     <div class="flex items-center justify-between text-left w-full">
                         <span class="text-lg">ver tareas</span>
@@ -119,7 +119,7 @@
                         </svg>
                     </div>
                 </button>
-                <div id="tareas" class="hidden px-6 py-3 mx-3 text-lg border-2 border-gray-200 rounded-lg" aria-hidden="true">
+                <div id="tareas_{{ $item->id }}" class="hidden px-6 py-3 mx-3 text-lg border-2 border-gray-200 rounded-lg" aria-hidden="true">
                     <div class="flex justify-between text-center">
                         <spam class="text-xl font-bold inline-flex mt-1">
                             <svg class="w-6 h-6 text-gray-800 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -127,43 +127,62 @@
                               </svg>
                             Tareas
                         </spam>
-                        <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
+                        @php
+                            $id_tarea = $item->id;
+                        @endphp
+
+                        <x-secondary-button 
+                            onclick="formIdProyecto({{$item->id}})"
+                            x-data="" data-tooltip-trigger="hover" 
+                            x-on:click="$dispatch('open-modal', 'my-modal')"
+                            class="mt-4 md:mt-0 cursor-pointer">
                             Crear Tareas
                         </x-secondary-button>
                     </div>
-                    <div>
-                        <div class="mt-2 flex text-red-600 rounded-lg bg-gradient-to-t from-slate-100 p-2">
-                            <h3>No hay tareas aún en este proyecto</h3>
-                        </div>
-                    </div>
-                    <div class="hidden">
-                        <div class="mt-2 flex flex-col gap-2 border-b-4 border-gray-300">
+                    @forelse($item->tareas as $tarea)
+                        <div class="mt-2 flex flex-col gap-2 border-b-[3px] border-gray-300">
                             <div class="transition bg-gradient-to-t hover:from-gray-100 py-3 text-base">
                                 <div class="flex">
-                                    <p class="font-semibold text-lg">Estuco</p>
+                                    <p class="font-semibold text-sm">Tipo Tarea: {{ $tarea->tareaTipo->nombre_tarea }}</p>
                                     <div class="ml-auto flex gap-2 text-sm">
-                                        <span class="text-blue-600 cursor-pointer hover:text-blue-300">
-                                            Avances
+                                        <span class="text-blue-600 hover:text-blue-300 cursor-pointer">
+                                            + Avances
                                         </span>
-                                        <span class="text-blue-600 cursor-pointer hover:text-blue-300">Editar</span>
-                                        <span class="text-sm">En Progreso:</span>
-                                        <span class="font-bold">9.89%</span>
+                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer" onclick="editTarea({{$tarea->id}})">
+                                            Editar
+                                        </a>
+                                        {!! $tarea->spanEstado !!}
+                                        <span class="font-bold">Completado: {{ $tarea->diasProcentage }}%</span>
                                     </div>
                                 </div>
-                                <p class="text-sm">RELLENO Y ESTUCO</p>
-                                <div class="mt-5 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                                    <div class="h-2 rounded-full bg-red-500" style="width: 9.89%;"></div>
+                                @php
+                                    $porcenTarea = $tarea->diasProcentage;
+                                    $bgTarea = match (true) {
+                                        $porcenTarea <= 80 => 'bg-green-500',
+                                        $porcenTarea <= 100 => 'bg-orange-400',
+                                        default => 'bg-red-500',
+                                    };
+                                @endphp
+                                <p class="text-sm">Descripcion: {{ $tarea->descripccion }}</p>
+                                <div class="my-2 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                                    <div class="h-2 rounded-full {{ $bgTarea }}" style="width:{{ ($tarea->diasProcentage<100)?$tarea->diasProcentage:100 }}%;"></div>
                                 </div>
-                                <div class="flex text-sm mt-2">
-                                    <p>Inicio: Mar 11, 2025</p>
-                                    <p class="ml-auto"></span>Final: Mar 22, 2025</p>
-                                </div>
-                                <div class="flex items-center text-base">
-                                    <small> Encargado: <strong class="text-blue-500">SEBASTIAN ERAZO PERDOMO</strong></small>
+                                <div class="flex justify-between">
+                                    <div class="flex items-center text-base">
+                                        <small> Encargado: <strong class="text-blue-500">{{ $tarea->user->nombre_completo }}</strong></small>
+                                    </div>
+                                    <div class="flex text-sm mt-2">
+                                        <p class="me-4">Inicio: {{$tarea->fecIni}}</p>
+                                        <p>Fin: {{$tarea->fechaFin}}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="mt-2 flex text-center justify-center text-red-600 rounded-lg bg-gradient-to-t from-slate-100 p-2">
+                            <h3>No hay tareas aún en este proyecto</h3>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -180,6 +199,10 @@
         </div>
     @endif
 
+    <button onclick="abrirModal('my-modal')" class="bg-blue-500 text-white px-4 py-2 rounded hidden">
+        Abrir Modal
+    </button>
+    @include('proyecto.modalTarea')
     <script>
         window.estadosProyecto = {!! json_encode($estado) !!};
     </script>

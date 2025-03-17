@@ -11,8 +11,7 @@ class Proyecto extends Model
     use HasFactory;
 
     protected $table = 'proyectos';
-
-    // Personalizar los nombres de las columnas de marca de tiempo
+    
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
@@ -42,11 +41,21 @@ class Proyecto extends Model
         'fec_fin_real' => 'datetime'
     ];
 
-    // Relación con el modelo User
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user');
-    }
+    public static $estado = [
+        1 => 'En Desarrollo',
+        2 => 'Cotizado',
+        3 => 'Entregado',
+        4 => 'Cancelado',
+        5 => 'Posventas'
+    ];
+
+    public static $ClassEstado = [
+        1 => 'span-green',
+        2 => 'span-yellow',
+        3 => 'span-blue',
+        4 => 'span-red',
+        5 => 'span-black'
+    ];
 
     public function getSpanEstadoAttribute()
     {
@@ -94,20 +103,14 @@ class Proyecto extends Model
         return $array[0];
     }
 
+    // Relación con el modelo User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 
-    public static $estado = [
-        1 => 'En Desarrollo',
-        2 => 'Cotizado',
-        3 => 'Entregado',
-        4 => 'Cancelado',
-        5 => 'Posventas'
-    ];
-
-    public static $ClassEstado = [
-        1 => 'span-green',
-        2 => 'span-yellow',
-        3 => 'span-blue',
-        4 => 'span-red',
-        5 => 'span-black'
-    ];
+    public function tareas()
+    {
+        return $this->hasMany(Tarea::class, 'id_proyecto', 'id');
+    }
 }
