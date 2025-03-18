@@ -106,6 +106,20 @@
                             Cambio de Estado
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
+                        <a data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
+                            onclick="listFinanzas(0,{{$item->id}})" x-data="" 
+                            x-on:click="$dispatch('open-modal', 'finanza-modal')"
+                            class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                            focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer me-2">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.5 21h13M12 21V7m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm2-1.8c3.073.661 2.467 2.8 5 2.8M5 8c3.359 0 2.192-2.115 5.012-2.793M7 9.556V7.75m0 1.806-1.95 4.393a.773.773 0 0 0 .37.962.785.785 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.776.776 0 0 0 .09-.716L7 9.556Zm10 0V7.313m0 2.243-1.95 4.393a.773.773 0 0 0 .37.962.786.786 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.775.775 0 0 0 .09-.716L17 9.556Z"/>
+                            </svg>       
+                        </a>
+                        <div id="tooltip-hover-finanza-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                            Ingresos & Egresos
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -203,6 +217,7 @@
         Abrir Modal
     </button>
     @include('proyecto.modalTarea')
+    @include('proyecto.modalFinanzas')
     <script>
         window.estadosProyecto = {!! json_encode($estado) !!};
     </script>

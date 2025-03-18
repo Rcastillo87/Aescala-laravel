@@ -22,6 +22,28 @@ class Finanza extends Model
         'valor'
     ];
 
+    public static $tipo = [
+        1 => 'Ingreso - Abono',
+        2 => 'Egreso - Carpinteria',
+        3 => 'Egreso Obra Blanca',
+        4 => 'Egreso - Otros'
+    ];
+
+    public static $ClassTipo = [
+        1 => 'span-green',
+        2 => 'span-red',
+        3 => 'span-red',
+        4 => 'span-red'
+    ];
+
+    protected $appends = ['spanTipo'];
+
+    public function getSpanTipoAttribute()
+    {
+        return '<span class="'.(self::$ClassTipo[$this->tipo] ?? 'default-class').'">'
+             . (self::$tipo[$this->tipo] ?? 'Desconocido') . '</span>';
+    }
+
     // Relación con el modelo Proyecto
     public function proyecto()
     {

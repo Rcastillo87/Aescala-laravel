@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Finanza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -39,7 +40,11 @@ class ProyectoController extends Controller
         $estadoTarea = Tarea::$estado;
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
-        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo'));
+
+        $headerFinanzas = ['Ingresos o Egresos', 'Concepto', 'Valor', 'Fecha Creación', 'Opciones'];
+        $tipoFinanzas = Finanza::$tipo;
+
+        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 'headerFinanzas', 'tipoFinanzas'));
     }
 
     public function create() 
@@ -154,7 +159,7 @@ class ProyectoController extends Controller
         }
     }
 
-    public function editTarea($id)
+    public function editTarea ($id)
     {
         $tarea = Tarea::find($id);
         if($tarea){
@@ -170,4 +175,48 @@ class ProyectoController extends Controller
             ], 404);
         }
     }
+
+    public function listFinanzas()
+    {
+        try {
+            $listFinanzas = Finanza::where('id_proyecto', Request('id'))->orderBy('id', 'desc')->paginate(10);
+            return response()->json([
+                'status' => true,
+                'message' => 'Lista de préstamos.',
+                'data' => $listFinanzas
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function savefinanza (Request $request)
+    {
+        $data = $request->validate([
+            'id_proyecto_finanza' => ['required', 'integer', Rule::exists('proyectos', 'id') ],
+            'tipo' => ['required', 'integer', Rule::in(array_keys(Finanza::$tipo))],
+            'valor' => ['required', 'integer'],
+            'concepto' => 'required|string|max:255'
+        ]);
+
+        $data['id_proyecto'] = $data['id_proyecto_finanza'];
+        $msg = "Ingreso o Egreso creado";
+        try {
+            DB::beginTransaction();
+            Finanza::Create($data);
+            DB::commit();
+            return redirect()->route('proyecto.index')->with('success', $msg);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
+    }
+
 }

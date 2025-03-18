@@ -17,3 +17,8 @@ UPDATE database.proyectos set departamento = 29 where departamento = 'Valle del 
 UPDATE database.proyectos set ciudad = 9 where ciudad = 'Cali';
 UPDATE database.proyectos set ciudad = 40 where ciudad = 'Yumbo';
 UPDATE database.proyectos set ciudad = 21 where ciudad = 'jamundí';
+
+UPDATE database.finanzas set tipo = 1 where tipo = 'Ingreso_abono';
+UPDATE database.finanzas set tipo = 2 where tipo = 'Gasto_Carpinteria';
+UPDATE database.finanzas set tipo = 3 where tipo = 'Obra Gasto_Obra_Blanca';
+UPDATE database.finanzas set tipo = 4 where tipo = 'Gasto_Otros';

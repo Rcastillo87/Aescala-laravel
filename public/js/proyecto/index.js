@@ -80,15 +80,60 @@ async function editTarea(id) {
         document.getElementById('id_user').value  = data.data.id_user;
         document.getElementById('id_tarea_tipo').value  = data.data.id_tarea_tipo;
         document.getElementById('id_tarea_estado').value  = data.data.id_tarea_estado;
-
-        // Establece los valores de los <select>
-        /*setTimeout(() => {
-            document.getElementById('id_user').value = data.data.id_user;
-            document.getElementById('id_tarea_tipo').value = data.data.id_tarea_tipo;
-            document.getElementById('id_tarea_estado').value = data.data.id_tarea_estado;
-        }, 100); */// Espera 100 ms antes de establecer los valores
     })
     .catch(error => {
         Swal.showValidationMessage(`Error: ${error.message}`);
     });
+}
+
+async function listFinanzas(page = 1, id) {
+    try {
+        const response = await fetch(`listFinanzas/?page=${page}&id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        document.getElementById('id_proyecto_finanza').value = id;
+        tableFinanzas(data.data);
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
+}
+
+function tableFinanzas(data) {
+    const serviceList = document.getElementById('serviceFinanzas');
+    const pagination = document.getElementById('pagination');
+    const noDataMessage = document.getElementById('noDataMessage');
+
+    serviceList.innerHTML = '';
+    pagination.innerHTML = '';
+
+    if (data.data && data.data.length > 0) {
+        data.data.forEach(service => {
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.spanTipo}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.concepto.toLowerCase() || 'N/A'}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.valor}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
+            `;
+            serviceList.appendChild(fila);
+        });
+
+        const paginationLinks = data.links.map(link => {
+            if (link.url) {
+                const page = new URL(link.url).searchParams.get('page') || 1;
+                return `<a href="#" onclick="listFinanzas(${page}, ${id})" class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</a>`;
+            }
+            return `<span class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</span>`;
+        }).join('');
+        pagination.innerHTML = paginationLinks;
+
+        noDataMessage.classList.add('hidden');
+    } else {
+        noDataMessage.classList.remove('hidden');
+    }
 }
