@@ -50,6 +50,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/editTarea/{id}', [ProyectoController::class, 'editTarea'])->name('editTarea');
         Route::get('/listFinanzas', [ProyectoController::class, 'listFinanzas'])->name('listFinanzas');
         Route::post('/savefinanza', [ProyectoController::class, 'savefinanza'])->name('savefinanza');
+        Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
+        Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
+        Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
     });
 
     Route::prefix('material')->name('material.')->group(function () {

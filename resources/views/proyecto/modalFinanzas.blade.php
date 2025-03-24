@@ -16,7 +16,6 @@
             </ul>
         </div>
         <div id="default-styled-tab-content">
-
             <div class="hidden p-4 rounded-lg bg-white dark:bg-gray-800" id="styled-profile" role="tabpanel" aria-labelledby="profile-tab">
                 <h2 class="text-xl font-semibold mb-4">Lista Ingresos & Egresos</h2>
                 <div class="p-0 overflow-x-auto ps ps--active-x">

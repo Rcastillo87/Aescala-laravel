@@ -94,12 +94,12 @@
                     </div>
                 </div>
                 <div class="flex justify-between">
-                    <button
+                    <a
                         x-on:click="$dispatch('close-modal', 'my-modal')"
                         class="bg-red-500 text-white px-4 py-2 rounded"
                     >
                         Cerrar
-                    </button>
+                    </a>
 
                     <x-primary-button class="ms-4">
                         Guardar

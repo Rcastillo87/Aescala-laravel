@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Avance;
 use App\Models\Finanza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,10 +42,12 @@ class ProyectoController extends Controller
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
 
-        $headerFinanzas = ['Ingresos o Egresos', 'Concepto', 'Valor', 'Fecha Creación', 'Opciones'];
+        $headerFinanzas = ['Ingresos o Egresos', 'Concepto', 'Valor', 'Fecha Creación'];
         $tipoFinanzas = Finanza::$tipo;
 
-        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 'headerFinanzas', 'tipoFinanzas'));
+        $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
+
+        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 'headerFinanzas', 'tipoFinanzas', 'headerAvance'));
     }
 
     public function create() 
@@ -219,4 +222,64 @@ class ProyectoController extends Controller
         }
     }
 
+    public function listAvances()
+    {
+        try {
+            $listAvance = Avance::where('id_tarea', Request('id'))->orderBy('createdAt', 'desc')->paginate(10);
+            return response()->json([
+                'status' => true,
+                'message' => 'Lista de avance.',
+                'data' => $listAvance
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function saveAvance (Request $request) 
+    {
+        $data = $request->validate([
+            'id_tarea_avance' => ['required', 'integer', Rule::exists('tareas', 'id') ],
+            'fec_avance' => ['required', 'date', 'date_format:Y-m-d'],
+            'avance' => 'required|string|max:255'
+        ]);
+
+        $data['id_tarea'] = $data['id_tarea_avance'];
+        $msg = "Avance creado";
+        try {
+            DB::beginTransaction();
+            Avance::Create($data);
+            DB::commit();
+            return redirect()->route('proyecto.index')->with('success', $msg);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteAvance()
+    {
+        try {
+            $avance = Avance::findOrFail(Request('id'));
+            $avance->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Avance eliminada.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
