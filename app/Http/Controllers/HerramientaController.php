@@ -93,7 +93,7 @@ class HerramientaController extends Controller
             $lisPrestamos = HerramientaPrestamo::with('user')
                 ->where('id_herramienta', request('id'))
                 ->orderBy('id', 'desc')
-                ->paginate(5);
+                ->paginate(10);
 
             $lastPrestamo = HerramientaPrestamo::where('id_herramienta', request('id'))
                 ->orderBy('id', 'desc')->first();

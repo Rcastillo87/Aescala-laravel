@@ -5,16 +5,16 @@
     <!-- Sección de etiquetas -->
     <div class="flex flex-wrap gap-4 md:gap-2">
         <span class="flex items-center text-center">
-            Normal (80%)
+            Normal (<=80%)
             <hr class="border-2 bg-green-500 rounded-lg w-[55px] p-[3px] ml-1">
         </span>
         <span class="flex items-center text-center ml-2">
-            Próximos a vencer (80%)
+            Próximos a vencer (80-100%)
             <hr class="border-2 bg-orange-400 rounded-lg w-[55px] p-[3px] ml-1">
         </span>
 
         <span class="flex items-center text-center ml-2">
-            Atrasados (>> 100%)
+            Atrasados (=> 100%)
             <hr class="border-2 bg-red-500 rounded-lg w-[55px] p-[3px] ml-1">
         </span>
     </div>
@@ -82,29 +82,54 @@
                 </div>
                 <div class="flex flex-col text-center w-[120px] border-l-2 px-2 mx-2 mt-1">
                     <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
-                    <div class="flex items-center p-1 text-center">
-                        <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" href="{{ route('proyecto.edit', $item->id) }}"
-                            class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
-                                focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 me-2">
-                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
-                            </svg>
-                        </a>
-                        <div id="tooltip-hover-edit-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                            Editar
-                            <div class="tooltip-arrow" data-popper-arrow></div>
+                    <div class="flex flex-wrap justify-start gap-1 p-1">
+                        <!-- Botón Editar -->
+                        <div class="relative inline-flex">
+                            <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
+                               href="{{ route('proyecto.edit', $item->id) }}"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
+                                      focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                                </svg>
+                            </a>
+                            <div id="tooltip-hover-edit-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Editar
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
                         </div>
-                        <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
-                            onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
-                            class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
-                                focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer me-2">
-                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
+                    
+                        <!-- Botón Cambio de Estado -->
+                        <div class="relative inline-flex">
+                            <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
+                               onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
+                               class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                                      focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
                                 </svg>                    
-                        </a>
-                        <div id="tooltip-hover-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                            Cambio de Estado
-                            <div class="tooltip-arrow" data-popper-arrow></div>
+                            </a>
+                            <div id="tooltip-hover-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Cambio de Estado
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+                    
+                        <!-- Botón Ingresos & Egresos -->
+                        <div class="relative inline-flex">
+                            <a data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
+                               onclick="listFinanzas(0,{{$item->id}})" x-data="" 
+                               x-on:click="$dispatch('open-modal', 'finanza-modal')"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4 
+                                      focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.5 21h13M12 21V7m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm2-1.8c3.073.661 2.467 2.8 5 2.8M5 8c3.359 0 2.192-2.115 5.012-2.793M7 9.556V7.75m0 1.806-1.95 4.393a.773.773 0 0 0 .37.962.785.785 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.776.776 0 0 0 .09-.716L7 9.556Zm10 0V7.313m0 2.243-1.95 4.393a.773.773 0 0 0 .37.962.786.786 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.775.775 0 0 0 .09-.716L17 9.556Z"/>
+                                </svg>       
+                            </a>
+                            <div id="tooltip-hover-finanza-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Ingresos & Egresos
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -114,15 +139,15 @@
                     class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic  items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full">
                     <div class="flex items-center justify-between text-left w-full">
                         <span class="text-lg">ver tareas</span>
-                        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 shrink-0 transition-transform" aria-hidden="true">
+                        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 shrink-0 transition-transform">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                         </svg>
                     </div>
                 </button>
-                <div id="tareas_{{ $item->id }}" class="hidden px-6 py-3 mx-3 text-lg border-2 border-gray-200 rounded-lg" aria-hidden="true">
+                <div id="tareas_{{ $item->id }}" class="hidden px-6 py-3 mx-3 text-lg border-2 border-gray-200 rounded-lg">
                     <div class="flex justify-between text-center">
                         <spam class="text-xl font-bold inline-flex mt-1">
-                            <svg class="w-6 h-6 text-gray-800 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-gray-800 me-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h4v-4m-5 0v-4m0 4h5m-5-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v1.98935M3 11h5v4m9.4708 4.1718-.8696-1.4388-2.8164-.235-2.573-4.2573 1.4873-2.8362 1.4441 2.3893c.3865.6396 1.2183.8447 1.8579.4582.6396-.3866.8447-1.2184.4582-1.858l-1.444-2.38925h3.1353l2.6101 4.27715-1.0713 2.5847.8695 1.4388"/>
                               </svg>
                             Tareas
@@ -145,12 +170,25 @@
                                 <div class="flex">
                                     <p class="font-semibold text-sm">Tipo Tarea: {{ $tarea->tareaTipo->nombre_tarea }}</p>
                                     <div class="ml-auto flex gap-2 text-sm">
-                                        <span class="text-blue-600 hover:text-blue-300 cursor-pointer">
+                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer"
+                                            data-tooltip-target="tooltip-hover-avance-{{$tarea->id}}"
+                                            onclick="openAvance(0,{{$tarea->id}})"
+                                            x-data="" data-tooltip-trigger="hover"
+                                            x-on:click="$dispatch('open-modal', 'avance-modal')">
                                             + Avances
-                                        </span>
-                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer" onclick="editTarea({{$tarea->id}})">
+                                        </a>
+                                        <div id="tooltip-hover-avance-{{$tarea->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 truncate max-w-xs text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                            Avances de la Tarea
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
+                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer" onclick="editTarea({{$tarea->id}})" x-data=""
+                                            x-data data-tooltip-target="tooltip-hover-tarea-{{$tarea->id}}" data-tooltip-trigger="hover">
                                             Editar
                                         </a>
+                                        <div id="tooltip-hover-tarea-{{$tarea->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 truncate max-w-xs text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                            Editar la Tarea
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
                                         {!! $tarea->spanEstado !!}
                                         <span class="font-bold">Completado: {{ $tarea->diasProcentage }}%</span>
                                     </div>
@@ -202,7 +240,9 @@
     <button onclick="abrirModal('my-modal')" class="bg-blue-500 text-white px-4 py-2 rounded hidden">
         Abrir Modal
     </button>
+    @include('proyecto.modalAvances')
     @include('proyecto.modalTarea')
+    @include('proyecto.modalFinanzas')
     <script>
         window.estadosProyecto = {!! json_encode($estado) !!};
     </script>

@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HerramientaController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\DespachoController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -48,6 +49,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');
         Route::post('/saveTarea', [ProyectoController::class, 'saveTarea'])->name('saveTarea');
         Route::get('/editTarea/{id}', [ProyectoController::class, 'editTarea'])->name('editTarea');
+        Route::get('/listFinanzas', [ProyectoController::class, 'listFinanzas'])->name('listFinanzas');
+        Route::post('/savefinanza', [ProyectoController::class, 'savefinanza'])->name('savefinanza');
+        Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
+        Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
+        Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
     });
 
     Route::prefix('material')->name('material.')->group(function () {
@@ -58,6 +64,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/save', [MaterialController::class, 'save'])->name('save');
         Route::get('/listPrestamos', [MaterialController::class, 'listPrestamos'])->name('listPrestamos');
         Route::post('/savePrestamo', [MaterialController::class, 'savePrestamo'])->name('savePrestamo');
+    });
+
+    Route::prefix('despacho')->name('despacho.')->group(function () {
+        Route::get('/index', [DespachoController::class, 'index'])->name('index');
     });
 
 });
