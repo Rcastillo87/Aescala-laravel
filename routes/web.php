@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HerramientaController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\DespachoController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -63,6 +64,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/save', [MaterialController::class, 'save'])->name('save');
         Route::get('/listPrestamos', [MaterialController::class, 'listPrestamos'])->name('listPrestamos');
         Route::post('/savePrestamo', [MaterialController::class, 'savePrestamo'])->name('savePrestamo');
+    });
+
+    Route::prefix('despacho')->name('despacho.')->group(function () {
+        Route::get('/index', [DespachoController::class, 'index'])->name('index');
     });
 
 });

@@ -22,3 +22,5 @@ UPDATE database.finanzas set tipo = 1 where tipo = 'Ingreso_abono';
 UPDATE database.finanzas set tipo = 2 where tipo = 'Gasto_Carpinteria';
 UPDATE database.finanzas set tipo = 3 where tipo = 'Obra Gasto_Obra_Blanca';
 UPDATE database.finanzas set tipo = 4 where tipo = 'Gasto_Otros';
+
+se crea en avance fec_avance

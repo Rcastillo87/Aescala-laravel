@@ -12,7 +12,7 @@
             <x-table-header :headers="$headers" />
             <tbody>
                 @forelse($items as $item)
-                    <tr>
+                    <tr class="h-[50px]">
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->nombre_completo }}
                         </td>
@@ -25,8 +25,51 @@
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->telefono }}
                         </td>
-                        <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->createdAt }}
+                        <td class="items-center py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+
+                            @php
+                                $proyectos = $item->progresProyecto;
+                                $btProyecto = $proyectos->isEmpty() ? 'hidden' : '';
+                                $tareas = $item->progresTarea;
+                                $btTarea = $tareas->isEmpty() ? 'hidden' : '';
+                            @endphp
+
+                            <button id="proyecto-dropdownHoverButton{{ $item->id }}" data-dropdown-toggle="proyecto-dropdownHover{{ $item->id }}" data-dropdown-trigger="hover" 
+                                class="my-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-2 py-1 
+                                text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 {{ $btProyecto }}" type="button">
+                                Proyectos 
+                                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                </svg>
+                            </button>
+                            <div id="proyecto-dropdownHover{{ $item->id }}" class="z-10 hidden border-2 border-gray-400  bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="proyecto-dropdownHoverButton{{ $item->id }}">
+                                    @foreach ($proyectos as $proyecto)
+                                        <li>{{$proyecto->nombre_proyecto}}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            <button id="tarea-dropdownHoverButton{{ $item->id }}" data-dropdown-toggle="tarea-dropdownHover{{ $item->id }}" data-dropdown-trigger="hover" 
+                                class="my-1 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 
+                                text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 {{ $btTarea }}" type="button">
+                                tareas 
+                                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                </svg>
+                            </button>
+                            <div id="tarea-dropdownHover{{ $item->id }}" class="z-10 hidden border-2 border-gray-400  bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="tarea-dropdownHoverButton{{ $item->id }}">
+                                    @foreach ($tareas as $tarea)
+                                    <li>
+                                        {{ optional($tarea->proyecto)->nombre_proyecto ?? 'Sin Proyecto' }} 
+                                        -> 
+                                        {{ optional($tarea->tareaTipo)->nombre_tarea ?? 'Sin Tipo de Tarea' }}
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {!! $item->spanRol !!}

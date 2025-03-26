@@ -93,6 +93,15 @@ class User extends Authenticatable
         return true;
     }
 
+    public function getProgresProyectoAttribute()
+    {
+        return $this->proyectos->whereIn('id_estado', [1, 5]);
+    }
+
+    public function getProgresTareaAttribute()
+    {
+        return $this->tareas->whereIn('id_tarea_estado', [2]);
+    }
 
     public static $roles = [
         1 => 'Administrador',
@@ -121,4 +130,16 @@ class User extends Authenticatable
         2 => ['CE', 'Cedu. Extrangeria'],
         3 => ['PAS', 'Pasaporte'],
     ];
+
+    //RELACIONES 
+    public function tareas()
+    {
+        return $this->hasMany(Tarea::class, 'id_user');
+    }
+
+    public function proyectos()
+    {
+        return $this->hasMany(Proyecto::class, 'id_user');
+    }
+
 }

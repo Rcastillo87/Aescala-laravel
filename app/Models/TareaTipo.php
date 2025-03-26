@@ -22,6 +22,6 @@ class TareaTipo extends Model
     // Relación con el modelo Tarea
     public function tareas()
     {
-        return $this->hasMany(Tarea::class, 'id_tarea_tipo');
+        return $this->belongsTo(Tarea::class, 'id_tarea_tipo');
     }
 }

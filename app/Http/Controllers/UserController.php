@@ -18,7 +18,7 @@ class UserController extends Controller
         $title = 'Lista de Usuarios';
         $roles = User::$roles;
         $estado = User::$estado;
-        $items = User::when(Request('nombre_completo'), function ($query, $nombre_completo) { 
+        $items = User::with(['proyectos', 'proyectos.tareas'])->when(Request('nombre_completo'), function ($query, $nombre_completo) { 
             return $query->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%$nombre_completo%"]);
         })
         ->when(Request('email'), function ($query, $email) { 
@@ -37,7 +37,7 @@ class UserController extends Controller
             return $query->where('id_rol', $id_rol);
         })
         ->paginate(10);
-        $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Fecha de Creación', 'Perfil', 'Estado', 'Opciones'];
+        $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Trabajando en', 'Perfil', 'Estado', 'Opciones'];
         return view('user.index', compact('roles', 'title', 'items', 'headers', 'estado'));
     }
 
@@ -124,6 +124,7 @@ class UserController extends Controller
 
     public function editStatus($id) 
     {
+        
         try {
             DB::beginTransaction();
             $user = User::findOrFail($id);
