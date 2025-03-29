@@ -1,0 +1,49 @@
+/* Aumenta el tamaño del texto en TomSelect */
+.ts-control, .ts-wrapper.single .ts-control input {
+    font-size: 1.1rem !important;  /* Tamaño de letra más grande */
+}
+
+/* Opcional: Ajusta el dropdown para que también tenga letra más grande */
+.ts-dropdown-content .option {
+    font-size: 1.1rem !important;
+}
+
+/* Estilo para TomSelect (altura, bordes, enfoque) */
+.tom-select-custom {
+    height: 42px;  /* Altura similar a inputs de Tailwind */
+    @apply border border-gray-300 rounded-md shadow-sm;
+    @apply focus:border-indigo-500 focus:ring-indigo-500;
+    @apply w-full mt-1;
+}
+
+/* Ajustar el texto dentro del control */
+.tom-select-custom .ts-control {
+    @apply h-full;  /* Ocupa toda la altura */
+    font-size: 1rem;  /* Tamaño de letra estándar */
+    padding: 8px 12px;  /* Similar a inputs de Tailwind */
+}
+
+/* Dropdown estilizado */
+.ts-dropdown {
+    @apply border border-gray-300 rounded-md shadow-sm;
+}
+
+/* Opciones del dropdown */
+.ts-dropdown .option {
+    padding: 8px 12px;  /* Mismo espaciado que el input */
+}
+
+[drawer-backdrop] {
+    transition: opacity 0.3s ease;
+    z-index: 30; /* Asegúrate que esté detrás del sidebar pero sobre el contenido */
+  }
+  
+  [drawer-backdrop].hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  #logo-sidebar {
+    transition: transform 0.3s ease;
+    z-index: 40; /* Mayor que el backdrop */
+  }

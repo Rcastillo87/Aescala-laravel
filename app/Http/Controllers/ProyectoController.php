@@ -66,7 +66,6 @@ class ProyectoController extends Controller
         $colaUsers = User::where('id_rol', 3)
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
-            ->map(fn($user) => ['id' => $user->id, 'nombre_completo' => $user->nombre_completo])
             ->toArray();
     
         $title = $id ? 'Editar Proyecto' : 'Crear Proyecto';

@@ -7,8 +7,8 @@
             Crear Herramienta
         </x-secondary-button>
     </div>
-    <div class="p-0 overflow-x-auto ps ps--active-x">
-        <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
+    <div class="relative overflow-x-auto rounded-lg border border-gray-200">
+        <table class="w-full text-left text-sm text-gray-500">
             <x-table-header :headers="$headers" />
             <tbody>
                 @forelse($items as $item)

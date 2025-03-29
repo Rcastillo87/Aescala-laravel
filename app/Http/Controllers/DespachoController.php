@@ -9,35 +9,34 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 use App\Models\User;
+use App\Models\Despachos;
+use App\Models\Proyecto;
+use App\Models\InventarioMaterial;
 
 class DespachoController extends Controller
 {
 
     public function index( ) 
     {
-        $title = 'Lista de Usuarios';
-        $roles = User::$roles;
-        $estado = User::$estado;
-        $items = User::when(Request('nombre_completo'), function ($query, $nombre_completo) { 
-            return $query->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%$nombre_completo%"]);
-        })
-        ->when(Request('email'), function ($query, $email) { 
-            return $query->whereRaw('LOWER(email) LIKE LOWER(?)', ["%$email%"]);
-        })
-        ->when(Request('activo'), function ($query, $activo) { 
-            return $query->where('activo', $activo);
-        })
-        ->when(Request('cedula'), function ($query, $cedula) { 
-            return $query->whereRaw('LOWER(cedula) LIKE LOWER(?)', ["%$cedula%"]);
-        })
-        ->when(Request('telefono'), function ($query, $telefono) { 
-            return $query->whereRaw('LOWER(telefono) LIKE LOWER(?)', ["%$telefono%"]);
-        })
-        ->when(Request('id_rol'), function ($query, $id_rol) { 
-            return $query->where('id_rol', $id_rol);
-        })
-        ->paginate(10);
-        $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Fecha de Creación', 'Perfil', 'Estado', 'Opciones'];
-        return view('user.index', compact('roles', 'title', 'items', 'headers', 'estado'));
+        $title = 'Despacho de Material';
+        $tipo = Despachos::$tipo;
+        $colaUsers = User::where('id_rol', 3)
+            ->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
+
+        $proyectos = Proyecto::wherein('id_estado', [1, 5])
+            ->get(['id', 'nombre_proyecto'])
+            ->toArray();
+
+        $materiales = InventarioMaterial::where('activo', 1) 
+        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'id_unidad', 'tipo'])->toArray();
+
+        return view('despachos.index', compact('title', 'tipo', 'colaUsers', 'proyectos', 'materiales'));
+    }
+
+    public function save( Request $request ) 
+    {
+        dd( $request->all() );
     }
 }
