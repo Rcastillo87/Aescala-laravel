@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
 
 class Despachos extends Model
 {
@@ -17,12 +19,22 @@ class Despachos extends Model
 
     protected $fillable = [
         'tipo',
+        'codigo',
         'id_material',
         'id_user',
         'id_proyecto',
         'cantidad',
         'valor_unidad'
     ];
+
+    public static function generarCodigoUnico()
+    {
+        do {
+            $codigo = strtoupper(Str::random(10)); // GUID de 10 caracteres
+        } while (self::where('codigo', $codigo)->exists());
+        
+        return $codigo;
+    }
 
     public function getSpanEstadoAttribute()
     {

@@ -7,6 +7,8 @@ use App\Http\Controllers\HerramientaController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DespachoController;
+use App\Http\Controllers\ProveedorController;
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -69,6 +71,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('despachos')->name('despachos.')->group(function () {
         Route::get('/index', [DespachoController::class, 'index'])->name('index');
         Route::post('/save', [DespachoController::class, 'save'])->name('save');
+    });
+
+    Route::prefix('proveedor')->name('proveedor.')->group(function () {
+        Route::get('/index', [ProveedorController::class, 'index'])->name('index');
+        Route::get('/create', [ProveedorController::class, 'create'])->name('create');
+        Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->name('edit');
+        Route::post('/save', [ProveedorController::class, 'save'])->name('save');
+        Route::get('/listPrestamos', [ProveedorController::class, 'listPrestamos'])->name('listPrestamos');
+        Route::post('/savePrestamo', [ProveedorController::class, 'savePrestamo'])->name('savePrestamo');
     });
 
 });

@@ -26,10 +26,18 @@ class InventarioMaterial extends Model
         'activo'
     ];
 
+    protected $appends = ['spanTipo', 'unidades'];
+
     public function getSpanEstadoAttribute()
     {
-        return '<span class="'.(self::$ClassEstado[$this->activo] ?? 'default-class').'">'
+        return '<span class="'.(self::$classEstado[$this->activo] ?? 'default-class').'">'
              . (self::$estado[$this->activo] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getSpanTipoAttribute()
+    {
+        return '<span class="'.(self::$classTipo[$this->tipo] ?? 'default-class').'">'
+             . (self::$tipo[$this->tipo] ?? 'Desconocido') . '</span>';
     }
 
     public function getClassEstadoAttribute()
@@ -70,7 +78,12 @@ class InventarioMaterial extends Model
         6 => 'Lit'
     ];
 
-    public static $ClassEstado = [
+    public static $classEstado = [
+        1 => 'span-green',
+        2 => 'span-red'
+    ];
+
+    public static $classTipo = [
         1 => 'span-green',
         2 => 'span-red'
     ];

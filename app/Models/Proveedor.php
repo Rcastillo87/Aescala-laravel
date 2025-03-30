@@ -16,11 +16,28 @@ class Proveedor extends Model
     const UPDATED_AT = 'updatedAt';
 
     protected $fillable = [
-        'nombre_proveedor',
-        'contacto',
+        'razon_social',
+        'nit',
+        'direccion',
         'telefono',
-        'correo'
+        'activo'
     ];
+
+    public static $estado = [
+        1 => 'Activo',
+        2 => 'Desactivado'
+    ];
+
+    public static $classEstado = [
+        1 => 'span-green',
+        2 => 'span-red'
+    ];
+
+    public function getSpanEstadoAttribute()
+    {
+        return '<span class="'.(self::$classEstado[$this->activo] ?? 'default-class').'">'
+             . (self::$estado[$this->activo] ?? 'Desconocido') . '</span>';
+    }
 
     public function pedidos()
     {

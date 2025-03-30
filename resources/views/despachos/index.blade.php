@@ -34,7 +34,7 @@
                         <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
                     </div>
                     <div>
-                        <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales">
+                        <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
                         <x-input-label for="id_material" :value="__('Seleccione Material *')" />
                         <x-select-input 
                             placeholder="Busqueda.."
@@ -61,7 +61,7 @@
                 </div>
 
                 <!-- Segunda columna -->
-                <div class="w-full h-full lg:w-1/2 text-center ">
+                <div class="w-full h-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
                     <p class="font-bold text-xl mb-3">Materiales a Despachar</p>
                     <div id="selectMateriales"></div>
                 </div>
