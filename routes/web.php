@@ -8,6 +8,7 @@ use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\PedidosController;
 
 
 Route::get('/', function () {
@@ -78,8 +79,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [ProveedorController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->name('edit');
         Route::post('/save', [ProveedorController::class, 'save'])->name('save');
-        Route::get('/listPrestamos', [ProveedorController::class, 'listPrestamos'])->name('listPrestamos');
-        Route::post('/savePrestamo', [ProveedorController::class, 'savePrestamo'])->name('savePrestamo');
+        Route::get('/editStatus/{id}', [ProveedorController::class, 'editStatus'])->name('editStatus');
+    });
+
+    Route::prefix('pedidos')->name('pedidos.')->group(function () {
+        Route::get('/index', [PedidosController::class, 'index'])->name('index');
+        Route::get('/create', [PedidosController::class, 'create'])->name('create');
+        Route::get('/edit/{id}', [PedidosController::class, 'edit'])->name('edit');
+        Route::post('/save', [PedidosController::class, 'save'])->name('save');
+        Route::get('/editStatus/{id}', [PedidosController::class, 'editStatus'])->name('editStatus');
     });
 
 });

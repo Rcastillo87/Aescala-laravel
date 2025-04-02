@@ -52,31 +52,29 @@ class ProveedorController extends Controller
 
     public function form($id = null)
     {
-        $herra = $id?Herramienta::find($id):null;
-        $title = $id?'Editar Herramienta':'Crear Herramienta';
-        $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'herra', 'estado'));
+        $proveedor = $id?Proveedor::find($id):null;
+        $title = $id?'Editar Proveedor':'Crear Proveedor';
+        $estado = Proveedor::$estado;
+        return view('proveedor.create', compact('title', 'proveedor', 'estado'));
     }
 
     public function save(Request $req)
     {
         $data = $req->validate([
             'id' => 'nullable|integer',
-            'nombre_herramienta' => 'required|string|max:200',
-            'referencia' => 'required|string|max:50',
-            'marca' => 'required|string|max:50',
-            'observacion' => 'nullable|string',
-            'estado' => ['required', 'integer', Rule::in(array_keys(Herramienta::$estado))],
+            'razon_social' => 'required|string|max:100',
+            'nit' => 'required|string|max:12',
+            'direccion' => 'nullable|string|max:100',
+            'telefono' => 'nullable|string|max:15'
         ]);
     
-        $msg = ucfirst($req->id ? 'herramienta editado con éxito' : 'herramienta creado con éxito');
+        $msg = ucfirst($req->id ? 'Proveedor editado con éxito' : 'Proveedor creado con éxito');
     
         try {
             DB::beginTransaction();
-            Herramienta::updateOrCreate(['id' => $data['id']], $data);
+            Proveedor::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
-    
-            return redirect()->route('herramienta.index')->with('success', $msg);
+            return redirect()->route('proveedor.index')->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
@@ -86,74 +84,24 @@ class ProveedorController extends Controller
         }
     }
 
-    public function listPrestamos()
+    public function editStatus($id) 
     {
-        try {
-            $lisPrestamos = HerramientaPrestamo::with('user')
-                ->where('id_herramienta', request('id'))
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-
-            $lastPrestamo = HerramientaPrestamo::where('id_herramienta', request('id'))
-                ->orderBy('id', 'desc')->first();
-    
-            return response()->json([
-                'status' => true,
-                'message' => 'Lista de préstamos.',
-                'data' => $lisPrestamos,
-                'last' => $lastPrestamo
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista de préstamos.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function savePrestamo(Request $req)
-    {
-        $data = $req->validate([
-            'id' => 'nullable|integer',
-            'id_herramienta' => [
-                'required',
-                'integer',
-                Rule::exists('herramientas', 'id'),
-            ],
-            'id_user' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
-            'tipo_prestamo' => ['required', 'integer', Rule::in(array_keys(HerramientaPrestamo::$prestamo))],
-            'observacion' => 'required|string|max:255',
-            'fec_prestamo' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
-        ]);
-
-        $lastPrestamo = HerramientaPrestamo::where('id_herramienta', $data['id_herramienta'])->orderBy('id', 'desc')->first();
-        if($lastPrestamo){
-            if( $lastPrestamo->tipo_prestamo == $data['tipo_prestamo']){
-                return back()->with('error', "El dispositivo se encuentra " . HerramientaPrestamo::$prestamo[$lastPrestamo->tipo_prestamo]);
-            }
-            /*if(($lastPrestamo->id_user != $data['id_user']) && ($lastPrestamo->tipo_prestamo==2)){
-                return back()->with('error', "El dispositivo lo posee ".$lastPrestamo->user->nombre_completo);
-            }*/
-        }
         
-        $msg = ucfirst($req->id ? "Editado con éxito" : 'Creado con éxito');
-    
         try {
             DB::beginTransaction();
-            HerramientaPrestamo::updateOrCreate(['id' => $data['id']], $data);
+            $user = Proveedor::findOrFail($id);
+            $user->update(['activo' => ($user->activo == 1) ? 2 : 1]);
             DB::commit();
-            return redirect()->route('herramienta.index')->with('success', $msg);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
+            return response()->json([
+                'status' => true, 
+                'message' => 'Proveedor actualizado correctamente.'
+            ],200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el proveedor: ' . $e->getMessage()
+            ], 500);
         }
     }
     
