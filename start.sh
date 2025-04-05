@@ -6,6 +6,9 @@ if [ ! -f /app/database/database.sqlite ]; then
   touch /app/database/database.sqlite
 fi
 
+npm install
+npm run build
+
 # Ejecuta migraciones
 #php artisan migrate --force
 
