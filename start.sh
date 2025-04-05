@@ -14,3 +14,6 @@ npm run build
 
 # Inicia el servidor
 php artisan serve --host=0.0.0.0 --port=8080
+
+php artisan config:clear
+php artisan cache:clear
