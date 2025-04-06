@@ -187,9 +187,11 @@
     </form>
 </div>
 
-<script>
-    window.departamentos = JSON.parse(@json($departamentos));
-</script>
+@endsection
 
-<script src="{{asset('js/proyecto/create.js')}}"></script>
+@section('scripts')
+    <script src="{{asset('js/proyecto/create.js')}}"></script>
+    <script>
+        window.departamentos = JSON.parse(@json($departamentos));
+    </script>
 @endsection

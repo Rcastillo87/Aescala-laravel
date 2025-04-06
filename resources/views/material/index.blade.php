@@ -76,7 +76,8 @@
             </div>
         @endif
     </div>
-    <script src="{{asset('js/material/index.js')}}"></script>
-
 @endsection
 
+@section('scripts')
+    <script src="{{asset('js/material/index.js')}}"></script>
+@endsection

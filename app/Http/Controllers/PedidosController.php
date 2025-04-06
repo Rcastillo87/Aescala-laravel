@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 use App\Models\Pedidos;
+use App\Models\InventarioMaterial;
+use App\Models\Proyecto;
 use App\Models\Proveedor;
-use App\Models\User;
-
 
 class PedidosController extends Controller
 {
@@ -66,109 +66,19 @@ class PedidosController extends Controller
 
     public function form($id = null)
     {
-        $herra = $id?Herramienta::find($id):null;
-        $title = $id?'Editar Herramienta':'Crear Herramienta';
-        $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'herra', 'estado'));
-    }
-
-    public function save(Request $req)
-    {
-        $data = $req->validate([
-            'id' => 'nullable|integer',
-            'nombre_herramienta' => 'required|string|max:200',
-            'referencia' => 'required|string|max:50',
-            'marca' => 'required|string|max:50',
-            'observacion' => 'nullable|string',
-            'estado' => ['required', 'integer', Rule::in(array_keys(Herramienta::$estado))],
-        ]);
-    
-        $msg = ucfirst($req->id ? 'herramienta editado con éxito' : 'herramienta creado con éxito');
-    
-        try {
-            DB::beginTransaction();
-            Herramienta::updateOrCreate(['id' => $data['id']], $data);
-            DB::commit();
-    
-            return redirect()->route('herramienta.index')->with('success', $msg);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
-        }
-    }
-
-    public function listPrestamos()
-    {
-        try {
-            $lisPrestamos = HerramientaPrestamo::with('user')
-                ->where('id_herramienta', request('id'))
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-
-            $lastPrestamo = HerramientaPrestamo::where('id_herramienta', request('id'))
-                ->orderBy('id', 'desc')->first();
-    
-            return response()->json([
-                'status' => true,
-                'message' => 'Lista de préstamos.',
-                'data' => $lisPrestamos,
-                'last' => $lastPrestamo
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista de préstamos.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function savePrestamo(Request $req)
-    {
-        $data = $req->validate([
-            'id' => 'nullable|integer',
-            'id_herramienta' => [
-                'required',
-                'integer',
-                Rule::exists('herramientas', 'id'),
-            ],
-            'id_user' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
-            'tipo_prestamo' => ['required', 'integer', Rule::in(array_keys(HerramientaPrestamo::$prestamo))],
-            'observacion' => 'required|string|max:255',
-            'fec_prestamo' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
-        ]);
-
-        $lastPrestamo = HerramientaPrestamo::where('id_herramienta', $data['id_herramienta'])->orderBy('id', 'desc')->first();
-        if($lastPrestamo){
-            if( $lastPrestamo->tipo_prestamo == $data['tipo_prestamo']){
-                return back()->with('error', "El dispositivo se encuentra " . HerramientaPrestamo::$prestamo[$lastPrestamo->tipo_prestamo]);
-            }
-            /*if(($lastPrestamo->id_user != $data['id_user']) && ($lastPrestamo->tipo_prestamo==2)){
-                return back()->with('error', "El dispositivo lo posee ".$lastPrestamo->user->nombre_completo);
-            }*/
-        }
+        $title = $id?'Editar Pedido':'Crear Pedido';
+        $pedidos = $id?Pedidos::where('id_factura', $id)->get():null;
+        $materiales = InventarioMaterial::where('activo', 1) 
+        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
+        ->toArray();
+        $proyectos = Proyecto::wherein('id_estado', [1, 5])
+        ->get(['id', 'nombre_proyecto'])
+        ->toArray();
+        $proveedor = Proveedor::wherein('id_estado', [1])
+        ->get(['id', 'razon_social'])
+        ->toArray();
         
-        $msg = ucfirst($req->id ? "Editado con éxito" : 'Creado con éxito');
-    
-        try {
-            DB::beginTransaction();
-            HerramientaPrestamo::updateOrCreate(['id' => $data['id']], $data);
-            DB::commit();
-            return redirect()->route('herramienta.index')->with('success', $msg);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
-        }
+        return view('pedidos.create', compact('title', 'pedidos', 'materiales', 'proyectos', 'proveedor'));
     }
-    
+
 }

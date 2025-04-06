@@ -75,7 +75,8 @@
             </div>
         @endif
     </div>
-    <script src="{{asset('js/proveedor/index.js')}}"></script>
-
 @endsection
 
+@section('scripts')
+    <script src="{{asset('js/proveedor/index.js')}}"></script>
+@endsection

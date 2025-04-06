@@ -243,10 +243,12 @@
     @include('proyecto.modalAvances')
     @include('proyecto.modalTarea')
     @include('proyecto.modalFinanzas')
+@endsection
+
+@section('scripts')
     <script>
         window.estadosProyecto = {!! json_encode($estado) !!};
     </script>
     <script src="{{asset('js/proyecto/index.js')}}"></script>
-
 @endsection
 

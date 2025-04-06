@@ -48,7 +48,8 @@
             </div>
         @endif
     </div>
-    <script src="{{asset('js/pedidos/index.js')}}"></script>
-
 @endsection
 
+@section('scripts')
+    <script src="{{asset('js/pedidos/index.js')}}"></script>
+@endsection

@@ -119,8 +119,8 @@
             </div>
         @endif
     </div>
-
-    <script src="{{asset('js/user/index.js')}}"></script>
-
 @endsection
 
+@section('scripts')
+    <script src="{{asset('js/user/index.js')}}"></script>
+@endsection

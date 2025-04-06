@@ -38,12 +38,6 @@
                 <x-text-input id="telefono" class="block mt-1 w-full" type="number" name="telefono" :value="old('telefono', $user?$user->telefono:'')" required/>
                 <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
             </div>
-
-            <!--<div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="id_rol" :value="__('Perfil *')" />
-                <x-select-input name="id_rol" :options="$roles" :selected="old('id_rol', $user?$user->id_rol:'')" class="block mt-1 w-full" />
-                <x-input-error :messages="$errors->get('id_rol')" class="mt-2" />
-            </div>-->
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="id_rol" :value="__('Perfil *')" />
                 <select name="id_rol" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
