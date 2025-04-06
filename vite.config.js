@@ -8,9 +8,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    server: {
+    /*server: {
         https: true,
         host: true,
     },
-    base: '/build/',
+    base: '/build/',*/
 });
