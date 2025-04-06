@@ -74,7 +74,7 @@ class PedidosController extends Controller
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
         ->get(['id', 'nombre_proyecto'])
         ->toArray();
-        $proveedor = Proveedor::wherein('id_estado', [1])
+        $proveedor = Proveedor::wherein('activo', [1])
         ->get(['id', 'razon_social'])
         ->toArray();
         

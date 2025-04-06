@@ -1,53 +1,73 @@
 @extends('layouts.app')
 @section('content')
-<div class="w-full px-2">
-    <form method="POST" action="{{ route('herramienta.save') }}">
-        @csrf
-        <div class="flex flex-wrap -mx-3">
-            <input type="hidden" id="id" name="id" value="{{$herra?$herra->id:''}}">
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="nombre_herramienta" :value="__('Nombre Herramienta *')" />
-                <x-text-input id="nombre_herramienta" class="block mt-1 w-full" type="text" name="nombre_herramienta" :value="old('nombre_herramienta', $herra?$herra->nombre_herramienta:'')" 
-                required autofocus />
-                <x-input-error :messages="$errors->get('nombre_completo')" class="mt-2" />
-            </div>
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="referencia" :value="__('Referencia *')" />
-                <x-text-input id="referencia" class="block mt-1 w-full" type="text" name="referencia" :value="old('referencia', $herra?$herra->referencia:'')" required/>
-                <x-input-error :messages="$errors->get('referencia')" class="mt-2" />
-            </div>
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="observacion" :value="__('Observacion')" />
-                <x-text-input id="observacion" class="block mt-1 w-full" type="text" name="observacion" :value="old('observacion', $herra?$herra->observacion:'')" />
-                <x-input-error :messages="$errors->get('observacion')" class="mt-2" />
-            </div>
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="marca" :value="__('Marca *')" />
-                <x-text-input id="marca" class="block mt-1 w-full" type="text" name="marca" :value="old('marca', $herra?$herra->marca:'')" required/>
-                <x-input-error :messages="$errors->get('marca')" class="mt-2" />
-            </div>
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="estado" :value="__('Estado *')" />
-                <select name="estado" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
-                    dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full" required>
-                    <option value="">-- Seleccione --</option>
-                    @foreach ($estado as $key => $value)
-                        <option value="{{$key}}" {{(old('estado', $herra?$herra->estado:'') == $key)?'selected':'' }}>
-                            {{$value}}</option>
-                    @endforeach
-                </select>
-                <x-input-error :messages="$errors->get('tipo_documento')" class="mt-2" />
-            </div>
-        </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-secondary-button class="ms-4" href="{{ route('herramienta.index') }}">
-                Atras
-            </x-secondary-button>
-            <x-primary-button class="ms-4">
-                Guardar
-            </x-primary-button>
-        </div>
-    </form>
-</div>
+    <div class="w-full p-2 max-h-full overflow-y-scroll">
+        <form method="POST" action="{{ route('pedidos.save') }}">
+            @csrf
+            <div class="flex flex-col lg:flex-row gap-4">
+                <!-- Primera columna -->
+                <div class="w-full lg:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
+                    <div>
+                        <x-input-label for="id_proyecto" :value="__('Proveedor *')" />
+                        <x-select-input 
+                            name="id_proveedor" 
+                            id="id_proveedor"
+                            :options="$proveedor" 
+                            :data="['id', 'razon_social']"
+                            :selected="old('id_proveedor')" 
+                            class="block mt-1 w-full"
+                        />
+                        <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-input-label for="id_proyecto" :value="__('Proyecto')" />
+                        <x-select-input 
+                            name="id_proyecto" 
+                            id="id_proyecto"
+                            :options="$proyectos" 
+                            :data="['id', 'nombre_proyecto']"
+                            :selected="old('id_proyecto')" 
+                            class="block mt-1 w-full"
+                        />
+                        <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
+                    </div>
+                    <div>
+                        <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
+                        <x-input-label for="id_material" :value="__('Seleccione Material *')" />
+                        <x-select-input 
+                            placeholder="Busqueda.."
+                            autocomplete="off"
+                            name="id_material" 
+                            id="id_material"
+                            :options="$materiales" 
+                            :data="['id', 'nombre_material']"
+                            :selected="old('id_material')" 
+                            class="block mt-1 w-full"
+                        />
+                        <x-input-error :messages="$errors->get('id_material')" class="mt-2" />
+                    </div>
+                </div>
+
+                <!-- Segunda columna -->
+                <div class="w-full h-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
+                    <p class="font-bold text-xl mb-3">Materiales Pedidos</p>
+                    <div id="selectMateriales"></div>
+                </div>
+            </div>
+
+            <!-- Botón alineado a la derecha siempre en la parte inferior -->
+            <div class="flex justify-end mt-6">
+                <x-secondary-button class="ms-4" href="{{ route('pedidos.index') }}">
+                    Atras
+                </x-secondary-button>
+                <x-primary-button class="ms-4">
+                    Guardar
+                </x-primary-button>
+            </div>
+        </form>
+    </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/pedidos/create.js') }}"></script>
 @endsection
