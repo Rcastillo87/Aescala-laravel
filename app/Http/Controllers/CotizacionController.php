@@ -6,26 +6,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-use App\Models\Pedidos;
+use App\Models\Cotizacion;
 use App\Models\InventarioMaterial;
 use App\Models\Proyecto;
 use App\Models\Proveedor;
 use App\Models\Despachos;
 use Illuminate\Support\Facades\Auth;
 
-class PedidosController extends Controller
+class CotizacionController extends Controller
 {
 
     public function index( ) 
     {
-        $title = 'Lista de Pedidos';
-        $items = Pedidos::with(['proveedor', 'material'])
-        ->selectRaw('id_factura, 
-                    DATE(fecha) as fecha,
-                    id_proveedor, 
-                    SUM(cantidad * vr_unidad) as total,
+        $title = 'Lista de Cotizacion';
+        $items = Cotizacion::with(['proyecto', 'material'])
+        ->selectRaw('id_proyecto, 
+                    DATE(createdAt) as createdAt,
+                    SUM(cantidad * valor_unidad) as total,
                     COUNT(*) as items')
-        ->when(request('factura'), function ($query, $factura) {
+        /*->when(request('factura'), function ($query, $factura) {
             return $query->where('id_factura', 'like', "%{$factura}%");
         })
         ->when(request('fecha_desde'), function ($query, $fecha) {
@@ -38,22 +37,22 @@ class PedidosController extends Controller
             return $query->whereHas('proveedor', function ($q) use ($proveedor) {
                 $q->where('razon_social', 'like', "%{$proveedor}%");
             });
-        })
-        ->groupBy('id_factura', 'id_proveedor', DB::raw('DATE(fecha)'))
-        ->orderBy('fecha', 'desc')
+        })*/
+        ->groupBy('id_proyecto', DB::raw('DATE(createdAt)'))
+        ->orderBy('id_proyecto', 'desc')
         ->paginate(10)
-        ->through(function ($factura) {
+        ->through(function ($cotizacion) {
             return [
-                'factura' => $factura->id_factura,
-                'proveedor' => $factura->proveedor->razon_social ?? 'N/A',
-                'total' => $factura->total,
-                'items' => $factura->items,
-                'fecha' => $factura->fecha
+                'id_proyecto' => $cotizacion->id_proyecto,
+                'nombre_proyecto' => $cotizacion->proyecto->nombre_proyecto,
+                'total' => $cotizacion->total,
+                'items' => $cotizacion->items,
+                'createdAt' => explode(' ', $cotizacion->createdAt)[0]
             ];
         });
         
-        $headers = ['ID Factura y/o Orden', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total'];
-        return view('pedidos.index', compact('title', 'items', 'headers'));
+        $headers = ['Nombre del Proyecto', 'Fecha Cotizacion', 'Numero de Items', 'Total Cotizado', 'Opciones'];
+        return view('cotizacion.index', compact('title', 'items', 'headers'));
     }
 
     public function create( ) 

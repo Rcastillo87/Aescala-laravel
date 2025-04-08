@@ -29,7 +29,7 @@ class Cotizacion extends Model
     }
 
     // Relación con el modelo InventarioMaterial
-    public function inventarioMaterial()
+    public function material()
     {
         return $this->belongsTo(InventarioMaterial::class, 'id_inventario');
     }

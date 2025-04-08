@@ -76,8 +76,8 @@
                         </svg>
                     </div>
                     <input 
-                        datepicker 
-                        datepicker-format="yyyy-mm-dd"
+                        data-datepicker 
+                        data-datepicker-format="yyyy-mm-dd"
                         type="text" 
                         id="fec_inicio" 
                         name="fec_inicio" 
@@ -98,8 +98,8 @@
                         </svg>
                     </div>
                     <input 
-                        datepicker 
-                        datepicker-format="yyyy-mm-dd"
+                        data-datepicker 
+                        data-datepicker-format="yyyy-mm-dd"
                         type="text" 
                         id="fec_fin_estimado" 
                         name="fec_fin_estimado" 
@@ -120,8 +120,8 @@
                         </svg>
                     </div>
                     <input 
-                        datepicker 
-                        datepicker-format="yyyy-mm-dd"
+                        data-datepicker 
+                        data-datepicker-format="yyyy-mm-dd"
                         type="text" 
                         id="fec_fin_real" 
                         name="fec_fin_real" 
