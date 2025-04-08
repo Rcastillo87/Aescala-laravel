@@ -68,26 +68,24 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         max="${material.cantidad}"
                         class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
                         focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
-                        onchange="calculateTotal(this, ${material.cantidad})">
+                        onchange="calculateTotal(this, null, ${materialIndex}, ${material.cantidad})">
                 </div>
-
                 <input type="number" 
-                    value="${formatCurrency(material.valor_unidad)}"
+                    value="${material.valor_unidad}"
                     min="1"
-                    name="valor_unidad[${materialIndex}][valor_unidad]" 
+                    name="materiales[${materialIndex}][valor_unidad]" 
                     placeholder="Valor"
                     class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
                     focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
-                    onchange="calculateTotal(this, ${material.valor_unidad})">
+                    onchange="calculateTotal(null, this, ${materialIndex}, ${material.cantidad})">
             </div>
             <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
-            <div class="flex bg-gradient-to-r text-left justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                <p class="font-medium">Costo: $${formatCurrency(material.valor_unidad)} * 
+            <div class="md:flex bg-gradient-to-r text-left md:justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
+                <p class="font-medium">Costo: $<span class="valor">${formatCurrency(material.valor_unidad)}</span> * 
                 <span class="quantity">1</span> = <b class="text-red-500 total">$${formatCurrency(material.valor_unidad)}</b></p>
                 <p>Tipo: ${material.spanTipo}</p>
             </div>
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${material.id}">
-            <input type="hidden" name="materiales[${materialIndex}][valor_unidad]" value="${material.valor_unidad}">
         `;
 
         document.getElementById('selectMateriales').appendChild(materialDiv);
@@ -99,25 +97,41 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     // Función para calcular total
-    window.calculateTotal = function(input, cantidad) {
+    window.calculateTotal = function(input1, input2, index, maxCant) {
 
-        const cantIngresada = input.value;
-        if(cantIngresada > cantidad){
-            input.value = cantidad
+        var container = null
+        var quantity = null
+        var total = null
+
+        if(input1){
+            const cantIngresada = input1.value;
+            if(cantIngresada > maxCant){
+                input1.value = maxCant
+            }
+            if(cantIngresada < 1){
+                input1.value = 1
+            }
+            container = input1.closest('div.bg-white');
+            const inputValor = document.querySelector(`[name="materiales[${index}][valor_unidad]"]`);
+            const price = parseFloat(inputValor.value);
+            quantity = parseInt(input1.value) || 0;
+            total = price * quantity;
+            container.querySelector('.quantity').textContent = quantity;
         }
 
-        if(cantIngresada < 1){
-            input.value = 1
+        if(input2){
+            container = input2.closest('div.bg-white');
+            const inputValor = document.querySelector(`[name="materiales[${index}][cantidad]"]`);
+            const count = parseFloat(inputValor.value);
+            quantity = parseInt(input2.value) || 0;
+            total = count * quantity;
+    
+            container.querySelector('.valor').textContent = formatCurrency(quantity);
+            container.querySelector('.total').textContent = `$${formatCurrency(total)}`;
+
         }
-
-        const container = input.closest('div.bg-white');
-        const priceText = container.querySelector('.font-medium').textContent.match(/\$([\d.,]+)/)[1].replace(/\./g, '').replace(',', '.');
-        const price = parseFloat(priceText);
-        const quantity = parseInt(input.value) || 0;
-        const total = price * quantity;
-
-        container.querySelector('.quantity').textContent = quantity;
         container.querySelector('.total').textContent = `$${formatCurrency(total)}`;
+
     };
 
     // Función para remover material

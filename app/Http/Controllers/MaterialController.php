@@ -37,7 +37,7 @@ class MaterialController extends Controller
             return $query->where('activo', $activo);
         })
         ->paginate(10);
-        $headers = ['Nombre Material', 'Stock', 'Stock Min', 'Valor', 'Tipo Material', 'Estado', 'Opciones'];
+        $headers = ['Nombre Material', 'Stock', 'Stock Min', 'Valor', 'Tipo Material', 'Fecha Creación', 'Estado', 'Opciones'];
         return view('material.index', compact( 'title', 'items', 'headers', 'estado','tipos'));
     }
 

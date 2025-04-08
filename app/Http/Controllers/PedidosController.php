@@ -10,6 +10,9 @@ use App\Models\Pedidos;
 use App\Models\InventarioMaterial;
 use App\Models\Proyecto;
 use App\Models\Proveedor;
+use App\Models\Despachos;
+use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Stmt\Continue_;
 
 class PedidosController extends Controller
 {
@@ -79,6 +82,103 @@ class PedidosController extends Controller
         ->toArray();
         
         return view('pedidos.create', compact('title', 'pedidos', 'materiales', 'proyectos', 'proveedor'));
+    }
+
+    public function save(Request $request)
+    {
+
+        $validated = $request->validate([
+            'fecha' => 'required|date_format:Y-m-d',
+            'codigo' => 'required|string',
+            'id_proveedor' => [
+                'required',
+                'integer',
+                Rule::exists('inventario_proveedores', 'id'),
+            ],
+            'id_proyecto' => [
+                'nullable',
+                'integer',
+                Rule::exists('proyectos', 'id'),
+            ],
+            'materiales' => ['required', 'array', 'min:1'],
+            'materiales.*.id_material' => [
+                'required',
+                'integer',
+                Rule::exists('inventario_materiales', 'id'),
+                function ($attribute, $value, $fail) {
+                    $material = InventarioMaterial::find($value);
+                    if (!$material || $material->activo != 1) {
+                        $fail('El material seleccionado no está disponible.');
+                    }
+                }
+            ],
+            'materiales.*.cantidad' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1];
+                    $materialId = $request->input("materiales.{$index}.id_material");
+                    $material = InventarioMaterial::find($materialId);
+    
+                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
+                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
+                    }
+                }
+            ],
+            'materiales.*.valor_unidad' => ['required', 'integer']
+        ]);
+
+        // Iniciar transacción
+        return DB::transaction(function () use ($validated) {
+            
+            $factura = Pedidos::max('id_factura') + 1;
+            $dato = [
+                'id_factura' => $factura,
+                'codigo' => $validated['codigo'],
+                'fecha' => $validated['fecha'],
+                'id_proveedor' => $validated['id_proveedor'],
+            ];
+
+            // Proceso pedido
+            foreach ($validated['materiales'] as $material) {
+
+                // Crear el despacho
+                $dato['id_material'] = $material['id_material'];
+                $dato['cantidad'] = $material['cantidad'];
+                $dato['vr_unidad'] = $material['valor_unidad'];
+                Pedidos::create($dato);
+                
+                $inventarioMaterial = InventarioMaterial::find($material['id_material']);
+                $inventarioMaterial['valor_unidad'] = $material['valor_unidad'];
+                if(!isset($validated['id_proyecto'])){
+                    $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                }
+                $inventarioMaterial->save();
+            }
+            
+            // Proceso despacho si existe id proyecto
+            if(isset($validated['id_proyecto'])){
+                $codigo1 = Despachos::generarCodigoUnico();
+                $dato = [
+                    'tipo' => 1,
+                    'codigo' => $codigo1,
+                    'id_user' => Auth::user()->id,
+                    'id_proyecto' => $validated['id_proyecto'],
+                ];
+                // Procesar materiales
+                foreach ($validated['materiales'] as $material) {
+                    // Crear el despacho
+                    $dato['id_material'] = $material['id_material'];
+                    $dato['cantidad'] = $material['cantidad'];
+                    $dato['valor_unidad'] = $material['valor_unidad'];
+                    Despachos::create($dato);
+                }
+            }
+            $codigo = $validated['codigo'];
+            return redirect()->route('proveedor.index')
+                        ->with('success', "Pedido con orden: {$codigo} fue registrado correctamente");
+        });
     }
 
 }

@@ -17,7 +17,7 @@
                             {{ $item->nombre_material }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->cantidad_min}} {{ $item->unidades }}
+                            {{ $item->cantidad}} {{ $item->unidades }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->cantidad_min }} {{ $item->unidades }}

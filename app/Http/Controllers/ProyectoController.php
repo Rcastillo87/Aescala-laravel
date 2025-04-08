@@ -47,7 +47,8 @@ class ProyectoController extends Controller
 
         $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
 
-        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 'headerFinanzas', 'tipoFinanzas', 'headerAvance'));
+        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
+            'headerFinanzas', 'tipoFinanzas', 'headerAvance'));
     }
 
     public function create() 
