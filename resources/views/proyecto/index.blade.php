@@ -131,6 +131,25 @@
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
+
+                        <!-- Botón Ingresos & Egresos -->
+                        <div class="relative inline-flex">
+                            <a data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
+                               onclick="listaCotizacion(0,{{$item->id}})" x-data="" 
+                               x-on:click="$dispatch('open-modal', 'cotizacion-modal')"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-slate-400 hover:bg-white hover:text-slate-500 border-2 border-slate-500 focus:ring-4 
+                                      focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-400 dark:hover:bg-slate-500 dark:focus:ring-slate-500 cursor-pointer">
+
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"/>
+                                 </svg>
+                            </a>
+                            <div id="tooltip-hover-cotizacion-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Cotizacion
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -243,6 +262,7 @@
     @include('proyecto.modalAvances')
     @include('proyecto.modalTarea')
     @include('proyecto.modalFinanzas')
+    @include('proyecto.modalCotizacion')
 @endsection
 
 @section('scripts')

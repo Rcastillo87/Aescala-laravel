@@ -58,6 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
         Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
         Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
+
+        Route::get('/listaCotizacion', [ProyectoController::class, 'listaCotizacion'])->name('listaCotizacion');
     });
 
     Route::prefix('material')->name('material.')->group(function () {
@@ -86,6 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('pedidos')->name('pedidos.')->group(function () {
         Route::get('/index', [PedidosController::class, 'index'])->name('index');
         Route::get('/create', [PedidosController::class, 'create'])->name('create');
+        Route::post('/save', [PedidosController::class, 'save'])->name('save');
     });
 
     Route::prefix('cotizacion')->name('cotizacion.')->group(function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Avance;
+use App\Models\Cotizacion;
 use App\Models\Finanza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,9 +47,10 @@ class ProyectoController extends Controller
         $tipoFinanzas = Finanza::$tipo;
 
         $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
+        $headerCotizacion = ['Fec Creacion', 'Nombre Material', 'Cantidad', 'Val Unid', 'SubTotal', 'Opciones'];
 
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
-            'headerFinanzas', 'tipoFinanzas', 'headerAvance'));
+            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion'));
     }
 
     public function create() 
@@ -274,6 +276,47 @@ class ProyectoController extends Controller
                 'message' => 'Avance eliminada.',
                 'data' => []
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function listaCotizacion()
+    {
+        try {
+            $list = Cotizacion::with(['material'])
+            ->where('id_proyecto', Request('id'))
+            ->selectRaw(
+                'id,
+                id_inventario,
+                createdAt,
+                cantidad,
+                valor_unidad,
+                SUM(cantidad * valor_unidad) as subtotal'
+            )
+            ->paginate(10)
+            ->through(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'id_inventario' => $data->id_inventario,
+                    'cantidad' => $data->cantidad,
+                    'valor_unidad' => $data->valor_unidad,
+                    'subtotal' => $data->subtotal,
+                    'createdAt' => explode(' ', $data->createdAt)[0],
+                    'nombre_material' => $data->material->nombre_material
+                ];
+            });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Lista de avance.',
+                'data' => $list
+            ], 200);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
