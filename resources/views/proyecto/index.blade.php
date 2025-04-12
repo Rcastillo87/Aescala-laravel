@@ -270,5 +270,6 @@
         window.estadosProyecto = {!! json_encode($estado) !!};
     </script>
     <script src="{{asset('js/proyecto/index.js')}}"></script>
+    <script src="{{ asset('js/pedidos/create.js') }}"></script>
 @endsection
 

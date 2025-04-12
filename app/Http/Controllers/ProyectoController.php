@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Avance;
-use App\Models\Cotizacion;
-use App\Models\Finanza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
 use App\Models\TareaTipo;
 use App\Models\User;
+use App\Models\InventarioMaterial;
+use App\Models\Avance;
+use App\Models\Cotizacion;
+use App\Models\Finanza;
 
 class ProyectoController extends Controller
 {
@@ -49,8 +51,12 @@ class ProyectoController extends Controller
         $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
         $headerCotizacion = ['Fec Creacion', 'Nombre Material', 'Cantidad', 'Val Unid', 'SubTotal', 'Opciones'];
 
+        $materiales = InventarioMaterial::where('activo', 1) 
+        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
+        ->toArray();
+
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
-            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion'));
+            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales'));
     }
 
     public function create() 
@@ -295,8 +301,7 @@ class ProyectoController extends Controller
                 id_inventario,
                 createdAt,
                 cantidad,
-                valor_unidad,
-                SUM(cantidad * valor_unidad) as subtotal'
+                valor_unidad'
             )
             ->paginate(10)
             ->through(function ($data) {
@@ -305,7 +310,7 @@ class ProyectoController extends Controller
                     'id_inventario' => $data->id_inventario,
                     'cantidad' => $data->cantidad,
                     'valor_unidad' => $data->valor_unidad,
-                    'subtotal' => $data->subtotal,
+                    'subtotal' => $data->cantidad * $data->valor_unidad,
                     'createdAt' => explode(' ', $data->createdAt)[0],
                     'nombre_material' => $data->material->nombre_material
                 ];
@@ -325,4 +330,99 @@ class ProyectoController extends Controller
             ], 500);
         }
     }
+
+    public function saveCotizacion(Request $request)
+    {
+        $validated = $request->validate([
+            'id_proyecto_cotizacion' => [
+                'nullable',
+                'integer',
+                Rule::exists('proyectos', 'id'),
+            ],
+            'materiales' => ['required', 'array', 'min:1'],
+            'materiales.*.id_material' => [
+                'required',
+                'integer',
+                Rule::exists('inventario_materiales', 'id'),
+                function ($attribute, $value, $fail) {
+                    $request = request();
+                    $idProyecto = $request->input("id_proyecto_cotizacion");
+                    $material = InventarioMaterial::find($value);
+                    if (!$material || $material->activo != 1) {
+                        $fail('El material seleccionado no está disponible.');
+                    }
+                    
+                    $cot = Cotizacion::where('id_proyecto', $idProyecto)->where('id_inventario', $value)->first();
+                    if ($cot) {
+                        $name = $cot->material->nombre_material;
+                        $fail("El material: $name, ya se encuentra cotizado.");
+                    }
+                }
+            ],
+            'materiales.*.cantidad' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1];
+                    $materialId = $request->input("materiales.{$index}.id_material");
+                    $material = InventarioMaterial::find($materialId);
+    
+                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
+                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
+                    }
+                }
+            ],
+            'materiales.*.valor_unidad' => ['required', 'integer']
+        ]);
+
+        try {
+            DB::transaction(function () use ($validated) {
+                foreach ($validated['materiales'] as $material) {
+                    $dato['id_proyecto'] = $validated['id_proyecto_cotizacion'];
+                    $dato['id_inventario'] = $material['id_material'];
+                    $dato['cantidad'] = $material['cantidad'];
+                    $dato['valor_unidad'] = $material['valor_unidad'];
+                    Cotizacion::create($dato);
+                }
+            });
+    
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'Cotización guardada exitosamente']);
+            }
+    
+            return redirect()->route('proyecto.index')->with('success', 'Cotización guardada exitosamente');
+    
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al guardar la cotización',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+    
+            return back()->withErrors(['message' => 'Error al guardar la cotización']);
+        }
+    }
+
+    public function deleteCotizacion()
+    {
+        try {
+            $cot = Cotizacion::findOrFail(Request('id'));
+            $cot->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Item en cotizacion eliminado.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

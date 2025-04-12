@@ -58,8 +58,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
         Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
         Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
-
+        Route::post('/saveCotizacion', [ProyectoController::class, 'saveCotizacion'])->name('saveCotizacion');
         Route::get('/listaCotizacion', [ProyectoController::class, 'listaCotizacion'])->name('listaCotizacion');
+        Route::delete('/deleteCotizacion', [ProyectoController::class, 'deleteCotizacion'])->name('deleteCotizacion');
     });
 
     Route::prefix('material')->name('material.')->group(function () {

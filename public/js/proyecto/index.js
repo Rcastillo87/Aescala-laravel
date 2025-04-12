@@ -256,6 +256,7 @@ function tableCotizacion(data) {
     const pagination = document.getElementById('paginationCotizacion');
     const noDataMessage = document.getElementById('noDataMessageCotizacion');
     const totalCotizacion = document.getElementById('totalCotizacion');
+    totalCotizacion.classList.add('hidden');
 
     serviceList.innerHTML = '';
     pagination.innerHTML = '';
@@ -270,13 +271,20 @@ function tableCotizacion(data) {
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.cantidad}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.valor_unidad}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.subtotal}</td>
-
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">detelete</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                <button onclick="deleteCotizacion(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 btn-eliminar-cotizacion">
+                        Eliminar
+                    </button>
+                </td>
             `;
             serviceList.appendChild(fila);
         });
-
-        totalCotizacion.textContent = `Total : $${total}`;
+        if(total>0){
+            totalCotizacion.classList.remove('hidden');
+            totalCotizacion.textContent = `Total : $${total}`;
+        } else {
+            totalCotizacion.classList.add('hidden');
+        }
 
         const paginationLinks = data.links.map(link => {
             if (link.url) {
@@ -291,4 +299,94 @@ function tableCotizacion(data) {
     } else {
         noDataMessage.classList.remove('hidden');
     }
+}
+
+document.getElementById('formCotizacion').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Evita envío tradicional
+
+    const form = e.target;
+    const url = form.action;
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.success === false) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Ocurrió un error al guardar los datos.'
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: data.message || 'Cotización guardada correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                // redireccionar si todo salió bien
+                window.location.reload();
+            });
+        }
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo procesar la solicitud.'
+        });
+    }
+});
+
+async function deleteCotizacion(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¿Deseas eliminar este elemento?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'No, cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`deleteCotizacion/?id=${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status) {
+                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'cotizacion-modal' }));
+                    Swal.fire({
+                        title: "Eliminado",
+                        text: "Item eliminado correctamente.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error", data.message || "No se pudo eliminar la data.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
+            }
+        }
+    });
 }

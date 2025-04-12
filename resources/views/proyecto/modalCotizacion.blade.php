@@ -50,45 +50,47 @@
 
             <div class="hidden p-4 rounded-lg bg-white dark:bg-gray-800" id="cotizacion-styled-contacts" role="tabpanel" aria-labelledby="contacts-tab">
                 <h2 class="text-xl font-semibold mb-4">Crear Cotizacion</h2>
-                <div class="w-full px-2">
-                    <form method="POST" action="{{ route('proyecto.savefinanza') }}">
+                <div class="w-full p-2 max-h-full overflow-y-scroll">
+                    <form method="POST" id="formCotizacion" action="{{ route('proyecto.saveCotizacion') }}">
                         @csrf
-                        <div class="flex flex-wrap -mx-3">
-
-                            <input type="hidden" id="id_proyecto_cotizacion" name="id_proyecto_cotizacion" >
-                            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                                <x-input-label for="tipo" :value="__('Ingresos & Egresos *')" />
-                                <x-select-input 
-                                    name="tipo" 
-                                    :options="$tipoFinanzas" 
-                                    :selected="old('tipo')" 
-                                    class="block mt-1 w-full" 
-                                />
-                                <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+                        <div class="flex flex-col lg:flex-row gap-4 mb-3">
+                            <!-- Primera columna -->
+                            <div class="w-full lg:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
+                                <input type="hidden" id="id_proyecto_cotizacion" name="id_proyecto_cotizacion" >
+                                <div>
+                                    <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
+                                    <x-input-label for="id_material" :value="__('Seleccione Material *')" />
+                                    <x-select-input 
+                                        placeholder="Busqueda.."
+                                        autocomplete="off"
+                                        name="id_material" 
+                                        id="id_material"
+                                        :options="$materiales" 
+                                        :data="['id', 'nombre_material']"
+                                        :selected="old('id_material')" 
+                                        class="block mt-1 w-full"
+                                    />
+                                    <x-input-error :messages="$errors->get('id_material')" class="mt-2" />
+                                </div>
                             </div>
-                            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                                <x-input-label for="valor" :value="__('Valor *')" />
-                                <x-text-input id="valor" class="block mt-1 w-full" type="number" name="valor" :value="old('valor')" 
-                                required autofocus />
-                                <x-input-error :messages="$errors->get('valor')" class="mt-2" />
+            
+                            <!-- Segunda columna -->
+                            <div class="w-full h-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
+                                <p class="font-bold text-xl mb-3">Materiales Pedidos</p>
+                                <div id="selectMateriales"></div>
                             </div>
-                            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-6/12 md:flex-0">
-                                <x-input-label for="concepto" :value="__('Concepto *')" />
-                                <x-text-input id="concepto" class="block mt-1 w-full" type="text" name="concepto" :value="old('concepto')" 
-                                required autofocus />
-                                <x-input-error :messages="$errors->get('concepto')" class="mt-2" />
-                            </div>
-                            
                         </div>
+            
+                        <!-- Botón alineado a la derecha siempre en la parte inferior -->
                         <div class="flex justify-between">
-                            <button
+                            <a
                                 x-data
                                 x-on:click="$nextTick(() => document.getElementById('cotizacion-profile-styled-tab').click());
                                 $dispatch('close-modal', 'cotizacion-modal')"
                                 class="bg-red-500 text-white px-4 py-2 rounded"
                             >
                                 Cerrar
-                            </button>
+                            </a>
                             <x-primary-button class="ms-4">
                                 Guardar
                             </x-primary-button>
