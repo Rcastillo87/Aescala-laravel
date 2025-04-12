@@ -2,7 +2,7 @@ function cambiarEstado(userId, estadoActual) {
     let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     Swal.fire({
         title: "¿Estás seguro?",
-        text: (estadoActual==1) ? "El usuario será Desactivado" : "El usuario será Activado",
+        text: (estadoActual==1) ? "El usuario será Desactivado" : "El proveedor será Activado",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, cambiar",

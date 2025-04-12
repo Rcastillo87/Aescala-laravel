@@ -85,7 +85,7 @@
                     <div class="flex flex-wrap justify-start gap-1 p-1">
                         <!-- Botón Editar -->
                         <div class="relative inline-flex">
-                            <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
                                href="{{ route('proyecto.edit', $item->id) }}"
                                class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
                                       focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
@@ -101,7 +101,7 @@
                     
                         <!-- Botón Cambio de Estado -->
                         <div class="relative inline-flex">
-                            <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                                onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
                                class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
                                       focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer">
@@ -117,7 +117,7 @@
                     
                         <!-- Botón Ingresos & Egresos -->
                         <div class="relative inline-flex">
-                            <a data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listFinanzas(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'finanza-modal')"
                                class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4 
@@ -132,20 +132,37 @@
                             </div>
                         </div>
 
-                        <!-- Botón Ingresos & Egresos -->
+                        <!-- Botón Cotizacion -->
                         <div class="relative inline-flex">
-                            <a data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaCotizacion(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'cotizacion-modal')"
                                class="flex items-center justify-center w-10 h-10 text-white bg-slate-400 hover:bg-white hover:text-slate-500 border-2 border-slate-500 focus:ring-4 
                                       focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-400 dark:hover:bg-slate-500 dark:focus:ring-slate-500 cursor-pointer">
-
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"/>
                                  </svg>
                             </a>
                             <div id="tooltip-hover-cotizacion-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                 Cotizacion
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Pespachos -->
+                        <div class="relative inline-flex">
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-despachos-{{$item->id}}" data-tooltip-trigger="hover"
+                               onclick="listaDespachos(0,{{$item->id}})" x-data="" 
+                               x-on:click="$dispatch('open-modal', 'despachos-modal')"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-fuchsia-600 hover:bg-white hover:text-fuchsia-500 border-2 border-fuchsia-500 focus:ring-4 
+                                      focus:outline-none focus:ring-fuchsia-300 font-medium rounded-full text-sm dark:bg-fuchsia-400 dark:hover:bg-fuchsia-500 dark:focus:ring-fuchsia-500 cursor-pointer">
+                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4"/>
+                                  </svg>
+                                  
+                            </a>
+                            <div id="tooltip-hover-despachos-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Despachos
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>

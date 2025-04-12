@@ -28,10 +28,10 @@ class PedidosController extends Controller
         ->when(request('factura'), function ($query, $factura) {
             return $query->where('id_factura', 'like', "%{$factura}%");
         })
-        ->when(request('fecha_desde'), function ($query, $fecha) {
+        ->when(request('fecha'), function ($query, $fecha) {
             return $query->whereDate('fecha', '>=', $fecha);
         })
-        ->when(request('fecha_hasta'), function ($query, $fecha) {
+        ->when(request('fecha'), function ($query, $fecha) {
             return $query->whereDate('fecha', '<=', $fecha);
         })
         ->when(request('proveedor'), function ($query, $proveedor) {

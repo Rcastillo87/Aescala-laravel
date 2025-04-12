@@ -19,21 +19,17 @@
         </h2>
         <div id="accordion-open-body-1" class="hidden" aria-labelledby="accordion-open-heading-1">
             <div class="p-1 border border-b-1 border-gray-200">
-             <form method="GET" action="{{route("pedidos.index")}}">
+             <form method="GET" action="{{route("cotizacion.index")}}">
                 <div class="flex flex-wrap gap-1">
 
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="proveedor" :value="__('Proveedor')" />
-                        <x-text-input id="proveedor" class="block mt-1 w-full" type="text" name="proveedor" :value="Request('proveedor')" 
+                        <x-input-label for="nomProyecto" :value="__('Nombre del Proyecto')" />
+                        <x-text-input id="nomProyecto" class="block mt-1 w-full" type="text" name="nomProyecto" :value="Request('nomProyecto')" 
                          autofocus />
                     </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="factura" :value="__('ID Factura y/o Orden')" />
-                        <x-text-input id="factura" class="block mt-1 w-full" type="text" name="factura" :value="Request('factura')" 
-                         autofocus />
-                    </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="fecha" :value="__('Fecha Pedido')" />
+
+                    <div class="relative p-2 shrink-0 w-[40]">
+                        <x-input-label for="fecha" :value="__('Fecha de Cotizacion')" />
                         <div class="relative max-w-sm">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -41,8 +37,9 @@
                                 </svg>
                             </div>
                             <input 
-                                data-datepicker 
-                                data-datepicker-format="yyyy-mm-dd"
+                                datepicker=""
+                                datepicker-format="yyyy-mm-dd"
+                                autocomplete="off"
                                 type="text" 
                                 id="fecha" 
                                 name="fecha" 

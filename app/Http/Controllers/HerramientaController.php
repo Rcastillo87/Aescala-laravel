@@ -137,9 +137,6 @@ class HerramientaController extends Controller
             if( $lastPrestamo->tipo_prestamo == $data['tipo_prestamo']){
                 return back()->with('error', "El dispositivo se encuentra " . HerramientaPrestamo::$prestamo[$lastPrestamo->tipo_prestamo]);
             }
-            /*if(($lastPrestamo->id_user != $data['id_user']) && ($lastPrestamo->tipo_prestamo==2)){
-                return back()->with('error', "El dispositivo lo posee ".$lastPrestamo->user->nombre_completo);
-            }*/
         }
         
         $msg = ucfirst($req->id ? "Editado con éxito" : 'Creado con éxito');

@@ -33,11 +33,11 @@ class MaterialController extends Controller
         ->when(Request('tipo'), function ($query, $tipo) { 
             return $query->where('tipo', $tipo);
         })
-        ->when(Request('activo'), function ($query, $activo) { 
-            return $query->where('activo', $activo);
+        ->when(Request('estado'), function ($query, $estado) { 
+            return $query->where('activo', $estado);
         })
         ->paginate(10);
-        $headers = ['Nombre Material', 'Stock', 'Stock Min', 'Valor', 'Tipo Material', 'Fecha Creación', 'Estado', 'Opciones'];
+        $headers = ['Nombre Material', 'Stock', 'Stock Min', 'Valor', 'Fecha Creación', 'Tipo Material', 'Estado', 'Opciones'];
         return view('material.index', compact( 'title', 'items', 'headers', 'estado','tipos'));
     }
 

@@ -31,8 +31,9 @@
                                 </svg>
                             </div>
                             <input 
-                                data-datepicker 
-                                data-datepicker-format="yyyy-mm-dd"
+                                datepicker=""
+                                datepicker-format="yyyy-mm-dd"
+                                autocomplete="off"
                                 type="text" 
                                 id="fecha" 
                                 datepicker-max-date="{{ date('Y-m-d') }}" 

@@ -76,8 +76,9 @@
                         </svg>
                     </div>
                     <input 
-                        data-datepicker 
-                        data-datepicker-format="yyyy-mm-dd"
+                        datepicker=""
+                        datepicker-format="yyyy-mm-dd"
+                        autocomplete="off"
                         type="text" 
                         id="fec_inicio" 
                         name="fec_inicio" 
@@ -98,8 +99,9 @@
                         </svg>
                     </div>
                     <input 
-                        data-datepicker 
-                        data-datepicker-format="yyyy-mm-dd"
+                        datepicker=""
+                        datepicker-format="yyyy-mm-dd"
+                        autocomplete="off"
                         type="text" 
                         id="fec_fin_estimado" 
                         name="fec_fin_estimado" 
@@ -120,8 +122,9 @@
                         </svg>
                     </div>
                     <input 
-                        data-datepicker 
-                        data-datepicker-format="yyyy-mm-dd"
+                        datepicker=""
+                        datepicker-format="yyyy-mm-dd"
+                        autocomplete="off"
                         type="text" 
                         id="fec_fin_real" 
                         name="fec_fin_real" 
