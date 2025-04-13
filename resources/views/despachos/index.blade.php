@@ -75,8 +75,8 @@
             </div>
         </form>
     </div>
+@endsection
 
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+@section('scripts')
     <script src="{{ asset('js/despachos/index.js') }}"></script>
-
 @endsection

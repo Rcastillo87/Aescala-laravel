@@ -27,6 +27,12 @@ class Despachos extends Model
         'valor_unidad'
     ];
 
+    protected $appends = ['spanEstado'];
+
+    protected $casts = [
+        'tipo' => 'integer',
+    ];
+
     public static function generarCodigoUnico()
     {
         do {
@@ -38,8 +44,8 @@ class Despachos extends Model
 
     public function getSpanEstadoAttribute()
     {
-        return '<span class="'.(self::$classTipo[$this->tipo] ?? 'default-class').'">'
-             . (self::$estado[$this->tipo] ?? 'Desconocido') . '</span>';
+        return '<span class="'.(self::$classTipo[(int)$this->tipo] ?? 'default-class').'">'
+        . (self::$tipo[(int)$this->tipo] ?? 'Desconocido') . '</span>';
     }
 
     public static $tipo = [
@@ -51,4 +57,15 @@ class Despachos extends Model
         1 => 'span-green',
         2 => 'span-red'
     ];
+
+    // Relación con el modelo InventarioMaterial
+    public function material()
+    {
+        return $this->belongsTo(InventarioMaterial::class, 'id_material');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }

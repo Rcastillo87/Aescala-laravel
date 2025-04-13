@@ -76,8 +76,9 @@
                         </svg>
                     </div>
                     <input 
-                        datepicker 
+                        datepicker=""
                         datepicker-format="yyyy-mm-dd"
+                        autocomplete="off"
                         type="text" 
                         id="fec_inicio" 
                         name="fec_inicio" 
@@ -98,8 +99,9 @@
                         </svg>
                     </div>
                     <input 
-                        datepicker 
+                        datepicker=""
                         datepicker-format="yyyy-mm-dd"
+                        autocomplete="off"
                         type="text" 
                         id="fec_fin_estimado" 
                         name="fec_fin_estimado" 
@@ -120,8 +122,9 @@
                         </svg>
                     </div>
                     <input 
-                        datepicker 
+                        datepicker=""
                         datepicker-format="yyyy-mm-dd"
+                        autocomplete="off"
                         type="text" 
                         id="fec_fin_real" 
                         name="fec_fin_real" 
@@ -187,9 +190,11 @@
     </form>
 </div>
 
-<script>
-    window.departamentos = JSON.parse(@json($departamentos));
-</script>
+@endsection
 
-<script src="{{asset('js/proyecto/create.js')}}"></script>
+@section('scripts')
+    <script src="{{asset('js/proyecto/create.js')}}"></script>
+    <script>
+        window.departamentos = JSON.parse(@json($departamentos));
+    </script>
 @endsection

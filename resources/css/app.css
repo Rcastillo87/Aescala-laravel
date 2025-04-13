@@ -4,27 +4,21 @@
 
 @layer components {
     .span-blue {
-      @apply bg-blue-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+      @apply bg-blue-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
     .span-green {
-        @apply bg-green-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+        @apply bg-green-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
     .span-yellow {
-        @apply bg-yellow-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+        @apply bg-yellow-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
     .span-red {
-        @apply bg-red-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+        @apply bg-red-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
     .span-gray {
-        @apply bg-gray-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+        @apply bg-gray-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
     .span-black {
-        @apply bg-black text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
-    }
-
-    @layer utilities {
-        [aria-expanded="true"] svg {
-            @apply rotate-180;
-        }
+        @apply bg-black inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
 }

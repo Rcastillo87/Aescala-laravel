@@ -63,11 +63,11 @@ class ProveedorController extends Controller
         $data = $req->validate([
             'id' => 'nullable|integer',
             'razon_social' => 'required|string|max:100',
-            'nit' => 'required|string|max:12',
+            'nit' => 'required|string|max:14',
             'direccion' => 'nullable|string|max:100',
-            'telefono' => 'nullable|string|max:15'
+            'telefono' => 'nullable|string|max:20'
         ]);
-    
+
         $msg = ucfirst($req->id ? 'Proveedor editado con éxito' : 'Proveedor creado con éxito');
     
         try {

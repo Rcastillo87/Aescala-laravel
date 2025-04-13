@@ -80,8 +80,9 @@
                                         </svg>
                                     </div>
                                     <input 
-                                        datepicker 
+                                        datepicker=""
                                         datepicker-format="yyyy-mm-dd"
+                                        autocomplete="off"
                                         datepicker-max-date="{{ date('Y-m-d') }}" 
                                         type="text" 
                                         id="fec_prestamo" 

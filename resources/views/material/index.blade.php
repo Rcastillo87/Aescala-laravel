@@ -3,8 +3,8 @@
 
     @include('material.filter')
     <div class="flex justify-end text-center mb-3">
-        <x-secondary-button class="ms-4" href="{{ route('proyecto.create')}}">
-            Crear Proyectos
+        <x-secondary-button class="ms-4" href="{{ route('material.create')}}">
+            Crear Material
         </x-secondary-button>
     </div>
     <div class="relative overflow-x-auto rounded-lg border border-gray-200">
@@ -17,7 +17,7 @@
                             {{ $item->nombre_material }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->cantidad_min}} {{ $item->unidades }}
+                            {{ $item->cantidad}} {{ $item->unidades }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->cantidad_min }} {{ $item->unidades }}
@@ -76,7 +76,8 @@
             </div>
         @endif
     </div>
-    <script src="{{asset('js/material/index.js')}}"></script>
-
 @endsection
 
+@section('scripts')
+    <script src="{{asset('js/material/index.js')}}"></script>
+@endsection

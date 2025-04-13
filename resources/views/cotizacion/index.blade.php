@@ -1,12 +1,7 @@
 @extends('layouts.app')
 @section('content')
 
-    @include('pedidos.filter')
-    <div class="flex justify-end text-center mb-3">
-        <x-secondary-button class="ms-4" href="{{ route('pedidos.create')}}">
-            Crear Pedido
-        </x-secondary-button>
-    </div>
+    @include('cotizacion.filter')
     <div class="relative overflow-x-auto rounded-lg border border-gray-200">
         <table class="w-full text-left text-sm text-gray-500">
             <x-table-header :headers="$headers" />
@@ -14,13 +9,10 @@
                 @forelse($items as $item)
                     <tr class="h-10">
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item['factura'] }}
+                            {{ $item['nombre_proyecto'] }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ strtolower($item['proveedor']) }}
-                        </td>
-                        <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item['fecha'] }}
+                            {{ $item['createdAt'] }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item['items'] }}

@@ -9,6 +9,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\PedidosController;
+use App\Http\Controllers\CotizacionController;
 
 
 Route::get('/', function () {
@@ -57,6 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
         Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
         Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
+        Route::post('/saveCotizacion', [ProyectoController::class, 'saveCotizacion'])->name('saveCotizacion');
+        Route::get('/listaCotizacion', [ProyectoController::class, 'listaCotizacion'])->name('listaCotizacion');
+        Route::delete('/deleteCotizacion', [ProyectoController::class, 'deleteCotizacion'])->name('deleteCotizacion');
+        Route::get('/listaDespachos', [ProyectoController::class, 'listaDespachos'])->name('listaDespachos');
+        Route::get('/listaBalance', [ProyectoController::class, 'listaBalance'])->name('listaBalance');
     });
 
     Route::prefix('material')->name('material.')->group(function () {
@@ -85,9 +91,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('pedidos')->name('pedidos.')->group(function () {
         Route::get('/index', [PedidosController::class, 'index'])->name('index');
         Route::get('/create', [PedidosController::class, 'create'])->name('create');
-        Route::get('/edit/{id}', [PedidosController::class, 'edit'])->name('edit');
         Route::post('/save', [PedidosController::class, 'save'])->name('save');
-        Route::get('/editStatus/{id}', [PedidosController::class, 'editStatus'])->name('editStatus');
+    });
+
+    Route::prefix('cotizacion')->name('cotizacion.')->group(function () {
+        Route::get('/index', [CotizacionController::class, 'index'])->name('index');
+        Route::get('/create', [CotizacionController::class, 'create'])->name('create');
     });
 
 });

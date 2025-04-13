@@ -233,3 +233,264 @@ function confirmDelete(id) {
         }
     });
 }
+
+async function listaCotizacion(page = 1, id) {
+    try {
+        const response = await fetch(`listaCotizacion/?page=${page}&id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        document.getElementById('id_proyecto_cotizacion').value = id;
+        tableCotizacion(data.data);
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
+}
+
+function tableCotizacion(data) {
+    const serviceList = document.getElementById('listaCotizacion');
+    const pagination = document.getElementById('paginationCotizacion');
+    const noDataMessage = document.getElementById('noDataMessageCotizacion');
+    const totalCotizacion = document.getElementById('totalCotizacion');
+    totalCotizacion.classList.add('hidden');
+
+    serviceList.innerHTML = '';
+    pagination.innerHTML = '';
+    let total = 0;
+    if (data.data && data.data.length > 0) {
+        data.data.forEach(service => {
+            total += service.subtotal;
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.createdAt}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.nombre_material.toLowerCase()}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.cantidad}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.valor_unidad}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.subtotal}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                <button onclick="deleteCotizacion(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 btn-eliminar-cotizacion">
+                        Eliminar
+                    </button>
+                </td>
+            `;
+            serviceList.appendChild(fila);
+        });
+        if(total>0){
+            totalCotizacion.classList.remove('hidden');
+            totalCotizacion.textContent = `Total : $${total}`;
+        } else {
+            totalCotizacion.classList.add('hidden');
+        }
+
+        const paginationLinks = data.links.map(link => {
+            if (link.url) {
+                const page = new URL(link.url).searchParams.get('page') || 1;
+                return `<a href="#" onclick="listaCotizacion(${page}, ${id})" class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</a>`;
+            }
+            return `<span class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</span>`;
+        }).join('');
+        pagination.innerHTML = paginationLinks;
+
+        noDataMessage.classList.add('hidden');
+    } else {
+        noDataMessage.classList.remove('hidden');
+    }
+}
+
+document.getElementById('formCotizacion').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Evita envío tradicional
+
+    const form = e.target;
+    const url = form.action;
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.success === false) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Ocurrió un error al guardar los datos.'
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: data.message || 'Cotización guardada correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                // redireccionar si todo salió bien
+                window.location.reload();
+            });
+        }
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo procesar la solicitud.'
+        });
+    }
+});
+
+async function deleteCotizacion(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¿Deseas eliminar este elemento?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'No, cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`deleteCotizacion/?id=${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status) {
+                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'cotizacion-modal' }));
+                    Swal.fire({
+                        title: "Eliminado",
+                        text: "Item eliminado correctamente.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error", data.message || "No se pudo eliminar la data.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
+            }
+        }
+    });
+}
+
+async function listaDespachos(id) {
+    try {
+        const response = await fetch(`listaDespachos/?id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        renderDespachos(data.data);
+        
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
+}
+
+function renderDespachos(despachos) {
+    const container = document.getElementById('listaDespachos');
+    
+    despachos.forEach(despacho => {
+        const card = document.createElement('div');
+        card.className = 'w-full max-w-full';
+        
+        card.innerHTML = `
+            <div class="bg-white border border-gray-200 rounded-lg shadow p-2">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-lg font-semibold">Código: ${despacho.codigo}</h2>
+                        <p class="text-gray-500 text-sm">${formatDate(despacho.createdAt)}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">${despacho.nombre_completo}</p>
+                        <div class="estado-container">${despacho.spanEstado}</div>
+                    </div>
+                </div>
+                
+                <div class="mb-1">
+                    <h3 class="font-medium mb-2">Materiales:</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2">Material</th>
+                                    <th class="px-4 py-2">Cantidad</th>
+                                    <th class="px-4 py-2">Valor Unitario</th>
+                                    <th class="px-4 py-2">Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="items-${despacho.codigo}">
+                                <!-- Items se insertarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            `;
+        
+        container.appendChild(card);
+        
+        // Renderizar items
+        const tbody = document.getElementById(`items-${despacho.codigo}`);
+        despacho.items.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'bg-white border-b';
+            row.innerHTML = `
+                <td class="px-4 py-2">${item.nombre_material}</td>
+                <td class="px-4 py-2">${item.cantidad}</td>
+                <td class="px-4 py-2">$${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-4 py-2 tipo-container">${item.spanTipo}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    });
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+async function listaBalance(id) {
+    try {
+        const response = await fetch(`listaBalance/?id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        console.log(data.data);
+        
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
+}

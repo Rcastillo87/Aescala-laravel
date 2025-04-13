@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 use App\Models\Pedidos;
+use App\Models\InventarioMaterial;
+use App\Models\Proyecto;
 use App\Models\Proveedor;
-use App\Models\User;
-
+use App\Models\Despachos;
+use Illuminate\Support\Facades\Auth;
 
 class PedidosController extends Controller
 {
@@ -26,10 +28,10 @@ class PedidosController extends Controller
         ->when(request('factura'), function ($query, $factura) {
             return $query->where('id_factura', 'like', "%{$factura}%");
         })
-        ->when(request('fecha_desde'), function ($query, $fecha) {
+        ->when(request('fecha'), function ($query, $fecha) {
             return $query->whereDate('fecha', '>=', $fecha);
         })
-        ->when(request('fecha_hasta'), function ($query, $fecha) {
+        ->when(request('fecha'), function ($query, $fecha) {
             return $query->whereDate('fecha', '<=', $fecha);
         })
         ->when(request('proveedor'), function ($query, $proveedor) {
@@ -50,7 +52,7 @@ class PedidosController extends Controller
             ];
         });
         
-        $headers = ['ID Factura y/o Orden', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
+        $headers = ['ID Factura y/o Orden', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total'];
         return view('pedidos.index', compact('title', 'items', 'headers'));
     }
 
@@ -66,109 +68,116 @@ class PedidosController extends Controller
 
     public function form($id = null)
     {
-        $herra = $id?Herramienta::find($id):null;
-        $title = $id?'Editar Herramienta':'Crear Herramienta';
-        $estado = Herramienta::$estado;
-        return view('herramienta.create', compact('title', 'herra', 'estado'));
-    }
-
-    public function save(Request $req)
-    {
-        $data = $req->validate([
-            'id' => 'nullable|integer',
-            'nombre_herramienta' => 'required|string|max:200',
-            'referencia' => 'required|string|max:50',
-            'marca' => 'required|string|max:50',
-            'observacion' => 'nullable|string',
-            'estado' => ['required', 'integer', Rule::in(array_keys(Herramienta::$estado))],
-        ]);
-    
-        $msg = ucfirst($req->id ? 'herramienta editado con éxito' : 'herramienta creado con éxito');
-    
-        try {
-            DB::beginTransaction();
-            Herramienta::updateOrCreate(['id' => $data['id']], $data);
-            DB::commit();
-    
-            return redirect()->route('herramienta.index')->with('success', $msg);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
-        }
-    }
-
-    public function listPrestamos()
-    {
-        try {
-            $lisPrestamos = HerramientaPrestamo::with('user')
-                ->where('id_herramienta', request('id'))
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-
-            $lastPrestamo = HerramientaPrestamo::where('id_herramienta', request('id'))
-                ->orderBy('id', 'desc')->first();
-    
-            return response()->json([
-                'status' => true,
-                'message' => 'Lista de préstamos.',
-                'data' => $lisPrestamos,
-                'last' => $lastPrestamo
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista de préstamos.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function savePrestamo(Request $req)
-    {
-        $data = $req->validate([
-            'id' => 'nullable|integer',
-            'id_herramienta' => [
-                'required',
-                'integer',
-                Rule::exists('herramientas', 'id'),
-            ],
-            'id_user' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
-            'tipo_prestamo' => ['required', 'integer', Rule::in(array_keys(HerramientaPrestamo::$prestamo))],
-            'observacion' => 'required|string|max:255',
-            'fec_prestamo' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
-        ]);
-
-        $lastPrestamo = HerramientaPrestamo::where('id_herramienta', $data['id_herramienta'])->orderBy('id', 'desc')->first();
-        if($lastPrestamo){
-            if( $lastPrestamo->tipo_prestamo == $data['tipo_prestamo']){
-                return back()->with('error', "El dispositivo se encuentra " . HerramientaPrestamo::$prestamo[$lastPrestamo->tipo_prestamo]);
-            }
-            /*if(($lastPrestamo->id_user != $data['id_user']) && ($lastPrestamo->tipo_prestamo==2)){
-                return back()->with('error', "El dispositivo lo posee ".$lastPrestamo->user->nombre_completo);
-            }*/
-        }
+        $title = $id?'Editar Pedido':'Crear Pedido';
+        $pedidos = $id?Pedidos::where('id_factura', $id)->get():null;
+        $materiales = InventarioMaterial::where('activo', 1) 
+        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
+        ->toArray();
+        $proyectos = Proyecto::wherein('id_estado', [1, 5])
+        ->get(['id', 'nombre_proyecto'])
+        ->toArray();
+        $proveedor = Proveedor::wherein('activo', [1])
+        ->get(['id', 'razon_social'])
+        ->toArray();
         
-        $msg = ucfirst($req->id ? "Editado con éxito" : 'Creado con éxito');
-    
-        try {
-            DB::beginTransaction();
-            HerramientaPrestamo::updateOrCreate(['id' => $data['id']], $data);
-            DB::commit();
-            return redirect()->route('herramienta.index')->with('success', $msg);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
-        }
+        return view('pedidos.create', compact('title', 'pedidos', 'materiales', 'proyectos', 'proveedor'));
     }
+
+    public function save(Request $request)
+    {
+
+        $validated = $request->validate([
+            'fecha' => 'required|date_format:Y-m-d',
+            'codigo' => 'required|string',
+            'id_proveedor' => [
+                'required',
+                'integer',
+                Rule::exists('inventario_proveedores', 'id'),
+            ],
+            'id_proyecto' => [
+                'nullable',
+                'integer',
+                Rule::exists('proyectos', 'id'),
+            ],
+            'materiales' => ['required', 'array', 'min:1'],
+            'materiales.*.id_material' => [
+                'required',
+                'integer',
+                Rule::exists('inventario_materiales', 'id'),
+                function ($attribute, $value, $fail) {
+                    $material = InventarioMaterial::find($value);
+                    if (!$material || $material->activo != 1) {
+                        $fail('El material seleccionado no está disponible.');
+                    }
+                }
+            ],
+            'materiales.*.cantidad' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1];
+                    $materialId = $request->input("materiales.{$index}.id_material");
+                    $material = InventarioMaterial::find($materialId);
     
+                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
+                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
+                    }
+                }
+            ],
+            'materiales.*.valor_unidad' => ['required', 'integer']
+        ]);
+
+        // Iniciar transacción
+        return DB::transaction(function () use ($validated) {
+            
+            $factura = Pedidos::max('id_factura') + 1;
+            $dato = [
+                'id_factura' => $factura,
+                'codigo' => $validated['codigo'],
+                'fecha' => $validated['fecha'],
+                'id_proveedor' => $validated['id_proveedor'],
+            ];
+
+            // Proceso pedido
+            foreach ($validated['materiales'] as $material) {
+
+                // Crear el despacho
+                $dato['id_material'] = $material['id_material'];
+                $dato['cantidad'] = $material['cantidad'];
+                $dato['vr_unidad'] = $material['valor_unidad'];
+                Pedidos::create($dato);
+                
+                $inventarioMaterial = InventarioMaterial::find($material['id_material']);
+                $inventarioMaterial['valor_unidad'] = $material['valor_unidad'];
+                if(!isset($validated['id_proyecto'])){
+                    $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                }
+                $inventarioMaterial->save();
+            }
+            
+            // Proceso despacho si existe id proyecto
+            if(isset($validated['id_proyecto'])){
+                $codigo1 = Despachos::generarCodigoUnico();
+                $dato = [
+                    'tipo' => 1,
+                    'codigo' => $codigo1,
+                    'id_user' => Auth::user()->id,
+                    'id_proyecto' => $validated['id_proyecto'],
+                ];
+                // Procesar materiales
+                foreach ($validated['materiales'] as $material) {
+                    // Crear el despacho
+                    $dato['id_material'] = $material['id_material'];
+                    $dato['cantidad'] = $material['cantidad'];
+                    $dato['valor_unidad'] = $material['valor_unidad'];
+                    Despachos::create($dato);
+                }
+            }
+            $codigo = $validated['codigo'];
+            return redirect()->route('proveedor.index')
+                        ->with('success', "Pedido con orden: {$codigo} fue registrado correctamente");
+        });
+    }
+
 }
