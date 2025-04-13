@@ -390,3 +390,92 @@ async function deleteCotizacion(id) {
         }
     });
 }
+
+async function listaDespachos(id) {
+    try {
+        const response = await fetch(`listaDespachos/?id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        renderDespachos(data.data);
+        //document.getElementById('listaDespachos').textContent = data.data;
+        
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
+}
+
+function renderDespachos(despachos) {
+    const container = document.getElementById('listaDespachos');
+    
+    despachos.forEach(despacho => {
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-gray-200 rounded-lg shadow p-6';
+        
+        card.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="text-lg font-semibold">Código: ${despacho.codigo}</h2>
+                    <p class="text-gray-500 text-sm">${formatDate(despacho.createdAt)}</p>
+                </div>
+                <div class="estado-container">${despacho.spanEstado}</div>
+            </div>
+            
+            <div class="mb-4">
+                <h3 class="font-medium mb-2">Materiales:</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2">Material</th>
+                                <th class="px-4 py-2">Cantidad</th>
+                                <th class="px-4 py-2">Valor Unitario</th>
+                                <th class="px-4 py-2">Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-${despacho.codigo}">
+                            <!-- Items se insertarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                    Ver Detalles
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(card);
+        
+        // Renderizar items
+        const tbody = document.getElementById(`items-${despacho.codigo}`);
+        despacho.items.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'bg-white border-b';
+            row.innerHTML = `
+                <td class="px-4 py-2">${item.nombre_material}</td>
+                <td class="px-4 py-2">${item.cantidad}</td>
+                <td class="px-4 py-2">$${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-4 py-2 tipo-container">${item.spanTipo}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    });
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}

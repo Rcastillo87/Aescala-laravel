@@ -152,14 +152,13 @@
                         <!-- Botón Pespachos -->
                         <div class="relative inline-flex">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despachos-{{$item->id}}" data-tooltip-trigger="hover"
-                               onclick="listaDespachos(0,{{$item->id}})" x-data="" 
+                               onclick="listaDespachos({{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'despachos-modal')"
                                class="flex items-center justify-center w-10 h-10 text-white bg-fuchsia-600 hover:bg-white hover:text-fuchsia-500 border-2 border-fuchsia-500 focus:ring-4 
                                       focus:outline-none focus:ring-fuchsia-300 font-medium rounded-full text-sm dark:bg-fuchsia-400 dark:hover:bg-fuchsia-500 dark:focus:ring-fuchsia-500 cursor-pointer">
-                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4"/>
-                                  </svg>
-                                  
+                                </svg>
                             </a>
                             <div id="tooltip-hover-despachos-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                 Despachos
@@ -280,6 +279,7 @@
     @include('proyecto.modalTarea')
     @include('proyecto.modalFinanzas')
     @include('proyecto.modalCotizacion')
+    @include('proyecto.modalDespachos')
 @endsection
 
 @section('scripts')

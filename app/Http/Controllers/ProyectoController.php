@@ -15,6 +15,7 @@ use App\Models\InventarioMaterial;
 use App\Models\Avance;
 use App\Models\Cotizacion;
 use App\Models\Finanza;
+use App\Models\Despachos;
 
 class ProyectoController extends Controller
 {
@@ -415,6 +416,66 @@ class ProyectoController extends Controller
                 'status' => true,
                 'message' => 'Item en cotizacion eliminado.',
                 'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function listaDespachos()
+    {
+        try {
+            $lista = Despachos::where('id_proyecto', request('id'))
+                            ->select('tipo', 'codigo', 'createdAt')
+                            ->distinct()
+                            ->get()
+                            ->map(function ($item) {
+                                return [
+                                    'codigo' => $item->codigo,
+                                    'createdAt' => $item->createdAt,
+                                    'spanEstado' => $item->spanEstado
+                                ];
+                            })
+                            ->toArray();
+    
+            $items = Despachos::with(['material' => function($query) {
+                                $query->select('id', 'nombre_material', 'tipo');
+                            }])
+                            ->where('id_proyecto', request('id'))
+                            ->select('codigo', 'id_material', 'cantidad', 'valor_unidad')
+                            ->get()
+                            ->map(function ($item) {
+                                return [
+                                    'codigo' => $item->codigo,
+                                    'id_material' => $item->id_material,
+                                    'cantidad' => $item->cantidad,
+                                    'valor_unidad' => $item->valor_unidad,
+                                    'nombre_material' => $item->material->nombre_material ?? null,
+                                    'spanTipo' => $item->material->spanTipo ?? null
+                                ];
+                            })
+                            ->toArray();
+    
+            $data = [];
+            foreach ($lista as $val1) {
+                $despacho = [];
+                foreach ($items as $val2) {
+                    if($val1['codigo'] == $val2['codigo']){
+                        $despacho[] = $val2;
+                    }
+                }
+                $val1['items'] = $despacho;
+                $data[] = $val1;
+            }
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Lista de Despachos.',
+                'data' => $data
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

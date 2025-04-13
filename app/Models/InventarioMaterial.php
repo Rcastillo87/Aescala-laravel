@@ -28,6 +28,10 @@ class InventarioMaterial extends Model
 
     protected $appends = ['spanTipo', 'unidades'];
 
+    protected $casts = [
+        'tipo' => 'integer',
+    ];
+
     public function getSpanEstadoAttribute()
     {
         return '<span class="'.(self::$classEstado[$this->activo] ?? 'default-class').'">'
@@ -36,8 +40,8 @@ class InventarioMaterial extends Model
 
     public function getSpanTipoAttribute()
     {
-        return '<span class="'.(self::$classTipo[$this->tipo] ?? 'default-class').'">'
-             . (self::$tipo[$this->tipo] ?? 'Desconocido') . '</span>';
+        return '<span class="'.(self::$classTipo[(int)$this->tipo] ?? 'default-class').'">'
+        . (self::$tipo[(int)$this->tipo] ?? 'Desconocido') . '</span>';
     }
 
     public function getClassEstadoAttribute()
