@@ -429,15 +429,20 @@ class ProyectoController extends Controller
     public function listaDespachos()
     {
         try {
-            $lista = Despachos::where('id_proyecto', request('id'))
-                            ->select('tipo', 'codigo', 'createdAt')
+            $rawDate = config('database.default') === 'sqlite' 
+            ? "strftime('%Y-%m-%d', createdAt)" 
+            : "DATE_FORMAT(createdAt, '%Y-%m-%d')";
+
+            $lista = Despachos::with('user')->where('id_proyecto', request('id'))
+                            ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
                             ->distinct()
                             ->get()
                             ->map(function ($item) {
                                 return [
                                     'codigo' => $item->codigo,
-                                    'createdAt' => $item->createdAt,
-                                    'spanEstado' => $item->spanEstado
+                                    'createdAt' => $item->formattedDate,
+                                    'spanEstado' => $item->spanEstado,
+                                    'nombre_completo' => $item->user->nombre_completo
                                 ];
                             })
                             ->toArray();
@@ -476,6 +481,25 @@ class ProyectoController extends Controller
                 'status' => true,
                 'message' => 'Lista de Despachos.',
                 'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function listaBalance()
+    {
+        try {
+            $proyecto = Proyecto::find(request('id'));
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Lista de avance.',
+                'data' => $proyecto
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

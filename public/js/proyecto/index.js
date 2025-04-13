@@ -402,7 +402,6 @@ async function listaDespachos(id) {
         });
         const data = await response.json();
         renderDespachos(data.data);
-        //document.getElementById('listaDespachos').textContent = data.data;
         
     } catch (error) {
         Swal.fire("Error", "No se pudo consultar la data.", "error");
@@ -414,42 +413,41 @@ function renderDespachos(despachos) {
     
     despachos.forEach(despacho => {
         const card = document.createElement('div');
-        card.className = 'bg-white border border-gray-200 rounded-lg shadow p-6';
+        card.className = 'w-full max-w-full';
         
         card.innerHTML = `
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h2 class="text-lg font-semibold">Código: ${despacho.codigo}</h2>
-                    <p class="text-gray-500 text-sm">${formatDate(despacho.createdAt)}</p>
+            <div class="bg-white border border-gray-200 rounded-lg shadow p-2">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-lg font-semibold">Código: ${despacho.codigo}</h2>
+                        <p class="text-gray-500 text-sm">${formatDate(despacho.createdAt)}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">${despacho.nombre_completo}</p>
+                        <div class="estado-container">${despacho.spanEstado}</div>
+                    </div>
                 </div>
-                <div class="estado-container">${despacho.spanEstado}</div>
-            </div>
-            
-            <div class="mb-4">
-                <h3 class="font-medium mb-2">Materiales:</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2">Material</th>
-                                <th class="px-4 py-2">Cantidad</th>
-                                <th class="px-4 py-2">Valor Unitario</th>
-                                <th class="px-4 py-2">Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="items-${despacho.codigo}">
-                            <!-- Items se insertarán aquí -->
-                        </tbody>
-                    </table>
+                
+                <div class="mb-1">
+                    <h3 class="font-medium mb-2">Materiales:</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2">Material</th>
+                                    <th class="px-4 py-2">Cantidad</th>
+                                    <th class="px-4 py-2">Valor Unitario</th>
+                                    <th class="px-4 py-2">Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="items-${despacho.codigo}">
+                                <!-- Items se insertarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            
-            <div class="flex justify-end">
-                <button class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
-                    Ver Detalles
-                </button>
-            </div>
-        `;
+            `;
         
         container.appendChild(card);
         
@@ -478,4 +476,21 @@ function formatDate(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+async function listaBalance(id) {
+    try {
+        const response = await fetch(`listaBalance/?id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+        console.log(data.data);
+        
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
 }

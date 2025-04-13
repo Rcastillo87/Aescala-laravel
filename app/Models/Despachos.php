@@ -63,4 +63,9 @@ class Despachos extends Model
     {
         return $this->belongsTo(InventarioMaterial::class, 'id_material');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }
