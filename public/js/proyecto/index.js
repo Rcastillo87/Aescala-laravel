@@ -171,7 +171,7 @@ function tableAvances(data) {
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.fec_avance}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
                 <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                    <button onclick="confirmDelete(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600">
+                    <button onclick="confirmDelete(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
                         Eliminar
                     </button>
                 </td>

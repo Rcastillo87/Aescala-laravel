@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="flex justify-star">
-                    <a
+                    <a  href="#" tabindex="0"
                         x-data
                         x-on:click="$nextTick(() => document.getElementById('avance-profile-styled-tab').click());
                             $dispatch('close-modal', 'avance-modal')"
@@ -80,6 +80,7 @@
                         </div>
                         <div class="flex justify-between">
                             <a
+                                href="#" tabindex="0"
                                 x-data
                                 x-on:click="$nextTick(() => document.getElementById('avance-profile-styled-tab').click());
                                 $dispatch('close-modal', 'avance-modal')"
