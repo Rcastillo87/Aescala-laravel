@@ -78,7 +78,7 @@
                             {!! $item->spanEstado !!}
                         </td>
                         <td class="py-2 bg-transparent border-b dark:border-white/40 shadow-transparent flex items-center justify-center">
-                            <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                                 onclick="cambiarEstado({{ $item->id }}, {{$item->activo}})" 
                                 class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
                                     focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer me-2">
@@ -90,7 +90,7 @@
                                 Cambio de Estado
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
-                            <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" href="{{ route('user.edit', $item->id) }}"
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" href="{{ route('user.edit', $item->id) }}"
                                 class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
                                        focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 me-2">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

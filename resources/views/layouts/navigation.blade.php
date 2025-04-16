@@ -1,4 +1,4 @@
-<nav class="bg-gradient-to-br from-green-500 to-slate-200 rounded-lg shadow-md shadow-gray-300 dark:bg-gray-800 dark:border-gray-700">
+<nav class="bg-gradient-to-br from-orange-400 to-orange-200 rounded-lg shadow-md shadow-gray-300 dark:bg-gray-800 dark:border-gray-700">
     <div class="flex flex-wrap items-center p-2 justify-between sm:justify-end">
         <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-dark rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
             <span class="sr-only">Open sidebar</span>
@@ -9,7 +9,7 @@
 
         <!-- Settings Dropdown -->
         <div class="flex my-4 mr-2">
-            <x-dropdown align="right" width="48">
+            <x-dropdown width="48">
                 <x-slot name="trigger">
                     <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                         <div>{{ Auth::user()->nombre_completo??'' }}</div>
