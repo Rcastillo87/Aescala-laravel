@@ -494,12 +494,44 @@ class ProyectoController extends Controller
     public function listaBalance()
     {
         try {
-            $proyecto = Proyecto::find(request('id'));
+            $proyecto = Proyecto::find(Request('id'));
+            $totales = Despachos::with('material')->where('id_proyecto', Request('id'))
+            ->selectRaw("
+                SUM(CASE WHEN tipo = 1 THEN cantidad * valor_unidad ELSE 0 END) as total_tipo_1,
+                SUM(CASE WHEN tipo = 2 THEN cantidad * valor_unidad ELSE 0 END) as total_tipo_2
+            ");
+
+            $data['carpinteria']['presupuesto'] = $proyecto->val_obra_carpinteria;
+            $data['carpinteria']['presupuestoMaterial'] = $proyecto->val_carpinteria_materiales;
+            $data['carpinteria']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 2)->sum('valor');
+            $totales = $totales->whereHas('material', function ($q) { $q->where('tipo', 2); })->first();
+            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $data['carpinteria']['gastosMaterial'] = $total_final;
+
+            $data['obrablanca']['presupuesto'] = $proyecto->val_obra_blanca;
+            $data['obrablanca']['presupuestoMaterial'] = $proyecto->val_obra_blanca_materiales;
+            $data['obrablanca']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 3)->sum('valor');
+            $totales = $totales->whereHas('material', function ($q) { $q->where('tipo', 1); })->first();
+            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $data['obrablanca']['gastosMaterial'] = $total_final;
+
+            $data['otros']['presupuesto'] = $proyecto->pres_otros;
+            $data['otros']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 4)->sum('valor');
+            $totales = $totales->whereHas('material', function ($q) { $q->whereNull('tipo'); })->first();
+            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $data['otros']['gastosMaterial'] = $total_final;
+
+            $data['global']['presupuesto'] = $proyecto->totalProyecto;
+            $data['global']['abonos'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 1)->sum('valor');
+            $data['global']['gastos'] = $data['carpinteria']['gastosDinero'] + $data['obrablanca']['gastosDinero'] + $data['otros']['gastosDinero'] +
+                                        $data['carpinteria']['gastosMaterial'] + $data['obrablanca']['gastosMaterial'] + $data['otros']['gastosMaterial'];
+            $data['global']['ganancia'] = $data['global']['abonos'] - $data['global']['gastos'];
+            
 
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de avance.',
-                'data' => $proyecto
+                'data' => $data
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -65,7 +65,17 @@ class Proyecto extends Model
 
     public function getTotalProyectoAttribute ()
     {
-        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales;
+        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales + $this->pres_otros;
+    }
+
+    public function getTotalManoAttribute ()
+    {
+        return $this->val_obra_blanca + $this->val_obra_carpinteria + $this->pres_otros;
+    }
+
+    public function getTotalMaterialesAttribute ()
+    {
+        return $this->val_obra_blanca_materiales + $this->val_carpinteria_materiales;
     }
 
     public function getDiasTranscurridosAttribute ()
