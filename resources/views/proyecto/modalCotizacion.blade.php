@@ -84,6 +84,7 @@
                         <!-- Botón alineado a la derecha siempre en la parte inferior -->
                         <div class="flex justify-between">
                             <a
+                                href="#" tabindex="0"
                                 x-data
                                 x-on:click="$nextTick(() => document.getElementById('cotizacion-profile-styled-tab').click());
                                 $dispatch('close-modal', 'cotizacion-modal')"

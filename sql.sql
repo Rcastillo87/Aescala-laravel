@@ -5,10 +5,10 @@ UPDATE database.herramientas set estado = 2 where estado = 'Bueno';
 UPDATE database.herramientas set estado = 3 where estado = 'Regular';
 UPDATE database.herramientas set estado = 4 where estado = 'Dado de baja';
 
-update herramienta_prestamos set tipo_prestamo = 1 where tipo_prestamo = 'Prestamo'
-update herramienta_prestamos set tipo_prestamo = 2 where tipo_prestamo = 'Devolucion'
+update database.herramienta_prestamos set tipo_prestamo = 1 where tipo_prestamo = 'Prestamo';
+update database.herramienta_prestamos set tipo_prestamo = 2 where tipo_prestamo = 'Devolucion';
 
-update database.inventario_materiales set activo = 2 where activo = 0 
+update database.inventario_materiales set activo = 2 where activo = 0;
 UPDATE database.inventario_materiales set tipo = 1 where tipo = 'Obra Blanca';
 UPDATE database.inventario_materiales set tipo = 2 where tipo = 'Carpinteria';
 

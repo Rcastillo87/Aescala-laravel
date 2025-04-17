@@ -44,7 +44,7 @@
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                             
-                            <a data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                                 onclick="cambiarEstado({{ $item->id }}, {{$item->activo}})" 
                                 class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
                                     focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer me-2">

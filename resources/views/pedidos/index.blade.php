@@ -26,7 +26,7 @@
                             {{ $item['items'] }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ number_format($item['total']) }}
+                            ${{ number_format($item['total']) }}
                         </td>
                     </tr>
                 @empty

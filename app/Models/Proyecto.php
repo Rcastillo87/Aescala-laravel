@@ -65,7 +65,17 @@ class Proyecto extends Model
 
     public function getTotalProyectoAttribute ()
     {
-        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales;
+        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales + $this->pres_otros;
+    }
+
+    public function getTotalManoAttribute ()
+    {
+        return $this->val_obra_blanca + $this->val_obra_carpinteria + $this->pres_otros;
+    }
+
+    public function getTotalMaterialesAttribute ()
+    {
+        return $this->val_obra_blanca_materiales + $this->val_carpinteria_materiales;
     }
 
     public function getDiasTranscurridosAttribute ()
@@ -103,6 +113,18 @@ class Proyecto extends Model
         return $array[0];
     }
 
+    public function getTotalFinanzasAttribute()
+    {
+        $totals = $this->finanzas()
+            ->selectRaw("
+                SUM(CASE WHEN tipo = 1 THEN valor ELSE 0 END) as ingresos,
+                SUM(CASE WHEN tipo = 2 THEN valor ELSE 0 END) as gastos
+            ")
+            ->first();
+        
+        return ($totals->ingresos ?? 0) - ($totals->gastos ?? 0);
+    }
+
     // Relación con el modelo User
     public function user()
     {
@@ -112,5 +134,10 @@ class Proyecto extends Model
     public function tareas()
     {
         return $this->hasMany(Tarea::class, 'id_proyecto', 'id');
+    }
+
+    public function finanzas()
+    {
+        return $this->hasMany(Finanza::class, 'id_proyecto', 'id');
     }
 }

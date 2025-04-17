@@ -84,7 +84,8 @@ class UserController extends Controller
             'email' => $req->email,
             'cedula' => $req->cedula,
             'telefono' => $req->telefono,
-            'tipo_documento' => $req->direccion,
+            'tipo_documento' => $req->tipo_documento,
+            'direccion' => $req->direccion,
             'id_rol' => $req->id_rol,
             'activo' => 1,
         ];

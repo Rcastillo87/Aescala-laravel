@@ -96,7 +96,7 @@
                     </div>
                 </div>
                 <div class="flex justify-between">
-                    <a
+                    <a  href="#" tabindex="0"
                         x-on:click="$dispatch('close-modal', 'my-modal')"
                         class="bg-red-500 text-white px-4 py-2 rounded"
                     >
