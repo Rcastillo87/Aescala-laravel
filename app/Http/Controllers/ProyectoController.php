@@ -23,7 +23,7 @@ class ProyectoController extends Controller
     {
         $title = 'Lista de Proyectos';
         $estado = Proyecto::$estado;
-        $items = Proyecto::with(['tareas'])->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) { 
+        $items = Proyecto::with(['tareas', 'finanzas'])->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) { 
             return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
         })
         ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 

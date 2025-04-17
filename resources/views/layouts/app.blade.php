@@ -51,7 +51,6 @@
             </div>
         </div>
 
-
         <div class="hidden">
             span-blue
             span-green
@@ -59,6 +58,8 @@
             span-red
             span-gray
             span-black
+            md:col-span-2 
+            col-span-1
         </div>
         @if(session('success') || session('error') || session('warning'))
             <script>

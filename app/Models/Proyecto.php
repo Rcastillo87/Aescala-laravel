@@ -113,6 +113,18 @@ class Proyecto extends Model
         return $array[0];
     }
 
+    public function getTotalFinanzasAttribute()
+    {
+        $totals = $this->finanzas()
+            ->selectRaw("
+                SUM(CASE WHEN tipo = 1 THEN valor ELSE 0 END) as ingresos,
+                SUM(CASE WHEN tipo = 2 THEN valor ELSE 0 END) as gastos
+            ")
+            ->first();
+        
+        return ($totals->ingresos ?? 0) - ($totals->gastos ?? 0);
+    }
+
     // Relación con el modelo User
     public function user()
     {
@@ -122,5 +134,10 @@ class Proyecto extends Model
     public function tareas()
     {
         return $this->hasMany(Tarea::class, 'id_proyecto', 'id');
+    }
+
+    public function finanzas()
+    {
+        return $this->hasMany(Finanza::class, 'id_proyecto', 'id');
     }
 }

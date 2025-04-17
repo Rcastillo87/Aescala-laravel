@@ -117,7 +117,7 @@ function tableFinanzas(data) {
             fila.innerHTML = `
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.spanTipo}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.concepto.toLowerCase() || 'N/A'}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.valor}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${ formatCurrency(service.valor) }</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
             `;
             serviceList.appendChild(fila);
@@ -269,8 +269,8 @@ function tableCotizacion(data) {
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.createdAt}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.nombre_material.toLowerCase()}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.cantidad}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.valor_unidad}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.subtotal}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.valor_unidad )}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.subtotal)}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                 <button onclick="deleteCotizacion(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 btn-eliminar-cotizacion">
                         Eliminar
@@ -410,6 +410,21 @@ async function listaDespachos(id) {
 
 function renderDespachos(despachos) {
     const container = document.getElementById('listaDespachos');
+    container.innerHTML= '';
+
+    // Manejo cuando no hay despachos
+    if (!despachos || despachos.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8 col-span-1 md:col-span-2">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">No hay despachos registrados</h3>
+                <p class="mt-1 text-gray-500">No se encontraron despachos para mostrar.</p>
+            </div>
+        `;
+        return;
+    }
     
     despachos.forEach(despacho => {
         const card = document.createElement('div');
@@ -488,9 +503,56 @@ async function listaBalance(id) {
             }
         });
         const data = await response.json();
-        console.log(data.data);
-        
+        await displayBalanceData(data.data);
     } catch (error) {
         Swal.fire("Error", "No se pudo consultar la data.", "error");
     }
+}
+
+
+async function displayBalanceData(balanceData) {
+    // Carpintería
+    const carpinteria = balanceData.carpinteria;
+    document.querySelector('#carpinteria-presupuesto').textContent = `PRESUPUESTO: ${formatCurrency(carpinteria.presupuesto)}`;
+    document.querySelector('#carpinteria-gastos-dinero').textContent = `GASTOS: ${formatCurrency(carpinteria.gastosDinero)}`;
+    document.querySelector('#carpinteria-disponible-dinero').textContent = `DISPONIBLE: ${formatCurrency(carpinteria.presupuesto - carpinteria.gastosDinero)}`;
+    
+    document.querySelector('#carpinteria-presupuesto-material').textContent = `PRESUPUESTO: ${formatCurrency(carpinteria.presupuestoMaterial)}`;
+    document.querySelector('#carpinteria-gastos-material').textContent = `GASTOS: ${formatCurrency(carpinteria.gastosMaterial)}`;
+    document.querySelector('#carpinteria-disponible-material').textContent = `DISPONIBLE: ${formatCurrency(carpinteria.presupuestoMaterial - carpinteria.gastosMaterial)}`;
+
+    // Obra Blanca
+    const obrablanca = balanceData.obrablanca;
+    document.querySelector('#obrablanca-presupuesto').textContent = `PRESUPUESTO: ${formatCurrency(obrablanca.presupuesto)}`;
+    document.querySelector('#obrablanca-gastos-dinero').textContent = `GASTOS: ${formatCurrency(obrablanca.gastosDinero)}`;
+    document.querySelector('#obrablanca-disponible-dinero').textContent = `DISPONIBLE: ${formatCurrency(obrablanca.presupuesto - obrablanca.gastosDinero)}`;
+    
+    document.querySelector('#obrablanca-presupuesto-material').textContent = `PRESUPUESTO: ${formatCurrency(obrablanca.presupuestoMaterial)}`;
+    document.querySelector('#obrablanca-gastos-material').textContent = `GASTOS: ${formatCurrency(obrablanca.gastosMaterial)}`;
+    document.querySelector('#obrablanca-disponible-material').textContent = `DISPONIBLE: ${formatCurrency(obrablanca.presupuestoMaterial - obrablanca.gastosMaterial)}`;
+
+    // Otros
+    const otros = balanceData.otros;
+    document.querySelector('#otros-presupuesto').textContent = `PRESUPUESTO: ${formatCurrency(otros.presupuesto)}`;
+    document.querySelector('#otros-gastos').textContent = `GASTOS PAGOS: ${formatCurrency(otros.gastosDinero)}`;
+    document.querySelector('#otros-gastos-material').textContent = `GASTOS MATERIAL: ${formatCurrency(otros.gastosMaterial)}`;
+    document.querySelector('#otros-disponible').textContent = `DISPONIBLE: ${formatCurrency(otros.presupuesto - otros.gastosDinero - otros.gastosMaterial)}`;
+
+    // Global
+    const global = balanceData.global;
+    document.querySelector('#global-presupuesto').textContent = `PRESUPUESTO TOTAL: ${formatCurrency(global.presupuesto)}`;
+    document.querySelector('#global-abonos').textContent = `ABONOS TOTALES: ${formatCurrency(global.abonos)}`;
+    document.querySelector('#global-gastos').textContent = `GASTOS TOTALES: ${formatCurrency(global.gastos)}`;
+    document.querySelector('#global-rentabilidad').textContent = `RENTABILIDAD: ${formatCurrency(global.ganancia)}`;
+}
+
+// Función auxiliar para formatear moneda en JavaScript
+function formatCurrency(value) {
+    // Asegurarse que el valor es un número
+    const num = typeof value === 'number' ? value : parseInt(value) || 0;
+    
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP'
+    }).format(num);
 }
