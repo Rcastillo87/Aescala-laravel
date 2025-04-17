@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-full px-2">
-    <form method="POST" action="{{ route('user.save') }}">
+    <form method="POST" action="{{ route('user.save') }}" autocomplete="off">
         @csrf
         <div class="flex flex-wrap -mx-3">
             <input type="hidden" id="id" name="id" value="{{$user?$user->id:''}}">
