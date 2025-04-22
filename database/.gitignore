@@ -1,3 +1,2 @@
 # Ignorar archivos temporales de SQLite
-database/*.sqlite-shm
-database/*.sqlite-wal
+database/*.sqlite
