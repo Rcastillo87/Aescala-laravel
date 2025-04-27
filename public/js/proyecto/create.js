@@ -8,9 +8,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (deptoId !== "") {
             let ciudades = departamentos.find(depto => depto.id == deptoId)?.ciudades || [];
-            ciudades.forEach(ciudad => {
+            ciudades.forEach((ciudad, index) => {
                 let option = document.createElement('option');
-                option.value = ciudad;
+                option.value = index;
                 option.textContent = ciudad;
                 ciudadSelect.appendChild(option);
             });
