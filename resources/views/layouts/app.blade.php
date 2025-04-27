@@ -22,7 +22,8 @@
             @include('layouts.sidebar')
             @include('layouts.navigation')
             <!-- Page Content -->
-            <main class="sm:ml-64 ml-0 sm:mt-6 mt-2 sm:mb-16 mb-1 sm:mr-5 mx-2 p-4 rounded-2xl bg-white border-2 shadow-lg shadow-gray-300 overflow-hidden">                <x-title-component title="{{$title??''}}" />
+            <main class="sm:ml-64 ml-0 sm:mt-6 mt-2 mb-16 sm:mr-5 mx-2 p-4 rounded-2xl bg-white border-2 shadow-lg shadow-gray-300 overflow-hidden">
+                <x-title-component title="{{$title??''}}" />
                 @yield('content')
             </main>
             @include('layouts.footer')

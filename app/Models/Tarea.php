@@ -21,16 +21,11 @@ class Tarea extends Model
         'descripccion',
         'id_tarea_tipo',
         'fec_inicio',
-        'fec_fin'
-    ];
-
-    protected $casts = [
-        'fec_inicio' => 'datetime',
-        'fec_fin' => 'datetime'
+        'fec_fin',
+        'dias_trabajo'
     ];
 
     protected $appends = ['fecIni', 'fechaFin'];
-
     
     public static $estado = [
         1 => 'En Pausa',
@@ -49,29 +44,10 @@ class Tarea extends Model
              . (self::$estado[$this->id_tarea_estado] ?? 'Desconocido') . '</span>';
     }
 
-    public function getDiasTranscurridosAttribute ()
+    public function diasHabilesTrascurridos($hoy, $diasFestivos)
     {
-        $fecInicio = Carbon::parse($this->fec_inicio);
-        $fechaActual = Carbon::now();
-        return intval($fecInicio->diffInDays($fechaActual));
-    }
-
-    public function getDiasProcentageAttribute()
-    {
-
-        $fecInicio = Carbon::parse($this->fec_inicio);
-        $fechaActual = Carbon::now();
-        $diasTranscurridos = intval($fecInicio->diffInDays($fechaActual));
-
-        $fecFin = Carbon::parse($this->fec_fin);
-        $diasTotales = intval($fecInicio->diffInDays($fecFin));
-
-        if( $diasTotales == 0 ){
-            return 100;
-        }
-    
-        $porcentaje = intval(($diasTranscurridos / $diasTotales) * 100);
-        return $porcentaje;
+        $festivos = new Festivos();
+        return $festivos->contarDiasHabiles($this->fec_inicio, $hoy, $diasFestivos);
     }
 
     public function getFecIniAttribute()

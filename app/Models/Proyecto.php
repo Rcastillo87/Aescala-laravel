@@ -30,6 +30,7 @@ class Proyecto extends Model
         'observacion',
         'fec_inicio',
         'fec_fin_estimado',
+        'dias_trabajo',
         'fec_fin_real',
         'id_estado',
         'id_user'
@@ -78,28 +79,10 @@ class Proyecto extends Model
         return $this->val_obra_blanca_materiales + $this->val_carpinteria_materiales;
     }
 
-    public function getDiasTranscurridosAttribute ()
+    public function diasHabilesTrascurridos($hoy, $diasFestivos)
     {
-        $fecInicio = Carbon::parse($this->fec_inicio);
-        $fechaActual = Carbon::now();
-        return intval($fecInicio->diffInDays($fechaActual));
-    }
-
-    public function getDiasProcentageAttribute()
-    {
-        $fecInicio = Carbon::parse($this->fec_inicio);
-        $fecFinEstimado = Carbon::parse($this->fec_fin_estimado);
-        
-        $diasTranscurridos = $this->dias_transcurridos;
-        $diasEstimados = $fecInicio->diffInDays($fecFinEstimado);
-    
-        if ($diasEstimados == 0) {
-            return 100;
-        }
-    
-        $porcentaje = intval(($diasTranscurridos / $diasEstimados) * 100);
-        //min($porcentaje, 100);
-        return $porcentaje;
+        $festivos = new Festivos();
+        return $festivos->contarDiasHabiles($this->fec_inicio, $hoy, $diasFestivos);
     }
 
     public function getFecIniAttribute()

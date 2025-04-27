@@ -1,7 +1,7 @@
 <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-60 h-full transition-transform -translate-x-full sm:translate-x-0 pb-4" aria-label="Sidebar">
 
-    <div class="h-full px-3 pt-4 voverflow-y-auto dark:bg-gray-700 mx-2 mt-2
-    bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg shadow-md shadow-gray-100">
+    <div class="h-full px-3 pt-4 overflow-y-auto dark:bg-gray-700 mx-2 mt-2
+    bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg shadow-md shadow-gray-100 ">
 
        <a href="{{ route('dashboard') }}" class="flex items-center">
             <img src="{{ asset('img/logo.png') }}" class="my-6 p-2 w-full">
