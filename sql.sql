@@ -28,3 +28,12 @@ se crea en avance fec_avance
 UPDATE database.inventario_solicituds set tipo = 1 where tipo = 'Despachado';
 UPDATE database.inventario_solicituds set tipo = 2 where tipo = 'Devolucion';
 
+----------------------------------------------------------------------------------------------------------------------------------
+
+migrar dias_festivos
+
+en proyecto
+dias_trabajo
+
+en tareas
+dias_trabajo

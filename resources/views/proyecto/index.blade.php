@@ -26,21 +26,35 @@
 </div>
     @forelse ($items as $item)
         @php
-            $porcen = $item->dias_procentage;
+            $diasProyec =  $item->dias_trabajo??0;
+            $diasTrascuridos =  $item->diasHabilesTrascurridos($hoy, $festivos)??0;
+
+            if ($diasProyec == 0) {
+                $porcen = 100;
+            } else {
+                $porcen = intval(($diasTrascuridos*100)/$diasProyec);
+            }
             $bg = match (true) {
                 $porcen <= 80 => 'bg-green-500',
-                $porcen <= 100 => 'bg-orange-400',
+                $porcen < 100 => 'bg-orange-400',
                 default => 'bg-red-500',
             };
         @endphp
         <div class=" border-2 rounded-lg pb-1 border-gray-300 shadow-lg shadow-black-200 mb-2">
             <div class="flex flex-grow mb-2">
-                <div class="text-center items-center w-[140px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center">
-                    <p class="text-white text-4xl font-bold">{{$item->dias_transcurridos}}</p>
-                    <span class="text-white text-xl font-bold">{{$item->dias_procentage}}%</span>
+                <div class="text-center items-center w-[140px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center"
+                    data-tooltip-target="tooltip-hover-porcent-{{$item->id}}" data-tooltip-trigger="hover">
+
+                    <p class="text-white text-2xl font-bold">{{$diasTrascuridos}} / {{$diasProyec}}</p>
+                    <span class="text-white text-xl font-bold">{{$porcen}}%</span>
                     <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
                     <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
                 </div>
+                <div id="tooltip-hover-porcent-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                    Dias Habiles VS Duracion Proyecto
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+
                 <div class="flex flex-wrap w-full">
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1">
                         <p class="text-lg text-gray-500 font-bold">Nombre Proyecto</p>
@@ -221,6 +235,22 @@
                     @forelse($item->tareas as $tarea)
                         <div class="mt-2 flex flex-col gap-2 border-b-[3px] border-gray-300">
                             <div class="transition bg-gradient-to-t hover:from-gray-100 py-3 text-base">
+                                @php
+                                    $diasTrascurridosTarea = $tarea->diasHabilesTrascurridos($hoy, $festivos)??0;
+                                    $diasTarea = $tarea->dias_trabajo??0;
+
+                                    if ($diasTarea == 0) {
+                                        $porcenTarea = 100;
+                                    } else {
+                                        $porcenTarea = intval(($diasTrascurridosTarea*100)/((int)$diasTarea));
+                                    }
+
+                                    $bgTarea = match (true) {
+                                        $porcenTarea <= 80 => 'bg-green-500',
+                                        $porcenTarea < 100 => 'bg-orange-400',
+                                        default => 'bg-red-500',
+                                    };
+                                @endphp
                                 <div class="flex">
                                     <p class="font-semibold text-sm">Tipo Tarea: {{ $tarea->tareaTipo->nombre_tarea }}</p>
                                     <div class="ml-auto flex gap-2 text-sm">
@@ -244,21 +274,19 @@
                                             <div class="tooltip-arrow" data-popper-arrow></div>
                                         </div>
                                         {!! $tarea->spanEstado !!}
-                                        <span class="font-bold">Completado: {{ $tarea->diasProcentage }}%</span>
+                                        <span class="font-bold">Dias: {{$diasTrascurridosTarea}} / {{$tarea->dias_trabajo??0}} </span>
                                     </div>
                                 </div>
-                                @php
-                                    $porcenTarea = $tarea->diasProcentage;
-                                    $bgTarea = match (true) {
-                                        $porcenTarea <= 80 => 'bg-green-500',
-                                        $porcenTarea <= 100 => 'bg-orange-400',
-                                        default => 'bg-red-500',
-                                    };
-                                @endphp
+
                                 <p class="text-sm">Descripcion: {{ $tarea->descripccion }}</p>
-                                <div class="my-2 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                                    <div class="h-2 rounded-full {{ $bgTarea }}" style="width:{{ ($tarea->diasProcentage<100)?$tarea->diasProcentage:100 }}%;"></div>
+                                <div class="my-2 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700" data-tooltip-target="tooltip-hover-porcenTarea-{{$tarea->id}}" data-tooltip-trigger="hover">
+                                    <div class="h-2 rounded-full {{ $bgTarea }}" style="width:{{ ($porcenTarea<100)?$porcenTarea:100 }}%;"></div>
                                 </div>
+                                <div id="tooltip-hover-porcenTarea-{{$tarea->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 truncate max-w-xs text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                    Porcentage del {{ $porcenTarea }}%
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+
                                 <div class="flex justify-between">
                                     <div class="flex items-center text-base">
                                         <small> Encargado: <strong class="text-blue-500">{{ $tarea->user->nombre_completo }}</strong></small>

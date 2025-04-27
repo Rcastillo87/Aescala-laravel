@@ -75,7 +75,7 @@ async function editTarea(id) {
         document.getElementById('id_proyecto').value = data.data.id_proyecto;
         document.getElementById('id').value = data.data.id;
         document.getElementById('descripccion').value = data.data.descripccion;
-        document.getElementById('fec_fin').value = data.data.fechaFin;
+        document.getElementById('dias_trabajo').value = data.data.dias_trabajo;
         document.getElementById('fec_inicio').value = data.data.fecIni;
         document.getElementById('id_user').value  = data.data.id_user;
         document.getElementById('id_tarea_tipo').value  = data.data.id_tarea_tipo;

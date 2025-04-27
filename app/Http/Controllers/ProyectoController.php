@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -16,11 +17,19 @@ use App\Models\Avance;
 use App\Models\Cotizacion;
 use App\Models\Finanza;
 use App\Models\Despachos;
+use App\Models\Festivos;
 
 class ProyectoController extends Controller
 {
     public function index( ) 
     {
+        $year = date('Y');
+        $festivos = new Festivos;
+        $festivos->festivos($year);
+        $festivos->festivos($year+1);
+
+        $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
+        $hoy = Carbon::today();
         $title = 'Lista de Proyectos';
         $estado = Proyecto::$estado;
         $items = Proyecto::with(['tareas', 'finanzas'])->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) { 
@@ -57,7 +66,7 @@ class ProyectoController extends Controller
         ->toArray();
 
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
-            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales'));
+            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy'));
     }
 
     public function create() 
@@ -108,7 +117,7 @@ class ProyectoController extends Controller
             'pres_otros' =>'nullable|integer|min:0',
             'observacion' => 'nullable|string',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
-            'fec_fin_estimado' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
+            'dias_trabajo' => 'required|integer|min:1',
             'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'id_estado' => Rule::in(array_keys(Proyecto::$estado)),
             'id_user' => [
@@ -117,7 +126,8 @@ class ProyectoController extends Controller
                 Rule::exists('users', 'id'),
             ],
         ]);
-    
+
+        $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
         $msg = ucfirst($req->id ? 'Proyecto editado con éxito' : 'Proyecto creado con éxito');
     
         try {
@@ -152,9 +162,10 @@ class ProyectoController extends Controller
             'id_tarea_tipo' => ['required', 'integer', Rule::exists('tarea_tipos', 'id') ],
             'descripccion' => 'required|string|max:255',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
-            'fec_fin' => ['required', 'date', 'date_format:Y-m-d']
+            'dias_trabajo' => 'required|integer|min:1'
         ]);
 
+        $data['fec_fin'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
         $msg = ucfirst($request->id ? 'Tarea editada' : "Tarea asignada" );
 
         try {
