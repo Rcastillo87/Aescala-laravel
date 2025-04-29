@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -440,54 +441,7 @@ class ProyectoController extends Controller
     public function listaDespachos()
     {
         try {
-            $rawDate = config('database.default') === 'sqlite' 
-            ? "strftime('%Y-%m-%d', createdAt)" 
-            : "DATE_FORMAT(createdAt, '%Y-%m-%d')";
-
-            $lista = Despachos::with('user')->where('id_proyecto', request('id'))
-                            ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
-                            ->distinct()
-                            ->get()
-                            ->map(function ($item) {
-                                return [
-                                    'codigo' => $item->codigo,
-                                    'createdAt' => $item->formattedDate,
-                                    'spanEstado' => $item->spanEstado,
-                                    'nombre_completo' => $item->user->nombre_completo
-                                ];
-                            })
-                            ->toArray();
-    
-            $items = Despachos::with(['material' => function($query) {
-                                $query->select('id', 'nombre_material', 'tipo');
-                            }])
-                            ->where('id_proyecto', request('id'))
-                            ->select('codigo', 'id_material', 'cantidad', 'valor_unidad')
-                            ->get()
-                            ->map(function ($item) {
-                                return [
-                                    'codigo' => $item->codigo,
-                                    'id_material' => $item->id_material,
-                                    'cantidad' => $item->cantidad,
-                                    'valor_unidad' => $item->valor_unidad,
-                                    'nombre_material' => $item->material->nombre_material ?? null,
-                                    'spanTipo' => $item->material->spanTipo ?? null
-                                ];
-                            })
-                            ->toArray();
-    
-            $data = [];
-            foreach ($lista as $val1) {
-                $despacho = [];
-                foreach ($items as $val2) {
-                    if($val1['codigo'] == $val2['codigo']){
-                        $despacho[] = $val2;
-                    }
-                }
-                $val1['items'] = $despacho;
-                $data[] = $val1;
-            }
-    
+            $data = (new Despachos)->despachos(Request('id'));
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de Despachos.',
@@ -500,6 +454,35 @@ class ProyectoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function pdfDespachos()
+    {
+
+        $proyecto = Proyecto::find(Request('id'));
+        $datos = (new Despachos)->despachos(Request('id'));
+        
+        $datosFactura = [
+            'empresa' => [
+                'razon' => env('RAZON', 'AESCALA'),
+                'nit' => env('NIT', '901.451.774-2'),
+                'telefono' => env('TEL', '323-345-0903'),
+                'direccion' => env('DIREC', 'Dirección: carrera 1d #46-63'),
+                'logo' => public_path('img/logo.png')
+            ],
+            'despacho' => $datos,
+            'proyecto' => $proyecto
+        ];
+
+        /*return response()->json([
+            'status' => true,
+            'message' => 'Lista de Despachos.',
+            'data' => $datosFactura
+        ], 200);*/
+
+        //dd($datosFactura);
+        $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
+        return $pdf->download('factura-'.Request('id').'.pdf');
     }
 
     public function listaBalance()

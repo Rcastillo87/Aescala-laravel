@@ -401,16 +401,38 @@ async function listaDespachos(id) {
             }
         });
         const data = await response.json();
-        renderDespachos(data.data);
+        await renderDespachos(data.data, id);
         
     } catch (error) {
         Swal.fire("Error", "No se pudo consultar la data.", "error");
     }
 }
 
-function renderDespachos(despachos) {
+document.getElementById('botonDescarga').addEventListener('click', function() {
+    const id = this.getAttribute('data-id');
+    const url = `pdfDespachos?id=${id}`;
+    window.open(url, '_blank');
+});
+
+/*document.getElementById('botonDescarga').addEventListener('click', async function() {
+    // Solución más confiable para descargas
+    const id = this.getAttribute('data-id');
+    const a = document.createElement('a');
+    console.log();
+    a.href = `pdfDespachos?id=${id}`;
+    a.download = '';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+});*/
+
+async function renderDespachos(despachos, id) {
+
     const container = document.getElementById('listaDespachos');
-    container.innerHTML= '';
+    container.innerHTML= '';   
+
+    const boton = document.getElementById('botonDescarga');
 
     // Manejo cuando no hay despachos
     if (!despachos || despachos.length === 0) {
@@ -423,8 +445,12 @@ function renderDespachos(despachos) {
                 <p class="mt-1 text-gray-500">No se encontraron despachos para mostrar.</p>
             </div>
         `;
+        boton.removeAttribute('data-id');
+        boton.classList.add('hidden');
         return;
     }
+    boton.setAttribute('data-id', id);
+    boton.classList.remove('hidden');
     
     despachos.forEach(despacho => {
         const card = document.createElement('div');
