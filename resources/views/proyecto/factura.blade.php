@@ -12,23 +12,24 @@
             font-family: Arial, sans-serif; 
             font-size: 11px;
             line-height: 1.3;
-            margin: 0;
             padding: 0;
+            padding-top:20px;
         }
         .header {
             position: fixed;
-            top: -60px;
+            top: -50px;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #969292;
         }
         .logo { 
+            max-width: 100%;
+            height: auto;
             width: 180px;
             max-height: 60px;
             object-fit: contain; 
@@ -40,18 +41,9 @@
         }
         .titulo { 
             text-align: center; 
-            margin: 5px 0 15px 0; 
+            margin: 20px 0 15px 0; 
             font-size: 16px; 
             font-weight: bold;
-        }
-        .info-cliente {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
         }
         .info-box {
             padding: 3px 0;
@@ -59,7 +51,7 @@
         .tabla-despachos { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-bottom: 15px; 
+            margin-bottom: 10px; 
             font-size: 10px;
         }
         .tabla-despachos th, .tabla-despachos td { 
@@ -85,9 +77,15 @@
             background-color: #f8f8f8; 
         }
         .resumen { 
+            page-break-inside: avoid;
+            break-inside: avoid;
             border-top: 2px solid #333; 
             margin-top: 15px; 
-            padding-top: 8px; 
+            padding-top: 0px; 
+        }
+        .despacho-section {
+            page-break-inside: avoid;
+            break-inside: avoid;
         }
         .totales { 
             text-align: right; 
@@ -116,9 +114,6 @@
         .page-break { 
             page-break-after: always; 
         }
-        .despacho-section { 
-            margin-bottom: 20px;
-        }
         .despacho-header {
             background-color: #f2f2f2;
             padding: 4px;
@@ -129,11 +124,11 @@
 </head>
 <body>
     <!-- Encabezado que se repetirá en cada página -->
-    <div class="header">
-        <div>
+    <div class="header" style="display: table; width: 100%;">
+        <div style="display: table-cell; vertical-align: middle; width: 50%;">
             <img src="{{ $empresa['logo'] }}" alt="Logo" class="logo">
         </div>
-        <div class="info-empresa">
+        <div class="info-empresa" style="display: table-cell; vertical-align: middle; width: 50%; text-align: right;">
             <div style="font-weight:bold; font-size:11px;">{{ $empresa['razon'] }}</div>
             <div>NIT: {{ $empresa['nit'] }}</div>
             <div>{{ $empresa['direccion'] }}</div>
@@ -153,65 +148,67 @@
     </div>
 
     <!-- Información del cliente en dos columnas -->
-    <div class="info-cliente">
-        <div>
-            <div class="info-box"><strong>Cliente:</strong> {{ $proyecto['nombre_cliente'] }}</div>
-            <div class="info-box"><strong>Teléfono:</strong> {{ $proyecto['telefono_cliente'] }}</div>
-            <div class="info-box"><strong>Dirección proyecto:</strong> {{ $proyecto['direccion'] }}</div>
-        </div>
-        <div>
-            <div class="info-box"><strong>Fecha Inicio:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_inicio'])->format('d/m/Y') }}</div>
-            <div class="info-box"><strong>Fecha Fin Estimada:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_fin_estimado'])->format('d/m/Y') }}</div>
-            <div class="info-box"><strong>Reporte generado:</strong> {{ date('d/m/Y H:i') }}</div>
-        </div>
-    </div>
+    <table width="100%" style="margin-bottom: 15px; border-collapse: collapse;">
+        <tr>
+            <td style="width: 70%; padding: 8px; background-color: #f9f9f9;">
+                <div class="info-box"><strong>Cliente:</strong> {{ $proyecto['nombre_cliente'] }}</div>
+                <div class="info-box"><strong>Teléfono:</strong> {{ $proyecto['telefono_cliente'] }}</div>
+                <div class="info-box"><strong>Dirección proyecto:</strong> {{ $proyecto['direccion'] }}</div>
+            </td>
+            <td style="width: 30%; padding: 8px; background-color: #f9f9f9;">
+                <div class="info-box"><strong>Fecha Inicio:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_inicio'])->format('d/m/Y') }}</div>
+                <div class="info-box"><strong>Fecha Fin Estimada:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_fin_estimado'])->format('d/m/Y') }}</div>
+                <div class="info-box"><strong>Reporte generado:</strong> {{ date('d/m/Y H:i') }}</div>
+            </td>
+        </tr>
+    </table>
 
     @foreach($despacho as $index => $desp)
-    <div class="despacho-section @if($index > 0) page-break @endif">
-        <div class="despacho-header">
-            Despacho #{{ $loop->iteration }}: {{ $desp['codigo'] }} - {!! $desp['spanEstado'] !!}
+        <div class="despacho-section">
+            <div class="despacho-header">
+                Despacho #{{ $loop->iteration }}: {{ $desp['codigo'] }} - {!! $desp['spanEstado'] !!}
+            </div>
+            
+            <div style="margin-bottom: 8px;">
+                <div><strong>Fecha:</strong> {{ $desp['createdAt'] }}</div>
+                <div><strong>Responsable:</strong> {{ $desp['nombre_completo'] }}</div>
+            </div>
+            
+            <table class="tabla-items">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 45%;">Material</th>
+                        <th style="width: 10%; text-align: center;">Cantidad</th>
+                        <th style="width: 15%; text-align: right;">Valor Unitario</th>
+                        <th style="width: 15%;">Tipo</th>
+                        <th style="width: 10%; text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($desp['items'] as $itemIndex => $item)
+                    <tr>
+                        <td>{{ $itemIndex + 1 }}</td>
+                        <td>{{ $item['nombre_material'] }}</td>
+                        <td style="text-align: center;">{{ $item['cantidad'] }}</td>
+                        <td style="text-align: right;">${{ number_format($item['valor_unidad'], 2, ',', '.') }}</td>
+                        <td>{!! $item['spanTipo'] !!}</td>
+                        <td style="text-align: right;">${{ number_format($item['cantidad'] * $item['valor_unidad'], 2, ',', '.') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            
+            @php
+                $subtotalDespacho = array_reduce($desp['items'], function($carry, $item) {
+                    return $carry + ($item['cantidad'] * $item['valor_unidad']);
+                }, 0);
+            @endphp
+            
+            <div style="text-align: right; margin-top: 3px;">
+                <div><strong>Subtotal Despacho:</strong> ${{ number_format($subtotalDespacho, 2, ',', '.') }}</div>
+            </div>
         </div>
-        
-        <div style="margin-bottom: 8px;">
-            <div><strong>Fecha:</strong> {{ $desp['createdAt'] }}</div>
-            <div><strong>Responsable:</strong> {{ $desp['nombre_completo'] }}</div>
-        </div>
-        
-        <table class="tabla-items">
-            <thead>
-                <tr>
-                    <th style="width: 5%;">#</th>
-                    <th style="width: 45%;">Material</th>
-                    <th style="width: 10%; text-align: center;">Cantidad</th>
-                    <th style="width: 15%; text-align: right;">Valor Unitario</th>
-                    <th style="width: 15%;">Tipo</th>
-                    <th style="width: 10%; text-align: right;">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($desp['items'] as $itemIndex => $item)
-                <tr>
-                    <td>{{ $itemIndex + 1 }}</td>
-                    <td>{{ $item['nombre_material'] }}</td>
-                    <td style="text-align: center;">{{ $item['cantidad'] }}</td>
-                    <td style="text-align: right;">${{ number_format($item['valor_unidad'], 2, ',', '.') }}</td>
-                    <td>{!! $item['spanTipo'] !!}</td>
-                    <td style="text-align: right;">${{ number_format($item['cantidad'] * $item['valor_unidad'], 2, ',', '.') }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        
-        @php
-            $subtotalDespacho = array_reduce($desp['items'], function($carry, $item) {
-                return $carry + ($item['cantidad'] * $item['valor_unidad']);
-            }, 0);
-        @endphp
-        
-        <div style="text-align: right; margin-top: 3px;">
-            <div><strong>Subtotal Despacho:</strong> ${{ number_format($subtotalDespacho, 2, ',', '.') }}</div>
-        </div>
-    </div>
     @endforeach
 
     <div class="resumen">
@@ -247,7 +244,7 @@
                 </tr>
                 <tr>
                     <td>Total Devoluciones</td>
-                    <td style="text-align: right;">${{ number_format($totalDevoluciones, 2, ',', '.') }}</td>
+                    <td style="text-align: right;">-${{ number_format($totalDevoluciones, 2, ',', '.') }}</td>
                 </tr>
                 <tr>
                     <td><strong>Subtotal</strong></td>

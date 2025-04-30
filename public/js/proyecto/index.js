@@ -414,19 +414,6 @@ document.getElementById('botonDescarga').addEventListener('click', function() {
     window.open(url, '_blank');
 });
 
-/*document.getElementById('botonDescarga').addEventListener('click', async function() {
-    // Solución más confiable para descargas
-    const id = this.getAttribute('data-id');
-    const a = document.createElement('a');
-    console.log();
-    a.href = `pdfDespachos?id=${id}`;
-    a.download = '';
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-});*/
-
 async function renderDespachos(despachos, id) {
 
     const container = document.getElementById('listaDespachos');
@@ -463,9 +450,17 @@ async function renderDespachos(despachos, id) {
                         <h2 class="text-lg font-semibold">Código: ${despacho.codigo}</h2>
                         <p class="text-gray-500 text-sm">${formatDate(despacho.createdAt)}</p>
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold">${despacho.nombre_completo}</p>
-                        <div class="estado-container">${despacho.spanEstado}</div>
+                    <div class="flex gap-2">
+                        <a href="pdfDespacho?codigo=${despacho.codigo}&id=${id}" class="mt-2 tooltip">
+                            <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4"></path>
+                            </svg>
+                            <span class="tooltiptext">Descarga</span>
+                        </a>
+                        <div>
+                            <p class="text-sm font-semibold">${despacho.nombre_completo}</p>
+                            <div class="estado-container">${despacho.spanEstado}</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -534,7 +529,6 @@ async function listaBalance(id) {
         Swal.fire("Error", "No se pudo consultar la data.", "error");
     }
 }
-
 
 async function displayBalanceData(balanceData) {
     // Carpintería

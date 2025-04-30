@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/deleteCotizacion', [ProyectoController::class, 'deleteCotizacion'])->name('deleteCotizacion');
         Route::get('/listaDespachos', [ProyectoController::class, 'listaDespachos'])->name('listaDespachos');
         Route::get('/pdfDespachos', [ProyectoController::class, 'pdfDespachos'])->name('pdfDespachos');
+        Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
         Route::get('/listaBalance', [ProyectoController::class, 'listaBalance'])->name('listaBalance');
     });
 

@@ -458,10 +458,8 @@ class ProyectoController extends Controller
 
     public function pdfDespachos()
     {
-
         $proyecto = Proyecto::find(Request('id'));
         $datos = (new Despachos)->despachos(Request('id'));
-        
         $datosFactura = [
             'empresa' => [
                 'razon' => env('RAZON', 'AESCALA'),
@@ -474,14 +472,33 @@ class ProyectoController extends Controller
             'proyecto' => $proyecto
         ];
 
-        /*return response()->json([
-            'status' => true,
-            'message' => 'Lista de Despachos.',
-            'data' => $datosFactura
-        ], 200);*/
-
-        //dd($datosFactura);
         $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
+        if( Request('view') ){
+            return $pdf->stream('factura-'.Request('id').'.pdf');
+        }
+        return $pdf->download('factura-'.Request('id').'.pdf');
+    }
+
+    public function pdfDespacho()
+    {
+        $proyecto = Proyecto::find(Request('id'));
+        $datos = (new Despachos)->despachos(Request('id'), Request('codigo'));
+        $datosFactura = [
+            'empresa' => [
+                'razon' => env('RAZON', 'AESCALA'),
+                'nit' => env('NIT', '901.451.774-2'),
+                'telefono' => env('TEL', '323-345-0903'),
+                'direccion' => env('DIREC', 'Dirección: carrera 1d #46-63'),
+                'logo' => public_path('img/logo.png')
+            ],
+            'despacho' => $datos,
+            'proyecto' => $proyecto
+        ];
+
+        $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
+        if( Request('view') ){
+            return $pdf->stream('factura-'.Request('id').'.pdf');
+        }
         return $pdf->download('factura-'.Request('id').'.pdf');
     }
 

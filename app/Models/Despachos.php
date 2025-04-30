@@ -69,13 +69,18 @@ class Despachos extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function despachos(int $id)
+    public function despachos(int $id, $codigo = null)
     {
+
         $rawDate = config('database.default') === 'sqlite' 
         ? "strftime('%Y-%m-%d', createdAt)" 
         : "DATE_FORMAT(createdAt, '%Y-%m-%d')";
 
-        $lista = Despachos::with('user')->where('id_proyecto', $id)
+        $lista =  Despachos::with('user')
+                        ->where('id_proyecto', $id)
+                        ->when($codigo, function ($query, $codigo) {
+                            return $query->where('codigo', $codigo);
+                        })
                         ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
                         ->distinct()
                         ->get()
@@ -93,6 +98,9 @@ class Despachos extends Model
                             $query->select('id', 'nombre_material', 'tipo');
                         }])
                         ->where('id_proyecto', $id)
+                        ->when($codigo, function ($query, $codigo) {
+                            return $query->where('codigo', $codigo);
+                        })
                         ->select('codigo', 'id_material', 'cantidad', 'valor_unidad')
                         ->get()
                         ->map(function ($item) {
