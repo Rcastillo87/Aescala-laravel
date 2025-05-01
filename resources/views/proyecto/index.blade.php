@@ -203,12 +203,15 @@
                 </div>
             </div>
             <div>
-                <button type="button" data-collapse-toggle="tareas_{{ $item->id }}" aria-expanded="false" 
-                    class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic  items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full">
+                <button type="button" 
+                        class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full"
+                        data-accordion-target="#tareas_{{ $item->id }}" 
+                        aria-expanded="false"
+                        aria-controls="tareas_{{ $item->id }}">
                     <div class="flex items-center justify-between text-left w-full">
                         <span class="text-lg">ver tareas</span>
-                        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 shrink-0 transition-transform">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        <svg data-accordion-icon class="w-5 h-5 shrink-0 transition-transform duration-200 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                         </svg>
                     </div>
                 </button>

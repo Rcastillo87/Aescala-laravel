@@ -61,13 +61,6 @@
                 <x-input-error :messages="$errors->get('pres_otros')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="observacion" :value="__('Comentario')" />
-                <x-text-input id="observacion" class="block mt-1 w-full" type="text" name="observacion" :value="old('observacion', $proyecto?$proyecto->observacion:'')" 
-                autofocus />
-                <x-input-error :messages="$errors->get('observacion')" class="mt-2" />
-            </div>
-
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="fec_inicio" :value="__('Fecha Ini Proyecto *')" />
                 <div class="relative max-w-sm">
                     <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
@@ -91,9 +84,37 @@
                 <x-input-error :messages="$errors->get('fec_inicio')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="dias_trabajo" :value="__('Dias Duración del Proyecto *')" />
-                <x-text-input id="dias_trabajo" class="block mt-1 w-full" type="number" name="dias_trabajo" 
-                :value="old('dias_trabajo', $proyecto?$proyecto->dias_trabajo:'0', 0)"/>
+                <label class="inline-flex items-center me-5 cursor-pointer py-7 px-2">
+                    <input type="hidden" name="conFechaFin" value="0">
+                    <input id="conFechaFin" name="conFechaFin" type="checkbox" value="1"
+                           class="sr-only peer"
+                           @checked(old('conFechaFin'))>
+                    <div class="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-purple-300 peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                    <span class="ms-3 text-sm font-medium text-gray-900">Con Fecha Fin</span>
+                </label>
+            </div>
+            <div id="fechaFinContainer" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0" 
+                    @class(['hidden' => !old('conFechaFin', $proyecto && $proyecto->fec_fin_estimado, $errors->get('fec_fin_real'))])>
+                <x-input-label for="fec_fin_estimado" :value="__('Fecha Fin Estimado *')" />
+                <div class="relative">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                        </svg>
+                    </div>
+                    <input datepicker datepicker-format="yyyy-mm-dd" type="text" 
+                            id="fec_fin_estimado" name="fec_fin_estimado"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                            value="{{ old('fec_fin_estimado', $proyecto?->fec_fin_estimado) }}"
+                            placeholder="Seleccione fecha">
+                </div>
+                <x-input-error :messages="$errors->get('fec_fin')" class="mt-2" />
+            </div>
+            <div id="diasTrabajoContainer" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0" 
+                    @class(['hidden' => old('conFechaFin', $proyecto && $proyecto->fec_fin_estimado)])>
+                <x-input-label for="dias_trabajo" :value="__('Días Duración del Proyecto *')" />
+                <x-text-input id="dias_trabajo" class="block w-full" type="number" 
+                                name="dias_trabajo" value="{{ old('dias_trabajo', $proyecto?->dias_trabajo ?? 1) }}"/>
                 <x-input-error :messages="$errors->get('dias_trabajo')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
@@ -131,7 +152,6 @@
                 />
                 <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
             </div>
-
             @php
                 $depts = json_decode($departamentos, true)
             @endphp
@@ -159,6 +179,12 @@
                     required
                 />
                 <x-input-error :messages="$errors->get('ciudad')" class="mt-2" />
+            </div>
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="observacion" :value="__('Comentario')" />
+                <x-text-input id="observacion" class="block mt-1 w-full" type="text" name="observacion" :value="old('observacion', $proyecto?$proyecto->observacion:'')" 
+                autofocus />
+                <x-input-error :messages="$errors->get('observacion')" class="mt-2" />
             </div>
         </div>
 

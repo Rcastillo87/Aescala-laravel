@@ -61,6 +61,7 @@ export default {
       'py-2',
       'm-1',
       'ml-2',
+      'me-2',
       'space-y-1',
       'space-x-2',
       
@@ -78,6 +79,7 @@ export default {
       // Clases de tipografía
       'text-md',
       'text-sm',
+      'text-xs',
       'text-[12px]',
       'font-bold',
       'font-medium',
