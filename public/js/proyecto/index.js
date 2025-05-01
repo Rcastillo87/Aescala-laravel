@@ -80,11 +80,53 @@ async function editTarea(id) {
         document.getElementById('id_user').value  = data.data.id_user;
         document.getElementById('id_tarea_tipo').value  = data.data.id_tarea_tipo;
         document.getElementById('id_tarea_estado').value  = data.data.id_tarea_estado;
+        document.getElementById('fec_fin').value = data.data.fec_fin;
     })
     .catch(error => {
         Swal.showValidationMessage(`Error: ${error.message}`);
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del DOM
+    const conFechaFin = document.getElementById('conFechaFin');
+    const fechaFinContainer = document.getElementById('fechaFinContainer');
+    const diasTrabajoContainer = document.getElementById('diasTrabajoContainer');
+    const fechaFinInput = document.getElementById('fec_fin');
+    const diasTrabajoInput = document.getElementById('dias_trabajo');
+
+    // Función para alternar visibilidad
+    function toggleFields() {
+        if (conFechaFin.checked) {
+            fechaFinContainer.classList.remove('hidden');
+            diasTrabajoContainer.classList.add('hidden');
+            fechaFinInput.required = true;
+            diasTrabajoInput.required = false;
+            if(diasTrabajoInput.value < '1'){
+                diasTrabajoInput.value = '1';
+            }
+        } else {
+            fechaFinContainer.classList.add('hidden');
+            diasTrabajoContainer.classList.remove('hidden');
+            fechaFinInput.required = false;
+            diasTrabajoInput.required = true;
+        }
+    }
+
+    // Event listener para el checkbox
+    conFechaFin.addEventListener('change', toggleFields);
+
+    // Inicializar el estado
+    toggleFields();
+
+    // Inicializar el datepicker de Flowbite
+    if (typeof window.Datepicker !== 'undefined') {
+        new Datepicker(fechaFinInput, {
+            format: 'yyyy-mm-dd',
+            autohide: true
+        });
+    }
+});
 
 async function listFinanzas(page = 1, id) {
     try {
@@ -455,7 +497,7 @@ async function renderDespachos(despachos, id) {
                             <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4"></path>
                             </svg>
-                            <span class="tooltiptext">Descarga</span>
+                            <span class="tooltiptext">Descarga Despacho</span>
                         </a>
                         <div>
                             <p class="text-sm font-semibold">${despacho.nombre_completo}</p>
@@ -576,3 +618,21 @@ function formatCurrency(value) {
         currency: 'COP'
     }).format(num);
 }
+
+document.querySelectorAll('[data-accordion-target]').forEach(button => {
+    const targetId = button.getAttribute('data-accordion-target');
+    const target = document.querySelector(targetId);
+    const icon = button.querySelector('[data-accordion-icon]');
+    
+    button.addEventListener('click', () => {
+        // Alternar visibilidad del contenido
+        target.classList.toggle('hidden');
+        
+        // Alternar atributo aria-expanded
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', !isExpanded);
+        
+        // Rotar el ícono
+        icon.classList.toggle('rotate-180');
+    });
+});

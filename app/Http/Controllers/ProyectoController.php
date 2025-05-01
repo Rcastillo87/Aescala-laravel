@@ -103,6 +103,8 @@ class ProyectoController extends Controller
 
     public function save(Request $req)
     {
+        //dd($req->all());
+
         $data = $req->validate([
             'id' => 'nullable|integer',
             'nombre_proyecto' => 'required|string|max:200',
@@ -118,7 +120,9 @@ class ProyectoController extends Controller
             'pres_otros' =>'nullable|integer|min:0',
             'observacion' => 'nullable|string',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
-            'dias_trabajo' => 'required|integer|min:1',
+            'fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
+            'dias_trabajo' => 'nullable|integer|min:1',
+            'conFechaFin' => 'required|integer|in:0,1',
             'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'id_estado' => Rule::in(array_keys(Proyecto::$estado)),
             'id_user' => [
@@ -128,7 +132,14 @@ class ProyectoController extends Controller
             ],
         ]);
 
-        $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
+        if($data['conFechaFin']==1){
+            $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
+            $data['dias_trabajo'] = ceil( (new Festivos)
+                ->contarDiasHabiles($data['fec_inicio'], $data['fec_fin_estimado'], $festivos) );
+        } else {
+            $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
+        }
+
         $msg = ucfirst($req->id ? 'Proyecto editado con éxito' : 'Proyecto creado con éxito');
     
         try {
@@ -163,10 +174,19 @@ class ProyectoController extends Controller
             'id_tarea_tipo' => ['required', 'integer', Rule::exists('tarea_tipos', 'id') ],
             'descripccion' => 'required|string|max:255',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
+            'fec_fin' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
+            'conFechaFin' => 'required|integer|in:0,1',
             'dias_trabajo' => 'required|integer|min:1'
         ]);
 
-        $data['fec_fin'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
+        if($data['conFechaFin']==1){
+            $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
+            $data['dias_trabajo'] = ceil( (new Festivos)
+                ->contarDiasHabiles($data['fec_inicio'], $data['fec_fin'], $festivos) );
+        } else {
+            $data['fec_fin'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
+        }
+
         $msg = ucfirst($request->id ? 'Tarea editada' : "Tarea asignada" );
 
         try {
