@@ -73,7 +73,7 @@ class MaterialController extends Controller
             'nombre_material' => 'required|string'
         ]);
         
-        if ( Auth::user()->id_rol == 2 ) {
+        if((Auth::user()->id_rol == 2) && ($data['id'])) {
             $data = array_diff_key($data, ['cantidad' => '']);
         }
 
