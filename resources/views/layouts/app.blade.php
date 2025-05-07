@@ -43,6 +43,7 @@
         @endif
         <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
         <script src="{{asset('js/flowbite312.min.js')}}"></script>
+        <script src="{{asset('js/chart.min.js')}}"></script>
         <script src="{{asset('js/app.js')}}"></script>
         @yield('scripts')
     </body>

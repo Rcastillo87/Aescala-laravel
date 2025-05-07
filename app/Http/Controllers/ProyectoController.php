@@ -573,4 +573,36 @@ class ProyectoController extends Controller
         }
     }
 
+    public function listComparativo()
+    {
+
+        $proyecto = Proyecto::with([
+            'despachos.material', 
+            'cotizacion.material'
+        ])->find(Request('id'));
+        
+        if (!$proyecto) {
+            return response()->json(['error' => 'Proyecto no encontrado'], 404);
+        }
+        
+        $idDespachos = $proyecto->despachos->pluck('id_material')->filter()->unique()->toArray();
+        $idCotizacion = $proyecto->cotizacion->pluck('id_inventario')->filter()->unique()->toArray();
+        $todosLosIds = array_unique(array_merge($idDespachos, $idCotizacion));
+
+        $materiales = InventarioMaterial::wherein('id', $todosLosIds)->get(['id_material', 'nombre_material']);
+
+        $data = []; 
+        foreach ($materiales as $key => $value) {
+            $despachos = Despachos::where('id_proyecto', Request('id'))->where('id_material', $value)->get();
+            $cotizaciones = Despachos::where('id_proyecto', Request('id'))->where('id_material', $value)->get();
+
+            $data['id_material'] = $value['id_material'];
+            $data['nombre_material'] = $value['id_material'];
+            $data['cot_cantidad'] = $value['id_material'];
+        }
+
+        
+        return $comparativo;
+    }
+
 }

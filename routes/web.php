@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pdfDespachos', [ProyectoController::class, 'pdfDespachos'])->name('pdfDespachos');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
         Route::get('/listaBalance', [ProyectoController::class, 'listaBalance'])->name('listaBalance');
+        Route::get('/listComparativo', [ProyectoController::class, 'listComparativo'])->name('listComparativo');
     });
 
     Route::prefix('material')->name('material.')->group(function () {
