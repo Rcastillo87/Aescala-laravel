@@ -48,7 +48,7 @@
                             <option value="1">Materiales x Cantidades</option>
                             <option value="2">Materiales x Valor</option>
                         </select>
-                        <canvas id="graficaComparativa" height="150" class="hidden"></canvas>
+                        <canvas id="graficaComparativa" class="hidden" width="1200" height="800" style="width: 600px; height: 400px;"></canvas>
                     </div>
                 </div>
 

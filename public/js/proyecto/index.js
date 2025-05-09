@@ -730,6 +730,8 @@ function renderGraficaComparativa(data, tipo) {
         ]
       },
       options: {
+        responsive: true,
+        devicePixelRatio: 2,
         plugins: {
           title: {
             display: true,
