@@ -199,6 +199,21 @@
                             </div>
                         </div>
 
+                        <!-- Botón comparativo -->
+                        <div class="relative inline-flex">
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-comparativo-{{$item->id}}" data-tooltip-trigger="hover"
+                                onclick="listComparativo({{$item->id}})" x-data="" 
+                                x-on:click="$dispatch('open-modal', 'compartivo-modal')"
+                                class="flex items-center justify-center w-10 h-10 text-white bg-pink-600 hover:bg-white hover:text-pink-500 border-2 border-pink-500 focus:ring-4 
+                                        focus:outline-none focus:ring-pink-300 font-medium rounded-full text-sm dark:bg-pink-400 dark:hover:bg-pink-500 dark:focus:ring-pink-500 cursor-pointer">
+                                Vs
+                            </a>
+                            <div id="tooltip-hover-comparativo-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Despachos Vs Cotizacion 
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -331,6 +346,7 @@
     @include('proyecto.modalCotizacion')
     @include('proyecto.modalDespachos')
     @include('proyecto.modalBalance')
+    @include('proyecto.modalComparativo')
 @endsection
 
 @section('scripts')
