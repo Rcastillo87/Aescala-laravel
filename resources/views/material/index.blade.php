@@ -12,7 +12,16 @@
             <x-table-header :headers="$headers" />
             <tbody>
                 @forelse($items as $item)
-                    <tr>
+                    @php
+                        $bg = '';
+                        if($item->cantidad == 0){
+                            $bg = 'bg-red-100';
+                        }
+                        if(($item->cantidad <= $item->cantidad_min) && ($item->cantidad > 0)){
+                            $bg = 'bg-orange-200';
+                        }
+                    @endphp
+                    <tr class="{{ $bg }}">
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->nombre_material }}
                         </td>

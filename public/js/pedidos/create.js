@@ -61,18 +61,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     </div>
                     <input type="number" 
                         value="1"
-                        max="${material.cantidad}"
                         min="1"
                         name="materiales[${materialIndex}][cantidad]" 
                         placeholder="Cantidad"
-                        max="${material.cantidad}"
                         class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
                         focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
                         onchange="calculateTotal(this, null, ${materialIndex}, ${material.cantidad})">
                 </div>
                 <input type="number" 
                     value="${material.valor_unidad}"
-                    min="1"
                     name="materiales[${materialIndex}][valor_unidad]" 
                     placeholder="Valor"
                     class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
@@ -105,9 +102,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         if(input1){
             const cantIngresada = input1.value;
-            if(cantIngresada > maxCant){
-                input1.value = maxCant
-            }
             if(cantIngresada < 1){
                 input1.value = 1
             }
@@ -124,6 +118,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
             const inputValor = document.querySelector(`[name="materiales[${index}][cantidad]"]`);
             const count = parseFloat(inputValor.value);
             quantity = parseInt(input2.value) || 0;
+            if(quantity<0){
+                input2.value = 0;
+                quantity = 0;
+            }
             total = count * quantity;
     
             container.querySelector('.valor').textContent = formatCurrency(quantity);
@@ -138,20 +136,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     window.removeMaterial = function(button, materialId) {
         const container = button.closest('div.bg-white');
         container.remove();
-
         // Remover de la lista de materiales añadidos
-        addedMaterials.delete(materialId);
-        
-        // Reindexar todos los materiales restantes
-        reindexMaterials();
-        
-        // Volver a agregar la opción al select
-        const material = materialesData.find(m => m.id == materialId);
-        if(material) {
-            tomSelect.addOption({
-                value: material.id,
-                text: material.nombre_material
-            });
-        }
+        addedMaterials.delete(String(materialId));
+
     };
 });

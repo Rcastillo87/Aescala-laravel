@@ -115,20 +115,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         container.remove();
 
         // Remover de la lista de materiales añadidos
-        addedMaterials.delete(materialId);
-        
-        // Reindexar todos los materiales restantes
-        reindexMaterials();
-        
-        // Volver a agregar la opción al select
-        const material = materialesData.find(m => m.id == materialId);
-        if(material) {
-            tomSelect.addOption({
-                value: material.id,
-                text: material.nombre_material
-            });
-        }
+        addedMaterials.delete(String(materialId));
     };
-
-    
 });

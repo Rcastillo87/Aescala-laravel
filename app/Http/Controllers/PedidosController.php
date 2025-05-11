@@ -86,6 +86,8 @@ class PedidosController extends Controller
     public function save(Request $request)
     {
 
+        //dd($request->all());
+
         $validated = $request->validate([
             'fecha' => 'required|date_format:Y-m-d',
             'codigo' => 'required|string',
@@ -107,23 +109,14 @@ class PedidosController extends Controller
                 function ($attribute, $value, $fail) {
                     $material = InventarioMaterial::find($value);
                     if (!$material || $material->activo != 1) {
-                        $fail('El material seleccionado no está disponible.');
+                        $fail("El material seleccionado no está disponible.");
                     }
                 }
             ],
             'materiales.*.cantidad' => [
                 'required',
                 'integer',
-                'min:1',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $materialId = $request->input("materiales.{$index}.id_material");
-                    $material = InventarioMaterial::find($materialId);
-    
-                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
-                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
-                    }
-                }
+                'min:1'
             ],
             'materiales.*.valor_unidad' => ['required', 'integer']
         ]);

@@ -76,11 +76,15 @@ class ProyectoController extends Controller
 
     public function create() 
     {
+        $anterior = url()->previous();
+        session(['proyecto_url' => $anterior]);
         return $this->form();
     }
 
     public function edit($id)
     {
+        $anterior = url()->previous();
+        session(['proyecto_url' => $anterior]);
         return $this->form($id);
     }
 
@@ -149,7 +153,7 @@ class ProyectoController extends Controller
             DB::beginTransaction();
             Proyecto::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
-            return redirect()->route('proyecto.index')->with('success', $msg);
+            return redirect(session('proyecto_url'))->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
