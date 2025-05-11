@@ -123,4 +123,14 @@ class Proyecto extends Model
     {
         return $this->hasMany(Finanza::class, 'id_proyecto', 'id');
     }
+
+    public function despachos()
+    {
+        return $this->hasMany(Despachos::class, 'id_proyecto', 'id');
+    }
+
+    public function cotizacion()
+    {
+        return $this->hasMany(Cotizacion::class, 'id_proyecto', 'id');
+    }
 }

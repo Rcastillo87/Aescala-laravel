@@ -39,8 +39,10 @@ class ProyectoController extends Controller
         ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
             return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
         })
-        ->when(Request('id_estado'), function ($query, $id_estado) { 
+        ->when(Request('id_estado'), function ($query, $id_estado) {
             return $query->where('id_estado', $id_estado);
+        }, function ($query) {
+            return $query->whereIn('id_estado', [1, 5]);
         })
         ->when(Request('id_userSerch'), function ($query, $id_user) { 
             return $query->where('id_user', $id_user);
@@ -62,21 +64,27 @@ class ProyectoController extends Controller
         $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
         $headerCotizacion = ['Fec Creacion', 'Nombre Material', 'Cantidad', 'Val Unid', 'SubTotal', 'Opciones'];
 
+        $headerComparativo = ['ID', 'Nombre Item', 'Cant. Desp.', 'Val Unidad Desp.', 'Cant. Cotizada', 'Val Unidad Cotizado'];
+
         $materiales = InventarioMaterial::where('activo', 1) 
         ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
         ->toArray();
 
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
-            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy'));
+            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo'));
     }
 
     public function create() 
     {
+        $anterior = url()->previous();
+        session(['proyecto_url' => $anterior]);
         return $this->form();
     }
 
     public function edit($id)
     {
+        $anterior = url()->previous();
+        session(['proyecto_url' => $anterior]);
         return $this->form($id);
     }
 
@@ -103,7 +111,6 @@ class ProyectoController extends Controller
 
     public function save(Request $req)
     {
-        //dd($req->all());
 
         $data = $req->validate([
             'id' => 'nullable|integer',
@@ -146,7 +153,7 @@ class ProyectoController extends Controller
             DB::beginTransaction();
             Proyecto::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
-            return redirect()->route('proyecto.index')->with('success', $msg);
+            return redirect(session('proyecto_url'))->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
@@ -571,6 +578,68 @@ class ProyectoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function listComparativo()
+    {
+
+        $proyecto = Proyecto::with([
+            'despachos.material', 
+            'cotizacion.material'
+        ])->find(Request('id'));
+        
+        if (!$proyecto) {
+            return response()->json(['error' => 'Proyecto no encontrado'], 404);
+        }
+        
+        $idDespachos = $proyecto->despachos->pluck('id_material')->filter()->unique()->toArray();
+        $idCotizacion = $proyecto->cotizacion->pluck('id_inventario')->filter()->unique()->toArray();
+        $todosLosIds = array_unique(array_merge($idDespachos, $idCotizacion));
+
+        $materiales = InventarioMaterial::wherein('id', $todosLosIds)->get(['id', 'nombre_material']);
+
+        $data = []; 
+        foreach ($materiales as $key => $value) {
+            $array = [];
+            $despachos = Despachos::where('id_proyecto', request('id'))
+            ->where('id_material', $value['id'])
+            ->get();
+
+            // Agrupar por tipo
+            $grouped = $despachos->groupBy('tipo');
+
+            // Obtener colección segura o vacía si no existe el tipo
+            $tipo1 = $grouped->get(1, collect());
+            $tipo2 = $grouped->get(2, collect());
+
+            // Calcular cantidades y subtotales
+            $tipo1_cantidad = $tipo1->sum('cantidad');
+            $tipo1_subtotal = $tipo1->sum(fn($item) => $item->cantidad * $item->valor_unidad);
+
+            $tipo2_cantidad = $tipo2->sum('cantidad');
+            $tipo2_subtotal = $tipo2->sum(fn($item) => $item->cantidad * $item->valor_unidad);
+
+            // Resultados
+            $total_cantidad = $tipo1_cantidad - $tipo2_cantidad;
+            $total_subtotal = $tipo1_subtotal - $tipo2_subtotal;
+            $valor_unitario_promedio = $total_cantidad > 0 ? $total_subtotal / $total_cantidad : 0;
+        
+            $cotizaciones = Cotizacion::where('id_proyecto', Request('id'))->where('id_inventario', $value['id'])->first();
+
+            $array['id_material'] = $value['id'];
+            $array['nombre_material'] = $value['nombre_material'];
+            $array['cot_cantidad'] = $cotizaciones?$cotizaciones['cantidad']:'0';
+            $array['cot_valor'] = $cotizaciones?$cotizaciones['valor_unidad']:'0';
+            $array['desp_cantidad'] = $total_cantidad;
+            $array['desp_valor'] = $valor_unitario_promedio;
+
+            $data[] = $array;
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Lista de comparativp.',
+            'data' => $data
+        ], 200);
     }
 
 }

@@ -323,7 +323,7 @@ function tableCotizacion(data) {
         });
         if(total>0){
             totalCotizacion.classList.remove('hidden');
-            totalCotizacion.textContent = `Total : $${total}`;
+            totalCotizacion.textContent = `Total : ${formatCurrency(total)  }`;
         } else {
             totalCotizacion.classList.add('hidden');
         }
@@ -634,5 +634,126 @@ document.querySelectorAll('[data-accordion-target]').forEach(button => {
         
         // Rotar el ícono
         icon.classList.toggle('rotate-180');
+    });
+});
+
+async function listComparativo(id) {
+    try {
+        const response = await fetch(`listComparativo/?id=${id}`, {
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+
+        if (data.data.length === 0) {
+            window.dataGrafica = '';
+            document.getElementById('listaComparativoEmpy').classList.remove('hidden'); 
+            document.getElementById('listaComparativo').classList.add('hidden'); 
+        } else {
+            window.dataGrafica = data.data;
+            tableComparativo(data.data);
+            renderGraficaComparativa(data.data, 1);
+            document.getElementById('listaComparativoEmpy').classList.add('hidden'); 
+            document.getElementById('listaComparativo').classList.remove('hidden'); 
+        }
+
+    } catch (error) {
+        Swal.fire("Error", "No se pudo consultar la data.", "error");
+    }
+}
+
+function tableComparativo(data) {
+    const serviceList = document.getElementById('tableComparativo');
+    const noDataMessage = document.getElementById('noDataMessageComparativo');
+
+    serviceList.innerHTML = '';
+    let total = 0;
+    if (data && data.length > 0) {
+        data.forEach(service => {
+            total += service.subtotal;
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.id_material}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.nombre_material.toLowerCase()}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.desp_cantidad}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.desp_valor)}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.cot_cantidad}</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.cot_valor)}</td>
+            `;
+            serviceList.appendChild(fila);
+        });
+
+        noDataMessage.classList.add('hidden');
+    } else {
+        noDataMessage.classList.remove('hidden');
+    }
+}
+
+//Renderizar gráfica
+function renderGraficaComparativa(data, tipo) {
+    const labels = data.map(item => item.nombre_material);
+    const cantidadDespachada = data.map(item => parseFloat(item.desp_cantidad) || 0);
+    const cantidadCotizada = data.map(item => parseFloat(item.cot_cantidad) || 0);
+    const valorDespachado = data.map(item => parseFloat(item.desp_valor) || 0);
+    const valorCotizado = data.map(item => parseFloat(item.cot_valor) || 0);
+  
+    const datosEntrega = tipo == 1 ? cantidadDespachada : valorDespachado;
+    const datosCotizados = tipo == 1 ? cantidadCotizada : valorCotizado;
+    const titulo = tipo == 1 ? 'Materiales x Cantidades' : 'Materiales x Valor';
+  
+    if (chart) chart.destroy();
+  
+    const ctx = document.getElementById('graficaComparativa').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Material Entregado',
+            data: datosEntrega,
+            borderColor: 'rgba(250, 128, 114, 2)',
+            backgroundColor: 'rgba(250, 128, 114, 0.4)',
+            stack: 'combined',
+            type: 'bar'
+          },
+          {
+            label: 'Material Cotizado',
+            data: datosCotizados,
+            borderColor: 'rgba(124, 252, 0, 0.8)',
+            backgroundColor: 'rgba(124, 252, 0, 2)',
+            stack: 'combined'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        devicePixelRatio: 2,
+        plugins: {
+          title: {
+            display: true,
+            text: titulo
+          }
+        },
+        scales: {
+          y: {
+            stacked: false
+          }
+        }
+      }
+    });
+  
+}
+
+let chart;
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('tipoGrafico').addEventListener('change', function () {
+      if (window.dataGrafica) {
+        renderGraficaComparativa(window.dataGrafica, this.value);
+      }
     });
 });
