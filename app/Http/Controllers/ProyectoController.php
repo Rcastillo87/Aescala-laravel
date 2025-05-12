@@ -70,8 +70,9 @@ class ProyectoController extends Controller
         ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
         ->toArray();
 
+        $proyecto = [];
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
-            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo'));
+            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo', 'proyecto'));
     }
 
     public function create() 
@@ -200,7 +201,8 @@ class ProyectoController extends Controller
             DB::beginTransaction();
             Tarea::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
-            return redirect()->route('proyecto.index')->with('success', $msg);
+            return redirect()->back()->with('success', $msg);
+            //return redirect()->route('proyecto.index')->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
@@ -216,7 +218,7 @@ class ProyectoController extends Controller
         if($tarea){
             return response()->json([
                 'status' => true,
-                'message' => 'Lista de préstamos.',
+                'message' => 'Lista de tareas.',
                 'data' => $tarea
             ], 200);
         } else {

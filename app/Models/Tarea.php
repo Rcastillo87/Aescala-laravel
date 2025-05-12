@@ -35,7 +35,7 @@ class Tarea extends Model
     public static $ClassEstado = [
         2 => 'span-yellow',
         1 => 'span-green',
-        4 => 'span-red'
+        3 => 'span-red'
     ];
 
     public function getSpanEstadoAttribute()

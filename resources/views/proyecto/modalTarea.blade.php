@@ -7,7 +7,24 @@
                 @csrf
                 <div class="flex flex-wrap -mx-3">
                     <input type="hidden" id="id" name="id" >
-                    <input type="hidden" id="id_proyecto" name="id_proyecto" >
+
+                    @if( empty($proyecto) )
+                        <input type="hidden" id="id_proyecto" name="id_proyecto" >
+                    @else 
+                        <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                            <x-input-label for="id_tarea_estado" :value="__('Proyecto *')" />
+                            <x-select-input 
+                                name="id_proyecto" 
+                                id="id_proyecto" 
+                                :options="$proyecto" 
+                                :data="['id', 'nombre_proyecto']"
+                                :selected="old('id_proyecto')" 
+                                class="block mt-1 w-full" 
+                            />
+                            <x-input-error :messages="$errors->get('id_tarea_estado')" class="mt-2" />
+                        </div>
+                    @endif
+
                     <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <x-input-label for="id_user" :value="__('Usuario Encargado *')" />
                         <x-select-input 

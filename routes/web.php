@@ -10,12 +10,11 @@ use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
-
+use App\Http\Controllers\TareasController;
 
 Route::get('/', function () {
     return view('auth.login');
 });
-
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -66,6 +65,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
         Route::get('/listaBalance', [ProyectoController::class, 'listaBalance'])->name('listaBalance');
         Route::get('/listComparativo', [ProyectoController::class, 'listComparativo'])->name('listComparativo');
+    });
+
+    Route::prefix('tareas')->name('tareas.')->group(function () {
+        Route::get('/index', [TareasController::class, 'index'])->name('index');
+        Route::post('/save', [TareasController::class, 'save'])->name('save');
+        Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
     });
 
     Route::prefix('material')->name('material.')->group(function () {
