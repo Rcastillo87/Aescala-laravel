@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -304,7 +303,8 @@ class ProyectoController extends Controller
             DB::beginTransaction();
             Avance::Create($data);
             DB::commit();
-            return redirect()->route('proyecto.index')->with('success', $msg);
+            return redirect()->back()->with('success', $msg);
+            //return redirect()->route('proyecto.index')->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());

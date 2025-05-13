@@ -1,7 +1,7 @@
 <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-60 h-full transition-transform -translate-x-full sm:translate-x-0 pb-4" aria-label="Sidebar">
 
     <div class="h-full px-3 pt-4 overflow-y-auto dark:bg-gray-700 mx-2 mt-2
-    bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg shadow-md shadow-gray-100 ">
+    bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg shadow-md shadow-gray-100 flex flex-col">
 
        <a href="{{ route('dashboard') }}" class="flex items-center">
             <img src="{{ asset('img/logo.png') }}" class="my-6 p-2 w-full">
@@ -86,6 +86,21 @@
             </a>
          </li>
        </ul>
+
+       <li class="mt-auto">
+         <a tabindex="0" data-tooltip-target="tooltip-hover-donwload-db" data-tooltip-trigger="hover" href="{{ route('descargar.db') }}" 
+            class="flex items-center p-2 font-normal text-white">
+            <svg class="w-10 h-10 mr-2 text-gray-300 group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v16c0 .552.448 1 1 1h14a1 1 0 0 0 1-1V4m-7 4v8m0 0l-3-3m3 3l3-3" />
+            </svg>
+            Servidor Caduca: {{ env('EXPIRE') }}
+         </a>
+         <div id="tooltip-hover-donwload-db" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(-12px, -48px);" data-popper-placement="top">
+            Descarga base de datos
+            <div class="tooltip-arrow" data-popper-arrow=" style=" position:="" absolute;="" left:="" 0px;="" transform:="" translate(26.25px,="" 0px);'="" style="position: absolute; left: 0px; transform: translate(27px, 0px);"></div>
+         </div>
+      </li>
     </div>
  </aside>
  

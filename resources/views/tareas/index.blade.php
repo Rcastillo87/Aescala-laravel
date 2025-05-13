@@ -85,20 +85,26 @@
                             </div>
                         </div>
                     
-                        <!-- Botón Cambio de Estado 
+                        <!-- Botón Cambio de Estado -->
                         <div class='relative inline-flex'>
-                            <a tabindex='0' data-tooltip-target='tooltip-hover-112' data-tooltip-trigger='hover' onclick='cambiarEstado(112, 1)' class='flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                            <a tabindex='0' 
+                            data-tooltip-target='tooltip-hover-".$item->id."' 
+                            data-tooltip-trigger='hover' 
+                            x-data=''
+                            x-on:click=\"\$dispatch('open-modal', 'avance-modal')\"
+                            onclick='openAvance(0, ".$item->id.")' 
+                            class='flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
                                       focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer'>
-                                <svg class='w-5 h-5' xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'>
-                                    <path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4'></path>
-                                </svg>                    
+                                <svg class=class='w-5 h-5' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'>
+                                    <path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z'/>
+                                </svg>
+
                             </a>
-                            <div id='tooltip-hover-112' role='tooltip' class='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700' style='position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(-17.5px, -47.5px);' data-popper-placement='top'>
-                                Cambio de Estado
+                            <div id='tooltip-hover-".$item->id."' role='tooltip' class='absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700' style='position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(-17.5px, -47.5px);' data-popper-placement='top'>
+                                Avances de la Tarea
                                 <div class='tooltip-arrow' data-popper-arrow=' style='position: absolute; left: 0px; transform: translate(32.5px, 0px);'></div>
                             </div>
-                        </div>-->
-                        
+                        </div>
                     </div>
                 </div>
             </div>";
