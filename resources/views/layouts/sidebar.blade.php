@@ -7,14 +7,16 @@
             <img src="{{ asset('img/logo.png') }}" class="my-6 p-2 w-full">
        </a>
        <ul class="space-y-2 font-medium">
-         <li>
-            <a href="{{ route('user.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-               <svg class="shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                  <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-               </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Usuarios</span>
-            </a>
-         </li>
+         @if (Auth::user()->id_rol == 1)
+            <li>
+               <a href="{{ route('user.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <svg class="shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                     <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                  </svg>
+                  <span class="flex-1 ms-3 whitespace-nowrap">Usuarios</span>
+               </a>
+            </li>
+         @endif
          <li>
              <a href="{{ route('herramienta.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -90,7 +92,7 @@
        <li class="mt-auto">
          <a tabindex="0" data-tooltip-target="tooltip-hover-donwload-db" data-tooltip-trigger="hover" href="{{ route('descargar.db') }}" 
             class="flex items-center p-2 font-normal text-white">
-            <svg class="w-10 h-10 mr-2 text-gray-300 group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2"
+            <svg class="w-8 h-8 mr-2 text-gray-300 group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2"
                   viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v16c0 .552.448 1 1 1h14a1 1 0 0 0 1-1V4m-7 4v8m0 0l-3-3m3 3l3-3" />
             </svg>

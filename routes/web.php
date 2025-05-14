@@ -112,6 +112,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [PedidosController::class, 'index'])->name('index');
         Route::get('/create', [PedidosController::class, 'create'])->name('create');
         Route::post('/save', [PedidosController::class, 'save'])->name('save');
+        Route::get('/listPedido', [PedidosController::class, 'listPedido'])->name('listPedido');
     });
 
     Route::prefix('cotizacion')->name('cotizacion.')->group(function () {
