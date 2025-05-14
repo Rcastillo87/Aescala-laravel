@@ -52,8 +52,10 @@ class PedidosController extends Controller
             ];
         });
         
-        $headers = ['ID Factura y/o Orden', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total'];
-        return view('pedidos.index', compact('title', 'items', 'headers'));
+        $headers = ['ID Factura y/o Orden', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
+        $headerFactura = ['ID', 'Nombre Item', 'Cantidad', 'Valor unidad','Fecha Pedido'];
+
+        return view('pedidos.index', compact('title', 'items', 'headers', 'headerFactura'));
     }
 
     public function create( ) 
@@ -85,8 +87,6 @@ class PedidosController extends Controller
 
     public function save(Request $request)
     {
-
-        //dd($request->all());
 
         $validated = $request->validate([
             'fecha' => 'required|date_format:Y-m-d',
@@ -171,6 +171,36 @@ class PedidosController extends Controller
             return redirect()->route('proveedor.index')
                         ->with('success', "Pedido con orden: {$codigo} fue registrado correctamente");
         });
+    }
+
+    public function listPedido( ) 
+    {
+        try {
+            $listPedido = Pedidos::with('material')->where('id_factura', intval( Request('id') ) )
+            ->orderBy('createdAt', 'desc')
+            ->paginate(10)
+            ->through(function ($data) {
+                return [
+                    'id' => $data->id_material,
+                    'cantidad' => $data->cantidad,
+                    'valor_unidad' => $data->vr_unidad,
+                    'fecha' => explode(' ', $data->fecha)[0],
+                    'nombre_material' => $data->material->nombre_material
+                ];
+            });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Lista de pedido.',
+                'data' => $listPedido
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }
