@@ -8,6 +8,8 @@ use App\Models\TareaTipo;
 use App\Models\Proyecto;
 use App\Models\User;
 use App\Models\Festivos;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TareasController extends Controller
 {
@@ -15,9 +17,6 @@ class TareasController extends Controller
     {
         $title = 'Lista de Teras';
         $items = Tarea::with(['proyecto', 'tareaTipo', 'user'])
-            ->whereHas('proyecto', function ($q) {
-                $q->whereIn('id_estado', [1, 5]);
-            })
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
                     $q->whereRaw('LOWER(nombre_proyecto) LIKE ?', ['%' . strtolower($nombre_proyecto) . '%']);
@@ -29,11 +28,11 @@ class TareasController extends Controller
             ->when(request('id_tipoSerch'), function ($query, $id_tipo) {
                 $query->where('id_tarea_tipo', $id_tipo);
             })
+            ->where('id_tarea_estado', 2)
             ->get();
 
-
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
-        $proyecto = Proyecto::wherein('id_estado', [1, 5])->get(['id', 'nombre_proyecto'])->toArray();
+        $proyecto = Proyecto::with('user')->wherein('id_estado', [1, 5])->whereNull('id_tarea')->get();
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
         $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
         $hoy = Carbon::today();
@@ -58,5 +57,126 @@ class TareasController extends Controller
             ], 404);
         }
     }
-    
+
+    public function moverTarea(Request $req){
+        $query = Tarea::where('id_proyecto', $req->proyecto_id);
+        $tipo = TareaTipo::find($req->tarea_tipo_id);
+        $pro = Proyecto::find($req->proyecto_id);
+        if(!$pro){
+            return response()->json([
+                'status' => false,
+                'message' => 'No se encontro Proyecto.'
+            ], 404);
+        }
+
+        if(!$tipo){
+            return response()->json([
+                'status' => false,
+                'message' => 'No se encontro Tipo de Tarea.'
+            ], 404);
+        }
+
+        $tarea =  new Tarea;
+        if($query->exists()){
+            if($query->where('id_tarea_tipo', $req->tarea_tipo_id)->exists()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Esta Tarea ya existe.'
+                ], 404);
+            }
+
+            $tareaOld = Tarea::where('id_proyecto', $req->proyecto_id)
+                ->where('id_tarea_estado', 2)
+                ->first();
+            $tarea['fec_inicio'] = $tareaOld->fec_fin;
+            $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($tareaOld->fec_fin, 10);
+        } else {
+            $tarea['fec_inicio'] = $pro->fec_inicio;
+            $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
+        }
+
+        $tarea['id_proyecto'] = $req->proyecto_id;
+        $tarea['id_user'] = $pro->id_user;
+        $tarea['id_tarea_estado'] = 2;
+        $tarea['descripccion'] = null;
+        $tarea['id_tarea_tipo'] = $req->tarea_tipo_id;
+        $tarea['dias_trabajo'] = 10;
+
+        DB::beginTransaction();
+        try {
+            $tarea->save();
+            $pro->id_tarea = $req->tarea_tipo_id;
+            $pro->save();
+            if(isset($tareaOld)){
+                $tareaOld->id_tarea_estado = 3;
+                $tareaOld->save();
+            }
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Tarea asignada correctamente.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error en la base de datos: ' . $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error inesperado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function finTarea(Request $req){
+        $tarea = Tarea::where('id_proyecto', $req->proyecto_id)
+            ->where('id_tarea_estado', 2)
+            ->first();
+
+        $pro = Proyecto::find($req->proyecto_id);
+
+        if(!$pro){
+            return response()->json([
+                'status' => false,
+                'message' => 'No se encontro Proyecto.'
+            ], 404);
+        }
+
+        if(!$tarea){
+            return response()->json([
+                'status' => false,
+                'message' => 'No se encontro ninguna tarea activa.'
+            ], 404);
+        }
+
+        DB::beginTransaction();
+        try {
+            $tarea->id_tarea_estado = 3;
+            $tarea->save();
+
+            $pro->id_estado = 3;
+            $pro->save();
+
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Tarea asignada correctamente.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error en la base de datos: ' . $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error inesperado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

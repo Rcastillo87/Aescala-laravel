@@ -62,7 +62,7 @@
                             </div>
                             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                                 <x-input-label for="valor" :value="__('Valor *')" />
-                                <x-text-input id="valor" class="block mt-1 w-full" type="number" name="valor" :value="old('valor')" 
+                                <x-text-input id="valor" class="block mt-1 w-full moneda-cop" type="number" name="valor" :value="old('valor')" 
                                 required autofocus />
                                 <x-input-error :messages="$errors->get('valor')" class="mt-2" />
                             </div>

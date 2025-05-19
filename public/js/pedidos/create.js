@@ -88,11 +88,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById('selectMateriales').appendChild(materialDiv);
     }
 
-    // Función para formatear moneda
-    function formatCurrency(value) {
-        return parseFloat(value).toLocaleString('es-ES');
-    }
-
     // Función para calcular total
     window.calculateTotal = function(input1, input2, index, maxCant) {
 

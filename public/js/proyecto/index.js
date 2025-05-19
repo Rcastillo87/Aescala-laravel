@@ -159,7 +159,7 @@ function tableFinanzas(data) {
             fila.innerHTML = `
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.spanTipo}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.concepto.toLowerCase() || 'N/A'}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${ formatCurrency(service.valor) }</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.valor) }</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
             `;
             serviceList.appendChild(fila);
@@ -606,17 +606,6 @@ async function displayBalanceData(balanceData) {
     document.querySelector('#global-abonos').textContent = `ABONOS TOTALES: ${formatCurrency(global.abonos)}`;
     document.querySelector('#global-gastos').textContent = `GASTOS TOTALES: ${formatCurrency(global.gastos)}`;
     document.querySelector('#global-rentabilidad').textContent = `RENTABILIDAD: ${formatCurrency(global.ganancia)}`;
-}
-
-// Función auxiliar para formatear moneda en JavaScript
-function formatCurrency(value) {
-    // Asegurarse que el valor es un número
-    const num = typeof value === 'number' ? value : parseInt(value) || 0;
-    
-    return new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP'
-    }).format(num);
 }
 
 document.querySelectorAll('[data-accordion-target]').forEach(button => {

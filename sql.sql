@@ -37,3 +37,7 @@ dias_trabajo
 
 en tareas
 dias_trabajo
+
+-------------------------------------------------------------------
+proyectos id_tarea en null
+tareas a null descripccion
