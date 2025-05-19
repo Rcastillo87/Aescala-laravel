@@ -7,23 +7,7 @@
                 @csrf
                 <div class="flex flex-wrap -mx-3">
                     <input type="hidden" id="id" name="id" >
-
-                    @if( empty($proyecto) )
-                        <input type="hidden" id="id_proyecto" name="id_proyecto" >
-                    @else 
-                        <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                            <x-input-label for="id_tarea_estado" :value="__('Proyecto *')" />
-                            <x-select-input 
-                                name="id_proyecto" 
-                                id="id_proyecto" 
-                                :options="$proyecto" 
-                                :data="['id', 'nombre_proyecto']"
-                                :selected="old('id_proyecto')" 
-                                class="block mt-1 w-full" 
-                            />
-                            <x-input-error :messages="$errors->get('id_tarea_estado')" class="mt-2" />
-                        </div>
-                    @endif
+                    <input type="hidden" id="id_proyecto" name="id_proyecto">
 
                     <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <x-input-label for="id_user" :value="__('Usuario Encargado *')" />
@@ -37,7 +21,9 @@
                         />
                         <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
                     </div>
-                    <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+
+                    <input type="hidden" id="id_tarea_estado" name="id_tarea_estado" value="{{ old('id_tarea_estado') }}">
+                    <!--<div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <x-input-label for="id_tarea_estado" :value="__('Estado Tarea *')" />
                         <x-select-input 
                             name="id_tarea_estado" 
@@ -47,8 +33,9 @@
                             class="block mt-1 w-full" 
                         />
                         <x-input-error :messages="$errors->get('id_tarea_estado')" class="mt-2" />
-                    </div>
-                    <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    </div>-->
+                    <input type="hidden" id="id_tarea_tipo" name="id_tarea_tipo" value="{{ old('id_tarea_tipo') }}">
+                    <!--<div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <x-input-label for="id_tarea_tipo" :value="__('Tipo *')" />
                         <x-select-input 
                             name="id_tarea_tipo" 
@@ -59,7 +46,7 @@
                             class="block mt-1 w-full" 
                         />
                         <x-input-error :messages="$errors->get('id_tarea_tipo')" class="mt-2" />
-                    </div>
+                    </div>-->
                     <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <x-input-label for="fec_inicio" :value="__('Fecha Inicio *')" />
                         <div class="relative max-w-sm">

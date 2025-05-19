@@ -176,3 +176,129 @@ function confirmDelete(id) {
         }
     });
 }
+
+function initSortable() {
+    document.querySelectorAll('.task-list, .task-end').forEach(list => {
+        new Sortable(list, {
+            group: 'shared-tasks',
+            animation: 150,
+            scroll: true,
+            scrollSensitivity: 30,
+            scrollSpeed: 10,
+            onEnd: async function (evt) {
+                const proyectoId = evt.item.getAttribute('data-id');
+                const tipo = evt.item.getAttribute('data-tipo');
+                const destino = evt.to.closest('[data-id][data-name]');
+                const newTareaTipoId = destino.getAttribute('data-id');
+                const estadoNombre = destino.getAttribute('data-name');
+
+                // Revertir si algo está mal
+                if (!proyectoId || !newTareaTipoId) return;
+
+                // Si ya está en el mismo tipo, no hacer nada
+                if (tipo == newTareaTipoId) return;
+
+                // Si es Finalizado
+                if (estadoNombre.toLowerCase() === 'finalizado') {
+                    const result = await Swal.fire({
+                        title: 'Finalizar proyecto',
+                        text: '¿Estás seguro que deseas marcar este proyecto como finalizado?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, finalizar',
+                        cancelButtonText: 'Cancelar'
+                    });
+
+                    if (!result.isConfirmed) {
+                        if (evt.from !== evt.to) {
+                            evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
+                        }
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('finTarea', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ proyecto_id: proyectoId })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && data.status) {
+                            await Swal.fire('Finalizado', data.message, 'success');
+                            location.reload();
+                        } else {
+                            throw new Error(data.message || 'No se pudo finalizar el proyecto.');
+                        }
+
+                    } catch (error) {
+                        console.error('Error al finalizar:', error);
+                        await Swal.fire('Error', error.message, 'error');
+                        location.reload();
+                    }
+
+                    return;
+                }
+
+                // Para otros cambios de tipo
+                const result = await Swal.fire({
+                    title: '¿Mover proyecto?',
+                    text: `¿Deseas mover este proyecto al estado "${estadoNombre}"?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, mover',
+                    cancelButtonText: 'Cancelar',
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch('moverTarea', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                proyecto_id: proyectoId,
+                                tarea_tipo_id: newTareaTipoId
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (response.ok && data.status) {
+                            await Swal.fire({
+                                title: '¡Éxito!',
+                                text: data.message || 'Tarea movida correctamente.',
+                                icon: 'success'
+                            });
+                            location.reload();
+                        } else {
+                            await Swal.fire({
+                                title: 'Error',
+                                text: data.message || 'No se pudo mover la tarea.',
+                                icon: 'error'
+                            });
+                            if (evt.from !== evt.to) {
+                                evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
+                            }
+                        }
+
+                    } catch (error) {
+                        console.error('Error al mover tarea:', error);
+                        Swal.fire('Error', 'Ocurrió un error al mover el proyecto.', 'error');
+                    }
+                } else {
+                    if (evt.from !== evt.to) {
+                        evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
+                    }
+                }
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initSortable);

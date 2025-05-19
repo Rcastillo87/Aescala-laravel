@@ -46,3 +46,49 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 });
+
+
+  function formatCurrency(value) {
+    const num = typeof value === 'number' ? value : parseInt(value) || 0;
+
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP'
+    }).format(num);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputs = document.querySelectorAll("input.moneda-cop");
+
+    inputs.forEach(input => {
+      let span = null;
+
+      const showFormatted = () => {
+        if (!span) {
+          span = document.createElement("span");
+          span.className = "formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none";
+          input.parentNode.appendChild(span);
+        }
+
+        const value = input.value;
+        span.textContent = value.trim() !== "" ? formatCurrency(value) : "";
+      };
+
+      const hideFormatted = () => {
+        if (span && input.value.trim() === "") {
+          span.remove();
+          span = null;
+        }
+      };
+
+      // Eventos para focus y entrada de datos
+      input.addEventListener("focus", showFormatted);
+      input.addEventListener("input", showFormatted);
+      input.addEventListener("blur", hideFormatted);
+
+      // Mostrar el span si ya hay valor al cargar (modo edición)
+      if (input.value.trim() !== "") {
+        showFormatted();
+      }
+    });
+  });

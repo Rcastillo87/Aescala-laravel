@@ -79,6 +79,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');
         Route::post('/save', [TareasController::class, 'save'])->name('save');
         Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
+        Route::post('/moverTarea', [TareasController::class, 'moverTarea'])->name('moverTarea');
+        Route::post('/finTarea', [TareasController::class, 'finTarea'])->name('finTarea');
         
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
         Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');

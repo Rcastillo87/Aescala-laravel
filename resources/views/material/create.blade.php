@@ -34,7 +34,7 @@
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="valor_unidad" :value="__('Valor Unidad *')" />
-                <x-text-input id="valor_unidad" class="block mt-1 w-full" step="any" type="number" name="valor_unidad" :value="old('valor_unidad', $material?$material->valor_unidad:'')" required/>
+                <x-text-input id="valor_unidad" class="block mt-1 w-full moneda-cop" step="any" type="number" name="valor_unidad" :value="old('valor_unidad', $material?$material->valor_unidad:'')" required/>
                 <x-input-error :messages="$errors->get('valor_unidad')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">

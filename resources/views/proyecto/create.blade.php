@@ -32,31 +32,31 @@
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="val_obra_blanca" :value="__('Costo Obra Blanca')" />
-                <x-text-input id="val_obra_blanca" class="block mt-1 w-full" type="number" name="val_obra_blanca" :value="old('val_obra_blanca', 
+                <x-text-input id="val_obra_blanca" class="block mt-1 w-full moneda-cop" type="number" name="val_obra_blanca" :value="old('val_obra_blanca', 
                 $proyecto?$proyecto->val_obra_blanca:'')"/>
                 <x-input-error :messages="$errors->get('val_obra_blanca')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="val_obra_blanca_materiales" :value="__('Costo Material Obra Blanca')" />
-                <x-text-input id="val_obra_blanca_materiales" class="block mt-1 w-full" type="number" name="val_obra_blanca_materiales" 
+                <x-text-input id="val_obra_blanca_materiales" class="block mt-1 w-full moneda-cop" type="number" name="val_obra_blanca_materiales" 
                 :value="old('val_obra_blanca_materiales', $proyecto?$proyecto->val_obra_blanca_materiales:'')"/>
                 <x-input-error :messages="$errors->get('val_obra_blanca_materiales')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="val_obra_carpinteria" :value="__('Costo Carpinteria')" />
-                <x-text-input id="val_obra_carpinteria" class="block mt-1 w-full" type="number" name="val_obra_carpinteria" :value="old('val_obra_carpinteria', 
+                <x-text-input id="val_obra_carpinteria" class="block mt-1 w-full moneda-cop" type="number" name="val_obra_carpinteria" :value="old('val_obra_carpinteria', 
                 $proyecto?$proyecto->val_obra_carpinteria:'')"/>
                 <x-input-error :messages="$errors->get('val_obra_carpinteria')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="val_carpinteria_materiales" :value="__('Costo Material Carpinteria')" />
-                <x-text-input id="val_carpinteria_materiales" class="block mt-1 w-full" type="number" name="val_carpinteria_materiales" 
+                <x-text-input id="val_carpinteria_materiales" class="block mt-1 w-full moneda-cop" type="number" name="val_carpinteria_materiales" 
                 :value="old('val_carpinteria_materiales', $proyecto?$proyecto->val_carpinteria_materiales:'')"/>
                 <x-input-error :messages="$errors->get('val_carpinteria_materiales')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="pres_otros" :value="__('Otros Costos')" />
-                <x-text-input id="pres_otros" class="block mt-1 w-full" type="number" name="pres_otros" :value="old('pres_otros', 
+                <x-text-input id="pres_otros" class="block mt-1 w-full moneda-cop" type="number" name="pres_otros" :value="old('pres_otros', 
                 $proyecto?$proyecto->pres_otros:'')"/>
                 <x-input-error :messages="$errors->get('pres_otros')" class="mt-2" />
             </div>
