@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 </div>
                 <input type="number" 
                        value="1"
+                       step="0.01"
                        max="${material.cantidad}"
                        min="1"
                        name="materiales[${materialIndex}][cantidad]" 
@@ -94,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             inputCantidad.value = 1;
         }
 
-        const cantidad = parseInt(inputCantidad.value) || 1;
+        const cantidad = inputCantidad.value;
 
         // Buscar el input hidden con el valor unitario
         const inputValor = container.parentElement.querySelector('input[name^="materiales"][name$="[valor_unidad]"]');
