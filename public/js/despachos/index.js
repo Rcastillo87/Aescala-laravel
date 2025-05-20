@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 </div>
                 <input type="number" 
                        value="1"
+                       step="0.01"
                        max="${material.cantidad}"
                        min="1"
                        name="materiales[${materialIndex}][cantidad]" 
@@ -71,8 +72,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             </div>
             <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
             <div class="flex bg-gradient-to-r text-left justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                <p class="font-medium">Costo: $${formatCurrency(material.valor_unidad)} * 
-                <span class="quantity">1</span> = <b class="text-red-500 total">$${formatCurrency(material.valor_unidad)}</b></p>
+                <p class="font-medium">Costo: ${formatCurrency(material.valor_unidad)} * 
+                <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
                 <p>Tipo: ${material.spanTipo}</p>
             </div>
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${material.id}">
@@ -83,25 +84,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     // Función para calcular total
-    window.calculateTotal = function(input, cantidad) {
+    window.calculateTotal = function(inputCantidad, maxCantidad) {
+        const container = inputCantidad.closest('div'); // contenedor del input cantidad
 
-        const cantIngresada = input.value;
-        if(cantIngresada > cantidad){
-            input.value = cantidad
+        // Asegura que el valor esté dentro del rango
+        if (inputCantidad.value > maxCantidad) {
+            inputCantidad.value = maxCantidad;
+        }
+        if (inputCantidad.value < 1) {
+            inputCantidad.value = 1;
         }
 
-        if(cantIngresada < 1){
-            input.value = 1
-        }
+        const cantidad = inputCantidad.value;
 
-        const container = input.closest('div.bg-white');
-        const priceText = container.querySelector('.font-medium').textContent.match(/\$([\d.,]+)/)[1].replace(/\./g, '').replace(',', '.');
-        const price = parseFloat(priceText);
-        const quantity = parseInt(input.value) || 0;
-        const total = price * quantity;
+        // Buscar el input hidden con el valor unitario
+        const inputValor = container.parentElement.querySelector('input[name^="materiales"][name$="[valor_unidad]"]');
+        const valor = parseFloat(inputValor.value) || 0;
 
-        container.querySelector('.quantity').textContent = quantity;
-        container.querySelector('.total').textContent = `$${formatCurrency(total)}`;
+        // Calcular total
+        const total = cantidad * valor;
+
+        // Actualizar en el DOM
+        container.parentElement.querySelector('.quantity').textContent = cantidad;
+        container.parentElement.querySelector('.total').textContent = formatCurrency(total);
     };
 
     // Función para remover material

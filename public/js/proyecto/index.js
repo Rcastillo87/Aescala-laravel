@@ -537,7 +537,7 @@ async function renderDespachos(despachos, id) {
             row.innerHTML = `
                 <td class="px-4 py-2">${item.nombre_material}</td>
                 <td class="px-4 py-2">${item.cantidad}</td>
-                <td class="px-4 py-2">$${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-4 py-2">${item.valor_unidad.toLocaleString()}</td>
                 <td class="px-4 py-2 tipo-container">${item.spanTipo}</td>
             `;
             tbody.appendChild(row);
