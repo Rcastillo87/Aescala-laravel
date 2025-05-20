@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class TareasController extends Controller
 {
-    public function index( ) 
+    public function index()
     {
         $title = 'Lista de Teras';
         $items = Tarea::with(['proyecto', 'tareaTipo', 'user'])
@@ -32,7 +32,16 @@ class TareasController extends Controller
             ->get();
 
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
-        $proyecto = Proyecto::with('user')->wherein('id_estado', [1, 5])->whereNull('id_tarea')->get();
+        $proyecto = Proyecto::with('user')
+            ->whereRaw('LOWER(nombre_proyecto) LIKE ?', ['%' . strtolower(request('nombre_proyecto')) . '%'])
+            ->where(function ($query) {
+                $query->where('id_estado', 1)
+                    ->whereDoesntHave('tareas');
+            })
+            ->orWhere(function ($query) {
+                $query->where('id_estado', 5);
+            })
+            ->get();
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
         $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
         $hoy = Carbon::today();
