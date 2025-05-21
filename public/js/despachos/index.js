@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 </div>
                 <input type="number" 
                        value="1"
-                       step="0.01"
                        max="${material.cantidad}"
                        min="1"
                        name="materiales[${materialIndex}][cantidad]" 

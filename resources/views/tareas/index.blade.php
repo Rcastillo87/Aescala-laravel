@@ -48,6 +48,10 @@
                 $porcenTarea < 100 => 'bg-orange-400',
                 default => 'bg-red-500',
             };
+            $hidden = '';
+            if(!Auth::user()->isNotColab){
+                $hidden = 'hidden';
+            }
             
             $card = 
             "<div data-id='$item->id_proyecto' data-tipo='$item->id_tarea_tipo' class='card-proyecto cursor-pointer w-[280px] border-gray-400 border rounded-md text-start items-center px-2 py-1'>
@@ -63,7 +67,7 @@
                         <span class='text-white text-md'>F Fin: ".$item->fechaFin."</span>
                     </div>
 
-                    <div class='space-y-2 mx-auto text-center gap-1'>
+                    <div class='space-y-2 mx-auto text-center gap-1 ".$hidden."'>
                         <!-- Botón Editar -->
                         <div class='relative inline-flex'>
                             <a      
@@ -115,14 +119,14 @@
     @endphp
 
     <div class="flex w-full lg:h-[calc(100vh-355px)] h-[calc(100vh-410px)] gap-2">
-        <div class="flex min-h-[calc(100vh-420px)] px-2 gap-2 overflow-x-scroll">
-            <div class="task-list tarea-column w-[290px] flex-shrink-0 bg-blue-50 border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
+        <div class="flex px-2 gap-2 overflow-x-scroll">
+            <div class="@if(Auth::user()->isNotColab) task-list tarea-column @endif w-[290px] flex-shrink-0 bg-blue-50 border rounded-md p-1 space-y-2">
                 <h3 class="text-xl font-bold mb-3 text-center">Sin Tareas</h3>
                 {!! $proyectos !!}
             </div>
             @foreach ($tareaTipo as $tarea)
                 <div data-id="{{ $tarea['id'] }}" data-name='{{ $tarea['nombre_tarea'] }}' 
-                    class="task-list w-[290px] flex-shrink-0 bg-white border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
+                    class="@if(Auth::user()->isNotColab) task-list @endif w-[290px] flex-shrink-0 bg-white border rounded-md p-1 space-y-2">
                     <h3 class="text-xl font-bold mb-3 text-center">{{ $tarea['nombre_tarea'] }}</h3>
                     @if(!empty( $arratareas[$tarea['id']] ))
                         {!! $arratareas[$tarea['id']] !!}
@@ -130,7 +134,7 @@
                 </div>
             @endforeach
             <div data-id="X" data-name="Finalizado" 
-            class="task-end w-[290px] flex-shrink-0 bg-red-50 border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
+            class="@if(Auth::user()->isNotColab) task-end @endif w-[290px] flex-shrink-0 bg-red-50 border rounded-md p-1 space-y-2">
                 <h3 class="text-xl font-bold mb-3 text-center">Fin</h3>
             </div>
         </div>

@@ -63,7 +63,7 @@ class DespachoController extends Controller
             ],
             'materiales.*.cantidad' => [
                 'required',
-                'numeric',
+                'integer',
                 'min:1',
                 function ($attribute, $value, $fail) use ($request) {
                     $index = explode('.', $attribute)[1];

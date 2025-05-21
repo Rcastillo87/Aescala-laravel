@@ -103,6 +103,11 @@ class User extends Authenticatable
         return $this->tareas->whereIn('id_tarea_estado', [2]);
     }
 
+    public function getIsNotColabAttribute()
+    {
+        return ($this->id_rol != 3)? true: false;
+    }
+
     public static $roles = [
         1 => 'Administrador',
         2 => 'Usuario',

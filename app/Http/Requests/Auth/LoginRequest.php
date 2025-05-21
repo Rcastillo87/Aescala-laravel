@@ -55,7 +55,6 @@ class LoginRequest extends FormRequest
             'email' => $credentials['email'],
             'password' => $credentials['password'],
             'activo' => 1,
-            'id_rol' => [1,2]
         ], $this->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),

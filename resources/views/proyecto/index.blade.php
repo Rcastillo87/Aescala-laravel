@@ -20,12 +20,17 @@
     </div>
 
     <!-- Botón responsive -->
-    <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
-        Crear Proyectos
-    </x-secondary-button>
+    @if (Auth::user()->isNotColab)
+        <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
+            Crear Proyectos
+        </x-secondary-button>
+    @endif
 </div>
     @forelse ($items as $item)
         @php
+            if(($item->fec_fin_real) && ($item->id_estado == 3)){
+               $hoy = $item->fec_fin_real;
+            }
             $diasProyec =  $item->dias_trabajo??0;
             $diasTrascuridos =  $item->diasHabilesTrascurridos($hoy, $festivos)??0;
 
@@ -93,10 +98,16 @@
                         <p class="text-lg text-gray-500 font-bold">Estado</p>
                         <span class="text-md text-black">{!! $item->span_estado !!}</span>
                     </div>
+                    @if($item->fec_fin_real)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Fecha de Entrega</p>
+                            <span class="text-md text-black">{{ explode(' ', $item->fec_fin_real)[0] }}</span>
+                        </div>
+                    @endif
                 </div>
                 <div class="flex flex-col text-center w-[120px] border-l-2 px-2 mx-2 mt-1">
                     <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
-                    <div class="flex flex-wrap justify-start gap-1 p-1">
+                    <div class="flex flex-wrap justify-start gap-1 p-1 @if(!Auth::user()->isNotColab) hidden @endif">
                         <!-- Botón Editar -->
                         <div class="relative inline-flex">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
@@ -217,7 +228,7 @@
                     </div>
                 </div>
             </div>
-            <div>
+            <div class="@if(!Auth::user()->isNotColab) hidden @endif">
                 <button type="button" 
                         class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full"
                         data-accordion-target="#tareas_{{ $item->id }}" 
@@ -243,6 +254,9 @@
                         <div class="mt-2 flex flex-col gap-2 border-b-[3px] border-gray-300">
                             <div class="transition bg-gradient-to-t hover:from-gray-100 py-3 text-base">
                                 @php
+                                    if($tarea->id_estado == 3){
+                                        $hoy = $item->updatedAt;
+                                    }
                                     $diasTrascurridosTarea = $tarea->diasHabilesTrascurridos($hoy, $festivos)??0;
                                     $diasTarea = $tarea->dias_trabajo??0;
 
