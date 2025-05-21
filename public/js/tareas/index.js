@@ -201,13 +201,33 @@ function initSortable() {
                 // Si es Finalizado
                 if (estadoNombre.toLowerCase() === 'finalizado') {
                     const result = await Swal.fire({
-                        title: 'Finalizar proyecto',
-                        text: '¿Estás seguro que deseas marcar este proyecto como finalizado?',
+                        title: '¿Desea Finalizar el Proyecto?',
+                        html: `
+                            <div class="text-left">
+                                <label for="fecha_fin" class="block mb-2 text-sm font-semibold text-gray-800 tracking-wide">
+                                    📅 Fecha de finalización:
+                                </label>
+                                <input
+                                    type="date"
+                                    id="fecha_fin"
+                                    class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700"
+                                />
+                            </div>
+                        `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Sí, finalizar',
-                        cancelButtonText: 'Cancelar'
+                        cancelButtonText: 'Cancelar',
+                        preConfirm: () => {
+                            const fecha = document.getElementById('fecha_fin').value;
+                            if (!fecha) {
+                                Swal.showValidationMessage('Debes seleccionar una fecha');
+                                return false;
+                            }
+                            return { fecha };
+                        }
                     });
+
 
                     if (!result.isConfirmed) {
                         if (evt.from !== evt.to) {
@@ -216,6 +236,9 @@ function initSortable() {
                         return;
                     }
 
+                    const fechaSeleccionada = result.value.fecha;
+                    console.log('Fecha seleccionada:', fechaSeleccionada);
+
                     try {
                         const response = await fetch('finTarea', {
                             method: 'POST',
@@ -223,7 +246,7 @@ function initSortable() {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({ proyecto_id: proyectoId })
+                            body: JSON.stringify({ proyecto_id: proyectoId, fecha_fin: fechaSeleccionada})
                         });
 
                         const data = await response.json();
@@ -240,7 +263,6 @@ function initSortable() {
                         await Swal.fire('Error', error.message, 'error');
                         location.reload();
                     }
-
                     return;
                 }
 

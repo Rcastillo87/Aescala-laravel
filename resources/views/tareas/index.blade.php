@@ -114,7 +114,7 @@
         }
     @endphp
 
-    <div class="flex w-full gap-2">
+    <div class="flex w-full lg:h-[calc(100vh-355px)] h-[calc(100vh-410px)] gap-2">
         <div class="flex min-h-[calc(100vh-420px)] px-2 gap-2 overflow-x-scroll">
             <div class="task-list tarea-column w-[290px] flex-shrink-0 bg-blue-50 border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
                 <h3 class="text-xl font-bold mb-3 text-center">Sin Tareas</h3>

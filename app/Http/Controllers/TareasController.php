@@ -68,6 +68,7 @@ class TareasController extends Controller
     }
 
     public function moverTarea(Request $req){
+
         $query = Tarea::where('id_proyecto', $req->proyecto_id);
         $tipo = TareaTipo::find($req->tarea_tipo_id);
         $pro = Proyecto::find($req->proyecto_id);
@@ -87,13 +88,6 @@ class TareasController extends Controller
 
         $tarea =  new Tarea;
         if($query->exists()){
-            if($query->where('id_tarea_tipo', $req->tarea_tipo_id)->exists()){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Esta Tarea ya existe.'
-                ], 404);
-            }
-
             $tareaOld = Tarea::where('id_proyecto', $req->proyecto_id)
                 ->where('id_tarea_estado', 2)
                 ->first();
@@ -114,8 +108,6 @@ class TareasController extends Controller
         DB::beginTransaction();
         try {
             $tarea->save();
-            $pro->id_tarea = $req->tarea_tipo_id;
-            $pro->save();
             if(isset($tareaOld)){
                 $tareaOld->id_tarea_estado = 3;
                 $tareaOld->save();
@@ -167,8 +159,8 @@ class TareasController extends Controller
             $tarea->save();
 
             $pro->id_estado = 3;
+            $pro->fec_fin_real = $req->fecha_fin;
             $pro->save();
-
             DB::commit();
             return response()->json([
                 'status' => true,
