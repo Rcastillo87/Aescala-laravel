@@ -37,3 +37,8 @@ dias_trabajo
 
 en tareas
 dias_trabajo
+
+-------------------------------------------------------------------
+tareas a null descripccion
+fec_fin_real tareas date null
+save integer null

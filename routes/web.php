@@ -10,17 +10,24 @@ use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
-
+use App\Http\Controllers\TareasController;
 
 Route::get('/', function () {
     return view('auth.login');
 });
 
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/descargar-db', function () {
+        $file = base_path('database/database.sqlite');
+        if (!file_exists($file)) {
+            abort(404, 'Archivo no encontrado.');
+        }
+        return response()->download($file, 'database.sqlite');
+    })->name('descargar.db');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');
@@ -68,6 +75,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listComparativo', [ProyectoController::class, 'listComparativo'])->name('listComparativo');
     });
 
+    Route::prefix('tareas')->name('tareas.')->group(function () {
+        Route::get('/index', [TareasController::class, 'index'])->name('index');
+        Route::post('/save', [TareasController::class, 'save'])->name('save');
+        Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
+        Route::post('/moverTarea', [TareasController::class, 'moverTarea'])->name('moverTarea');
+        Route::post('/finTarea', [TareasController::class, 'finTarea'])->name('finTarea');
+        
+        Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
+        Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
+        Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
+    });
+
     Route::prefix('material')->name('material.')->group(function () {
         Route::get('/index', [MaterialController::class, 'index'])->name('index');
         Route::get('/editStatus/{id}', [MaterialController::class, 'editStatus'])->name('editStatus');
@@ -95,6 +114,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [PedidosController::class, 'index'])->name('index');
         Route::get('/create', [PedidosController::class, 'create'])->name('create');
         Route::post('/save', [PedidosController::class, 'save'])->name('save');
+        Route::get('/listPedido', [PedidosController::class, 'listPedido'])->name('listPedido');
     });
 
     Route::prefix('cotizacion')->name('cotizacion.')->group(function () {

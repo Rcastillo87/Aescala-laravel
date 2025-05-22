@@ -46,3 +46,57 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 });
+
+function formatCurrency(value) {
+  const num = typeof value === 'number' ? value : parseFloat(value) || 0;
+
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP'
+  }).format(num);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const inputs = document.querySelectorAll("input.moneda-cop");
+
+  inputs.forEach(input => {
+    let span = null;
+
+    const showFormatted = () => {
+      if (!span) {
+        span = document.createElement("span");
+        span.className = "formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none";
+        input.parentNode.appendChild(span);
+      }
+
+      const value = input.value;
+      span.textContent = value.trim() !== "" ? formatCurrency(value) : "";
+    };
+
+    const hideFormatted = () => {
+      if (span && input.value.trim() === "") {
+        span.remove();
+        span = null;
+      }
+    };
+
+    input.addEventListener("focus", showFormatted);
+    input.addEventListener("input", showFormatted);
+    input.addEventListener("blur", hideFormatted);
+
+    if (input.value.trim() !== "") {
+      showFormatted();
+    }
+  });
+});
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}

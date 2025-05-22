@@ -79,18 +79,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
             <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
             <div class="md:flex bg-gradient-to-r text-left md:justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
                 <p class="font-medium">Costo: $<span class="valor">${formatCurrency(material.valor_unidad)}</span> * 
-                <span class="quantity">1</span> = <b class="text-red-500 total">$${formatCurrency(material.valor_unidad)}</b></p>
+                <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
                 <p>Tipo: ${material.spanTipo}</p>
             </div>
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${material.id}">
         `;
 
         document.getElementById('selectMateriales').appendChild(materialDiv);
-    }
-
-    // Función para formatear moneda
-    function formatCurrency(value) {
-        return parseFloat(value).toLocaleString('es-ES');
     }
 
     // Función para calcular total
@@ -125,10 +120,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
             total = count * quantity;
     
             container.querySelector('.valor').textContent = formatCurrency(quantity);
-            container.querySelector('.total').textContent = `$${formatCurrency(total)}`;
+            container.querySelector('.total').textContent = `${formatCurrency(total)}`;
 
         }
-        container.querySelector('.total').textContent = `$${formatCurrency(total)}`;
+        container.querySelector('.total').textContent = `${formatCurrency(total)}`;
 
     };
 

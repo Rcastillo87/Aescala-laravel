@@ -19,6 +19,7 @@ class Pedidos extends Model
         'id_proveedor',
         'id_material',
         'id_factura',
+        'codigo',
         'vr_unidad',
         'cantidad',
         'fecha'

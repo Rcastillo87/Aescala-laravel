@@ -92,12 +92,10 @@ class UserController extends Controller
 
         // valido los password para los distincos casos
         if (!$req->id) {
-            if ($req->id_rol <> 3) {
-                $req->validate([
-                    'password' => 'required|string|min:6|max:20'
-                ]);
-                $user['password'] = Hash::make($req->password);
-            }
+            $req->validate([
+                'password' => 'required|string|min:6|max:20'
+            ]);
+            $user['password'] = Hash::make($req->password);
             $msg = 'Usuario creado con éxito';
         } else {
             $req->validate([

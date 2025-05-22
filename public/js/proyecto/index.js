@@ -1,30 +1,65 @@
 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 function cambiarEstado(itemId, estadoActual) {
+    let selectedEstado = estadoActual;
+
     Swal.fire({
         title: '⚠️ Cambiar Estado',
         text: "Selecciona un nuevo estado para el proyecto.",
-        icon: 'warning', // 🔥 Icono de advertencia
+        icon: 'warning',
         input: 'select',
         inputOptions: window.estadosProyecto,
         inputValue: estadoActual,
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         cancelButtonText: 'Cancelar',
-        customClass: {
-            popup: 'custom-swal', // Clase para personalizar la alerta
-            confirmButton: 'custom-confirm-button',
-            cancelButton: 'custom-cancel-button',
-            input: 'border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1' // Clase para personalizar el select
+        didOpen: () => {
+            const swalContainer = Swal.getPopup();
+
+            // Crear etiqueta (label) e input de fecha
+            const label = document.createElement('label');
+            label.textContent = 'Ingrese fecha de entrega';
+            label.setAttribute('for', 'fechaDua');
+            label.className = 'swal2-label mt-2 text-center';
+            label.style.display = 'none';
+
+            const fechaInput = document.createElement('input');
+            fechaInput.type = 'date';
+            fechaInput.id = 'fechaDua';
+            fechaInput.className = 'swal2-input mt-1';
+            fechaInput.style.display = 'none';
+
+            // Insertar en el popup
+            swalContainer.appendChild(label);
+            swalContainer.appendChild(fechaInput);
+
+            // Mostrar si se selecciona estado 3
+            const select = swalContainer.querySelector('select');
+            select.addEventListener('change', (e) => {
+                selectedEstado = parseInt(e.target.value);
+                const mostrar = selectedEstado === 3;
+                label.style.display = mostrar ? 'block' : 'none';
+                fechaInput.style.display = mostrar ? 'block' : 'none';
+            });
         },
-        preConfirm: (nuevoEstado) => {
+        preConfirm: () => {
+            const fechaDua = document.getElementById('fechaDua')?.value;
+
+            if (parseInt(selectedEstado) === 3 && !fechaDua) {
+                Swal.showValidationMessage('Debes ingresar una fecha de entrega.');
+                return false;
+            }
+
             return fetch(`editStatus/${itemId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ estado: nuevoEstado })
+                body: JSON.stringify({
+                    estado: selectedEstado,
+                    fecha_dua: selectedEstado === 3 ? fechaDua : null
+                })
             })
             .then(response => {
                 if (!response.ok) throw new Error('Error en la solicitud');
@@ -41,10 +76,11 @@ function cambiarEstado(itemId, estadoActual) {
                 text: 'El estado se cambió correctamente.',
                 icon: 'success',
                 confirmButtonText: 'Aceptar'
-            }).then(() => location.reload()); 
+            }).then(() => location.reload());
         }
     });
 }
+
 
 async function formIdProyecto(id) {
     document.getElementById('id_proyecto').value = id;
@@ -53,6 +89,8 @@ async function formIdProyecto(id) {
 }
 
 async function editTarea(id) {
+    document.getElementById('idFecFinReal').classList.add('hidden');
+    document.getElementById('fec_fin_real').value = '';
     return fetch(`editTarea/${id}`, {
         method: 'get',
         headers: {
@@ -81,6 +119,10 @@ async function editTarea(id) {
         document.getElementById('id_tarea_tipo').value  = data.data.id_tarea_tipo;
         document.getElementById('id_tarea_estado').value  = data.data.id_tarea_estado;
         document.getElementById('fec_fin').value = data.data.fec_fin;
+        if( (data.data.id_tarea_estado == 3) && (data.data.fec_fin_real)){
+            document.getElementById('idFecFinReal').classList.remove('hidden');
+            document.getElementById('fec_fin_real').value = data.data.fec_fin_real.split(' ')[0];
+        }
     })
     .catch(error => {
         Swal.showValidationMessage(`Error: ${error.message}`);
@@ -159,7 +201,7 @@ function tableFinanzas(data) {
             fila.innerHTML = `
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.spanTipo}</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.concepto.toLowerCase() || 'N/A'}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${ formatCurrency(service.valor) }</td>
+                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.valor) }</td>
                 <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
             `;
             serviceList.appendChild(fila);
@@ -537,22 +579,11 @@ async function renderDespachos(despachos, id) {
             row.innerHTML = `
                 <td class="px-4 py-2">${item.nombre_material}</td>
                 <td class="px-4 py-2">${item.cantidad}</td>
-                <td class="px-4 py-2">$${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-4 py-2">${item.valor_unidad.toLocaleString()}</td>
                 <td class="px-4 py-2 tipo-container">${item.spanTipo}</td>
             `;
             tbody.appendChild(row);
         });
-    });
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
     });
 }
 
@@ -606,17 +637,6 @@ async function displayBalanceData(balanceData) {
     document.querySelector('#global-abonos').textContent = `ABONOS TOTALES: ${formatCurrency(global.abonos)}`;
     document.querySelector('#global-gastos').textContent = `GASTOS TOTALES: ${formatCurrency(global.gastos)}`;
     document.querySelector('#global-rentabilidad').textContent = `RENTABILIDAD: ${formatCurrency(global.ganancia)}`;
-}
-
-// Función auxiliar para formatear moneda en JavaScript
-function formatCurrency(value) {
-    // Asegurarse que el valor es un número
-    const num = typeof value === 'number' ? value : parseInt(value) || 0;
-    
-    return new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP'
-    }).format(num);
 }
 
 document.querySelectorAll('[data-accordion-target]').forEach(button => {
