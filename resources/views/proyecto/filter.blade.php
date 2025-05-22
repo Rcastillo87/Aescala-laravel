@@ -35,16 +35,18 @@
                             class="block mt-1 w-full" 
                         />
                     </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="id_userSerch" :value="__('Encargado')" />
-                        <x-select-input 
-                            name="id_userSerch" 
-                            :data="['id', 'nombre_completo']"
-                            :options="$userColab" 
-                            :selected="Request('id_userSerch')" 
-                            class="block mt-1 w-full" 
-                        />
-                    </div>
+                        @if (Auth::user()->isNotcolab)
+                            <div class="p-2 shrink-0 w-[40]">
+                                <x-input-label for="id_userSerch" :value="__('Encargado')" />
+                                <x-select-input 
+                                    name="id_userSerch" 
+                                    :data="['id', 'nombre_completo']"
+                                    :options="$userColab" 
+                                    :selected="Request('id_userSerch')" 
+                                    class="block mt-1 w-full" 
+                                />
+                            </div>
+                        @endif
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_cliente" :value="__('Nombre Cliente')" />
                         <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="Request('nombre_cliente')" 

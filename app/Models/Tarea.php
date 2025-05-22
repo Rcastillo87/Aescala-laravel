@@ -22,7 +22,9 @@ class Tarea extends Model
         'id_tarea_tipo',
         'fec_inicio',
         'fec_fin',
-        'dias_trabajo'
+        'dias_trabajo',
+        'fec_fin_real',
+        'save'
     ];
 
     protected $appends = ['fecIni', 'fechaFin'];

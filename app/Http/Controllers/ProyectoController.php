@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -28,6 +29,18 @@ class ProyectoController extends Controller
         $festivos->festivos($year);
         $festivos->festivos($year+1);
 
+        if(!Request('id_estado')){
+            $est = [1,5]; 
+        } else {
+            $est[] = Request('id_estado');
+        }
+
+        if(Auth::user()->isnotColab){
+            $cola = Request('id_userSerch');
+        } else {
+            $cola = Auth::user()->id;
+        }
+
         $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
         $hoy = Carbon::today();
         $title = 'Lista de Proyectos';
@@ -38,12 +51,10 @@ class ProyectoController extends Controller
         ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
             return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
         })
-        ->when(Request('id_estado'), function ($query, $id_estado) {
-            return $query->where('id_estado', $id_estado);
-        }, function ($query) {
-            return $query->whereIn('id_estado', [1, 5]);
+        ->when($est, function ($query, $id_estado) {
+            return $query->whereIN('id_estado', $id_estado);
         })
-        ->when(Request('id_userSerch'), function ($query, $id_user) { 
+        ->when($cola, function ($query, $id_user) { 
             return $query->where('id_user', $id_user);
         })
         ->orderBy('id', 'desc')
@@ -114,10 +125,10 @@ class ProyectoController extends Controller
 
         $data = $req->validate([
             'id' => 'nullable|integer',
-            'nombre_proyecto' => 'required|string|max:200',
+            'nombre_proyecto' => ['required', 'string', 'max:200', Rule::unique('proyectos')->ignore($req->id, 'id')],
             'departamento' => 'required|integer',
             'ciudad' => 'required|integer',
-            'direccion' => 'required|string|min:0',
+            'direccion' => ['required', 'string', Rule::unique('proyectos')->ignore($req->id, 'id')],
             'nombre_cliente' => 'required|string|max:100',
             'telefono_cliente' => 'required|string|max:15',
             'val_obra_blanca' => 'nullable|integer|min:0',
@@ -167,8 +178,33 @@ class ProyectoController extends Controller
     {
         $proyecto = Proyecto::findOrFail($id);
         $proyecto->id_estado = $request->estado;
+
+        if ((int)$request->estado === 3) {
+            if (!$request->filled('fecha_dua')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La fecha de entrega (DUA) es obligatoria para este estado.'
+                ], 422);
+            }
+
+            $proyecto->fec_fin_real = $request->fecha_dua;
+            Tarea::where('id_proyecto', $id)
+                ->whereIn('id_tarea_estado', [1, 2])
+                ->update([
+                    'fec_fin_real' => $request->fecha_dua,
+                    'id_tarea_estado' => 3
+                ]);
+
+        } else {
+            $proyecto->fec_fin_real = null;
+        }
+
         $proyecto->save();
-        return response()->json(['success' => true, 'message' => 'Estado actualizado']);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado actualizado correctamente.'
+        ]);
     }
 
     public function saveTarea (Request $request)
@@ -179,9 +215,10 @@ class ProyectoController extends Controller
             'id_user' => ['required', 'integer', Rule::exists('users', 'id') ],
             'id_tarea_estado' => ['required', 'integer', Rule::in(array_keys(Tarea::$estado))],
             'id_tarea_tipo' => ['required', 'integer', Rule::exists('tarea_tipos', 'id') ],
-            'descripccion' => 'required|string|max:255',
+            'descripccion' => 'nullable|string|max:255',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
             'fec_fin' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
+            'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'conFechaFin' => 'required|integer|in:0,1',
             'dias_trabajo' => 'required|integer|min:1'
         ]);

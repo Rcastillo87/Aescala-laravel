@@ -1,6 +1,8 @@
 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 async function editTarea(id) {
+    document.getElementById('idFecFinReal').classList.add('hidden');
+    document.getElementById('fec_fin_real').value = '';
     return fetch(`editTarea/${id}`, {
         method: 'get',
         headers: {
@@ -28,7 +30,12 @@ async function editTarea(id) {
         document.getElementById('id_user').value  = data.data.id_user;
         document.getElementById('id_tarea_tipo').value  = data.data.id_tarea_tipo;
         document.getElementById('id_tarea_estado').value  = data.data.id_tarea_estado;
-        document.getElementById('fec_fin').value = data.data.fechaFin;
+        document.getElementById('fec_fin').value = data.data.fec_fin;
+        if( (data.data.id_tarea_estado == 3) && (data.data.fec_fin_real)){
+            document.getElementById('idFecFinReal').classList.remove('hidden');
+            document.getElementById('fec_fin_real').value = data.data.fec_fin_real.split(' ')[0];
+        }
+
     })
     .catch(error => {
         Swal.showValidationMessage(`Error: ${error.message}`);
