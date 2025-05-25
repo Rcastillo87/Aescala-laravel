@@ -28,9 +28,7 @@ class DespachoController extends Controller
             ->get(['id', 'nombre_proyecto'])
             ->toArray();
 
-        $materiales = InventarioMaterial::where('activo', 1) 
-        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
-        ->toArray();
+	$materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
 
         return view('despachos.index', compact('title', 'tipo', 'colaUsers', 'proyectos', 'materiales'));
     }

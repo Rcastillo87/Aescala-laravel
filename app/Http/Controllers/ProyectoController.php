@@ -76,9 +76,7 @@ class ProyectoController extends Controller
 
         $headerComparativo = ['ID', 'Nombre Item', 'Cant. Desp.', 'Val Unidad Desp.', 'Cant. Cotizada', 'Val Unidad Cotizado'];
 
-        $materiales = InventarioMaterial::where('activo', 1) 
-        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
-        ->toArray();
+	$materiales = InventarioMaterial::where('activo', 1)->get();
 
         $proyecto = [];
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
