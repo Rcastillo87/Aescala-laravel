@@ -32,14 +32,14 @@
                 <div class="flex flex-wrap relative content-center justify-center rounded-l-md bg-white
                     w-96 h-[32rem] md:shadow-[40px_0px_30px_rgb(255,255,255)]">
                     <div class="w-72">
-                        <img src="{{ asset('img/logo.png') }}" class="absolute top-6 right-5 w-20" alt="">
+                        <img src="{{ asset('img/logo.png') }}" class="absolute top-6 right-5 w-20" alt="logo">
                         <h1 class="text-3xl font-bold cursor-pointer">Iniciar Sesión</h1>
                         <small class="text-gray-600">¡Bienvenido!, ingresa tus credenciales para poder continuar</small>
                             {{ $slot }}
                     </div>
                 </div>
                 <div class="md:flex flex-wrap content-center justify-center rounded-r-md hidden w-96 h-[32rem]">
-                    <img src="{{ asset('img/banner.jpg') }}" class="w-full h-full bg-center bg-no-repeat bg-cover rounded-r-md object-cover" alt="">
+                    <img src="{{ asset('img/banner.jpg') }}" class="w-full h-full bg-center bg-no-repeat bg-cover rounded-r-md object-cover" alt="logo">
                 </div>
             </div>
         </div>
