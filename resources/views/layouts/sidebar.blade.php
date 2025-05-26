@@ -4,7 +4,7 @@
     bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg shadow-md shadow-gray-100 flex flex-col">
 
        <a href="{{ route('dashboard') }}" class="flex items-center">
-            <img src="{{ asset('img/logo.png') }}" class="my-6 p-2 w-full">
+            <img src="{{ asset('img/logo.png') }}" class="my-6 p-2 w-full" alt="">
        </a>
        <ul class="space-y-2 font-medium">
          @if (Auth::user()->id_rol == 1)

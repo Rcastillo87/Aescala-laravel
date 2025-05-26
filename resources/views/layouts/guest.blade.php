@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ config('app.name', 'Laravel') }}</title>
+        <meta name="description" content="Aescala App es una plataforma para la gestión y seguimiento de proyectos de arquitectura civil.">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <meta name="theme-color" content="#007bff">
@@ -31,14 +32,14 @@
                 <div class="flex flex-wrap relative content-center justify-center rounded-l-md bg-white
                     w-96 h-[32rem] md:shadow-[40px_0px_30px_rgb(255,255,255)]">
                     <div class="w-72">
-                        <img src="{{ asset('img/logo.png') }}" class="absolute top-6 right-5 w-20">
+                        <img src="{{ asset('img/logo.png') }}" class="absolute top-6 right-5 w-20" alt="">
                         <h1 class="text-3xl font-bold cursor-pointer">Iniciar Sesión</h1>
-                        <small class="text-gray-400">¡Bienvenido!, ingresa tus credenciales para poder continuar</small>
+                        <small class="text-gray-600">¡Bienvenido!, ingresa tus credenciales para poder continuar</small>
                             {{ $slot }}
                     </div>
                 </div>
                 <div class="md:flex flex-wrap content-center justify-center rounded-r-md hidden w-96 h-[32rem]">
-                    <img src="{{ asset('img/banner.jpg') }}" class="w-full h-full bg-center bg-no-repeat bg-cover rounded-r-md object-cover">
+                    <img src="{{ asset('img/banner.jpg') }}" class="w-full h-full bg-center bg-no-repeat bg-cover rounded-r-md object-cover" alt="">
                 </div>
             </div>
         </div>
