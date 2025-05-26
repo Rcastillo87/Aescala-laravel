@@ -81,7 +81,6 @@ function cambiarEstado(itemId, estadoActual) {
     });
 }
 
-
 async function formIdProyecto(id) {
     document.getElementById('id_proyecto').value = id;
     document.getElementById('id').value = null;

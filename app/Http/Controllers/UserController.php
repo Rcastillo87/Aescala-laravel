@@ -36,7 +36,8 @@ class UserController extends Controller
         ->when(Request('id_rol'), function ($query, $id_rol) { 
             return $query->where('id_rol', $id_rol);
         })
-        ->paginate(10);
+        ->paginate(10)
+        ->appends(request()->query());
         $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Trabajando en', 'Perfil', 'Estado', 'Opciones'];
         return view('user.index', compact('roles', 'title', 'items', 'headers', 'estado'));
     }

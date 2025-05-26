@@ -42,6 +42,7 @@ class PedidosController extends Controller
         ->groupBy('id_factura', 'id_proveedor', DB::raw('DATE(fecha)'))
         ->orderBy('fecha', 'desc')
         ->paginate(10)
+        ->appends(request()->query())
         ->through(function ($factura) {
             return [
                 'factura' => $factura->id_factura,

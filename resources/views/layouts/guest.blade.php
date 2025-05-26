@@ -3,9 +3,22 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name', 'Laravel') }}</title>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <meta name="theme-color" content="#007bff">
+        <link rel="icon" type="image/png" href="{{ asset('img/favicon-96x96.png') }}" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="{{asset('img/favicon.svg')}}" />
+        <link rel="shortcut icon" href="{{asset('img/favicon.ico')}}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{asset('img/apple-touch-icon.png')}}" />
+        <meta name="apple-mobile-web-app-title" content="Aescala" />
+        <link rel="manifest" href="{{asset('manifest.json')}}" />
+
+        <!--<link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#007bff">
+        <link rel="apple-touch-icon" href="/icons/icon-192.png">
+        <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}">-->
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

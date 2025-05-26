@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             </div>
             <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
             <div class="md:flex bg-gradient-to-r text-left md:justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                <p class="font-medium">Costo: $<span class="valor">${formatCurrency(material.valor_unidad)}</span> * 
+                <p class="font-medium">Costo: <span class="valor">${formatCurrency(material.valor_unidad)}</span> * 
                 <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
                 <p>Tipo: ${material.spanTipo}</p>
             </div>

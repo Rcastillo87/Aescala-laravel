@@ -58,7 +58,8 @@ class ProyectoController extends Controller
             return $query->where('id_user', $id_user);
         })
         ->orderBy('id', 'desc')
-        ->paginate(10);
+        ->paginate(10)
+        ->appends(request()->query());
 
         $userColab = User::where('id_rol', 3)->where('activo', 1)
         ->get(['id', 'nombre_completo'])
@@ -73,11 +74,9 @@ class ProyectoController extends Controller
 
         $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
         $headerCotizacion = ['Fec Creacion', 'Nombre Material', 'Cantidad', 'Val Unid', 'SubTotal', 'Opciones'];
-
         $headerComparativo = ['ID', 'Nombre Item', 'Cant. Desp.', 'Val Unidad Desp.', 'Cant. Cotizada', 'Val Unidad Cotizado'];
 
-	$materiales = InventarioMaterial::where('activo', 1)->get();
-
+	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
         $proyecto = [];
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
             'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo', 'proyecto'));

@@ -47,6 +47,9 @@ class TareasController extends Controller
 
 
         $proyecto = Proyecto::with('tareas')
+            ->when($cola, function ($query, $id_user) {
+                $query->where('id_user', $id_user);
+            })
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 $query->whereRaw('LOWER(nombre_proyecto) LIKE ?', ['%' . strtolower($nombre_proyecto) . '%']);
             })
