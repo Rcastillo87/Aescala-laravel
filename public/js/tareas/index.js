@@ -331,3 +331,28 @@ function initSortable() {
 }
 
 document.addEventListener('DOMContentLoaded', initSortable);
+
+const container = document.getElementById('scrollContainer');
+let isDragging = false;
+
+const edgeThreshold = 500; // Área cerca del borde donde se activa el scroll
+const scrollSpeed = 30;    // Velocidad de scroll
+
+document.querySelectorAll('.draggable').forEach(el => {
+el.addEventListener('dragstart', () => isDragging = true);
+el.addEventListener('dragend', () => isDragging = false);
+});
+
+container.addEventListener('dragover', (e) => {
+if (!isDragging) return;
+
+const containerRect = container.getBoundingClientRect();
+const mouseX = e.clientX;
+
+// Verifica si el cursor está dentro del área de acción
+if (mouseX < containerRect.left + edgeThreshold) {
+    container.scrollLeft -= scrollSpeed;
+} else if (mouseX > containerRect.right - edgeThreshold) {
+    container.scrollLeft += scrollSpeed;
+}
+});

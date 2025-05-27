@@ -11,14 +11,17 @@
         <link rel="icon" type="image/png" href="{{ asset('img/favicon-96x96.png') }}" sizes="96x96" />
         <link rel="icon" type="image/svg+xml" href="{{asset('img/favicon.svg')}}" />
         <link rel="shortcut icon" href="{{asset('img/favicon.ico')}}" />
-        <link rel="apple-touch-icon" sizes="180x180" href="{{asset('img/apple-touch-icon.png')}}" />
-        <meta name="apple-mobile-web-app-title" content="Aescala" />
-        <link rel="manifest" href="{{asset('manifest.json')}}" />
 
-        <!--<link rel="manifest" href="/manifest.json">
-        <meta name="theme-color" content="#007bff">
-        <link rel="apple-touch-icon" href="/icons/icon-192.png">
-        <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}">-->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Aescala">
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <!-- Apple Touch Icon -->
+        <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png') }}">
+        <meta name="apple-mobile-web-app-title" content="Aescala" />
+        
+        <link rel="manifest" href="{{asset('manifest.json')}}" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

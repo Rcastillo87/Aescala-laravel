@@ -24,7 +24,7 @@
         $proyectos = '';
         foreach ($proyecto as $proy) {
             $card = 
-            "<div data-id='$proy->id' class='card-proyecto cursor-pointer w-[280px] border-gray-400 border bg-white rounded-md text-start proys-center px-2 py-1'>
+            "<div data-id='$proy->id' draggable='true' class='draggable card-proyecto cursor-pointer w-[280px] border-gray-400 border bg-white rounded-md text-start proys-center px-2 py-1'>
                 <p class='text-lg font-bold'>Proyecto: <span class='text-md font-semibold text-gray-600'>$proy->nombre_proyecto</span></p>
                 <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($proy->user->nombre_completo)."</span></p>
                 <p class='text-lg font-bold'>Estado: <span class='text-md font-semibold text-gray-600'>$proy->spanEstado</span></p>
@@ -54,7 +54,7 @@
             }
             
             $card = 
-            "<div data-id='$item->id_proyecto' data-tipo='$item->id_tarea_tipo' class='card-proyecto cursor-pointer w-[280px] border-gray-400 border rounded-md text-start items-center px-2 py-1'>
+            "<div data-id='$item->id_proyecto' draggable='true' data-tipo='$item->id_tarea_tipo' class='draggable card-proyecto cursor-pointer w-[280px] border-gray-400 border rounded-md text-start items-center px-2 py-1'>
                 <p class='text-lg font-bold'>Proyecto: <span class='text-md font-semibold text-gray-600'>".$item->proyecto->nombre_proyecto."</span></p>
                 <p class='text-lg font-bold'>Proyecto Estado: <span class='text-md font-semibold text-gray-600'>".$item->proyecto->spanEstado."</span></p>
                 <p class='text-lg font-bold'>Tarea: <span class='text-md font-semibold text-gray-600'>".$item->tareaTipo->nombre_tarea."</span></p>
@@ -118,7 +118,7 @@
         }
     @endphp
 
-    <div class="flex w-full lg:h-[calc(100vh-355px)] h-[calc(100vh-410px)] gap-2 overflow-x-auto">
+    <div id="scrollContainer" class="flex w-full lg:h-[calc(100vh-355px)] h-[calc(100vh-410px)] gap-2 overflow-x-auto">
 
         <div class="flex flex-col flex-shrink-0 min-w-[290px] bg-blue-50 border rounded-md">
             <h3 class="text-xl font-bold mb-3 text-center">Sin Tareas</h3>

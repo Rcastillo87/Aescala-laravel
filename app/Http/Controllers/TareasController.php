@@ -43,7 +43,10 @@ class TareasController extends Controller
             ->where('id_tarea_estado', 2)
             ->get();
 
-        $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
+        $tareaTipo = TareaTipo::where('orden', '<>', 0)
+            ->orderBy('orden', 'asc')
+            ->get(['id', 'nombre_tarea'])
+            ->toArray();
 
 
         $proyecto = Proyecto::with('tareas')
