@@ -40,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
 
         return response()->download($latest->getRealPath(), $latest->getFilename());
-    });
+    })->name('descargar.db');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');
