@@ -24,18 +24,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('/descargar-db', function () {
-        //$backupDir = storage_path('backups');
         $backupDir = '/home/user/backups/databases/aescala';
-
 
         if (!File::exists($backupDir)) {
             abort(404, 'No hay copias disponibles.');
         }
 
         $files = collect(File::files($backupDir))
-            ->sortByDesc(function ($file) {
-                return $file->getMTime();
-            });
+            ->sortByDesc(fn($file) => $file->getMTime());
 
         $latest = $files->first();
 
@@ -44,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
 
         return response()->download($latest->getRealPath(), $latest->getFilename());
-    })->name('descargar.db');
+    });
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');
