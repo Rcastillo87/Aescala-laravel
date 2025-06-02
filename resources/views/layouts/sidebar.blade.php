@@ -92,7 +92,7 @@
             </li>
          @endif
        </ul>
-      @if (Auth::user()->isNotColab)
+      @if (Auth::check() && Auth::user()->isNotColab)
          <li class="mt-auto">
             <a tabindex="0" data-tooltip-target="tooltip-hover-donwload-db" data-tooltip-trigger="hover" href="{{ route('descargar.db') }}" 
                class="flex items-center p-2 font-normal text-white">
