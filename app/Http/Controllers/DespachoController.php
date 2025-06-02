@@ -105,15 +105,15 @@ class DespachoController extends Controller
                 if ($validated['tipo'] == 2) {
                     // Si el tipo es 2, se suma la cantidad
                     $msg = 'Devolucion';
-                    /*if($material['cobro'] == 1){
+                    //if($material['cobro'] == 1){
                         $inventarioMaterial->increment('cantidad', $material['cantidad']);
-                    }*/
+                    //}
                 } else {
                     // Si no, se descuenta
                     $msg = 'Despacho';
-                    /*if($material['cobro'] == 1){
+                    //if($material['cobro'] == 1){
                         $inventarioMaterial->decrement('cantidad', $material['cantidad']);
-                    }*/
+                    //}
                 }
             }
     
