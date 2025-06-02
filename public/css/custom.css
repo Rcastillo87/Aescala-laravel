@@ -82,3 +82,8 @@
     z-index: 9999;
   }
 }
+
+.sortable-ghost {
+  opacity: 0.4;
+  background: #ccc;
+}

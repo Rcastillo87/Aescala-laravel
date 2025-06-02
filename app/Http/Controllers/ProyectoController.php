@@ -522,7 +522,7 @@ class ProyectoController extends Controller
     public function pdfDespachos()
     {
         $proyecto = Proyecto::find(Request('id'));
-        $datos = (new Despachos)->despachos(Request('id'));
+        $datos = (new Despachos)->despachos(Request('id'), null, 1);
         $datosFactura = [
             'empresa' => [
                 'razon' => env('RAZON', 'AESCALA'),
@@ -545,7 +545,7 @@ class ProyectoController extends Controller
     public function pdfDespacho()
     {
         $proyecto = Proyecto::find(Request('id'));
-        $datos = (new Despachos)->despachos(Request('id'), Request('codigo'));
+        $datos = (new Despachos)->despachos(Request('id'), Request('codigo'), 1);
         $datosFactura = [
             'empresa' => [
                 'razon' => env('RAZON', 'AESCALA'),

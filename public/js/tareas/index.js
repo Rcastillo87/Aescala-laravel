@@ -332,23 +332,19 @@ function initSortable() {
 
 document.addEventListener('DOMContentLoaded', initSortable);
 
+/* old
 const container = document.getElementById('scrollContainer');
 let isDragging = false;
-
 const edgeThreshold = 500; // Área cerca del borde donde se activa el scroll
 const scrollSpeed = 30;    // Velocidad de scroll
-
 document.querySelectorAll('.draggable').forEach(el => {
 el.addEventListener('dragstart', () => isDragging = true);
 el.addEventListener('dragend', () => isDragging = false);
 });
-
 container.addEventListener('dragover', (e) => {
 if (!isDragging) return;
-
 const containerRect = container.getBoundingClientRect();
 const mouseX = e.clientX;
-
 // Verifica si el cursor está dentro del área de acción
 if (mouseX < containerRect.left + edgeThreshold) {
     container.scrollLeft -= scrollSpeed;
@@ -356,3 +352,26 @@ if (mouseX < containerRect.left + edgeThreshold) {
     container.scrollLeft += scrollSpeed;
 }
 });
+*/
+
+// Selecciona el contenedor que tiene scroll horizontal
+const container = document.getElementById('scrollContainer');
+
+// Inicializa SortableJS en el contenedor
+new Sortable(container, {
+  animation: 150,
+  ghostClass: 'sortable-ghost',
+  // Habilita soporte para dispositivos táctiles (activado por defecto)
+  touchStartThreshold: 5,
+  // Scroll automático cuando el ítem llega al borde
+  scroll: true,
+  scrollSensitivity: 30, // Qué tan cerca del borde empieza a hacer scroll
+  scrollSpeed: 15,       // Velocidad del scroll
+  // Activamos scroll personalizado horizontal
+  setScroll: function (scrollContainer, direction) {
+    if (direction === 'x') {
+      scrollContainer.scrollLeft += scrollContainer.scrollSpeed;
+    }
+  }
+});
+

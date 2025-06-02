@@ -73,7 +73,8 @@ class DespachoController extends Controller
                     }
                 }
             ],
-            'materiales.*.valor_unidad' => ['required', 'integer']
+            'materiales.*.valor_unidad' => ['required', 'integer'],
+            'materiales.*.cobro' => ['required', 'integer', 'in:0,1']
         ]);
 
         // Iniciar transacción
@@ -94,6 +95,7 @@ class DespachoController extends Controller
                 $dato['id_material'] = $material['id_material'];
                 $dato['cantidad'] = $material['cantidad'];
                 $dato['valor_unidad'] = $material['valor_unidad'];
+                $dato['cobro'] = $material['cobro'];
                 Despachos::create($dato);
 
                 $inventarioMaterial = InventarioMaterial::find($material['id_material']);
@@ -103,11 +105,15 @@ class DespachoController extends Controller
                 if ($validated['tipo'] == 2) {
                     // Si el tipo es 2, se suma la cantidad
                     $msg = 'Devolucion';
-                    $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                    /*if($material['cobro'] == 1){
+                        $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                    }*/
                 } else {
                     // Si no, se descuenta
                     $msg = 'Despacho';
-                    $inventarioMaterial->decrement('cantidad', $material['cantidad']);
+                    /*if($material['cobro'] == 1){
+                        $inventarioMaterial->decrement('cantidad', $material['cantidad']);
+                    }*/
                 }
             }
     

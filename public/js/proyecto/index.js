@@ -553,10 +553,11 @@ async function renderDespachos(despachos, id) {
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th class="px-4 py-2">Material</th>
-                                    <th class="px-4 py-2">Cantidad</th>
-                                    <th class="px-4 py-2">Valor Unitario</th>
-                                    <th class="px-4 py-2">Tipo</th>
+                                    <th class="px-3 py-2">Material</th>
+                                    <th class="px-3 py-2">Cantidad</th>
+                                    <th class="px-3 py-2">Valor Unitario</th>
+                                    <th class="px-3 py-2">Se Cobra</th>
+                                    <th class="px-3 py-2">Tipo</th>
                                 </tr>
                             </thead>
                             <tbody id="items-${despacho.codigo}">
@@ -576,10 +577,11 @@ async function renderDespachos(despachos, id) {
             const row = document.createElement('tr');
             row.className = 'bg-white border-b';
             row.innerHTML = `
-                <td class="px-4 py-2">${item.nombre_material}</td>
-                <td class="px-4 py-2">${item.cantidad}</td>
-                <td class="px-4 py-2">${item.valor_unidad.toLocaleString()}</td>
-                <td class="px-4 py-2 tipo-container">${item.spanTipo}</td>
+                <td class="px-3 py-2">${item.nombre_material}</td>
+                <td class="px-3 py-2">${item.cantidad}</td>
+                <td class="px-3 py-2">${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-3 py-2 tipo-container">${item.isCobro}</td>
+                <td class="px-3 py-2 tipo-container">${item.spanTipo}</td>
             `;
             tbody.appendChild(row);
         });
