@@ -24,7 +24,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('/descargar-db', function () {
-        $backupDir = storage_path('backups');
+        //$backupDir = storage_path('backups');
+        $backupDir = '/home/user/backups/databases/aescala';
+
 
         if (!File::exists($backupDir)) {
             abort(404, 'No hay copias disponibles.');
