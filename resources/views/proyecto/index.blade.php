@@ -83,10 +83,6 @@
                         <span class="text-md text-black">{{$item->telefono_cliente}}</span>
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                        <p class="text-lg text-gray-500 font-bold">Colaborador Encargado</p>
-                        <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
-                    </div>
-                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Total Estim. Proyecto</p>
                         <span class="text-md text-black">{{number_format($item->totalProyecto)}}$</span>
                     </div>
@@ -98,6 +94,22 @@
                         <p class="text-lg text-gray-500 font-bold">Estado</p>
                         <span class="text-md text-black">{!! $item->span_estado !!}</span>
                     </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Cont. Obra Blanca</p>
+                        <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
+                    </div>
+                    @if($item->userOB)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Cont. Carpinteria</p>
+                            <span class="text-md text-black">{{$item->userOB['nombre_completo']}}</span>
+                        </div>
+                    @endif
+                    @if($item->userCarpi)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Arquitecto Encargado</p>
+                            <span class="text-md text-black">{{$item->userCarpi['nombre_completo']}}</span>
+                        </div>
+                    @endif
                     @if($item->fec_fin_real)
                         <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                             <p class="text-lg text-gray-500 font-bold">Fecha de Entrega</p>

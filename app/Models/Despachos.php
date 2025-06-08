@@ -87,9 +87,9 @@ class Despachos extends Model
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        ->when($cobro, function ($query) {
+                        /*->when($cobro, function ($query) {
                             return $query->where('cobro', 1);
-                        })
+                        })*/
                         ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
                         ->distinct()
                         ->get()
@@ -110,9 +110,9 @@ class Despachos extends Model
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        ->when($cobro, function ($query) {
+                        /*->when($cobro, function ($query) {
                             return $query->where('cobro', 1);
-                        })
+                        })*/
                         ->select('codigo', 'id_material', 'cantidad', 'valor_unidad', 'cobro')
                         ->get()
                         ->map(function ($item) {
@@ -120,7 +120,7 @@ class Despachos extends Model
                                 'codigo' => $item->codigo,
                                 'id_material' => $item->id_material,
                                 'cantidad' => $item->cantidad,
-                                'valor_unidad' => $item->valor_unidad,
+                                'valor_unidad' => ($item->cobro==1)?$item->valor_unidad:0,
                                 'isCobro' => $item->isCobro,
                                 'nombre_material' => $item->material->nombre_material ?? null,
                                 'spanTipo' => $item->material->spanTipo ?? null

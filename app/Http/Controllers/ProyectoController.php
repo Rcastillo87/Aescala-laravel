@@ -145,6 +145,16 @@ class ProyectoController extends Controller
                 'integer',
                 Rule::exists('users', 'id'),
             ],
+            'id_user_obra_blanca' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
+            'id_user_carpinteria' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ]
         ]);
 
         if($data['conFechaFin']==1){
@@ -578,21 +588,21 @@ class ProyectoController extends Controller
             $data['carpinteria']['presupuesto'] = $proyecto->val_obra_carpinteria;
             $data['carpinteria']['presupuestoMaterial'] = $proyecto->val_carpinteria_materiales;
             $data['carpinteria']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 2)->sum('valor');
-            $totales = $totales->whereHas('material', function ($q) { $q->where('tipo', 2); })->first();
-            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $total = (clone $totales)->whereHas('material', function ($q) { $q->where('tipo', 2); })->first();
+            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
             $data['carpinteria']['gastosMaterial'] = $total_final;
 
             $data['obrablanca']['presupuesto'] = $proyecto->val_obra_blanca;
             $data['obrablanca']['presupuestoMaterial'] = $proyecto->val_obra_blanca_materiales;
             $data['obrablanca']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 3)->sum('valor');
-            $totales = $totales->whereHas('material', function ($q) { $q->where('tipo', 1); })->first();
-            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $total = (clone $totales)->whereHas('material', function ($q) { $q->where('tipo', 1); })->first();
+            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
             $data['obrablanca']['gastosMaterial'] = $total_final;
 
             $data['otros']['presupuesto'] = $proyecto->pres_otros;
             $data['otros']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 4)->sum('valor');
-            $totales = $totales->whereHas('material', function ($q) { $q->whereNull('tipo'); })->first();
-            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $total = (clone $totales)->whereHas('material', function ($q) { $q->whereNull('tipo'); })->first();
+            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
             $data['otros']['gastosMaterial'] = $total_final;
 
             $data['global']['presupuesto'] = $proyecto->totalProyecto;
