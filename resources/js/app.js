@@ -31,7 +31,6 @@ if ('serviceWorker' in navigator) {
             }
             const swVersion = new Date().getTime();
             const registration = await navigator.serviceWorker.register(`/sw.js?v=${swVersion}`);
-
             console.log('✅ Service Worker registrado:', registration);
         } catch (error) {
             console.error('❌ Error al registrar el Service Worker:', error);
