@@ -46,5 +46,28 @@
                 </div>
             </div>
         </div>
+        @once
+            @if(session('error'))
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de inicio de sesión',
+                        text: @json(session('error')),
+                        confirmButtonText: 'Aceptar'
+                    });
+                </script>
+            @endif
+            @if($errors->any())
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errores en el formulario',
+                        html: `{!! implode('<br>', $errors->all()) !!}`,
+                        confirmButtonText: 'Ok'
+                    });
+                </script>
+            @endif
+        @endonce
+
     </body>
 </html>

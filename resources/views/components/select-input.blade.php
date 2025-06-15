@@ -1,4 +1,4 @@
-@props(['name', 'disabled' => false, 'options' => [], 'selected' => null, 'data' => null])
+@props(['name', 'disabled' => false, 'options' => [], 'selected' => null, 'data' => null, 'datax' => false])
 
 <select name="{{ $name }}" 
     {{ $disabled ? 'disabled' : '' }} 
@@ -11,7 +11,13 @@
     @if (is_array($options) && !empty($options))
         @if (!empty($data) && is_array($data))
             @foreach ($options as $option)
-                <option value="{{ $option[$data[0]] }}" {{ $option[$data[0]] == old($name, $selected) ? 'selected' : '' }}>
+                <option 
+                    value="{{ $option[$data[0]] }}" 
+                    {{ $option[$data[0]] == old($name, $selected) ? 'selected' : '' }}
+                    @if($datax)
+                        data-datax='@json($option)'
+                    @endif
+                >
                     {{ strtolower($option[$data[1]]) }}
                 </option>
             @endforeach

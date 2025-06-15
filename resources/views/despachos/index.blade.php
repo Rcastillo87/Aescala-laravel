@@ -12,6 +12,7 @@
                         <x-select-input 
                             name="id_proyecto" 
                             id="id_proyecto"
+                            :datax="true"
                             :options="$proyectos" 
                             :data="['id', 'nombre_proyecto']"
                             :selected="old('id_proyecto')" 

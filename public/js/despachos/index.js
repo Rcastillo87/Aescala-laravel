@@ -138,4 +138,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // Remover de la lista de materiales añadidos
         addedMaterials.delete(String(materialId));
     };
+
+    const proyectoSelect = document.getElementById('id_proyecto');
+    const userSelect = document.getElementById('id_user');
+    proyectoSelect.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const dataAttr = selectedOption.getAttribute('data-datax');
+        if (!dataAttr) return;
+        try {
+            const data = JSON.parse(dataAttr);
+            const idUser = data.id_user;
+            if (!idUser) return;
+            userSelect.value = idUser;
+        } catch (e) {
+            console.error("Error al parsear data-datax:", e);
+        }
+    });
+
 });

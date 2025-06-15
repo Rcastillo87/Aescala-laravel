@@ -28,14 +28,14 @@ class AuthenticatedSessionController extends Controller
         try {
             $request->authenticate();
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard', absolute: false));
+
+            return redirect()->intended(route('dashboard'));
         } catch (ValidationException $e) {
-                throw $e;
-        } catch (\Exception $e) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('login')->with('error', 'Compruebe sus credenciales e intente nuevamente.');
+            return back()->withErrors($e->errors())
+                        ->withInput();
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Hubo un error inesperado. Por favor intente nuevamente.')
+                        ->withInput();
         }
     }
 

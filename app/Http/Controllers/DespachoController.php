@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Despachos;
 use App\Models\Proyecto;
 use App\Models\InventarioMaterial;
-
+use Illuminate\Routing\Route;
 
 class DespachoController extends Controller
 {
@@ -25,10 +25,10 @@ class DespachoController extends Controller
             ->toArray();
 
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
-            ->get(['id', 'nombre_proyecto'])
+            ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
 
-	$materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
 
         return view('despachos.index', compact('title', 'tipo', 'colaUsers', 'proyectos', 'materiales'));
     }
@@ -116,9 +116,16 @@ class DespachoController extends Controller
                     //}
                 }
             }
-    
+
+            $pdfRoute = route('proyecto.pdfDespacho', [
+                'id' => $validated['id_proyecto'],
+                'codigo' => $codigo,
+                'view' => 1
+            ]);
+
             return redirect()->route('despachos.index')
-                        ->with('success', "$msg {$codigo} registrado correctamente");
+                ->with('success', "$msg {$codigo} registrado correctamente")
+                ->with('pdf_url', $pdfRoute);
         });
     }
     
