@@ -13,16 +13,16 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
-/*if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(reg => console.log('Service Worker registrado', reg))
       .catch(err => console.error('Error al registrar SW:', err));
   });
-}*/
+}
 
 // Registro y limpieza del Service Worker
-if ('serviceWorker' in navigator) {
+/*if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
         try {
             await navigator.serviceWorker.register('/sw.js');
@@ -31,4 +31,4 @@ if ('serviceWorker' in navigator) {
             console.error('❌ Error al registrar el Service Worker:', error);
         }
     });
-}
+}*/

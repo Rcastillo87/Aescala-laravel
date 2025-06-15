@@ -9,9 +9,7 @@ const urlsToCache = [
   '/img/logo.png',
   '/img/site.webmanifest',
   '/img/web-app-manifest-192x192.png',
-  '/img/web-app-manifest-512x512.png',
-  '/css/app.css',
-  '/js/app.js',
+  '/img/web-app-manifest-512x512.png'
 ];
 
 
