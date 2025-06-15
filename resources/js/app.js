@@ -25,13 +25,8 @@ Alpine.start();
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
         try {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            for (const reg of registrations) {
-                await reg.unregister();
-            }
-            const swVersion = new Date().getTime();
-            const registration = await navigator.serviceWorker.register(`/sw.js?v=${swVersion}`);
-            console.log('✅ Service Worker registrado:', registration);
+            await navigator.serviceWorker.register('/sw.js');
+            console.log('✅ Service Worker registrado');
         } catch (error) {
             console.error('❌ Error al registrar el Service Worker:', error);
         }

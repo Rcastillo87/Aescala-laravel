@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aescala-{{ \Illuminate\Support\Carbon::now()->format("YmdHis") }}';
+const CACHE_NAME = 'aescala-v1';
 
 @php
     $isLocal = app()->environment('local');
@@ -15,7 +15,7 @@ const urlsToCache = [
     '{{ asset('manifest.json') }}',
     @unless($isLocal)
         '{{ Vite::asset("resources/css/app.css") }}',
-        '{{ Vite::asset("resources/js/app.js") }}'
+        '{{ Vite::asset("resources/js/app.js") }}',
     @endunless
 ];
 
@@ -43,18 +43,7 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(name => {
-                    if (name !== CACHE_NAME) {
-                        return caches.delete(name);
-                    }
-                })
-            );
-        })
-    );
-    console.log('SW activado y viejo cache limpiado');
+    console.log('SW activado');
 });
 
 self.addEventListener('fetch', event => {
