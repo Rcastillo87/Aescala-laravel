@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aescala-v1';
+const CACHE_NAME = 'aescala-v{{ now()->format("YmdHis") }}';
 const urlsToCache = [
   '/',
   '/favicon.ico',
@@ -13,25 +13,30 @@ const urlsToCache = [
 ];
 
 
-self.addEventListener('install', function(event) {
-  console.log('Service Worker: Instalando...');
+self.addEventListener('install', event => {
+  console.log('[SW] Instalando...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async cache => {
-      for (const url of urlsToCache) {
-        try {
-          await cache.add(url);
-        } catch (e) {
-          console.warn('No se pudo cachear:', url, e);
-        }
-      }
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
     })
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
-    })
+self.addEventListener('activate', event => {
+  console.log('[SW] Activado');
+  event.waitUntil(
+    caches.keys().then(cacheNames =>
+      Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            console.log('[SW] Borrando cache viejo:', cache);
+            return caches.delete(cache);
+          }
+        })
+      )
+    )
   );
+  self.clients.claim();
 });
+

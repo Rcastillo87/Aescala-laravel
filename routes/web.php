@@ -18,9 +18,13 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-/*Route::get('/sw.js', function () {
-    return response()->view('sw')->header('Content-Type', 'application/javascript');
-});*/
+// routes/web.php
+Route::get('/sw.js', function () {
+    return response()->view('sw')
+        ->header('Content-Type', 'application/javascript')
+        ->header('Cache-Control', 'no-cache, must-revalidate');
+});
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
