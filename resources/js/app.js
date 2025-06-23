@@ -20,15 +20,3 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('Error al registrar SW:', err));
   });
 }
-
-// Registro y limpieza del Service Worker
-/*if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-        try {
-            await navigator.serviceWorker.register('/sw.js');
-            console.log('✅ Service Worker registrado');
-        } catch (error) {
-            console.error('❌ Error al registrar el Service Worker:', error);
-        }
-    });
-}*/

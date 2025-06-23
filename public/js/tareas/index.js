@@ -106,42 +106,96 @@ async function openAvance(page = 1, id) {
 }
 
 function tableAvances(data) {
-    const serviceList = document.getElementById('avanceList');
-    const pagination = document.getElementById('paginationAvance');
-    const noDataMessage = document.getElementById('noDataMessageAvance');
-
-    serviceList.innerHTML = '';
-    pagination.innerHTML = '';
-
-    if (data.data && data.data.length > 0) {
-        data.data.forEach(service => {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.avance}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.fec_avance}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
-                <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                    <button onclick="confirmDelete(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
-                        Eliminar
-                    </button>
-                </td>
-            `;
-            serviceList.appendChild(fila);
-        });
-
-        const paginationLinks = data.links.map(link => {
-            if (link.url) {
-                const page = new URL(link.url).searchParams.get('page') || 1;
-                return `<a href="#" onclick="listAvances(${page}, ${id})" class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</a>`;
-            }
-            return `<span class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</span>`;
-        }).join('');
-        pagination.innerHTML = paginationLinks;
-
-        noDataMessage.classList.add('hidden');
-    } else {
-        noDataMessage.classList.remove('hidden');
+    const contenedor = document.getElementById('avanceList');
+    
+    if (!data || data.length === 0) {
+        contenedor.innerHTML = `
+            <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50">
+                No hay datos para mostrar
+            </div>
+        `;
+        return;
     }
+
+    // Mapear colores para cada tarea
+    const colores = [
+        'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
+        'bg-yellow-500', 'bg-red-500', 'bg-indigo-500',
+        'bg-pink-500', 'bg-teal-500', 'bg-orange-500',
+        'bg-cyan-500', 'bg-lime-500', 'bg-amber-500',
+        'bg-emerald-500', 'bg-violet-500', 'bg-fuchsia-500'
+    ];
+
+    let html = `
+        <div class="max-w-4xl mx-auto">
+    `;
+
+    data.forEach((tarea, index) => {
+        const color = colores[index % colores.length];
+        const colorClaro = color.replace('500', '200');
+        const colorMedio = color.replace('500', '400');
+        const colorOscuro = color;
+        
+        // Usar el estado proporcionado por la API
+        const estadoHTML = tarea.estado 
+            ? tarea.estado.replace('span-yellow', 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800')
+            : '<span class="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Estado no definido</span>';
+
+        html += `
+            <div class="mb-10">
+                <div class="flex flex-wrap items-center mb-4 gap-2">
+                    <div class="${color} w-4 h-4 rounded-full"></div>
+                    <h2 class="ml-2 text-xl font-semibold text-gray-800">${tarea.nombre_tarea}</h2>
+                    <span class="ml-2 text-sm text-gray-500">${tarea.fech_ini} - ${tarea.fech_fin}</span>
+                    ${estadoHTML}
+                </div>
+        `;
+
+        if (tarea.avances && tarea.avances.length > 0) {
+            html += `
+                <ol class="relative border-l border-gray-200 ml-2">
+            `;
+            
+            tarea.avances.forEach((avance, avanceIndex) => {
+                const avanceColor = avanceIndex % 3 === 0 ? colorClaro : 
+                                  avanceIndex % 3 === 1 ? colorMedio : colorOscuro;
+                
+                html += `
+                    <li class="mb-4 ml-6 group">
+                        <div class="absolute w-3 h-3 ${avanceColor} rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                        <div class="flex justify-between items-start">
+                            <p class="text-base font-normal text-gray-800 mt-1 flex-1">${avance.avance}</p>
+
+                            <button onclick="confirmDelete(${avance.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
+                                Eliminar
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Actualizado: ${new Date(avance.updatedAt).toLocaleString()}</p>
+                    </li>
+                `;
+            });
+            
+            html += `
+                </ol>
+            `;
+        } else {
+            html += `
+                <div class="ml-6 p-4 text-sm text-gray-500 italic">
+                    No hay avances registrados para esta tarea
+                </div>
+            `;
+        }
+
+        html += `
+            </div>
+        `;
+    });
+
+    html += `
+        </div>
+    `;
+
+    contenedor.innerHTML = html;
 }
 
 function confirmDelete(id) {
