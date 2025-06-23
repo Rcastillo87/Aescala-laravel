@@ -319,6 +319,18 @@ class ProyectoController extends Controller
     {
         try {
             $listAvance = Avance::where('id_tarea', Request('id'))->orderBy('createdAt', 'desc')->paginate(10);
+
+            /*$id = Tarea::find(Request('id'));
+            $listAvance = Tarea::with(['avance', 'tareaTipo'])->where('id_proyecto', $id->id_proyecto)->get()
+            ->map(function ($data) {
+                return [
+                    'nombre_tarea' => $data->tareaTipo->nombre_tarea,
+                    'fech_ini' => $data->fec_inicio,
+                    'fech_fin' => $data->fec_fin,
+                    'avances' => $data->avance
+                ];
+            })->toArray();*/
+
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de avance.',

@@ -69,6 +69,11 @@ class Tarea extends Model
         return $this->belongsTo(Proyecto::class, 'id_proyecto');
     }
 
+    public function avance()
+    {
+        return $this->hasMany(Avance::class, 'id_tarea');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
