@@ -52,8 +52,16 @@
                         <input type="hidden" id="id_tarea_avance" name="id_tarea_avance" >
                         <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-6/12 md:flex-0">
                             <x-input-label for="avance" :value="__('Describa el Avance *')" />
-                            <x-text-input id="avance" class="block mt-1 w-full" type="text" name="avance" :value="old('avance')" 
-                            required autofocus />
+                            <textarea
+                                id="avance"
+                                name="avance"
+                                autofocus
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 
+                                focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full overflow-hidden resize-none leading-6 py-2"
+                                >{{old('avance')}}
+                            </textarea>
+
                             <x-input-error :messages="$errors->get('avance')" class="mt-2" />
                         </div>
                         <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">

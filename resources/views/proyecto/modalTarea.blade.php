@@ -134,8 +134,16 @@
                     </div>
                     <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-6/12 md:flex-0">
                         <x-input-label for="descripccion" :value="__('Observacion')" />
-                        <x-text-input id="descripccion" class="block mt-1 w-full" type="text" name="descripccion" :value="old('descripccion')" 
-                        autofocus />
+                        <textarea
+                            id="descripccion"
+                            name="descripccion"
+                            autofocus
+                            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 
+                            focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full overflow-hidden resize-none leading-6 py-2 h-11"
+                            >
+                            {{old('descripccion')}}
+                        </textarea>
                         <x-input-error :messages="$errors->get('descripccion')" class="mt-2" />
                     </div>
                 </div>
