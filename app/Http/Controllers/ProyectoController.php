@@ -119,8 +119,13 @@ class ProyectoController extends Controller
 
     public function save(Request $req)
     {
+        if($req->conFechaFin == 0){
+            $val = ['dias_trabajo' => 'nullable|integer|min:1']; 
+        } else {
+            $val = ['fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio']]; 
+        }
 
-        $data = $req->validate([
+        $valbase = [
             'id' => 'nullable|integer',
             'nombre_proyecto' => ['required', 'string', 'max:200', Rule::unique('proyectos')->ignore($req->id, 'id')],
             'departamento' => 'required|integer',
@@ -135,27 +140,27 @@ class ProyectoController extends Controller
             'pres_otros' =>'nullable|integer|min:0',
             'observacion' => 'nullable|string',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
-            'fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
-            'dias_trabajo' => 'nullable|integer|min:1',
             'conFechaFin' => 'required|integer|in:0,1',
             'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'id_estado' => Rule::in(array_keys(Proyecto::$estado)),
             'id_user' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
+                    'required',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
             'id_user_obra_blanca' => [
-                'nullable',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
             'id_user_carpinteria' => [
-                'nullable',
-                'integer',
-                Rule::exists('users', 'id'),
-            ]
-        ]);
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ]
+            ]; 
+
+        $data = $req->validate(array_merge($val, $valbase));
 
         if($data['conFechaFin']==1){
             $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
