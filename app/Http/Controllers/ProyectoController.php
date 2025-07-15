@@ -280,11 +280,12 @@ class ProyectoController extends Controller
     public function deleteTarea ()
     {
         $tarea = Tarea::find(Request('id'));
+        $idPro = $tarea->id_proyecto;
         if($tarea){
             Avance::where('id_tarea', Request('id'))->delete();
             $tarea->delete();
-            if (!Tarea::where('id_tarea_estado', 2)->exists()) {
-                $val = Tarea::where('id_tarea_estado', 3)->orderBy('createdAt', 'desc')->first();
+            if (!Tarea::where('id_tarea_estado', 2)->where('id_proyecto', $idPro)->exists()) {
+                $val = Tarea::where('id_tarea_estado', 3)->where('id_proyecto', $idPro)->orderBy('createdAt', 'desc')->first();
                 if ($val) {
                     $val->update(['id_tarea_estado' => 2]);
                 }
