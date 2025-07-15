@@ -130,7 +130,7 @@
         @foreach ($tareaTipo as $tarea)
             <div class="flex flex-col flex-shrink-0 min-w-[290px] bg-white border rounded-md">
                 <h3 class="text-xl font-bold mb-3 text-center">{{ $tarea['nombre_tarea'] }}</h3>
-                <div data-id="{{ $tarea['id'] }}" data-name='{{ $tarea['nombre_tarea'] }}' 
+                <div data-id="{{ $tarea['id'] }}" data-name='{{ $tarea['nombre_tarea'] }}' id='{{ $tarea['id'] }}'
                     class="@if(Auth::user()->isNotColab) task-list @endif h-full overflow-y-auto space-y-2 p-1">
                     @if(!empty( $arratareas[$tarea['id']] ))
                         {!! $arratareas[$tarea['id']] !!}

@@ -81,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');
         Route::post('/saveTarea', [ProyectoController::class, 'saveTarea'])->name('saveTarea');
         Route::get('/editTarea/{id}', [ProyectoController::class, 'editTarea'])->name('editTarea');
+        Route::delete('/deleteTarea', [ProyectoController::class, 'deleteTarea'])->name('deleteTarea');
         Route::get('/listFinanzas', [ProyectoController::class, 'listFinanzas'])->name('listFinanzas');
         Route::post('/savefinanza', [ProyectoController::class, 'savefinanza'])->name('savefinanza');
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
@@ -100,9 +101,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');
         Route::post('/save', [TareasController::class, 'save'])->name('save');
         Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
+        Route::delete('/deleteTarea', [TareasController::class, 'deleteTarea'])->name('deleteTarea');
         Route::post('/moverTarea', [TareasController::class, 'moverTarea'])->name('moverTarea');
         Route::post('/finTarea', [TareasController::class, 'finTarea'])->name('finTarea');
-        
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
         Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
         Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');

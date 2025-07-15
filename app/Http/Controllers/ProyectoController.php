@@ -277,10 +277,35 @@ class ProyectoController extends Controller
         }
     }
 
+    public function deleteTarea ()
+    {
+        $tarea = Tarea::find(Request('id'));
+        if($tarea){
+            Avance::where('id_tarea', Request('id'))->delete();
+            $tarea->delete();
+            if (!Tarea::where('id_tarea_estado', 2)->exists()) {
+                $val = Tarea::where('id_tarea_estado', 3)->orderBy('createdAt', 'desc')->first();
+                if ($val) {
+                    $val->update(['id_tarea_estado' => 2]);
+                }
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Se elimio la tarea y los avaces de esta.',
+                'data' => $tarea
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'No se encontro tarea.'
+            ], 404);
+        }
+    }
+
     public function listFinanzas()
     {
         try {
-            $listFinanzas = Finanza::where('id_proyecto', Request('id'))->orderBy('id', 'desc')->paginate(10);
+            $listFinanzas = Finanza::where('id_proyecto', Request('id'))->orderBy('fec_inicio', 'desc')->paginate(10);
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de préstamos.',
@@ -330,6 +355,7 @@ class ProyectoController extends Controller
             ->get()
             ->map(function ($data) {
                 return [
+                    'id' => $data->id,
                     'nombre_tarea' => $data->tareaTipo->nombre_tarea,
                     'fech_ini' => $data->fec_inicio,
                     'fech_fin' => $data->fec_fin,

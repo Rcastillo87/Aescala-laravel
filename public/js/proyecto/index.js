@@ -128,6 +128,50 @@ async function editTarea(id) {
     });
 }
 
+async function deleteTarea(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¿Deseas eliminar esta tarea con todos sus avaces?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'No, cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`deleteTarea/?id=${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status) {
+                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'tarea-modal' }));
+                    Swal.fire({
+                        title: "Eliminado",
+                        text: "Item eliminado correctamente.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error", data.message || "No se pudo eliminar la data.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
+            }
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const conFechaFin = document.getElementById('conFechaFin');
@@ -277,10 +321,17 @@ function tableAvances(data) {
         html += `
             <div class="mb-10">
                 <div class="flex flex-wrap items-center mb-4 gap-2">
-                    <div class="${color} w-4 h-4 rounded-full"></div>
-                    <h2 class="ml-2 text-xl font-semibold text-gray-800">${tarea.nombre_tarea}</h2>
-                    <span class="ml-2 text-sm text-gray-500">${tarea.fech_ini} - ${tarea.fech_fin}</span>
-                    ${estadoHTML}
+                    <div class="flex-1 flex items-center gap-2 flex-wrap">
+                        <div class="${color} w-4 h-4 rounded-full"></div>
+                        <h2 class="text-xl font-semibold text-gray-800">${tarea.nombre_tarea}</h2>
+                        <span class="text-sm text-gray-500">${tarea.fech_ini} - ${tarea.fech_fin}</span>
+                        ${estadoHTML}
+                    </div>
+                    <div class="ml-auto">
+                        <button onclick="deleteTarea(${tarea.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
+                            Eliminar
+                        </button>
+                    </div>
                 </div>
         `;
 
@@ -302,7 +353,9 @@ function tableAvances(data) {
                                 Eliminar
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Actualizado: ${new Date(avance.updatedAt).toLocaleString()}</p>
+                        <p class="text-xs text-gray-500 mt-1">Actualizado: 
+                            ${new Date(avance.updatedAt).getFullYear()}-${String(new Date(avance.updatedAt).getMonth() + 1).padStart(2, '0')}-${String(new Date(avance.updatedAt).getDate()).padStart(2, '0')} ${String(new Date(avance.updatedAt).getHours()).padStart(2, '0')}:${String(new Date(avance.updatedAt).getMinutes()).padStart(2, '0')}
+                        </p>
                     </li>
                 `;
             });
