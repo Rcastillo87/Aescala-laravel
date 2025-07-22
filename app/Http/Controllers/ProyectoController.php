@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -28,6 +29,18 @@ class ProyectoController extends Controller
         $festivos->festivos($year);
         $festivos->festivos($year+1);
 
+        if(!Request('id_estado')){
+            $est = [1,5]; 
+        } else {
+            $est[] = Request('id_estado');
+        }
+
+        if(Auth::user()->isnotColab){
+            $cola = Request('id_userSerch');
+        } else {
+            $cola = Auth::user()->id;
+        }
+
         $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
         $hoy = Carbon::today();
         $title = 'Lista de Proyectos';
@@ -38,16 +51,15 @@ class ProyectoController extends Controller
         ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
             return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
         })
-        ->when(Request('id_estado'), function ($query, $id_estado) {
-            return $query->where('id_estado', $id_estado);
-        }, function ($query) {
-            return $query->whereIn('id_estado', [1, 5]);
+        ->when($est, function ($query, $id_estado) {
+            return $query->whereIN('id_estado', $id_estado);
         })
-        ->when(Request('id_userSerch'), function ($query, $id_user) { 
+        ->when($cola, function ($query, $id_user) { 
             return $query->where('id_user', $id_user);
         })
         ->orderBy('id', 'desc')
-        ->paginate(10);
+        ->paginate(10)
+        ->appends(request()->query());
 
         $userColab = User::where('id_rol', 3)->where('activo', 1)
         ->get(['id', 'nombre_completo'])
@@ -62,13 +74,9 @@ class ProyectoController extends Controller
 
         $headerAvance = ['Avance', 'Fecha de Ejecucion', 'Fecha Guardado', 'Opciones'];
         $headerCotizacion = ['Fec Creacion', 'Nombre Material', 'Cantidad', 'Val Unid', 'SubTotal', 'Opciones'];
-
         $headerComparativo = ['ID', 'Nombre Item', 'Cant. Desp.', 'Val Unidad Desp.', 'Cant. Cotizada', 'Val Unidad Cotizado'];
 
-        $materiales = InventarioMaterial::where('activo', 1) 
-        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
-        ->toArray();
-
+	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
         $proyecto = [];
         return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
             'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo', 'proyecto'));
@@ -111,13 +119,18 @@ class ProyectoController extends Controller
 
     public function save(Request $req)
     {
+        if($req->conFechaFin == 0){
+            $val = ['dias_trabajo' => 'nullable|integer|min:1']; 
+        } else {
+            $val = ['fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio']]; 
+        }
 
-        $data = $req->validate([
+        $valbase = [
             'id' => 'nullable|integer',
-            'nombre_proyecto' => 'required|string|max:200',
+            'nombre_proyecto' => ['required', 'string', 'max:200', Rule::unique('proyectos')->ignore($req->id, 'id')],
             'departamento' => 'required|integer',
             'ciudad' => 'required|integer',
-            'direccion' => 'required|string|min:0',
+            'direccion' => ['required', 'string', Rule::unique('proyectos')->ignore($req->id, 'id')],
             'nombre_cliente' => 'required|string|max:100',
             'telefono_cliente' => 'required|string|max:15',
             'val_obra_blanca' => 'nullable|integer|min:0',
@@ -127,17 +140,27 @@ class ProyectoController extends Controller
             'pres_otros' =>'nullable|integer|min:0',
             'observacion' => 'nullable|string',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
-            'fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
-            'dias_trabajo' => 'nullable|integer|min:1',
             'conFechaFin' => 'required|integer|in:0,1',
             'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'id_estado' => Rule::in(array_keys(Proyecto::$estado)),
             'id_user' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
-        ]);
+                    'required',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
+            'id_user_obra_blanca' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
+            'id_user_carpinteria' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ]
+            ]; 
+
+        $data = $req->validate(array_merge($val, $valbase));
 
         if($data['conFechaFin']==1){
             $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
@@ -167,8 +190,33 @@ class ProyectoController extends Controller
     {
         $proyecto = Proyecto::findOrFail($id);
         $proyecto->id_estado = $request->estado;
+
+        if ((int)$request->estado === 3) {
+            if (!$request->filled('fecha_dua')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La fecha de entrega (DUA) es obligatoria para este estado.'
+                ], 422);
+            }
+
+            $proyecto->fec_fin_real = $request->fecha_dua;
+            Tarea::where('id_proyecto', $id)
+                ->whereIn('id_tarea_estado', [1, 2])
+                ->update([
+                    'fec_fin_real' => $request->fecha_dua,
+                    'id_tarea_estado' => 3
+                ]);
+
+        } else {
+            $proyecto->fec_fin_real = null;
+        }
+
         $proyecto->save();
-        return response()->json(['success' => true, 'message' => 'Estado actualizado']);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado actualizado correctamente.'
+        ]);
     }
 
     public function saveTarea (Request $request)
@@ -179,9 +227,10 @@ class ProyectoController extends Controller
             'id_user' => ['required', 'integer', Rule::exists('users', 'id') ],
             'id_tarea_estado' => ['required', 'integer', Rule::in(array_keys(Tarea::$estado))],
             'id_tarea_tipo' => ['required', 'integer', Rule::exists('tarea_tipos', 'id') ],
-            'descripccion' => 'required|string|max:255',
+            'descripccion' => 'nullable|string|max:255',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
             'fec_fin' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
+            'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'conFechaFin' => 'required|integer|in:0,1',
             'dias_trabajo' => 'required|integer|min:1'
         ]);
@@ -228,10 +277,36 @@ class ProyectoController extends Controller
         }
     }
 
+    public function deleteTarea ()
+    {
+        $tarea = Tarea::find(Request('id'));
+        $idPro = $tarea->id_proyecto;
+        if($tarea){
+            Avance::where('id_tarea', Request('id'))->delete();
+            $tarea->delete();
+            if (!Tarea::where('id_tarea_estado', 2)->where('id_proyecto', $idPro)->exists()) {
+                $val = Tarea::where('id_tarea_estado', 3)->where('id_proyecto', $idPro)->orderBy('createdAt', 'desc')->first();
+                if ($val) {
+                    $val->update(['id_tarea_estado' => 2]);
+                }
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Se elimio la tarea y los avaces de esta.',
+                'data' => $tarea
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'No se encontro tarea.'
+            ], 404);
+        }
+    }
+
     public function listFinanzas()
     {
         try {
-            $listFinanzas = Finanza::where('id_proyecto', Request('id'))->orderBy('id', 'desc')->paginate(10);
+            $listFinanzas = Finanza::where('id_proyecto', Request('id'))->orderBy('fec_inicio', 'desc')->paginate(10);
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de préstamos.',
@@ -274,7 +349,22 @@ class ProyectoController extends Controller
     public function listAvances()
     {
         try {
-            $listAvance = Avance::where('id_tarea', Request('id'))->orderBy('createdAt', 'desc')->paginate(10);
+            $id = Tarea::find(Request('id'));
+            $listAvance = Tarea::with(['avance', 'tareaTipo'])
+            ->where('id_proyecto', $id->id_proyecto)
+            ->orderBy('fec_inicio', 'desc')
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'nombre_tarea' => $data->tareaTipo->nombre_tarea,
+                    'fech_ini' => $data->fec_inicio,
+                    'fech_fin' => $data->fec_fin,
+                    'estado' => $data->spanEstado,
+                    'avances' => $data->avance
+                ];
+            })->toArray();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de avance.',
@@ -488,7 +578,7 @@ class ProyectoController extends Controller
     public function pdfDespachos()
     {
         $proyecto = Proyecto::find(Request('id'));
-        $datos = (new Despachos)->despachos(Request('id'));
+        $datos = (new Despachos)->despachos(Request('id'), null, 1);
         $datosFactura = [
             'empresa' => [
                 'razon' => env('RAZON', 'AESCALA'),
@@ -511,7 +601,7 @@ class ProyectoController extends Controller
     public function pdfDespacho()
     {
         $proyecto = Proyecto::find(Request('id'));
-        $datos = (new Despachos)->despachos(Request('id'), Request('codigo'));
+        $datos = (new Despachos)->despachos(Request('id'), Request('codigo'), 1);
         $datosFactura = [
             'empresa' => [
                 'razon' => env('RAZON', 'AESCALA'),
@@ -544,21 +634,21 @@ class ProyectoController extends Controller
             $data['carpinteria']['presupuesto'] = $proyecto->val_obra_carpinteria;
             $data['carpinteria']['presupuestoMaterial'] = $proyecto->val_carpinteria_materiales;
             $data['carpinteria']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 2)->sum('valor');
-            $totales = $totales->whereHas('material', function ($q) { $q->where('tipo', 2); })->first();
-            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $total = (clone $totales)->whereHas('material', function ($q) { $q->where('tipo', 2); })->first();
+            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
             $data['carpinteria']['gastosMaterial'] = $total_final;
 
             $data['obrablanca']['presupuesto'] = $proyecto->val_obra_blanca;
             $data['obrablanca']['presupuestoMaterial'] = $proyecto->val_obra_blanca_materiales;
             $data['obrablanca']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 3)->sum('valor');
-            $totales = $totales->whereHas('material', function ($q) { $q->where('tipo', 1); })->first();
-            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $total = (clone $totales)->whereHas('material', function ($q) { $q->where('tipo', 1); })->first();
+            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
             $data['obrablanca']['gastosMaterial'] = $total_final;
 
             $data['otros']['presupuesto'] = $proyecto->pres_otros;
             $data['otros']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 4)->sum('valor');
-            $totales = $totales->whereHas('material', function ($q) { $q->whereNull('tipo'); })->first();
-            $total_final = $totales->total_tipo_1 - $totales->total_tipo_2;
+            $total = (clone $totales)->whereHas('material', function ($q) { $q->whereNull('tipo'); })->first();
+            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
             $data['otros']['gastosMaterial'] = $total_final;
 
             $data['global']['presupuesto'] = $proyecto->totalProyecto;

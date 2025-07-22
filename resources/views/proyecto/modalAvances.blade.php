@@ -7,7 +7,7 @@
                 data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300" role="tablist">
                 <li class="me-2" role="presentation">
                     <button class="inline-block p-4 border-b-2 rounded-t-lg" id="avance-profile-styled-tab" data-tabs-target="#avance-styled-profile" type="button" role="tab" 
-                    aria-controls="profile" aria-selected="false">Lista Avance</button>
+                    aria-controls="profile" aria-selected="false">Línea de Vida de Tareas</button>
                 </li>
                 <li role="presentation">
                     <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" 
@@ -18,19 +18,9 @@
         </div>
         <div id="avance-default-styled-tab-content">
             <div class="hidden p-4 rounded-lg bg-white dark:bg-gray-800" id="avance-styled-profile" role="tabpanel" aria-labelledby="profile-tab">
-                <h2 class="text-xl font-semibold mb-4">Lista Avances</h2>
+                <h2 class="text-xl font-semibold mb-4">Línea de Vida de Tareas</h2>
                 <div class="p-0 overflow-x-auto ps ps--active-x">
-                    <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
-                        <x-table-header :headers="$headerAvance" />
-                        <tbody id="avanceList"></tbody>
-                    </table>
-                    <!-- Paginador -->
-                    <div id="paginationAvance" class="flex justify-center mt-4">
-                        <!-- Aquí se cargará la paginación -->
-                    </div>
-                    <div id="noDataMessageAvance" class="hidden text-center text-gray-500">
-                        No hay datos disponibles.
-                    </div>
+                    <div id="avanceList"></div>
                 </div>
                 <div class="flex justify-star">
                     <a  href="#" tabindex="0"
@@ -52,8 +42,16 @@
                         <input type="hidden" id="id_tarea_avance" name="id_tarea_avance" >
                         <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-6/12 md:flex-0">
                             <x-input-label for="avance" :value="__('Describa el Avance *')" />
-                            <x-text-input id="avance" class="block mt-1 w-full" type="text" name="avance" :value="old('avance')" 
-                            required autofocus />
+                            <textarea
+                                id="avance"
+                                name="avance"
+                                autofocus
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 
+                                focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full overflow-hidden resize-none leading-6 py-2"
+                                >{{old('avance')}}
+                            </textarea>
+
                             <x-input-error :messages="$errors->get('avance')" class="mt-2" />
                         </div>
                         <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">

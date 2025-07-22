@@ -39,5 +39,6 @@ en tareas
 dias_trabajo
 
 -------------------------------------------------------------------
-proyectos id_tarea en null
 tareas a null descripccion
+fec_fin_real tareas date null
+save integer null

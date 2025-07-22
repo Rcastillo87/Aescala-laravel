@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Despachos;
 use App\Models\Proyecto;
 use App\Models\InventarioMaterial;
-
+use Illuminate\Routing\Route;
 
 class DespachoController extends Controller
 {
@@ -25,12 +25,10 @@ class DespachoController extends Controller
             ->toArray();
 
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
-            ->get(['id', 'nombre_proyecto'])
+            ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
 
-        $materiales = InventarioMaterial::where('activo', 1) 
-        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
-        ->toArray();
+	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
 
         return view('despachos.index', compact('title', 'tipo', 'colaUsers', 'proyectos', 'materiales'));
     }
@@ -63,7 +61,7 @@ class DespachoController extends Controller
             ],
             'materiales.*.cantidad' => [
                 'required',
-                'numeric',
+                'integer',
                 'min:1',
                 function ($attribute, $value, $fail) use ($request) {
                     $index = explode('.', $attribute)[1];
@@ -75,7 +73,8 @@ class DespachoController extends Controller
                     }
                 }
             ],
-            'materiales.*.valor_unidad' => ['required', 'integer']
+            'materiales.*.valor_unidad' => ['required', 'integer'],
+            'materiales.*.cobro' => ['required', 'integer', 'in:0,1']
         ]);
 
         // Iniciar transacción
@@ -96,6 +95,7 @@ class DespachoController extends Controller
                 $dato['id_material'] = $material['id_material'];
                 $dato['cantidad'] = $material['cantidad'];
                 $dato['valor_unidad'] = $material['valor_unidad'];
+                $dato['cobro'] = $material['cobro'];
                 Despachos::create($dato);
 
                 $inventarioMaterial = InventarioMaterial::find($material['id_material']);
@@ -105,16 +105,27 @@ class DespachoController extends Controller
                 if ($validated['tipo'] == 2) {
                     // Si el tipo es 2, se suma la cantidad
                     $msg = 'Devolucion';
-                    $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                    //if($material['cobro'] == 1){
+                        $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                    //}
                 } else {
                     // Si no, se descuenta
                     $msg = 'Despacho';
-                    $inventarioMaterial->decrement('cantidad', $material['cantidad']);
+                    //if($material['cobro'] == 1){
+                        $inventarioMaterial->decrement('cantidad', $material['cantidad']);
+                    //}
                 }
             }
-    
+
+            $pdfRoute = route('proyecto.pdfDespacho', [
+                'id' => $validated['id_proyecto'],
+                'codigo' => $codigo,
+                'view' => 1
+            ]);
+
             return redirect()->route('despachos.index')
-                        ->with('success', "$msg {$codigo} registrado correctamente");
+                ->with('success', "$msg {$codigo} registrado correctamente")
+                ->with('pdf_url', $pdfRoute);
         });
     }
     

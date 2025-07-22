@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 </div>
                 <input type="number" 
                        value="1"
-                       step="0.01"
                        max="${material.cantidad}"
                        min="1"
                        name="materiales[${materialIndex}][cantidad]" 
@@ -70,7 +69,27 @@ document.addEventListener("DOMContentLoaded", function(event) {
                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
                        onchange="calculateTotal(this, ${material.cantidad})">
             </div>
-            <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
+            <div class="flex justify-between">
+                <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
+                
+                <div class="flex items-center">
+                    <input type="hidden" name="materiales[${materialIndex}][cobro]" value="0">
+                    <input
+                        id="materiales[${materialIndex}][cobro]"
+                        type="checkbox"
+                        name="materiales[${materialIndex}][cobro]"
+                        value="1"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm 
+                            focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 
+                            focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        checked
+                    >
+                    <label for="materiales[${materialIndex}][cobro]" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        Se cobra
+                    </label>
+                </div>
+
+            </div>
             <div class="flex bg-gradient-to-r text-left justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
                 <p class="font-medium">Costo: ${formatCurrency(material.valor_unidad)} * 
                 <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
@@ -79,6 +98,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${material.id}">
             <input type="hidden" name="materiales[${materialIndex}][valor_unidad]" value="${material.valor_unidad}">
         `;
+
+
 
         document.getElementById('selectMateriales').appendChild(materialDiv);
     }
@@ -117,4 +138,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // Remover de la lista de materiales añadidos
         addedMaterials.delete(String(materialId));
     };
+
+    const proyectoSelect = document.getElementById('id_proyecto');
+    const userSelect = document.getElementById('id_user');
+    proyectoSelect.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const dataAttr = selectedOption.getAttribute('data-datax');
+        if (!dataAttr) return;
+        try {
+            const data = JSON.parse(dataAttr);
+            const idUser = data.id_user;
+            if (!idUser) return;
+            userSelect.value = idUser;
+        } catch (e) {
+            console.error("Error al parsear data-datax:", e);
+        }
+    });
+
 });

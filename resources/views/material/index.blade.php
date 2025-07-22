@@ -81,7 +81,7 @@
         <!-- Paginador -->
         @if($items->hasPages())
             <div class="mt-4">
-                {{ $items->links() }}
+                {{ $items->appends(request()->query())->links() }}
             </div>
         @endif
     </div>

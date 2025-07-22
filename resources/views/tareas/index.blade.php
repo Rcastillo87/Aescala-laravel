@@ -24,7 +24,7 @@
         $proyectos = '';
         foreach ($proyecto as $proy) {
             $card = 
-            "<div data-id='$proy->id' class='card-proyecto cursor-pointer w-[280px] border-gray-400 border bg-white rounded-md text-start proys-center px-2 py-1'>
+            "<div data-id='$proy->id' draggable='true' class='draggable card-proyecto cursor-pointer w-[280px] border-gray-400 border bg-white rounded-md text-start proys-center px-2 py-1'>
                 <p class='text-lg font-bold'>Proyecto: <span class='text-md font-semibold text-gray-600'>$proy->nombre_proyecto</span></p>
                 <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($proy->user->nombre_completo)."</span></p>
                 <p class='text-lg font-bold'>Estado: <span class='text-md font-semibold text-gray-600'>$proy->spanEstado</span></p>
@@ -48,14 +48,18 @@
                 $porcenTarea < 100 => 'bg-orange-400',
                 default => 'bg-red-500',
             };
+            $hidden = '';
+            if(!Auth::user()->isNotColab){
+                $hidden = 'hidden';
+            }
             
             $card = 
-            "<div data-id='$item->id_proyecto' data-tipo='$item->id_tarea_tipo' class='card-proyecto cursor-pointer w-[280px] border-gray-400 border rounded-md text-start items-center px-2 py-1'>
+            "<div data-id='$item->id_proyecto' draggable='true' data-tipo='$item->id_tarea_tipo' class='draggable card-proyecto cursor-pointer w-[280px] border-gray-400 border rounded-md text-start items-center px-2 py-1'>
                 <p class='text-lg font-bold'>Proyecto: <span class='text-md font-semibold text-gray-600'>".$item->proyecto->nombre_proyecto."</span></p>
+                <p class='text-lg font-bold'>Proyecto Estado: <span class='text-md font-semibold text-gray-600'>".$item->proyecto->spanEstado."</span></p>
                 <p class='text-lg font-bold'>Tarea: <span class='text-md font-semibold text-gray-600'>".$item->tareaTipo->nombre_tarea."</span></p>
+                <p class='text-lg font-bold'>Tarea Estado: <span class='text-md font-semibold text-gray-600'>".$item->spanEstado."</span></p>
                 <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($item->user->nombre_completo)."</span></p>
-                <p class='text-lg font-bold'>Estado: <span class='text-md font-semibold text-gray-600'>".$item->spanEstado."</span></p>
-
                 <div class='flex my-2'>
                     <div class='flex flex-col items-center justify-center border-2 rounded-xl w-[250px] ".$bgTarea." p-2'>
                         <p class='text-white text-2xl font-bold'>".$diasTrascurridosTarea."/".$diasTarea." | ". $porcenTarea ."%</p>
@@ -63,7 +67,7 @@
                         <span class='text-white text-md'>F Fin: ".$item->fechaFin."</span>
                     </div>
 
-                    <div class='space-y-2 mx-auto text-center gap-1'>
+                    <div class='space-y-2 mx-auto text-center gap-1 ".$hidden."'>
                         <!-- Botón Editar -->
                         <div class='relative inline-flex'>
                             <a      
@@ -114,33 +118,40 @@
         }
     @endphp
 
-    <div class="flex w-full gap-2">
-        <div class="flex min-h-[calc(100vh-420px)] px-2 gap-2 overflow-x-scroll">
-            <div class="task-list tarea-column w-[290px] flex-shrink-0 bg-blue-50 border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
-                <h3 class="text-xl font-bold mb-3 text-center">Sin Tareas</h3>
+    <div id="scrollContainer" class="flex w-full lg:h-[calc(100vh-355px)] h-[calc(100vh-410px)] gap-2 overflow-x-auto">
+
+        <div class="flex flex-col flex-shrink-0 min-w-[290px] bg-blue-50 border rounded-md">
+            <h3 class="text-xl font-bold mb-3 text-center">Sin Tareas</h3>
+            <div class="@if(Auth::user()->isNotColab) task-list tarea-column @endif h-full overflow-y-auto space-y-2 p-1">
                 {!! $proyectos !!}
             </div>
-            @foreach ($tareaTipo as $tarea)
-                <div data-id="{{ $tarea['id'] }}" data-name='{{ $tarea['nombre_tarea'] }}' 
-                    class="task-list w-[290px] flex-shrink-0 bg-white border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
-                    <h3 class="text-xl font-bold mb-3 text-center">{{ $tarea['nombre_tarea'] }}</h3>
+        </div>
+
+        @foreach ($tareaTipo as $tarea)
+            <div class="flex flex-col flex-shrink-0 min-w-[290px] bg-white border rounded-md">
+                <h3 class="text-xl font-bold mb-3 text-center">{{ $tarea['nombre_tarea'] }}</h3>
+                <div data-id="{{ $tarea['id'] }}" data-name='{{ $tarea['nombre_tarea'] }}' id='{{ $tarea['id'] }}'
+                    class="@if(Auth::user()->isNotColab) task-list @endif h-full overflow-y-auto space-y-2 p-1">
                     @if(!empty( $arratareas[$tarea['id']] ))
                         {!! $arratareas[$tarea['id']] !!}
                     @endif
                 </div>
-            @endforeach
-            <div data-id="X" data-name="Finalizado" 
-            class="task-end w-[290px] flex-shrink-0 bg-red-50 border rounded-md p-1 space-y-2 min-h-[calc(100vh-420px)]">
-                <h3 class="text-xl font-bold mb-3 text-center">Fin</h3>
             </div>
+        @endforeach
+
+        <div data-id="X" data-name="Finalizado" 
+            class="@if(Auth::user()->isNotColab) task-end @endif flex flex-col flex-shrink-0 min-w-[290px] bg-red-50 border rounded-md">
+            <h3 class="text-xl font-bold mb-3 text-center">Fin</h3>
         </div>
+
     </div>
+
 
     @include('proyecto.modalAvances')
     @include('proyecto.modalTarea')
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="{{asset('js/tareas/index.js')}}"></script>
 @endsection

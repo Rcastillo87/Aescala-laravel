@@ -24,10 +24,11 @@ class Despachos extends Model
         'id_user',
         'id_proyecto',
         'cantidad',
-        'valor_unidad'
+        'valor_unidad',
+        'cobro'
     ];
 
-    protected $appends = ['spanEstado'];
+    protected $appends = ['spanEstado', 'isCobro'];
 
     protected $casts = [
         'tipo' => 'integer',
@@ -46,6 +47,11 @@ class Despachos extends Model
     {
         return '<span class="'.(self::$classTipo[(int)$this->tipo] ?? 'default-class').'">'
         . (self::$tipo[(int)$this->tipo] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getIsCobroAttribute()
+    {
+        return ($this->cobro==1)?'<span class="span-green">SI</span>':'<span class="span-red">NO</span>';
     }
 
     public static $tipo = [
@@ -69,7 +75,7 @@ class Despachos extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function despachos(int $id, $codigo = null)
+    public function despachos(int $id, $codigo = null, $cobro = null)
     {
 
         $rawDate = config('database.default') === 'sqlite' 
@@ -81,6 +87,9 @@ class Despachos extends Model
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
+                        /*->when($cobro, function ($query) {
+                            return $query->where('cobro', 1);
+                        })*/
                         ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
                         ->distinct()
                         ->get()
@@ -101,14 +110,18 @@ class Despachos extends Model
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        ->select('codigo', 'id_material', 'cantidad', 'valor_unidad')
+                        /*->when($cobro, function ($query) {
+                            return $query->where('cobro', 1);
+                        })*/
+                        ->select('codigo', 'id_material', 'cantidad', 'valor_unidad', 'cobro')
                         ->get()
                         ->map(function ($item) {
                             return [
                                 'codigo' => $item->codigo,
                                 'id_material' => $item->id_material,
                                 'cantidad' => $item->cantidad,
-                                'valor_unidad' => $item->valor_unidad,
+                                'valor_unidad' => ($item->cobro==1)?$item->valor_unidad:0,
+                                'isCobro' => $item->isCobro,
                                 'nombre_material' => $item->material->nombre_material ?? null,
                                 'spanTipo' => $item->material->spanTipo ?? null
                             ];

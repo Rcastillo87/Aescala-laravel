@@ -33,7 +33,9 @@ class Proyecto extends Model
         'dias_trabajo',
         'fec_fin_real',
         'id_estado',
-        'id_user'
+        'id_user',
+        'id_user_obra_blanca',
+        'id_user_carpinteria'
     ];
 
     protected $casts = [
@@ -112,6 +114,16 @@ class Proyecto extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function userOB()
+    {
+        return $this->belongsTo(User::class, 'id_user_obra_blanca');
+    }
+
+    public function userCarpi()
+    {
+        return $this->belongsTo(User::class, 'id_user_carpinteria');
     }
 
     public function tareas()

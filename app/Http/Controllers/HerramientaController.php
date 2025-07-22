@@ -29,7 +29,8 @@ class HerramientaController extends Controller
         ->when(Request('estado'), function ($query, $estado) { 
             return $query->where('estado', $estado);
         })
-        ->paginate(10);
+        ->paginate(10)
+        ->appends(request()->query());
         $userPrestamo = User::where('id_rol', 3)->where('activo', 1)
         ->get(['id', 'nombre_completo'])
         ->toArray();

@@ -140,7 +140,7 @@
                 <x-input-error :messages="$errors->get('fec_fin_real')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="id_user" :value="__('Colaborador Encargado *')" />
+                <x-input-label for="id_user" :value="__('Arquitecto Encargado *')" />
                 <x-select-input 
                     name="id_user" 
                     id="id_user"
@@ -152,6 +152,33 @@
                 />
                 <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
             </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="id_user_obra_blanca" :value="__('Cont. Obra Blanca')" />
+                <x-select-input 
+                    name="id_user_obra_blanca" 
+                    id="id_user_obra_blanca"
+                    :options="$colaUsers" 
+                    :data="['id', 'nombre_completo']"
+                    :selected="old('id_user_obra_blanca', $proyecto?$proyecto->id_user_obra_blanca:'')" 
+                    class="block mt-1 w-full"
+                />
+                <x-input-error :messages="$errors->get('id_user_obra_blanca')" class="mt-2" />
+            </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="id_user_carpinteria" :value="__('Cont. Carpinteria')" />
+                <x-select-input 
+                    name="id_user_carpinteria" 
+                    id="id_user_carpinteria"
+                    :options="$colaUsers" 
+                    :data="['id', 'nombre_completo']"
+                    :selected="old('id_user_carpinteria', $proyecto?$proyecto->id_user_carpinteria:'')" 
+                    class="block mt-1 w-full"
+                />
+                <x-input-error :messages="$errors->get('id_user_carpinteria')" class="mt-2" />
+            </div>
+
             @php
                 $depts = json_decode($departamentos, true)
             @endphp
@@ -182,8 +209,14 @@
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="observacion" :value="__('Comentario')" />
-                <x-text-input id="observacion" class="block mt-1 w-full" type="text" name="observacion" :value="old('observacion', $proyecto?$proyecto->observacion:'')" 
-                autofocus />
+                <textarea
+                    id="observacion"
+                    name="observacion"
+                    autofocus
+                    oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
+                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 
+                    focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full overflow-hidden resize-none leading-6 py-2"
+                    >{{old('observacion', $proyecto?$proyecto->observacion:'')}}</textarea>
                 <x-input-error :messages="$errors->get('observacion')" class="mt-2" />
             </div>
         </div>

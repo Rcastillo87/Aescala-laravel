@@ -36,7 +36,8 @@ class UserController extends Controller
         ->when(Request('id_rol'), function ($query, $id_rol) { 
             return $query->where('id_rol', $id_rol);
         })
-        ->paginate(10);
+        ->paginate(10)
+        ->appends(request()->query());
         $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Trabajando en', 'Perfil', 'Estado', 'Opciones'];
         return view('user.index', compact('roles', 'title', 'items', 'headers', 'estado'));
     }
@@ -92,12 +93,10 @@ class UserController extends Controller
 
         // valido los password para los distincos casos
         if (!$req->id) {
-            if ($req->id_rol <> 3) {
-                $req->validate([
-                    'password' => 'required|string|min:6|max:20'
-                ]);
-                $user['password'] = Hash::make($req->password);
-            }
+            $req->validate([
+                'password' => 'required|string|min:6|max:20'
+            ]);
+            $user['password'] = Hash::make($req->password);
             $msg = 'Usuario creado con éxito';
         } else {
             $req->validate([

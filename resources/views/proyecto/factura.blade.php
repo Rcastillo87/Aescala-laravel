@@ -150,15 +150,24 @@
     <!-- Información del cliente en dos columnas -->
     <table width="100%" style="margin-bottom: 15px; border-collapse: collapse;">
         <tr>
-            <td style="width: 70%; padding: 8px; background-color: #f9f9f9;">
+            <td style="width: 40%; padding: 8px; background-color: #f9f9f9;">
                 <div class="info-box"><strong>Cliente:</strong> {{ $proyecto['nombre_cliente'] }}</div>
                 <div class="info-box"><strong>Teléfono:</strong> {{ $proyecto['telefono_cliente'] }}</div>
-                <div class="info-box"><strong>Dirección proyecto:</strong> {{ $proyecto['direccion'] }}</div>
+                <div class="info-box"><strong>Dir. proyecto:</strong> {{ $proyecto['direccion'] }}</div>
             </td>
-            <td style="width: 30%; padding: 8px; background-color: #f9f9f9;">
-                <div class="info-box"><strong>Fecha Inicio:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_inicio'])->format('d/m/Y') }}</div>
-                <div class="info-box"><strong>Fecha Fin Estimada:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_fin_estimado'])->format('d/m/Y') }}</div>
-                <div class="info-box"><strong>Reporte generado:</strong> {{ date('d/m/Y H:i') }}</div>
+            <td style="width: 25%; padding: 8px; background-color: #f9f9f9;">
+                <div class="info-box"><strong>Fec. Inicio:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_inicio'])->format('d/m/Y') }}</div>
+                <div class="info-box"><strong>Fec. Fin Est:</strong> {{ \Carbon\Carbon::parse($proyecto['fec_fin_estimado'])->format('d/m/Y') }}</div>
+                <div class="info-box"><strong>Fec. Reporte:</strong> {{ date('d/m/Y H:i') }}</div>
+            </td>
+            <td style="width: 35%; padding: 8px; background-color: #f9f9f9; vertical-align: top;">
+                <div class="info-box"><strong>Arq. Encargado:</strong> {{ $proyecto->user['nombre_completo'] }}</div>
+                @if ($proyecto->userOB)
+                    <div class="info-box"><strong>Cont. Obra Blanca:</strong> {{ $proyecto->userOB['nombre_completo'] }}</div>
+                @endif
+                @if ($proyecto->userCarpi)
+                    <div class="info-box"><strong>Cont. Carpinteria:</strong> {{ $proyecto->userCarpi['nombre_completo'] }}</div>
+                @endif
             </td>
         </tr>
     </table>
@@ -178,21 +187,23 @@
                 <thead>
                     <tr>
                         <th style="width: 5%;">#</th>
-                        <th style="width: 45%;">Material</th>
+                        <th style="width: 40%;">Material</th>
                         <th style="width: 10%; text-align: center;">Cantidad</th>
-                        <th style="width: 15%; text-align: right;">Valor Unitario</th>
+                        <th style="width: 10%;">Se Cobra</th>
+                        <th style="width: 12%; text-align: right;">Valor Unitario</th>
                         <th style="width: 15%;">Tipo</th>
-                        <th style="width: 10%; text-align: right;">Subtotal</th>
+                        <th style="width: 13%; text-align: right;">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($desp['items'] as $itemIndex => $item)
                     <tr>
-                        <td>{{ $itemIndex + 1 }}</td>
+                        <td style="text-align: center;">{{ $itemIndex + 1 }}</td>
                         <td>{{ $item['nombre_material'] }}</td>
                         <td style="text-align: center;">{{ $item['cantidad'] }}</td>
+                        <td style="text-align: center;">{!! $item['isCobro'] !!}</td>
                         <td style="text-align: right;">${{ number_format($item['valor_unidad'], 2, ',', '.') }}</td>
-                        <td>{!! $item['spanTipo'] !!}</td>
+                        <td style="text-align: center;">{!! $item['spanTipo'] !!}</td>
                         <td style="text-align: right;">${{ number_format($item['cantidad'] * $item['valor_unidad'], 2, ',', '.') }}</td>
                     </tr>
                     @endforeach

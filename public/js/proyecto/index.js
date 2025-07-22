@@ -1,30 +1,65 @@
 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 function cambiarEstado(itemId, estadoActual) {
+    let selectedEstado = estadoActual;
+
     Swal.fire({
         title: '⚠️ Cambiar Estado',
         text: "Selecciona un nuevo estado para el proyecto.",
-        icon: 'warning', // 🔥 Icono de advertencia
+        icon: 'warning',
         input: 'select',
         inputOptions: window.estadosProyecto,
         inputValue: estadoActual,
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         cancelButtonText: 'Cancelar',
-        customClass: {
-            popup: 'custom-swal', // Clase para personalizar la alerta
-            confirmButton: 'custom-confirm-button',
-            cancelButton: 'custom-cancel-button',
-            input: 'border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1' // Clase para personalizar el select
+        didOpen: () => {
+            const swalContainer = Swal.getPopup();
+
+            // Crear etiqueta (label) e input de fecha
+            const label = document.createElement('label');
+            label.textContent = 'Ingrese fecha de entrega';
+            label.setAttribute('for', 'fechaDua');
+            label.className = 'swal2-label mt-2 text-center';
+            label.style.display = 'none';
+
+            const fechaInput = document.createElement('input');
+            fechaInput.type = 'date';
+            fechaInput.id = 'fechaDua';
+            fechaInput.className = 'swal2-input mt-1';
+            fechaInput.style.display = 'none';
+
+            // Insertar en el popup
+            swalContainer.appendChild(label);
+            swalContainer.appendChild(fechaInput);
+
+            // Mostrar si se selecciona estado 3
+            const select = swalContainer.querySelector('select');
+            select.addEventListener('change', (e) => {
+                selectedEstado = parseInt(e.target.value);
+                const mostrar = selectedEstado === 3;
+                label.style.display = mostrar ? 'block' : 'none';
+                fechaInput.style.display = mostrar ? 'block' : 'none';
+            });
         },
-        preConfirm: (nuevoEstado) => {
+        preConfirm: () => {
+            const fechaDua = document.getElementById('fechaDua')?.value;
+
+            if (parseInt(selectedEstado) === 3 && !fechaDua) {
+                Swal.showValidationMessage('Debes ingresar una fecha de entrega.');
+                return false;
+            }
+
             return fetch(`editStatus/${itemId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ estado: nuevoEstado })
+                body: JSON.stringify({
+                    estado: selectedEstado,
+                    fecha_dua: selectedEstado === 3 ? fechaDua : null
+                })
             })
             .then(response => {
                 if (!response.ok) throw new Error('Error en la solicitud');
@@ -41,7 +76,7 @@ function cambiarEstado(itemId, estadoActual) {
                 text: 'El estado se cambió correctamente.',
                 icon: 'success',
                 confirmButtonText: 'Aceptar'
-            }).then(() => location.reload()); 
+            }).then(() => location.reload());
         }
     });
 }
@@ -53,6 +88,8 @@ async function formIdProyecto(id) {
 }
 
 async function editTarea(id) {
+    document.getElementById('idFecFinReal').classList.add('hidden');
+    document.getElementById('fec_fin_real').value = '';
     return fetch(`editTarea/${id}`, {
         method: 'get',
         headers: {
@@ -81,9 +118,57 @@ async function editTarea(id) {
         document.getElementById('id_tarea_tipo').value  = data.data.id_tarea_tipo;
         document.getElementById('id_tarea_estado').value  = data.data.id_tarea_estado;
         document.getElementById('fec_fin').value = data.data.fec_fin;
+        if( (data.data.id_tarea_estado == 3) && (data.data.fec_fin_real)){
+            document.getElementById('idFecFinReal').classList.remove('hidden');
+            document.getElementById('fec_fin_real').value = data.data.fec_fin_real.split(' ')[0];
+        }
     })
     .catch(error => {
         Swal.showValidationMessage(`Error: ${error.message}`);
+    });
+}
+
+async function deleteTarea(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¿Deseas eliminar esta tarea con todos sus avaces?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'No, cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`deleteTarea/?id=${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status) {
+                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'tarea-modal' }));
+                    Swal.fire({
+                        title: "Eliminado",
+                        text: "Item eliminado correctamente.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire("Error", data.message || "No se pudo eliminar la data.", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
+            }
+        }
     });
 }
 
@@ -198,42 +283,104 @@ async function openAvance(page = 1, id) {
 }
 
 function tableAvances(data) {
-    const serviceList = document.getElementById('avanceList');
-    const pagination = document.getElementById('paginationAvance');
-    const noDataMessage = document.getElementById('noDataMessageAvance');
-
-    serviceList.innerHTML = '';
-    pagination.innerHTML = '';
-
-    if (data.data && data.data.length > 0) {
-        data.data.forEach(service => {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.avance}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.fec_avance}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
-                <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                    <button onclick="confirmDelete(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
-                        Eliminar
-                    </button>
-                </td>
-            `;
-            serviceList.appendChild(fila);
-        });
-
-        const paginationLinks = data.links.map(link => {
-            if (link.url) {
-                const page = new URL(link.url).searchParams.get('page') || 1;
-                return `<a href="#" onclick="listAvances(${page}, ${id})" class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</a>`;
-            }
-            return `<span class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</span>`;
-        }).join('');
-        pagination.innerHTML = paginationLinks;
-
-        noDataMessage.classList.add('hidden');
-    } else {
-        noDataMessage.classList.remove('hidden');
+    const contenedor = document.getElementById('avanceList');
+    
+    if (!data || data.length === 0) {
+        contenedor.innerHTML = `
+            <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50">
+                No hay datos para mostrar
+            </div>
+        `;
+        return;
     }
+
+    // Mapear colores para cada tarea
+    const colores = [
+        'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
+        'bg-yellow-500', 'bg-red-500', 'bg-indigo-500',
+        'bg-pink-500', 'bg-teal-500', 'bg-orange-500',
+        'bg-cyan-500', 'bg-lime-500', 'bg-amber-500',
+        'bg-emerald-500', 'bg-violet-500', 'bg-fuchsia-500'
+    ];
+
+    let html = `
+        <div class="max-w-4xl mx-auto">
+    `;
+
+    data.forEach((tarea, index) => {
+        const color = colores[index % colores.length];
+        const colorClaro = color.replace('500', '200');
+        const colorMedio = color.replace('500', '400');
+        const colorOscuro = color;
+        
+        // Usar el estado proporcionado por la API
+        const estadoHTML = tarea.estado 
+            ? tarea.estado.replace('span-yellow', 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800')
+            : '<span class="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Estado no definido</span>';
+
+        html += `
+            <div class="mb-10">
+                <div class="flex flex-wrap items-center mb-4 gap-2">
+                    <div class="flex-1 flex items-center gap-2 flex-wrap">
+                        <div class="${color} w-4 h-4 rounded-full"></div>
+                        <h2 class="text-xl font-semibold text-gray-800">${tarea.nombre_tarea}</h2>
+                        <span class="text-sm text-gray-500">${tarea.fech_ini} - ${tarea.fech_fin}</span>
+                        ${estadoHTML}
+                    </div>
+                    <div class="ml-auto">
+                        <button onclick="deleteTarea(${tarea.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+        `;
+
+        if (tarea.avances && tarea.avances.length > 0) {
+            html += `
+                <ol class="relative border-l border-gray-200 ml-2">
+            `;
+            
+            tarea.avances.forEach((avance, avanceIndex) => {
+                const avanceColor = avanceIndex % 3 === 0 ? colorClaro : 
+                                  avanceIndex % 3 === 1 ? colorMedio : colorOscuro;
+                
+                html += `
+                    <li class="mb-4 ml-6 group">
+                        <div class="absolute w-3 h-3 ${avanceColor} rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                        <div class="flex justify-between items-start">
+                            <p class="text-base font-normal text-gray-800 mt-1 flex-1">${avance.avance}</p>
+                            <button onclick="confirmDelete(${avance.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 cursor-pointer">
+                                Eliminar
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Actualizado: 
+                            ${new Date(avance.updatedAt).getFullYear()}-${String(new Date(avance.updatedAt).getMonth() + 1).padStart(2, '0')}-${String(new Date(avance.updatedAt).getDate()).padStart(2, '0')} ${String(new Date(avance.updatedAt).getHours()).padStart(2, '0')}:${String(new Date(avance.updatedAt).getMinutes()).padStart(2, '0')}
+                        </p>
+                    </li>
+                `;
+            });
+            
+            html += `
+                </ol>
+            `;
+        } else {
+            html += `
+                <div class="ml-6 p-4 text-sm text-gray-500 italic">
+                    No hay avances registrados para esta tarea
+                </div>
+            `;
+        }
+
+        html += `
+            </div>
+        `;
+    });
+
+    html += `
+        </div>
+    `;
+
+    contenedor.innerHTML = html;
 }
 
 function confirmDelete(id) {
@@ -512,10 +659,11 @@ async function renderDespachos(despachos, id) {
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th class="px-4 py-2">Material</th>
-                                    <th class="px-4 py-2">Cantidad</th>
-                                    <th class="px-4 py-2">Valor Unitario</th>
-                                    <th class="px-4 py-2">Tipo</th>
+                                    <th class="px-3 py-2">Material</th>
+                                    <th class="px-3 py-2">Cantidad</th>
+                                    <th class="px-3 py-2">Valor Unitario</th>
+                                    <th class="px-3 py-2">Se Cobra</th>
+                                    <th class="px-3 py-2">Tipo</th>
                                 </tr>
                             </thead>
                             <tbody id="items-${despacho.codigo}">
@@ -535,24 +683,14 @@ async function renderDespachos(despachos, id) {
             const row = document.createElement('tr');
             row.className = 'bg-white border-b';
             row.innerHTML = `
-                <td class="px-4 py-2">${item.nombre_material}</td>
-                <td class="px-4 py-2">${item.cantidad}</td>
-                <td class="px-4 py-2">${item.valor_unidad.toLocaleString()}</td>
-                <td class="px-4 py-2 tipo-container">${item.spanTipo}</td>
+                <td class="px-3 py-2">${item.nombre_material}</td>
+                <td class="px-3 py-2">${item.cantidad}</td>
+                <td class="px-3 py-2">${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-3 py-2 tipo-container">${item.isCobro}</td>
+                <td class="px-3 py-2 tipo-container">${item.spanTipo}</td>
             `;
             tbody.appendChild(row);
         });
-    });
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
     });
 }
 

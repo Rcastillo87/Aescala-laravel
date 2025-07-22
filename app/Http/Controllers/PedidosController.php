@@ -42,6 +42,7 @@ class PedidosController extends Controller
         ->groupBy('id_factura', 'id_proveedor', DB::raw('DATE(fecha)'))
         ->orderBy('fecha', 'desc')
         ->paginate(10)
+        ->appends(request()->query())
         ->through(function ($factura) {
             return [
                 'factura' => $factura->id_factura,
@@ -73,7 +74,7 @@ class PedidosController extends Controller
         $title = $id?'Editar Pedido':'Crear Pedido';
         $pedidos = $id?Pedidos::where('id_factura', $id)->get():null;
         $materiales = InventarioMaterial::where('activo', 1) 
-        ->get(['id','nombre_material', 'cantidad', 'valor_unidad', 'spanTipo', 'unidades', 'id_unidad', 'tipo', 'descripccion'])
+        ->get()
         ->toArray();
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
         ->get(['id', 'nombre_proyecto'])

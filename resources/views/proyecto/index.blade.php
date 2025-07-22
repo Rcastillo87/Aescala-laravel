@@ -20,12 +20,17 @@
     </div>
 
     <!-- Botón responsive -->
-    <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
-        Crear Proyectos
-    </x-secondary-button>
+    @if (Auth::user()->isNotColab)
+        <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
+            Crear Proyectos
+        </x-secondary-button>
+    @endif
 </div>
     @forelse ($items as $item)
         @php
+            if(($item->fec_fin_real) && ($item->id_estado == 3)){
+               $hoy = $item->fec_fin_real;
+            }
             $diasProyec =  $item->dias_trabajo??0;
             $diasTrascuridos =  $item->diasHabilesTrascurridos($hoy, $festivos)??0;
 
@@ -78,10 +83,6 @@
                         <span class="text-md text-black">{{$item->telefono_cliente}}</span>
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
-                        <p class="text-lg text-gray-500 font-bold">Colaborador Encargado</p>
-                        <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
-                    </div>
-                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Total Estim. Proyecto</p>
                         <span class="text-md text-black">{{number_format($item->totalProyecto)}}$</span>
                     </div>
@@ -93,12 +94,34 @@
                         <p class="text-lg text-gray-500 font-bold">Estado</p>
                         <span class="text-md text-black">{!! $item->span_estado !!}</span>
                     </div>
+                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                        <p class="text-lg text-gray-500 font-bold">Cont. Obra Blanca</p>
+                        <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
+                    </div>
+                    @if($item->userOB)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Cont. Carpinteria</p>
+                            <span class="text-md text-black">{{$item->userOB['nombre_completo']}}</span>
+                        </div>
+                    @endif
+                    @if($item->userCarpi)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Arquitecto Encargado</p>
+                            <span class="text-md text-black">{{$item->userCarpi['nombre_completo']}}</span>
+                        </div>
+                    @endif
+                    @if($item->fec_fin_real)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Fecha de Entrega</p>
+                            <span class="text-md text-black">{{ explode(' ', $item->fec_fin_real)[0] }}</span>
+                        </div>
+                    @endif
                 </div>
                 <div class="flex flex-col text-center w-[120px] border-l-2 px-2 mx-2 mt-1">
                     <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
                     <div class="flex flex-wrap justify-start gap-1 p-1">
                         <!-- Botón Editar -->
-                        <div class="relative inline-flex">
+                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
                                href="{{ route('proyecto.edit', $item->id) }}"
                                class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
@@ -114,7 +137,7 @@
                         </div>
                     
                         <!-- Botón Cambio de Estado -->
-                        <div class="relative inline-flex">
+                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                                onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
                                class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
@@ -130,7 +153,7 @@
                         </div>
                     
                         <!-- Botón Ingresos & Egresos -->
-                        <div class="relative inline-flex">
+                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listFinanzas(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'finanza-modal')"
@@ -147,7 +170,7 @@
                         </div>
 
                         <!-- Botón Cotizacion -->
-                        <div class="relative inline-flex">
+                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaCotizacion(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'cotizacion-modal')"
@@ -181,7 +204,7 @@
                         </div>
 
                         <!-- Botón balacen general -->
-                        <div class="relative inline-flex">
+                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-balance-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaBalance({{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'balance-modal')"
@@ -191,7 +214,6 @@
                                     <path fill="currentColor" d="M10.7367 14.5876c.895.2365 2.8528.754 3.1643-.4966.3179-1.2781-1.5795-1.7039-2.5053-1.9117-.1034-.0232-.1947-.0437-.2694-.0623l-.6025 2.4153c.0611.0152.1328.0341.2129.0553Zm.8452-3.5291c.7468.1993 2.3746.6335 2.6581-.5025.2899-1.16213-1.2929-1.5124-2.066-1.68348-.0869-.01923-.1635-.03619-.2262-.0518l-.5462 2.19058c.0517.0129.1123.0291.1803.0472Z"/>
                                     <path fill="currentColor" fill-rule="evenodd" d="M9.57909 21.7008c5.35781 1.3356 10.78401-1.9244 12.11971-7.2816 1.3356-5.35745-1.9247-10.78433-7.2822-12.11995C9.06034.963624 3.6344 4.22425 2.2994 9.58206.963461 14.9389 4.22377 20.3652 9.57909 21.7008ZM14.2085 8.0526c1.3853.47719 2.3984 1.1925 2.1997 2.5231-.1441.9741-.6844 1.4456-1.4013 1.6116.9844.5128 1.485 1.2987 1.0078 2.6612-.5915 1.6919-1.9987 1.8347-3.8697 1.4807l-.454 1.8196-1.0972-.2734.4481-1.7953c-.2844-.0706-.575-.1456-.8741-.2269l-.44996 1.8038-1.09594-.2735.45407-1.8234c-.10059-.0258-.20185-.0522-.30385-.0788-.15753-.0411-.3168-.0827-.47803-.1231l-1.42812-.3559.54468-1.2563s.80844.215.7975.1991c.31063.0769.44844-.1256.50282-.2606l.71781-2.8766.11562.0288c-.04375-.0175-.08343-.0288-.11406-.0366l.51188-2.05344c.01375-.23312-.06688-.52719-.51125-.63812.01718-.01157-.79688-.19813-.79688-.19813l.29188-1.17187 1.51313.37781-.0013.00562c.2275.05657.4619.11032.7007.16469l.4497-1.80187 1.0965.27343-.4406 1.76657c.2944.06718.5906.135.8787.20687l.4375-1.755 1.0975.27344-.4493 1.8025Z" clip-rule="evenodd"/>
                                   </svg>
-                                  
                             </a>
                             <div id="tooltip-hover-balance-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                 Balance General
@@ -200,7 +222,7 @@
                         </div>
 
                         <!-- Botón comparativo -->
-                        <div class="relative inline-flex">
+                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-comparativo-{{$item->id}}" data-tooltip-trigger="hover"
                                 onclick="listComparativo({{$item->id}})" x-data="" 
                                 x-on:click="$dispatch('open-modal', 'compartivo-modal')"
@@ -217,7 +239,7 @@
                     </div>
                 </div>
             </div>
-            <div>
+            <div class="@if(!Auth::user()->isNotColab) hidden @endif">
                 <button type="button" 
                         class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full"
                         data-accordion-target="#tareas_{{ $item->id }}" 
@@ -243,6 +265,9 @@
                         <div class="mt-2 flex flex-col gap-2 border-b-[3px] border-gray-300">
                             <div class="transition bg-gradient-to-t hover:from-gray-100 py-3 text-base">
                                 @php
+                                    if(($tarea->id_tarea_estado == 3) && ($item->fec_fin_real)){
+                                        $hoy = $tarea->fec_fin_real;
+                                    }
                                     $diasTrascurridosTarea = $tarea->diasHabilesTrascurridos($hoy, $festivos)??0;
                                     $diasTarea = $tarea->dias_trabajo??0;
 
@@ -322,7 +347,7 @@
     <!-- Paginador -->
     @if($items->hasPages())
         <div class="mt-4">
-            {{ $items->links() }}
+            {{ $items->appends(request()->query())->links() }}
         </div>
     @endif
 

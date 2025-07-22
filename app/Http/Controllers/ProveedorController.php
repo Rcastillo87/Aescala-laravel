@@ -33,7 +33,8 @@ class ProveedorController extends Controller
         ->when(Request('activo'), function ($query, $activo) { 
             return $query->where('activo', $activo);
         })
-        ->paginate(10);
+        ->paginate(10)
+        ->appends(request()->query());
     
         $activo = Proveedor::$estado;
         $headers = ['Nombre | Razón', 'Documento | NIT', 'Direccion', 'Telefono', 'Fecha de Creacion', 'Estado', 'Opciones'];

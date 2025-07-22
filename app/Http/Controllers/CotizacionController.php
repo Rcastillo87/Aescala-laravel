@@ -29,6 +29,7 @@ class CotizacionController extends Controller
         ->groupBy('id_proyecto', DB::raw('DATE(createdAt)'))
         ->orderBy('id_proyecto', 'desc')
         ->paginate(10)
+        ->appends(request()->query())
         ->through(function ($cotizacion) {
             return [
                 'id_proyecto' => $cotizacion->id_proyecto,
