@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: laravel-app
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://aescala-laravel-dev.onrender.com
+      - fromDatabase:
+          name: aescala-dev
+          property: connectionString
+          key: DATABASE_URL
+
+databases:
+  - name: aescala-dev
+    databaseName: aescala-dev
+    user: admin-dev
