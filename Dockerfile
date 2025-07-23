@@ -1,25 +1,33 @@
+# Etapa base: PHP con extensiones necesarias
 FROM php:8.2
 
-# Instalar dependencias del sistema
+# Instala dependencias necesarias para Laravel + Vite
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpng-dev libonig-dev libxml2-dev \
-    libzip-dev libpq-dev mariadb-client nodejs npm
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
+    mariadb-client \
+    nodejs npm \
+    && docker-php-ext-install pdo pdo_mysql zip
 
-# Instalar Composer
+# Copia Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar archivos del proyecto
-COPY . /var/www
+# Define el directorio de trabajo
 WORKDIR /var/www
 
-# Instalar dependencias de Laravel
+# Copia todos los archivos del proyecto
+COPY . .
+
+# Instala dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Instalar Node y compilar Vite
+# Instala y compila assets con Vite
 RUN npm install && npm run build
 
-# Permisos
-RUN chown -R www-data:www-data storage bootstrap/cache
+# Da permisos a Laravel
+RUN chmod -R 775 storage bootstrap/cache
 
-# Servidor embebido
+# Expone el puerto que usará PHP (Render espera que escuchemos en 8080)
+EXPOSE 8080
+
+# Comando para iniciar Laravel
 CMD php -S 0.0.0.0:8080 -t public
