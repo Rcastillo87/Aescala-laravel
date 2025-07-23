@@ -6,10 +6,13 @@ const urlsToCache = [
   '/img/banner.jpg',
   '/img/favicon-96x96.png',
   '/img/favicon.svg',
-  '/img/logo.png',
+  //'/img/logo.png',
   '/img/site.webmanifest',
   '/img/web-app-manifest-192x192.png',
-  '/img/web-app-manifest-512x512.png'
+  '/img/web-app-manifest-512x512.png',
+  '/css/app.css',
+  '/js/app.js',
+  '/js/chart.min.js',
 ];
 
 
