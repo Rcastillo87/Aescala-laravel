@@ -1,27 +1,25 @@
-FROM php:8.2-fpm
+FROM php:8.2
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libzip-dev libonig-dev libxml2-dev libpng-dev libjpeg-dev libfreetype6-dev mariadb-client \
-    && docker-php-ext-install pdo pdo_mysql zip gd
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev \
+    libzip-dev libpq-dev mariadb-client nodejs npm
 
 # Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Crear directorio de la app
-WORKDIR /var/www
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copiar archivos del proyecto
-COPY . .
+COPY . /var/www
+WORKDIR /var/www
 
 # Instalar dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Asignar permisos
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Instalar Node y compilar Vite
+RUN npm install && npm run build
 
-# Puerto para Laravel (Render expone 8080)
-EXPOSE 8080
+# Permisos
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Comando para iniciar el servidor PHP
+# Servidor embebido
 CMD php -S 0.0.0.0:8080 -t public
