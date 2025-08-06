@@ -46,7 +46,7 @@ class Proyecto extends Model
 
     public static $estado = [
         1 => 'En Desarrollo',
-        2 => 'Cotizado',
+        2 => 'Reserva Cupo',
         3 => 'Entregado',
         4 => 'Cancelado',
         5 => 'Posventas'

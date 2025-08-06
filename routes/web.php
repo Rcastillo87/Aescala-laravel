@@ -13,6 +13,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\TareasController;
+use App\Http\Controllers\ComercialController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -62,6 +63,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/editStatus/{id}', [UserController::class, 'editStatus'])->name('editStatus');
         Route::get('/edit/{id}', [UserController::class, 'edit'])->name('edit');
         Route::post('/save', [UserController::class, 'save'])->name('save');
+    });
+
+    Route::prefix('comercial')->name('comercial.')->group(function () {
+        Route::get('/index', [ComercialController::class, 'index'])->name('index');
     });
 
     Route::prefix('herramienta')->name('herramienta.')->group(function () {
