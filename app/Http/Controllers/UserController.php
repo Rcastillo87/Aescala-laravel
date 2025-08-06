@@ -38,7 +38,9 @@ class UserController extends Controller
         })
         ->paginate(10)
         ->appends(request()->query());
-        $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Trabajando en', 'Perfil', 'Estado', 'Opciones'];
+        //$headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Trabajando en', 'Perfil', 'Estado', 'Opciones'];
+        $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Perfil', 'Estado', 'Opciones'];
+
         return view('user.index', compact('roles', 'title', 'items', 'headers', 'estado'));
     }
 

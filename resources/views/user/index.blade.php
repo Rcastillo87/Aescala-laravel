@@ -25,7 +25,7 @@
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->telefono }}
                         </td>
-                        <td class="items-center py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                        <!--<td class="items-center py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
 
                             @php
                                 $proyectos = $item->progresProyecto;
@@ -70,7 +70,7 @@
                                 </ul>
                             </div>
 
-                        </td>
+                        </td>-->
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {!! $item->spanRol !!}
                         </td>

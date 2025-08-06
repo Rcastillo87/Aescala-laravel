@@ -108,16 +108,38 @@ class User extends Authenticatable
         return ($this->id_rol != 3)? true: false;
     }
 
+    public function getIsAdminAttribute()
+    {
+        return ($this->id_rol == 1)? true: false;
+    }
+
+    public function getIsUserAttribute()
+    {
+        return ($this->id_rol == 2)? true: false;
+    }
+
+    public function getIsColabAttribute()
+    {
+        return ($this->id_rol == 3)? true: false;
+    }
+
+    public function getIsComerAttribute()
+    {
+        return ($this->id_rol == 4)? true: false;
+    }
+
     public static $roles = [
         1 => 'Administrador',
         2 => 'Usuario',
-        3 => 'Colaborador'
+        3 => 'Colaborador',
+        4 => 'Comercial'
     ];
 
     public static $ClassRol = [
         1 => 'span-blue',
         2 => 'span-yellow',
-        3 => 'span-gray'
+        3 => 'span-gray',
+        4 => 'span-red'
     ];
 
     public static $estado = [
