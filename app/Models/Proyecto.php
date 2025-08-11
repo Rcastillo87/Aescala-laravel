@@ -22,12 +22,6 @@ class Proyecto extends Model
         'direccion',
         'nombre_cliente',
         'telefono_cliente',
-        'val_obra_blanca',
-        'val_obra_blanca_materiales',
-        'val_obra_carpinteria',
-        'val_carpinteria_materiales',
-        'pres_otros',
-        'observacion',
         'fec_inicio',
         'fec_fin_estimado',
         'dias_trabajo',
@@ -60,26 +54,18 @@ class Proyecto extends Model
         5 => 'span-black'
     ];
 
+    public static $tipoDocumento = [
+        1 => ['CC', 'Cedu. Ciudadania'],
+        2 => ['CE', 'Cedu. Extrangeria'],
+        3 => ['PAS', 'Pasaporte'],
+    ];
+
     public function getSpanEstadoAttribute()
     {
         return '<span class="'.(self::$ClassEstado[$this->id_estado] ?? 'default-class').'">'
              . (self::$estado[$this->id_estado] ?? 'Desconocido') . '</span>';
     }
 
-    public function getTotalProyectoAttribute ()
-    {
-        return $this->val_obra_blanca + $this->val_obra_blanca_materiales + $this->val_obra_carpinteria + $this->val_carpinteria_materiales + $this->pres_otros;
-    }
-
-    public function getTotalManoAttribute ()
-    {
-        return $this->val_obra_blanca + $this->val_obra_carpinteria + $this->pres_otros;
-    }
-
-    public function getTotalMaterialesAttribute ()
-    {
-        return $this->val_obra_blanca_materiales + $this->val_carpinteria_materiales;
-    }
 
     public function diasHabilesTrascurridos($hoy, $diasFestivos)
     {

@@ -694,58 +694,6 @@ async function renderDespachos(despachos, id) {
     });
 }
 
-async function listaBalance(id) {
-    try {
-        const response = await fetch(`listaBalance/?id=${id}`, {
-            method: "GET",
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-                "Content-Type": "application/json"
-            }
-        });
-        const data = await response.json();
-        await displayBalanceData(data.data);
-    } catch (error) {
-        Swal.fire("Error", "No se pudo consultar la data.", "error");
-    }
-}
-
-async function displayBalanceData(balanceData) {
-    // Carpintería
-    const carpinteria = balanceData.carpinteria;
-    document.querySelector('#carpinteria-presupuesto').textContent = `PRESUPUESTO: ${formatCurrency(carpinteria.presupuesto)}`;
-    document.querySelector('#carpinteria-gastos-dinero').textContent = `GASTOS: ${formatCurrency(carpinteria.gastosDinero)}`;
-    document.querySelector('#carpinteria-disponible-dinero').textContent = `DISPONIBLE: ${formatCurrency(carpinteria.presupuesto - carpinteria.gastosDinero)}`;
-    
-    document.querySelector('#carpinteria-presupuesto-material').textContent = `PRESUPUESTO: ${formatCurrency(carpinteria.presupuestoMaterial)}`;
-    document.querySelector('#carpinteria-gastos-material').textContent = `GASTOS: ${formatCurrency(carpinteria.gastosMaterial)}`;
-    document.querySelector('#carpinteria-disponible-material').textContent = `DISPONIBLE: ${formatCurrency(carpinteria.presupuestoMaterial - carpinteria.gastosMaterial)}`;
-
-    // Obra Blanca
-    const obrablanca = balanceData.obrablanca;
-    document.querySelector('#obrablanca-presupuesto').textContent = `PRESUPUESTO: ${formatCurrency(obrablanca.presupuesto)}`;
-    document.querySelector('#obrablanca-gastos-dinero').textContent = `GASTOS: ${formatCurrency(obrablanca.gastosDinero)}`;
-    document.querySelector('#obrablanca-disponible-dinero').textContent = `DISPONIBLE: ${formatCurrency(obrablanca.presupuesto - obrablanca.gastosDinero)}`;
-    
-    document.querySelector('#obrablanca-presupuesto-material').textContent = `PRESUPUESTO: ${formatCurrency(obrablanca.presupuestoMaterial)}`;
-    document.querySelector('#obrablanca-gastos-material').textContent = `GASTOS: ${formatCurrency(obrablanca.gastosMaterial)}`;
-    document.querySelector('#obrablanca-disponible-material').textContent = `DISPONIBLE: ${formatCurrency(obrablanca.presupuestoMaterial - obrablanca.gastosMaterial)}`;
-
-    // Otros
-    const otros = balanceData.otros;
-    document.querySelector('#otros-presupuesto').textContent = `PRESUPUESTO: ${formatCurrency(otros.presupuesto)}`;
-    document.querySelector('#otros-gastos').textContent = `GASTOS PAGOS: ${formatCurrency(otros.gastosDinero)}`;
-    document.querySelector('#otros-gastos-material').textContent = `GASTOS MATERIAL: ${formatCurrency(otros.gastosMaterial)}`;
-    document.querySelector('#otros-disponible').textContent = `DISPONIBLE: ${formatCurrency(otros.presupuesto - otros.gastosDinero - otros.gastosMaterial)}`;
-
-    // Global
-    const global = balanceData.global;
-    document.querySelector('#global-presupuesto').textContent = `PRESUPUESTO TOTAL: ${formatCurrency(global.presupuesto)}`;
-    document.querySelector('#global-abonos').textContent = `ABONOS TOTALES: ${formatCurrency(global.abonos)}`;
-    document.querySelector('#global-gastos').textContent = `GASTOS TOTALES: ${formatCurrency(global.gastos)}`;
-    document.querySelector('#global-rentabilidad').textContent = `RENTABILIDAD: ${formatCurrency(global.ganancia)}`;
-}
-
 document.querySelectorAll('[data-accordion-target]').forEach(button => {
     const targetId = button.getAttribute('data-accordion-target');
     const target = document.querySelector(targetId);

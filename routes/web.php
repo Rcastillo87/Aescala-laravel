@@ -67,6 +67,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('comercial')->name('comercial.')->group(function () {
         Route::get('/index', [ComercialController::class, 'index'])->name('index');
+        Route::get('/create', [ComercialController::class, 'create'])->name('create');
+        Route::post('/save', [ComercialController::class, 'save'])->name('save');
     });
 
     Route::prefix('herramienta')->name('herramienta.')->group(function () {
@@ -98,7 +100,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listaDespachos', [ProyectoController::class, 'listaDespachos'])->name('listaDespachos');
         Route::get('/pdfDespachos', [ProyectoController::class, 'pdfDespachos'])->name('pdfDespachos');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
-        Route::get('/listaBalance', [ProyectoController::class, 'listaBalance'])->name('listaBalance');
         Route::get('/listComparativo', [ProyectoController::class, 'listComparativo'])->name('listComparativo');
     });
 

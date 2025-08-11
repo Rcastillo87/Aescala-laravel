@@ -133,11 +133,6 @@ class ProyectoController extends Controller
             'direccion' => ['required', 'string', Rule::unique('proyectos')->ignore($req->id, 'id')],
             'nombre_cliente' => 'required|string|max:100',
             'telefono_cliente' => 'required|string|max:15',
-            'val_obra_blanca' => 'nullable|integer|min:0',
-            'val_obra_blanca_materiales' =>'nullable|integer|min:0',
-            'val_obra_carpinteria'  =>'nullable|integer|min:0',
-            'val_carpinteria_materiales'  =>'nullable|integer|min:0',
-            'pres_otros' =>'nullable|integer|min:0',
             'observacion' => 'nullable|string',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
             'conFechaFin' => 'required|integer|in:0,1',
@@ -250,7 +245,6 @@ class ProyectoController extends Controller
             Tarea::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
             return redirect()->back()->with('success', $msg);
-            //return redirect()->route('proyecto.index')->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
@@ -619,57 +613,6 @@ class ProyectoController extends Controller
             return $pdf->stream('factura-'.Request('id').'.pdf');
         }
         return $pdf->download('factura-'.Request('id').'.pdf');
-    }
-
-    public function listaBalance()
-    {
-        try {
-            $proyecto = Proyecto::find(Request('id'));
-            $totales = Despachos::with('material')->where('id_proyecto', Request('id'))
-            ->selectRaw("
-                SUM(CASE WHEN tipo = 1 THEN cantidad * valor_unidad ELSE 0 END) as total_tipo_1,
-                SUM(CASE WHEN tipo = 2 THEN cantidad * valor_unidad ELSE 0 END) as total_tipo_2
-            ");
-
-            $data['carpinteria']['presupuesto'] = $proyecto->val_obra_carpinteria;
-            $data['carpinteria']['presupuestoMaterial'] = $proyecto->val_carpinteria_materiales;
-            $data['carpinteria']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 2)->sum('valor');
-            $total = (clone $totales)->whereHas('material', function ($q) { $q->where('tipo', 2); })->first();
-            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
-            $data['carpinteria']['gastosMaterial'] = $total_final;
-
-            $data['obrablanca']['presupuesto'] = $proyecto->val_obra_blanca;
-            $data['obrablanca']['presupuestoMaterial'] = $proyecto->val_obra_blanca_materiales;
-            $data['obrablanca']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 3)->sum('valor');
-            $total = (clone $totales)->whereHas('material', function ($q) { $q->where('tipo', 1); })->first();
-            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
-            $data['obrablanca']['gastosMaterial'] = $total_final;
-
-            $data['otros']['presupuesto'] = $proyecto->pres_otros;
-            $data['otros']['gastosDinero'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 4)->sum('valor');
-            $total = (clone $totales)->whereHas('material', function ($q) { $q->whereNull('tipo'); })->first();
-            $total_final = $total->total_tipo_1 - $total->total_tipo_2;
-            $data['otros']['gastosMaterial'] = $total_final;
-
-            $data['global']['presupuesto'] = $proyecto->totalProyecto;
-            $data['global']['abonos'] = Finanza::where('id_proyecto', Request('id'))->where('tipo', 1)->sum('valor');
-            $data['global']['gastos'] = $data['carpinteria']['gastosDinero'] + $data['obrablanca']['gastosDinero'] + $data['otros']['gastosDinero'] +
-                                        $data['carpinteria']['gastosMaterial'] + $data['obrablanca']['gastosMaterial'] + $data['otros']['gastosMaterial'];
-            $data['global']['ganancia'] = $data['global']['abonos'] - $data['global']['gastos'];
-            
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Lista de avance.',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
 
     public function listComparativo()

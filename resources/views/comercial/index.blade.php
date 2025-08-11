@@ -1,12 +1,8 @@
 @extends('layouts.app')
 @section('content')
-    <div class="flex justify-between text-center mb-3">
-        <div>
-
-        </div>
-
-        <x-secondary-button class="ms-4" href="{{ route('material.create')}}">
-            Crear Material
+    <div class="flex justify-end text-center mb-3">
+        <x-secondary-button class="ms-4" href="{{ route('comercial.create')}}">
+            Crear Proyecto
         </x-secondary-button>
     </div>
     <div class="relative overflow-x-auto rounded-lg border border-gray-200">

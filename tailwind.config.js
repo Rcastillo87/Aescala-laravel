@@ -78,12 +78,22 @@ export default {
     'border-white',
 
     // Clases de espaciado
+    'p-1',
+    'p-2',
+    'p-3',
+    'p-4',
+    'px-1',
     'px-2',
     'px-3',
     'px-4',
     'py-1',
     'py-2',
+    'py-3',
+    'py-4',
     'm-1',
+    'm-2',
+    'm-3',
+    'm-4',
     'mb-4',
     'mb-10',
     'ml-2',
@@ -101,6 +111,10 @@ export default {
     'items-start',
     'justify-center',
     'justify-between',
+    'items-baseline',
+    'flex-col', 
+    'justify-end',
+    'self-start',
 
     // Clases de tamaño
     'w-full',
