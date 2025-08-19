@@ -87,6 +87,9 @@ class ComercialController extends Controller
 
     public function save(Request $req)
     {
+dd($req->all());
+
+
         $data = $req->validate([
             'id' => 'nullable|integer',
             'nombre_proyecto' => ['required', 'string', 'max:200', Rule::unique('proyectos')->ignore($req->id, 'id')],

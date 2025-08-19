@@ -32,9 +32,7 @@
                 <div class="flex w-full items-center">
                     <!-- Botón -->
                     <div class="p-3 shrink-0">
-                        <x-secondary-button class="py-1 px-1" href="#" 
-                            data-tooltip-target="tooltip-hover-item" data-tooltip-trigger="hover" 
-                            x-data="" x-on:click="$dispatch('open-modal', 'entregable-modal')">
+                        <x-secondary-button class="py-1 px-1" id="addItem" href="#" data-tooltip-target="tooltip-hover-item">
                             <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
                             </svg>
@@ -48,15 +46,21 @@
                     </div>
 
                     <!-- Input -->
-                    <div class="flex items-center gap-4 w-full px-3">
-                        <x-input-label for="valor_total" :value="__('Item 1 *')" class="whitespace-nowrap" />
-                        <x-text-input id="valor_total" class="block w-full moneda-cop" type="text" name="valor_total" required/>
+                    <div id="entregable-items" class="w-full">
+                        <!-- Item base que usaremos como plantilla -->
+                        <div class="item-group flex items-center gap-4 w-full px-3 mb-2" data-item-number="1">
+                            <x-input-label class="item-label whitespace-nowrap">Item 1 *</x-input-label>
+                            <x-text-input class="item-input block w-full" type="text" name="items[]" required/>
+                            <a href="#" class="remove-item bg-red-500 text-white px-4 py-2 rounded">
+                                <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
-
-
                 <div class="flex w-full justify-between mt-4">
-                    <a  href="#" tabindex="0"
+                    <a href="#" tabindex="0"
                         x-on:click="$dispatch('close-modal', 'entregable-modal')"
                         class="bg-red-500 text-white px-4 py-2 rounded"
                     >
@@ -68,6 +72,5 @@
                 </div>
             </form>
         </div>
-
     </div>
 </x-modal>

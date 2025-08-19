@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-full px-2">
-    <form method="POST" action="{{ route('comercial.save') }}">
+    <form method="POST" action="{{ route('comercial.save') }}" id="sendEntregable"> 
         @csrf
         <div class="flex flex-wrap -mx-3">
 
@@ -96,18 +96,84 @@
                 <x-input-error :messages="$errors->get('area_privada')" class="mt-2" />
             </div>
 
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
+                <x-input-label for="aprov_diseno_por" :value="__('se Aprueba Diseño *')" />
+                <x-text-input id="aprov_diseno_por" class="block w-full" type="number" 
+                    min="0" step="any" name="aprov_diseno_por" value="{{ old('aprov_diseno_por', $proyecto?->aprov_diseno_por ?? 50) }}"/>
+                <x-input-error :messages="$errors->get('aprov_diseno_por')" class="mt-2" />
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
+                <x-input-label for="ini_carpinteria_por" :value="__('Se Inicia Carpinteria *')" />
+                <x-text-input id="ini_carpinteria_por" class="block w-full" type="number" 
+                    min="0" step="any" name="ini_carpinteria_por" value="{{ old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por ?? 15) }}"/>
+                <x-input-error :messages="$errors->get('ini_carpinteria_por')" class="mt-2" />
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
+                <x-input-label for="ini_enchape_por" :value="__('Se Inicia Enchape *')" />
+                <x-text-input id="ini_enchape_por" class="block w-full" type="number" 
+                    min="0" step="any" name="ini_enchape_por" value="{{ old('ini_enchape_por', $proyecto?->ini_enchape_por ?? 30) }}"/>
+                <x-input-error :messages="$errors->get('ini_enchape_por')" class="mt-2" />
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
+                <x-input-label for="ini_griferia_por" :value="__('Se Inicia Griferia *')" />
+                <x-text-input id="ini_griferia_por" class="block w-full" type="number" 
+                    min="0" step="any" name="ini_griferia_por" value="{{ old('ini_griferia_por', $proyecto?->ini_griferia_por ?? 3) }}"/>
+                <x-input-error :messages="$errors->get('ini_griferia_por')" class="mt-2" />
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
+                <x-input-label for="entrega_obra_por" :value="__('Se Entrega Obra *')" />
+                <x-text-input id="entrega_obra_por" class="block w-full" type="number" 
+                    min="0" step="any" name="entrega_obra_por" value="{{ old('entrega_obra_por', $proyecto?->entrega_obra_por ?? 2) }}"/>
+                <x-input-error :messages="$errors->get('entrega_obra_por')" class="mt-2" />
+            </div>
+
+            <div class="flex  flex-wrap w-full max-w-full shrink-0 p-2 rounded-2xl border-2 border-gray-200">
+                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                    <p id="aprov_diseno_p">(50%) -> <span id="aprov_diseno_spa">$ 0</span></p>
+                </div>
+                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                    <p id="ini_carpinteria_p">(15%) -> <span id="ini_carpinteria_spa">$ 0</span></p>
+                </div>
+                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                    <p id="ini_enchape_p">(30%) -> <span id="ini_enchape_spa">$ 0</span></p>
+                </div>
+                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                    <p id="ini_griferia_p">(3%) -> <span id="ini_griferia_spa">$ 0</span></p>
+                </div>
+                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                    <p id="entrega_obra_p">(2%) -> <span id="entrega_obra_spa">$ 0</span></p>
+                </div>
+                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                    <p class="text-red-500">(100%) -> <span id="total_spa">$ 0</span></p>
+                </div>
+            </div>
+
             <hr class="w-full my-2">
             <div class="mx-auto px-2 py-2 justify-start w-full">
                 <h2 class="text-xl font-bold text-[#242e68]">Entregables</h2>
-                <x-secondary-button class="my-2 py-1 px-1" href="#" data-tooltip-target="tooltip-hover-Entregable" data-tooltip-trigger="hover" 
-                    x-data="" x-on:click="$dispatch('open-modal', 'entregable-modal')">
-                    <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
-                    </svg>
-                </x-secondary-button>
-                <div id="tooltip-hover-Entregable" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                    Añadir Entregable
-                    <div class="tooltip-arrow" data-popper-arrow></div>
+                <div class="flex w-full items-center space-x-2">
+                    <div class="py-1 shrink-0">
+                        <x-secondary-button class="my-2 py-1 px-1" href="#" data-tooltip-target="tooltip-hover-Entregable" data-tooltip-trigger="hover" 
+                            x-data="" x-on:click="$dispatch('open-modal', 'entregable-modal')">
+                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
+                            </svg>
+                        </x-secondary-button>
+                        <div id="tooltip-hover-Entregable" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                            Añadir Entregable
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </div>
+
+                    <div id="entregables-div" class="mt-2 space-y-2 w-full">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -125,7 +191,7 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/proyecto/create.js')}}"></script>
+    <script src="{{asset('js/comercial/create.js')}}"></script>
     <script>
         window.departamentos = JSON.parse(@json($departamentos));
     </script>
