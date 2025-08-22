@@ -277,12 +277,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        // limpiar errores previos
         document.querySelectorAll(".input-error").forEach(el => el.textContent = "");
-
         const formData = new FormData(form);
 
+        const result = await Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Se guardarán los cambios en el proyecto.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, guardar",
+            cancelButtonText: "Cancelar",
+        });
+
+        // Si confirma, se envía el formulario
+        if (result.isConfirmed) {
         try {
             const response = await fetch(saveUrl, {
                 method: "POST",
@@ -332,9 +340,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.location.href = data.redirect;
                 });
             }
-        } catch (error) {
-            Swal.fire("Error", "Ocurrió un error inesperado", "error");
-            console.error(error);
+            } catch (error) {
+                Swal.fire("Error", "Ocurrió un error inesperado", "error");
+                console.error(error);
+            }
         }
     });
 });
