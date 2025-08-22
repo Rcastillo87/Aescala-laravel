@@ -11,6 +11,8 @@ class Proyecto extends Model
     use HasFactory;
 
     protected $table = 'proyectos';
+    protected $primaryKey = 'id';
+    public $timestamps = true;
     
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
@@ -22,14 +24,17 @@ class Proyecto extends Model
         'direccion',
         'nombre_cliente',
         'telefono_cliente',
-        'fec_inicio',
-        'fec_fin_estimado',
+        'cedula_cliente',
+        'tipo_doc_cliente',
         'dias_trabajo',
-        'fec_fin_real',
-        'id_estado',
-        'id_user',
-        'id_user_obra_blanca',
-        'id_user_carpinteria'
+        'area_privada',
+        'aprov_diseno_por',
+        'ini_carpinteria_por',
+        'ini_enchape_por',
+        'ini_griferia_por',
+        'entrega_obra_por',
+        'opcion',
+        'por_inicia'
     ];
 
     protected $casts = [
@@ -40,7 +45,7 @@ class Proyecto extends Model
 
     public static $estado = [
         1 => 'En Desarrollo',
-        2 => 'Reserva Cupo',
+        2 => 'Nuevo',
         3 => 'Entregado',
         4 => 'Cancelado',
         5 => 'Posventas'

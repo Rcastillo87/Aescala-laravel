@@ -128,6 +128,11 @@ class User extends Authenticatable
         return ($this->id_rol == 4)? true: false;
     }
 
+    public function getNewProyectAttribute()
+    {
+        return Proyecto::where('id_estado', 2)->count();
+    }
+
     public static $roles = [
         1 => 'Administrador',
         2 => 'Usuario',

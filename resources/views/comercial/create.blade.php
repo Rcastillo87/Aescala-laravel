@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-full px-2">
-    <form method="POST" action="{{ route('comercial.save') }}" id="sendEntregable"> 
+    <form method="POST" action="{{ route('comercial.save') }}" id="formComercial"> 
         @csrf
         <div class="flex flex-wrap -mx-3">
 
@@ -90,69 +90,63 @@
                 <x-input-error :messages="$errors->get('dias_trabajo')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="area_privada" :value="__('Area Privada *')" />
+                <x-input-label for="area_privada" :value="__('Area Privada(mts cuadrados) *')" />
                 <x-text-input id="area_privada" class="block w-full" type="number" 
                     min="0" step="any" name="area_privada" value="{{ old('area_privada', $proyecto?->area_privada ?? 0) }}"/>
                 <x-input-error :messages="$errors->get('area_privada')" class="mt-2" />
             </div>
 
+            <hr class="w-full my-2">
+            <div class="mx-auto px-2 py-2 flex justify-start w-full">
+                <h2 class="text-xl font-bold text-[#242e68]">Porcentajes </h2>
+            </div>
+
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="aprov_diseno_por" :value="__('se Aprueba Diseño *')" />
+                <x-input-label for="aprov_diseno_por" :value="__('Se Aprueba Diseño(%) *')" />
                 <x-text-input id="aprov_diseno_por" class="block w-full" type="number" 
                     min="0" step="any" name="aprov_diseno_por" value="{{ old('aprov_diseno_por', $proyecto?->aprov_diseno_por ?? 50) }}"/>
                 <x-input-error :messages="$errors->get('aprov_diseno_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="ini_carpinteria_por" :value="__('Se Inicia Carpinteria *')" />
+                <x-input-label for="ini_carpinteria_por" :value="__('Se Inicia Carpinteria(%) *')" />
                 <x-text-input id="ini_carpinteria_por" class="block w-full" type="number" 
                     min="0" step="any" name="ini_carpinteria_por" value="{{ old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por ?? 15) }}"/>
                 <x-input-error :messages="$errors->get('ini_carpinteria_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="ini_enchape_por" :value="__('Se Inicia Enchape *')" />
+                <x-input-label for="ini_enchape_por" :value="__('Se Inicia Enchape(%) *')" />
                 <x-text-input id="ini_enchape_por" class="block w-full" type="number" 
                     min="0" step="any" name="ini_enchape_por" value="{{ old('ini_enchape_por', $proyecto?->ini_enchape_por ?? 30) }}"/>
                 <x-input-error :messages="$errors->get('ini_enchape_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="ini_griferia_por" :value="__('Se Inicia Griferia *')" />
+                <x-input-label for="ini_griferia_por" :value="__('Se Inicia Griferia(%) *')" />
                 <x-text-input id="ini_griferia_por" class="block w-full" type="number" 
                     min="0" step="any" name="ini_griferia_por" value="{{ old('ini_griferia_por', $proyecto?->ini_griferia_por ?? 3) }}"/>
                 <x-input-error :messages="$errors->get('ini_griferia_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="entrega_obra_por" :value="__('Se Entrega Obra *')" />
+                <x-input-label for="entrega_obra_por" :value="__('Se Entrega Obra(%) *')" />
                 <x-text-input id="entrega_obra_por" class="block w-full" type="number" 
                     min="0" step="any" name="entrega_obra_por" value="{{ old('entrega_obra_por', $proyecto?->entrega_obra_por ?? 2) }}"/>
                 <x-input-error :messages="$errors->get('entrega_obra_por')" class="mt-2" />
             </div>
+            
 
-            <div class="flex  flex-wrap w-full max-w-full shrink-0 p-2 rounded-2xl border-2 border-gray-200">
-                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                    <p id="aprov_diseno_p">(50%) -> <span id="aprov_diseno_spa">$ 0</span></p>
-                </div>
-                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                    <p id="ini_carpinteria_p">(15%) -> <span id="ini_carpinteria_spa">$ 0</span></p>
-                </div>
-                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                    <p id="ini_enchape_p">(30%) -> <span id="ini_enchape_spa">$ 0</span></p>
-                </div>
-                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                    <p id="ini_griferia_p">(3%) -> <span id="ini_griferia_spa">$ 0</span></p>
-                </div>
-                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                    <p id="entrega_obra_p">(2%) -> <span id="entrega_obra_spa">$ 0</span></p>
-                </div>
-                <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                    <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                    <p class="text-red-500">(100%) -> <span id="total_spa">$ 0</span></p>
+            <div class="flex items-center gap-x-4 w-full max-w-full p-3 shrink-0 md:w-12/12 lg:w-6/12 2xl:w-4/12">
+                <!-- Checkbox -->
+                <label class="inline-flex items-center w-[30%] space-x-2">
+                    <input type="hidden" name="opcion" value="0">
+                    <x-text-input type="checkbox" name="opcion" value="1" id="checkOpcion" />
+                    <span class="text-gray-700">Inicia Proyecto</span>
+                </label>
+                <!-- Input oculto -->
+                <div id="inputExtra" class="hidden w-[70%]">
+                    <x-input-label for="por_inicia" :value="__('Porcentaje de Inicio(%) *')" />
+                    <x-text-input type="number" value=0; name="por_inicia" id="por_inicia" />
                 </div>
             </div>
+
 
             <hr class="w-full my-2">
             <div class="mx-auto px-2 py-2 justify-start w-full">
@@ -177,6 +171,35 @@
                 </div>
             </div>
         </div>
+
+        <div class="flex  flex-wrap w-full max-w-full shrink-0 p-2 rounded-2xl border-2 border-gray-200">
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                <p id="aprov_diseno_p">(50%) -> <span id="aprov_diseno_spa">$ 0</span></p>
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                <p id="ini_carpinteria_p">(15%) -> <span id="ini_carpinteria_spa">$ 0</span></p>
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                <p id="ini_enchape_p">(30%) -> <span id="ini_enchape_spa">$ 0</span></p>
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                <p id="ini_griferia_p">(3%) -> <span id="ini_griferia_spa">$ 0</span></p>
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
+                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
+                <p id="entrega_obra_p">(2%) -> <span id="entrega_obra_spa">$ 0</span></p>
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0 font-semibold text-xl">
+                <x-input-label class="font-semibold text-xl" :value="__('Totales')" />
+                <p id="total_p" class="text-red-500">(100%) -> <span id="total_spa">$ 0</span></p>
+            </div>
+        </div>
+        <x-input-error :messages="$errors->get('total_p')" class="mt-2" />
+
         <div class="flex items-center justify-end mt-4">
             <x-secondary-button class="ms-4" href="{{ route('comercial.index') }}">
                 Atras
@@ -191,8 +214,12 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/comercial/create.js')}}"></script>
     <script>
         window.departamentos = JSON.parse(@json($departamentos));
     </script>
+    <script>
+        const saveUrl = "{{ route('comercial.save') }}";
+    </script>
+    <script src="{{ asset('js/comercial/create.js') }}"></script>
+
 @endsection

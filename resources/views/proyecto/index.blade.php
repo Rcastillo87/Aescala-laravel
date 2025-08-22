@@ -45,16 +45,17 @@
                 default => 'bg-red-500',
             };
         @endphp
-        <div class=" border-2 rounded-lg pb-1 border-gray-300 shadow-lg shadow-black-200 mb-2">
+        <div class=" border-2 rounded-lg pb-1 @if ($item->id_estado == 2) bg-green-200 border-green-600 @else border-gray-300 @endif shadow-lg shadow-black-200 mb-2">
             <div class="flex flex-grow mb-2">
-                <div class="text-center items-center w-[140px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center"
-                    data-tooltip-target="tooltip-hover-porcent-{{$item->id}}" data-tooltip-trigger="hover">
-
-                    <p class="text-white text-2xl font-bold">{{$diasTrascuridos}} / {{$diasProyec}}</p>
-                    <span class="text-white text-xl font-bold">{{$porcen}}%</span>
-                    <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
-                    <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
-                </div>
+                @if ($item->id_estado != 2)
+                    <div class="text-center items-center w-[140px] h-[110px] border-2 rounded-xl {{ $bg }} mb-1 ml-3 mt-2 flex flex-col justify-center"
+                        data-tooltip-target="tooltip-hover-porcent-{{$item->id}}" data-tooltip-trigger="hover">
+                        <p class="text-white text-2xl font-bold">{{$diasTrascuridos}} / {{$diasProyec}}</p>
+                        <span class="text-white text-xl font-bold">{{$porcen}}%</span>
+                        <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
+                        <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
+                    </div>
+                @endif
                 <div id="tooltip-hover-porcent-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                     Dias Habiles VS Duracion Proyecto
                     <div class="tooltip-arrow" data-popper-arrow></div>
@@ -96,7 +97,7 @@
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Cont. Obra Blanca</p>
-                        <span class="text-md text-black">{{$item->user->nombre_completo}}</span>
+                        <span class="text-md text-black">{{$item->user?->nombre_completo}}</span>
                     </div>
                     @if($item->userOB)
                         <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">

@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="grid grid-cols-3 gap-2 mb-2">
                 <div class="text-sm"><span class="font-semibold">Cantidad:</span> ${cantidad}</div>
-                <div class="text-sm"><span class="font-semibold">Valor Unitario:</span> $${valor}</div>
-                <div class="text-sm"><span class="font-semibold">Total:</span> $${total}</div>
+                <div class="text-sm"><span class="font-semibold">Valor Unitario:</span>${formatCurrency(valor)}</div>
+                <div class="text-sm"><span class="font-semibold">Total:</span>${formatCurrency(total)}</div>
             </div>
             <div class="bg-gray-50 p-2 rounded">
                 <h4 class="font-medium text-sm mb-1">Items:</h4>
@@ -189,24 +189,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function actualizarResumen() {
         const total = calcularTotalEntregables();
 
-        let acumulado = 0;
+        let acumuladoMonto = 0;
+        let acumuladoPorcentaje = 0;
+
         inputs.forEach(id => {
             const input = document.getElementById(id);
             const porcentaje = parseFloat(input.value || 0);
             const monto = (total * porcentaje / 100).toFixed(2);
 
-            // Actualizar el <p> (texto del porcentaje)
+            // Actualizar el <p> con el porcentaje y monto
             const p = document.getElementById(id.replace("_por", "_p"));
             if (p) {
-                p.innerHTML = `(${porcentaje}%) -> <span id="${id.replace("_por", "_spa")}">$ ${monto}</span>`;
+                p.innerHTML = `(${porcentaje}%) -> <span id="${id.replace("_por", "_spa")}">${formatCurrency(monto)}</span>`;
             }
-            acumulado += parseFloat(monto);
+
+            acumuladoMonto += parseFloat(monto);
+            acumuladoPorcentaje += porcentaje;
         });
 
-        // Actualizar total
+        // Actualizar total (porcentaje y monto)
+        const totalP = document.getElementById("total_p");
         const totalSpa = document.getElementById("total_spa");
-        if (totalSpa) {
-            totalSpa.textContent = `$ ${acumulado.toFixed(2)}`;
+
+        if (totalP) {
+            totalP.innerHTML = `(${acumuladoPorcentaje}%) -> <span id="total_spa">$ ${formatCurrency(acumuladoMonto)}</span>`;
+        } else if (totalSpa) {
+            totalSpa.textContent = `$ ${acumuladoMonto.toFixed(2)}`;
         }
     }
 
@@ -245,11 +253,89 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-async function values(){
-    const aprovDisenoInput = document.getElementById('aprov_diseno_por');
-    const iniCarpinteriaInput = document.getElementById('ini_carpinteria_por');
-    const iniEnchapeInput = document.getElementById('ini_enchape_por');
-    const iniGriferiaInput = document.getElementById('ini_griferia_por');
-    const entregaObraInput = document.getElementById('entrega_obra_por');
+document.addEventListener("DOMContentLoaded", () => {
+    const checkOpcion = document.getElementById("checkOpcion");
+    const inputExtra = document.getElementById("inputExtra");
+    const inputPorcentaje = document.getElementById("por_inicia");
 
-}
+    checkOpcion.addEventListener("change", () => {
+        if (checkOpcion.checked) {
+            inputExtra.classList.remove("hidden");
+            inputPorcentaje.required = true;
+            inputPorcentaje.value = 30;
+        } else {
+            inputExtra.classList.add("hidden");
+            inputPorcentaje.required = false;
+            inputPorcentaje.value = "";
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.getElementById("formComercial");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // limpiar errores previos
+        document.querySelectorAll(".input-error").forEach(el => el.textContent = "");
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(saveUrl, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                    "Accept": "application/json"
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (data.errors) {
+                    for (const [field, messages] of Object.entries(data.errors)) {
+                        const input = document.querySelector(`[name="${field}"]`);
+
+                        if (!input) continue;
+
+                        // buscar x-input-error si existe
+                        let errorContainer = input.parentNode.querySelector("x-input-error");
+
+                        if (errorContainer) {
+                            // si es componente Blade, colocamos mensaje dentro
+                            errorContainer.innerHTML = messages.join(", ");
+                        } else {
+                            // si no existe, lo creamos dinámicamente
+                            errorContainer = document.createElement("p");
+                            errorContainer.classList.add("input-error", "text-red-600", "text-sm", "mt-2");
+                            errorContainer.textContent = messages.join(", ");
+                            input.insertAdjacentElement("afterend", errorContainer);
+                        }
+                    }
+                } else if (data.error) {
+                    Swal.fire("Error", data.error, "error");
+                }
+                return;
+            }
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = data.redirect;
+                });
+            }
+        } catch (error) {
+            Swal.fire("Error", "Ocurrió un error inesperado", "error");
+            console.error(error);
+        }
+    });
+});
+

@@ -102,7 +102,6 @@ class Festivos extends Model
     {
         $inicio = Carbon::parse($fechaInicio);
         $fin = Carbon::parse($fechaFin);
-        //dd($fin->format('Y-m-d') .'  '. $inicio->format('Y-m-d'));
         $diasHabiles = 0;
         $medioDiaAcumulado = 0;
         
