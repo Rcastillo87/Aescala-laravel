@@ -134,16 +134,28 @@
             
 
             <div class="flex items-center gap-x-4 w-full max-w-full p-3 shrink-0 md:w-12/12 lg:w-6/12 2xl:w-4/12">
-                <!-- Checkbox -->
                 <label class="inline-flex items-center w-[30%] space-x-2">
                     <input type="hidden" name="opcion" value="0">
-                    <x-text-input type="checkbox" name="opcion" value="1" id="checkOpcion" />
+
+                    <input 
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
+                        dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        type="checkbox" 
+                        name="opcion" 
+                        value="1" 
+                        id="checkOpcion"
+                        {{ old('opcion', $proyecto?->opcion) == 1 ? 'checked' : '' }}
+                    />
                     <span class="text-gray-700">Inicia Proyecto</span>
                 </label>
-                <!-- Input oculto -->
-                <div id="inputExtra" class="hidden w-[70%]">
+                <div id="inputExtra" class="{{ old('opcion', $proyecto?->opcion) == 1 ? '' : 'hidden' }} w-[70%]">
                     <x-input-label for="por_inicia" :value="__('Porcentaje de Inicio(%) *')" />
-                    <x-text-input type="number" value=0; name="por_inicia" id="por_inicia" />
+                    <x-text-input 
+                        type="number" 
+                        value="{{ old('por_inicia', $proyecto?->por_inicia ?? 0) }}" 
+                        name="por_inicia" 
+                        id="por_inicia" 
+                    />
                 </div>
             </div>
 
@@ -166,7 +178,7 @@
                     </div>
 
                     <div id="entregables-div" class="mt-2 space-y-2 w-full">
-
+                        {!! $entregableProye !!}
                     </div>
                 </div>
             </div>
@@ -175,27 +187,32 @@
         <div class="flex  flex-wrap w-full max-w-full shrink-0 p-2 rounded-2xl border-2 border-gray-200">
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
                 <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="aprov_diseno_p">(50%) -> <span id="aprov_diseno_spa">$ 0</span></p>
+                <p id="aprov_diseno_p">({{ old('aprov_diseno_por', $proyecto?->aprov_diseno_por ?? 50) }}%) -> 
+                    <span id="aprov_diseno_spa">$ {{ number_format(old('aprov_diseno_por', $proyecto?->aprov_diseno_por) * $valor, 2, '.', ',') }}</span></p>
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
                 <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="ini_carpinteria_p">(15%) -> <span id="ini_carpinteria_spa">$ 0</span></p>
+                <p id="ini_carpinteria_p">({{ old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por ?? 15) }}%) -> 
+                    <span id="ini_carpinteria_spa">$ {{ number_format(old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por) * $valor, 2, '.', ',') }}</span></p>
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
                 <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="ini_enchape_p">(30%) -> <span id="ini_enchape_spa">$ 0</span></p>
+                <p id="ini_enchape_p">({{ old('ini_enchape_por', $proyecto?->ini_enchape_por ?? 30) }}%) -> 
+                    <span id="ini_enchape_spa">$ {{ number_format(old('ini_enchape_por', $proyecto?->ini_enchape_por) * $valor, 2, '.', ',') }}</span></p>
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
                 <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="ini_griferia_p">(3%) -> <span id="ini_griferia_spa">$ 0</span></p>
+                <p id="ini_griferia_p">({{ old('ini_griferia_por', $proyecto?->ini_griferia_por ?? 3) }}%) -> 
+                    <span id="ini_griferia_spa">$ {{ number_format(old('ini_griferia_por', $proyecto?->ini_griferia_por) * $valor, 2, '.', ',') }}</span></p>
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
                 <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="entrega_obra_p">(2%) -> <span id="entrega_obra_spa">$ 0</span></p>
+                <p id="entrega_obra_p">({{ old('entrega_obra_por', $proyecto?->entrega_obra_por ?? 2) }}%) -> 
+                    <span id="entrega_obra_spa">$ {{ number_format(old('entrega_obra_por', $proyecto?->entrega_obra_por) * $valor, 2, '.', ',') }}</span></p>
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0 font-semibold text-xl">
                 <x-input-label class="font-semibold text-xl" :value="__('Totales')" />
-                <p id="total_p" class="text-red-500">(100%) -> <span id="total_spa">$ 0</span></p>
+                <p id="total_p" class="text-red-500">({{ $suma??100 }}%) -> <span id="total_spa">$ {{$valor}}</span></p>
             </div>
         </div>
         <x-input-error :messages="$errors->get('total_p')" class="mt-2" />

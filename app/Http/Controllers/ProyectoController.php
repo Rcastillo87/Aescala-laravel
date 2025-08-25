@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -675,6 +676,12 @@ class ProyectoController extends Controller
             'message' => 'Lista de comparativp.',
             'data' => $data
         ], 200);
+    }
+
+    public function contratoPdf($id)
+    {
+        $proyecto = Proyecto::find($id);
+
     }
 
 }

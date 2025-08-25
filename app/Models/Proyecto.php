@@ -22,11 +22,16 @@ class Proyecto extends Model
         'departamento',
         'ciudad',
         'direccion',
-        'nombre_cliente',
-        'telefono_cliente',
         'cedula_cliente',
         'tipo_doc_cliente',
+        'nombre_cliente',
+        'telefono_cliente',
         'dias_trabajo',
+        'id_estado',
+        'id_user',
+        'id_user_obra_blanca',
+        'id_user_carpinteria',
+        'id_user_comercial',
         'area_privada',
         'aprov_diseno_por',
         'ini_carpinteria_por',
@@ -34,7 +39,7 @@ class Proyecto extends Model
         'ini_griferia_por',
         'entrega_obra_por',
         'opcion',
-        'por_inicia'
+        'por_inicia',
     ];
 
     protected $casts = [

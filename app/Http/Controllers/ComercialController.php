@@ -63,8 +63,56 @@ class ComercialController extends Controller
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
+
+        if(!$id){
+            $entregableProye = '';
+            $valor = 0;
+            $title = 'Crear Proyecto';
+            $suma = 0;
+        } else {
+            $entre = EntregableProye::with('entregable')->where('id_proyecto', $id)->get();
+            $suma = $proyecto->aprov_diseno_por + $proyecto->ini_carpinteria_por + $proyecto->ini_enchape_por + $proyecto->ini_griferia_por + $proyecto->entrega_obra_por;
+            $entregableProye = '';
+            foreach ($entre as $key => $value) {
+                $arr = explode('||', $value->tx_entregable);
+                $arrItem = '';
+                foreach ($arr as $val) {
+                    $arrItem .= '<input type="hidden" name="entregables['.$value->id_entregable.'][items][]" value="'.$val.'">';
+                }
+                $arrTx = implode('</li><li>', $arr);
+                $valor = 0;
+                $entregableProye .= 
+                    '<div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm" data-entregable-id="1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-[#242e68]">opcion 1</h3>
+                            <button class="remove-entregable text-red-500 hover:text-red-700">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mb-2">
+                            <div class="text-sm"><span class="font-semibold">Cantidad:</span>'.$value->cantidad.'</div>
+                            <div class="text-sm"><span class="font-semibold">Valor Unitario:</span> $ '.number_format($value->valor_total, 2, '.', ',').'</div>
+                            <div class="text-sm"><span class="font-semibold">Total:</span> $ '.number_format($value->cantidad*$value->valor_total, 2, '.', ',').'</div>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <h4 class="font-medium text-sm mb-1">Items:</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1">
+                                <li>ertfhdfjdyfjh</li>
+                            </ul>
+                        </div>
+                        '.$arrItem.'
+                        <input type="hidden" name="entregables['.$value->id_entregable.'][id]" value="'.$value->id_entregable.'">
+                        <input type="hidden" name="entregables['.$value->id_entregable.'][cantidad]" value="'.$value->cantidad.'">
+                        <input type="hidden" name="entregables['.$value->id_entregable.'][valor]" value="'.$value->valor_total.'">
+                    </div>
+                    ';
+                $valor += $value->valor_total;
+            }
+            $title = 'Editar Proyecto';
+        }
     
-        $title = $id ? 'Editar Proyecto' : 'Crear Proyecto';
         $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
         $ciudades = [];
         if ($id && $proyecto) {
@@ -76,7 +124,7 @@ class ComercialController extends Controller
         }
         $entregables = Entregables::all()->toArray();
         $tipoDocs = Proyecto::$tipoDocumento;
-        return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs', 'entregables'));
+        return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs', 'entregables', 'entregableProye', 'valor', 'suma'));
     }
 
     public function save(Request $req)
@@ -132,6 +180,7 @@ class ComercialController extends Controller
             if ($data['opcion']) {
                 $data['id_estado'] = 2;
             }
+
             $data['id_usuario_comercial'] = Auth::user()->id;
         
             DB::beginTransaction();
@@ -143,6 +192,10 @@ class ComercialController extends Controller
                 ['id' => $req->id],
                 $datosProyecto
             );
+
+            if($req->id){
+                EntregableProye::where('id_proyecto', $req->id)->delete();
+            }
 
             $entregables = $data['entregables'] ?? [];
             foreach ($entregables as $value) {

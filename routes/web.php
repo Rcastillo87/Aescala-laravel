@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('comercial')->name('comercial.')->group(function () {
         Route::get('/index', [ComercialController::class, 'index'])->name('index');
         Route::get('/create', [ComercialController::class, 'create'])->name('create');
+        Route::get('/edit/{id}', [ComercialController::class, 'edit'])->name('edit');
         Route::post('/save', [ComercialController::class, 'save'])->name('save');
     });
 
@@ -101,6 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pdfDespachos', [ProyectoController::class, 'pdfDespachos'])->name('pdfDespachos');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
         Route::get('/listComparativo', [ProyectoController::class, 'listComparativo'])->name('listComparativo');
+        Route::get('/contratoPdf/{id}', [ProyectoController::class, 'contratoPdf'])->name('contratoPdf');
     });
 
     Route::prefix('tareas')->name('tareas.')->group(function () {
