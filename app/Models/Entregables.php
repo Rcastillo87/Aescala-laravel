@@ -15,10 +15,5 @@ class Entregables extends Model
     protected $fillable = [
         'nombre_estregable'
     ];
-
-    // Relación con el modelo Proveedor
-    public function proveedor()
-    {
-        return $this->belongsTo(Proveedor::class, 'id_proveedor');
-    }
+    
 }

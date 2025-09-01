@@ -62,7 +62,6 @@ class Festivos extends Model
     {
         $fecha = Carbon::parse($fechaInicio);
         $diasTrabajados = 0;
-        $medioDiaAcumulado = 0;
 
         // Cargar festivos de la base de datos
         $festivos = self::pluck('date')->map(function ($date) {
@@ -76,15 +75,8 @@ class Festivos extends Model
             if ($diaSemana == Carbon::SUNDAY || $esFestivo) {
                 // Domingo o festivo: no se cuenta
             } elseif ($diaSemana == Carbon::SATURDAY) {
-                // Sábado: medio día
                 $diasTrabajados = $diasTrabajados + 0.5;
-                /*$medioDiaAcumulado += 0.5;
-                if ($medioDiaAcumulado == 1) {
-                    $diasTrabajados++;
-                    $medioDiaAcumulado = 0;
-                }*/
             } else {
-                // Día normal: día completo
                 $diasTrabajados++;
             }
 
@@ -103,7 +95,6 @@ class Festivos extends Model
         $inicio = Carbon::parse($fechaInicio);
         $fin = Carbon::parse($fechaFin);
         $diasHabiles = 0;
-        $medioDiaAcumulado = 0;
         
         if (is_null($festivos)) {
             $festivos = self::pluck('date')->map(function ($date) {
@@ -119,11 +110,6 @@ class Festivos extends Model
                 // No cuenta
             } elseif ($diaSemana == Carbon::SATURDAY) {
                 $diasHabiles = $diasHabiles + 0.5;
-                /*$medioDiaAcumulado += 0.5;
-                if ($medioDiaAcumulado == 1) {
-                    $diasHabiles++;
-                    $medioDiaAcumulado = 0;
-                }*/
             } else {
                 $diasHabiles++;
             }

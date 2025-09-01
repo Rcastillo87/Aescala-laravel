@@ -40,6 +40,7 @@ class Proyecto extends Model
         'entrega_obra_por',
         'opcion',
         'por_inicia',
+        'fec_begin_cont'
     ];
 
     protected $casts = [
@@ -65,8 +66,8 @@ class Proyecto extends Model
     ];
 
     public static $tipoDocumento = [
-        1 => ['CC', 'Cedu. Ciudadania'],
-        2 => ['CE', 'Cedu. Extrangeria'],
+        1 => ['CC', 'Cedula De Ciudadania'],
+        2 => ['CE', 'Cedula De Extrangeria'],
         3 => ['PAS', 'Pasaporte'],
     ];
 
@@ -140,5 +141,10 @@ class Proyecto extends Model
     public function cotizacion()
     {
         return $this->hasMany(Cotizacion::class, 'id_proyecto', 'id');
+    }
+
+    public function entreProyecto()
+    {
+        return $this->hasMany(EntregableProye::class, 'id_proyecto', 'id');
     }
 }

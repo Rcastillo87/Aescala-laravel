@@ -122,11 +122,11 @@
                     <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
                     <div class="flex flex-wrap justify-start gap-1 p-1">
 
-                        <!-- Botón Editar -->
-                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
+                        <!-- Botón Inicio de proyecto -->
+                        <div class="relative @if(Auth::user()->isNotColab && ($item->id_estado==2)) @else hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
-                               href="{{ route('proyecto.edit', $item->id) }}"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
+                               data-beginProyec='@json($item)' x-on:click="$dispatch('open-modal', 'beginProyec-modal')" x-data="" 
+                               class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
                                       focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
@@ -138,24 +138,28 @@
                             </div>
                         </div>
 
-                        <!-- Botón Editar -->
-                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
-                            <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
-                               href="{{ route('proyecto.edit', $item->id) }}"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
-                                      focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                        <!-- Botón Contrato -->
+                        <div class="relative @if(Auth::user()->isNotColab && $item->entreProyecto->isNotEmpty()) @else hidden @endif">
+                            <a tabindex="0" 
+                            data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
+                            data-tooltip-trigger="hover" 
+                            href="{{ route('proyecto.contratoPdf', $item->id) }}" 
+                            target="_blank"
+                            class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4 
+                                focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"/>
                                 </svg>
                             </a>
-                            <div id="tooltip-hover-edit-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                                Editar
+                            <div id="tooltip-hover-contratoPdf-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Contrato
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
                     
                         <!-- Botón Cambio de Estado -->
-                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                                onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
                                class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
@@ -171,7 +175,7 @@
                         </div>
                     
                         <!-- Botón Ingresos & Egresos -->
-                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listFinanzas(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'finanza-modal')"
@@ -188,7 +192,7 @@
                         </div>
 
                         <!-- Botón Cotizacion -->
-                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaCotizacion(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'cotizacion-modal')"
@@ -205,7 +209,7 @@
                         </div>
 
                         <!-- Botón despachos -->
-                        <div class="relative inline-flex">
+                        <div class="relative">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despachos-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaDespachos({{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'despachos-modal')"
@@ -222,7 +226,7 @@
                         </div>
 
                         <!-- Botón comparativo -->
-                        <div class="relative inline-flex @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-comparativo-{{$item->id}}" data-tooltip-trigger="hover"
                                 onclick="listComparativo({{$item->id}})" x-data="" 
                                 x-on:click="$dispatch('open-modal', 'compartivo-modal')"
@@ -351,9 +355,6 @@
         </div>
     @endif
 
-    <button onclick="abrirModal('my-modal')" class="bg-blue-500 text-white px-4 py-2 rounded hidden">
-        Abrir Modal
-    </button>
     @include('proyecto.modalAvances')
     @include('proyecto.modalTarea')
     @include('proyecto.modalFinanzas')
@@ -361,11 +362,14 @@
     @include('proyecto.modalDespachos')
     @include('proyecto.modalBalance')
     @include('proyecto.modalComparativo')
+    @include('proyecto.modalBeginProyec')
 @endsection
 
 @section('scripts')
     <script>
-        window.estadosProyecto = {!! json_encode($estado) !!};
+        window.tipoDoc = @json($tipoDoc);
+        window.estadosProyecto = @json($estado);
+        window.departamentos = @json($departamentos);
     </script>
     <script src="{{asset('js/proyecto/index.js')}}"></script>
     <script src="{{ asset('js/pedidos/create.js') }}"></script>

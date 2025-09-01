@@ -23,9 +23,8 @@ class EntregableProye extends Model
         'tx_entregable',
     ];
 
-    // Relación con el modelo Herramienta
     public function entregable()
     {
-        return $this->belongsTo(Entregables::class, 'id_entregable');
+        return $this->belongsTo(Entregables::class, 'id_entregable', 'id');
     }
 }

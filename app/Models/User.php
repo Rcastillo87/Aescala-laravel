@@ -158,8 +158,8 @@ class User extends Authenticatable
     ];
 
     public static $tipoDocumento = [
-        1 => ['CC', 'Cedu. Ciudadania'],
-        2 => ['CE', 'Cedu. Extrangeria'],
+        1 => ['CC', 'Cedula De Ciudadania'],
+        2 => ['CE', 'Cedula De Extrangeria'],
         3 => ['PAS', 'Pasaporte'],
     ];
 

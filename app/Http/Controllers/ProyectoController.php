@@ -8,7 +8,11 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
-use PhpOffice\PhpWord\TemplateProcessor;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -20,6 +24,7 @@ use App\Models\Cotizacion;
 use App\Models\Finanza;
 use App\Models\Despachos;
 use App\Models\Festivos;
+use App\Models\EntregableProye;
 
 class ProyectoController extends Controller
 {
@@ -79,7 +84,12 @@ class ProyectoController extends Controller
 
 	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
         $proyecto = [];
-        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 
+        $tipoDoc = Proyecto::$tipoDocumento;
+        $colaUsers = User::where('id_rol', 3)
+            ->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
+        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 'tipoDoc', 'colaUsers',
             'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo', 'proyecto'));
     }
 
@@ -173,6 +183,52 @@ class ProyectoController extends Controller
             Proyecto::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
             return redirect(session('proyecto_url'))->with('success', $msg);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
+    }
+
+    public function begin(Request $req)
+    {
+        $valbase = [
+            'id_proyecto_begin' => [
+                'required',
+                'integer',
+                Rule::exists('proyectos', 'id'),
+            ],
+            'id_user' => [
+                    'required',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
+            'id_user_obra_blanca' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
+            'id_user_carpinteria' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('users', 'id'),
+                ],
+            'dias_trabajo_begin' => 'required|integer|min:1',
+            'fec_inicio' => ['required', 'date', 'date_format:Y-m-d']
+        ]; 
+
+        $data = $req->validate($valbase);
+        $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo_begin']);
+        $data['id_estado'] = 1;
+        $data['fec_begin_cont'] = now();
+    
+        try {
+            DB::beginTransaction();
+            Proyecto::updateOrCreate(['id' => $data['id_proyecto_begin']], $data);
+            DB::commit();
+            return back()->with('success', 'Proyecto editado con éxito');
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
@@ -676,12 +732,169 @@ class ProyectoController extends Controller
             'message' => 'Lista de comparativp.',
             'data' => $data
         ], 200);
+    } 
+
+    public function contratoPdf($idProyecto)
+    {
+        try {
+            $proyecto = Proyecto::with('entreProyecto')->findOrFail($idProyecto);
+
+            $dptArray = json_decode(
+                file_get_contents(storage_path('json/jsonCityColombia.json')), 
+                true
+            );
+
+            $ciudad_dpt = $dptArray[$proyecto->departamento]['departamento'] . ', ' .
+                        $dptArray[$proyecto->departamento]['ciudades'][$proyecto->ciudad];
+
+            $meses   = ceil($proyecto->dias_trabajo / 24);
+            $txMeses = $this->numeroATexto($meses);
+            $total   = $proyecto->entreProyecto->sum('valor_total');
+            $txTotal = $this->numeroATexto($total);
+
+            $valTerm1 = ceil($total * 0.50);
+            $valTerm2 = ceil($total * 0.30);
+            $valTerm3 = ceil($total * 0.15);
+            $valTerm4 = ceil($total * 0.03);
+            $valTerm5 = ceil($total * 0.02);
+
+            $carbon = Carbon::parse($proyecto->fec_begin_cont);
+            $carbon->locale('es');
+            $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
+
+            /*$entregables = $proyecto->entreProyecto->map(function($e){
+                        return [
+                            "titulo" => $e->entregable->nombre_estregable,
+                            "items"  => explode("||", $e->tx_entregable),
+                            "precio" => number_format($e->valor_total, 0, ',', '.')
+                        ];
+                    })->toArray();*/
+
+            //$htmlTabla = $this->generarTablaPresupuesto($entregables, $proyecto->dias_trabajo);
+
+            // Data para Python
+            $data = [
+                "plantilla" => storage_path('plantillas/contrato.docx'),
+                "variables" => [
+                    "id_proyecto"         => $proyecto->id,
+                    "fecha_contrato"      =>  mb_strtoupper($fechaTexto, 'UTF-8'),
+                    "nombre_cliente"      => Str::title($proyecto->nombre_cliente),
+                    "ciudad_dpt"          => $ciudad_dpt,
+                    "tipo_doc_cliente"    => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][1] ?? '',
+                    "tipo_doc_cliente_acro"    => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][0] ?? '',
+                    "documento_cliente"   => number_format($proyecto->cedula_cliente, 0, ',', '.'),
+                    "nombre_repre"        => env('NOMBRE_REPRESENTANTE'),
+                    "tipo_doc_repre"      => env('TIPO_IDENT_REPRESENTANTE'),
+                    "tipo_doc_repre_acro"      => env('TIPO_IDENT_REPRESENTANTE_ACRO'),
+                    "documento_repre"     => env('IDENTI_REPRESENTANTE'),
+                    "razon_social"        => env('RAZON'),
+                    "ciudad_dpt_repre"    => env('IDENTI_REPRESENTANTE_EXPED'),
+                    "nit"                 => env('NIT'),
+                    "ciudad_dpt_empresa"  => env('CIU_DPT_EMPRE'),
+                    "direccion_proye"     => $proyecto->direccion,
+                    "area_privada_proye"  => $proyecto->area_privada,
+                    "dias_proye"          => $proyecto->dias_trabajo,
+                    "meses_proye"         => $meses,
+                    "tx_meses_proye"      => Str::title($txMeses),
+                    "tx_valor_total"      => Str::title($txTotal),
+                    "valor_total"         => number_format($total, 0, ',', '.'),
+                    "val_term_1"          => number_format($valTerm1, 0, ',', '.'),
+                    "val_term_2"          => number_format($valTerm2, 0, ',', '.'),
+                    "val_term_3"          => number_format($valTerm3, 0, ',', '.'),
+                    "val_term_4"          => number_format($valTerm4, 0, ',', '.'),
+                    "val_term_5"          => number_format($valTerm5, 0, ',', '.'),
+                    // Tabla entregables
+                    "table_entregables"   => $proyecto->entreProyecto->map(function($e){ 
+                        return [ 
+                            "titulo" => $e->entregable->nombre_estregable, 
+                            "items" => explode("||", $e->tx_entregable), 
+                            "precio" => number_format($e->valor_total, 0, ',', '.') 
+                        ];
+                    })->toArray()
+                ]
+            ];
+
+            // Llamar script Python
+            $process = new Process(["py", base_path("scripts/generar_contrato.py")]);
+
+            $process->setInput(json_encode($data));
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            $pdfBase64 = trim($process->getOutput()); // elimina saltos de línea
+            $pdfContent = base64_decode($pdfBase64, true);
+
+            if ($pdfContent === false) {
+                Log::error("Base64 inválido recibido de Python");
+                return response()->json(["error" => "Error al decodificar el PDF"], 500);
+            }
+
+            return response($pdfContent)
+                ->header("Content-Type", "application/pdf")
+                ->header("Content-Disposition", "inline; filename=contrato.pdf");
+
+        } catch (\Exception $e) {
+            Log::error('Error generando contrato PDF: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
+
+        }
     }
 
-    public function contratoPdf($id)
-    {
-        $proyecto = Proyecto::find($id);
+    function generarTablaPresupuesto($entregables, $dias) {
+        $html = '
+        <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            <tr>
+                <th style="width: 60%; background-color: #ff8c00; color: white; padding: 12px; border: 1px solid #e67300; text-align: center; font-size: 18px;">Entregables</th>
+                <th style="width: 30%; background-color: #ff8c00; color: white; padding: 12px; border: 1px solid #e67300; text-align: center; font-size: 18px;">Precios</th>
+                <th style="width: 10%; background-color: #ff8c00; color: white; padding: 12px; border: 1px solid #e67300; text-align: center; font-size: 18px;">Tiempos</th>
+            </tr>';
 
+        $rowspan = count($entregables);
+        foreach($entregables as $index => $e) {
+            $html .= '<tr>';
+
+            // Columna entregables
+            $html .= '<td style="background-color: #fffaf2; padding: 16px; border: 1px solid #ffe0b3;">
+                        <strong style="color: #cc5200;">' . e($e['titulo']) . '</strong>
+                        <ul style="margin-top: 10px; padding-left: 18px;">';
+
+            foreach($e['items'] as $item) {
+                $html .= '<li>' . e($item) . '</li>';
+            }
+
+            $html .= '</ul></td>';
+
+            // Columna precios
+            $html .= '<td style="background-color: #fff3e0; padding: 16px; border: 1px solid #ffe0b3; color: #333; font-weight: bold; font-size: 16px;">
+                        ' . e($e['precio']) . '
+                    </td>';
+
+            // Columna tiempos (solo en la primera fila)
+            if ($index === 0) {
+                $html .= '<td style="background-color: #fff0e0; border: 1px solid #ffe0b3;" rowspan="' . $rowspan . '">
+                            <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                                <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-weight: bold; color: #cc5200; font-size: 18px;">
+                                    ' . e($dias) . ' días trabajables
+                                </div>
+                            </div>
+                        </td>';
+            }
+
+            $html .= '</tr>';
+        }
+
+        $html .= '</table>';
+
+        return $html;
+    }
+
+    public function numeroATexto($numero)
+    {
+        $formatter = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
+        return $formatter->format($numero);
     }
 
 }

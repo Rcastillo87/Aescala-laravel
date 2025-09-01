@@ -86,6 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [ProyectoController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('edit');
         Route::post('/save', [ProyectoController::class, 'save'])->name('save');
+        Route::post('/begin', [ProyectoController::class, 'begin'])->name('begin');
         Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');
         Route::post('/saveTarea', [ProyectoController::class, 'saveTarea'])->name('saveTarea');
         Route::get('/editTarea/{id}', [ProyectoController::class, 'editTarea'])->name('editTarea');

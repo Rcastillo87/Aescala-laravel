@@ -832,3 +832,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnbeginProyec = document.querySelectorAll(".beginProyec");
+    const form = document.getElementById("formBeginProyec");
+
+
+    btnbeginProyec.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const proyecto = JSON.parse(btn.getAttribute("data-beginProyec"));
+            console.log(proyecto);
+            let departamentos = window.departamentos;
+            let txCui = departamentos[proyecto.departamento]['departamento'] + ' - ' + departamentos[proyecto.departamento]['ciudades'][proyecto.ciudad];
+            document.getElementById("txNombreProyec").textContent = proyecto.nombre_proyecto ?? '';
+            document.getElementById("txUbicacion").textContent = txCui;
+            document.getElementById("txDireccion").textContent = proyecto.direccion ?? '';
+            document.getElementById("txContacto").textContent = proyecto.nombre_cliente ?? '';
+            document.getElementById("txDocumento").textContent = window.tipoDoc[proyecto.tipo_doc_cliente][0] + ': ' + proyecto.cedula_cliente;
+            document.getElementById("txTelefono").textContent = proyecto.telefono_cliente ?? '';
+            document.getElementById("txAreaPrivada").textContent = proyecto.area_privada ?? '';
+
+            // 🔹 Campos ocultos obligatorios
+            document.getElementById("id_proyecto_begin").value = proyecto.id ?? '';
+            document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
+        });
+    });
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        Swal.fire({
+            title: '¿Iniciar proyecto?',
+            text: "Se guardará la información del formulario.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, iniciar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
