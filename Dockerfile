@@ -5,10 +5,11 @@ FROM php:8.2
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
     libjpeg62-turbo-dev libfreetype6-dev \
+    libicu-dev \
     mariadb-client \
     nodejs npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql zip gd
+    && docker-php-ext-install pdo pdo_mysql zip gd intl
 
 # Copia Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
