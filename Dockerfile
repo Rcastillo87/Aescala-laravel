@@ -4,9 +4,11 @@ FROM php:8.2
 # Instala dependencias necesarias para Laravel + Vite
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
+    libjpeg62-turbo-dev libfreetype6-dev \
     mariadb-client \
     nodejs npm \
-    && docker-php-ext-install pdo pdo_mysql zip
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql zip gd
 
 # Copia Composer desde imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
