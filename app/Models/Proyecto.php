@@ -40,7 +40,7 @@ class Proyecto extends Model
         'entrega_obra_por',
         'opcion',
         'por_inicia',
-        'fec_begin_cont'
+        //'fec_begin_cont'
     ];
 
     protected $casts = [

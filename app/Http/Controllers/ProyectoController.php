@@ -227,7 +227,7 @@ class ProyectoController extends Controller
         $data = $req->validate($valbase);
         $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo_begin']);
         $data['id_estado'] = 1;
-        $data['fec_begin_cont'] = now();
+        //$data['fec_begin_cont'] = now();
     
         try {
             DB::beginTransaction();
