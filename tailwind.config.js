@@ -198,6 +198,9 @@ export default {
         'absolute',
         '-left-1.5',
         'flex-1',
+        'w-auto',
+        'h-full',
+        'object-contain'
     ],
 
 };

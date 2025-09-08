@@ -36,6 +36,39 @@
                 <x-text-input id="telefono_cliente" class="block mt-1 w-full" type="text" name="telefono_cliente" :value="old('telefono_cliente', $proyecto?$proyecto->telefono_cliente:'')" required/>
                 <x-input-error :messages="$errors->get('telefono_cliente')" class="mt-2" />
             </div>
+            
+            <!-- Campo de firma -->
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label :value="__('Firma *')" />
+
+                <!-- Vista previa -->
+                <div id="firma-preview"
+                    class="border border-gray-300 rounded-lg w-full h-40 flex items-center justify-center bg-gray-50 overflow-hidden">
+                    @if($proyecto && $proyecto->firma_base64)
+                        <img src="{{ $proyecto->firma_base64 }}" 
+                            alt="Firma previa" 
+                            class="w-full h-full object-contain">
+                    @else
+                        <span class="text-gray-400">No se ha añadido firma</span>
+                    @endif
+                </div>
+
+                <x-secondary-button class="my-2 py-1 px-1" 
+                    href="#" 
+                    data-tooltip-target="tooltip-hover-Entregable" 
+                    data-tooltip-trigger="hover" 
+                    x-data="" 
+                    x-on:click="$dispatch('open-modal', 'firma-modal')"
+                    >
+                    Añadir / Editar Firma
+                </x-secondary-button>
+
+                <!-- Input hidden donde guardamos el base64 -->
+                <input type="hidden" name="firma_base64" id="firma_base64"
+                    value="{{ old('firma_base64', $proyecto ? $proyecto->firma_base64 : '') }}">
+
+                <x-input-error :messages="$errors->get('firma_base64')" class="mt-2" />
+            </div>
 
             <hr class="w-full my-2">
             <div class="mx-auto px-2 py-2 flex justify-start w-full">
@@ -228,6 +261,7 @@
     </form>
 </div>
 @include('comercial.modalEntregable')
+@include('comercial.modalFirma')
 @endsection
 
 @section('scripts')
@@ -237,6 +271,7 @@
     <script>
         const saveUrl = "{{ route('comercial.save') }}";
     </script>
+    <script src="{{ asset('js/comercial/signature_pad.umd.min.js') }}"></script>
     <script src="{{ asset('js/comercial/create.js') }}"></script>
 
 @endsection

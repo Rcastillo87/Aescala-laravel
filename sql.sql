@@ -19,13 +19,16 @@ ALTER TABLE proyectos
     ADD COLUMN ini_griferia_por int(11) NULL AFTER ini_enchape_por,
     ADD COLUMN entrega_obra_por int(11) NULL AFTER ini_griferia_por,
     ADD COLUMN opcion int(11) NULL AFTER entrega_obra_por,
-    ADD COLUMN por_inicia int(11) NULL AFTER opcion;
+    ADD COLUMN por_inicia int(11) NULL AFTER opcion,
+    ADD COLUMN img_firma TEXT NULL AFTER por_inicia;
 
 ALTER TABLE proyectos
     MODIFY COLUMN fec_inicio DATE NULL;
 ALTER TABLE proyectos
     MODIFY COLUMN id_user BIGINT NULL;
-
+ALTER TABLE proyectos 
+    MODIFY id_estado INT NULL DEFAULT NULL;
+    
 
 CREATE TABLE IF NOT EXISTS `entregables` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

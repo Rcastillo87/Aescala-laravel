@@ -1,3 +1,81 @@
+document.addEventListener("DOMContentLoaded", function () { 
+    const canvas = document.getElementById("signature-pad");
+    const clearButton = document.getElementById("clear-signature");
+    const saveButton = document.getElementById("save-signature");
+    const hiddenInput = document.getElementById("firma_base64");
+    const preview = document.getElementById("firma-preview");
+    let signaturePad;
+
+    function resizeCanvas() {
+        const ratio = window.devicePixelRatio || 1;
+        const container = document.getElementById("signature-pad-container");
+        const rect = container.getBoundingClientRect();
+
+        // Ajuste al tamaño del contenedor
+        canvas.width = rect.width * ratio;
+        canvas.height = rect.height * ratio;
+
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    function initSignaturePad() {
+        resizeCanvas();
+        signaturePad = new SignaturePad(canvas, {
+            penColor: "#111",
+            minWidth: 0.8,
+            maxWidth: 2.5,
+            throttle: 16, // suaviza el trazo
+            velocityFilterWeight: 0.7,
+        });
+    }
+
+    document.addEventListener("open-modal", function (event) {
+        if (event.detail === "firma-modal") {
+            setTimeout(() => {
+                initSignaturePad();
+                signaturePad.clear();
+            }, 300);
+        }
+    });
+
+    clearButton.addEventListener("click", function () {
+        if (signaturePad) signaturePad.clear();
+        hiddenInput.value = "";
+        preview.innerHTML = '<span class="text-gray-400 text-sm">Sin firma</span>';
+    });
+
+    saveButton.addEventListener("click", function () {
+        if (!signaturePad || signaturePad.isEmpty()) {
+            Swal.fire({
+                icon: "warning",
+                title: "Firma requerida",
+                text: "Por favor, dibuja tu firma antes de guardar.",
+            });
+            return;
+        }
+
+        const dataURL = signaturePad.toDataURL("image/png");
+        hiddenInput.value = dataURL;
+        preview.innerHTML = `<img src="${dataURL}" alt="Firma previa" class="w-full h-full object-contain">`;
+
+        Swal.fire({
+            icon: "success",
+            title: "Firma guardada",
+            timer: 1200,
+            showConfirmButton: false,
+        });
+        window.dispatchEvent(new CustomEvent("close-modal", { detail: "firma-modal" }));
+    });
+
+    window.addEventListener("resize", () => {
+        if (signaturePad) {
+            resizeCanvas();
+            signaturePad.clear();
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const formEntregable = document.getElementById('formEntregable');
     const entregablesDiv = document.getElementById('entregables-div');

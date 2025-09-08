@@ -40,6 +40,7 @@ class Proyecto extends Model
         'entrega_obra_por',
         'opcion',
         'por_inicia',
+        'img_firma'
         //'fec_begin_cont'
     ];
 
