@@ -134,35 +134,41 @@
                 <h2 class="text-xl font-bold text-[#242e68]">Porcentajes </h2>
             </div>
 
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="aprov_diseno_por" :value="__('Se Aprueba Diseño(%) *')" />
-                <x-text-input id="aprov_diseno_por" class="block w-full" type="number" 
-                    min="0" step="any" name="aprov_diseno_por" value="{{ old('aprov_diseno_por', $proyecto?->aprov_diseno_por ?? 50) }}"/>
-                <x-input-error :messages="$errors->get('aprov_diseno_por')" class="mt-2" />
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
+                <x-input-label for="termino_1_por" :value="__('Inicio de Diseño(%) *')" />
+                <x-text-input id="termino_1_por" class="block w-full" type="number" 
+                    min="0" step="any" name="termino_1_por" value="{{ old('termino_1_por', $proyecto?->termino_1_por ?? 30) }}"/>
+                <x-input-error :messages="$errors->get('termino_1_por')" class="mt-2" />
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="ini_carpinteria_por" :value="__('Se Inicia Carpinteria(%) *')" />
-                <x-text-input id="ini_carpinteria_por" class="block w-full" type="number" 
-                    min="0" step="any" name="ini_carpinteria_por" value="{{ old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por ?? 15) }}"/>
-                <x-input-error :messages="$errors->get('ini_carpinteria_por')" class="mt-2" />
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
+                <x-input-label for="termino_2_por" :value="__('Inicio de Obra-Blanca(%) *')" />
+                <x-text-input id="termino_2_por" class="block w-full" type="number" 
+                    min="0" step="any" name="termino_2_por" value="{{ old('termino_2_por', $proyecto?->termino_2_por ?? 20) }}"/>
+                <x-input-error :messages="$errors->get('termino_2_por')" class="mt-2" />
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="ini_enchape_por" :value="__('Se Inicia Enchape(%) *')" />
-                <x-text-input id="ini_enchape_por" class="block w-full" type="number" 
-                    min="0" step="any" name="ini_enchape_por" value="{{ old('ini_enchape_por', $proyecto?->ini_enchape_por ?? 30) }}"/>
-                <x-input-error :messages="$errors->get('ini_enchape_por')" class="mt-2" />
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
+                <x-input-label for="termino_3_por" :value="__('Inicio Corte Carpinteria(%) *')" />
+                <x-text-input id="termino_3_por" class="block w-full" type="number" 
+                    min="0" step="any" name="termino_3_por" value="{{ old('termino_3_por', $proyecto?->termino_3_por ?? 30) }}"/>
+                <x-input-error :messages="$errors->get('termino_3_por')" class="mt-2" />
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="ini_griferia_por" :value="__('Se Inicia Griferia(%) *')" />
-                <x-text-input id="ini_griferia_por" class="block w-full" type="number" 
-                    min="0" step="any" name="ini_griferia_por" value="{{ old('ini_griferia_por', $proyecto?->ini_griferia_por ?? 3) }}"/>
-                <x-input-error :messages="$errors->get('ini_griferia_por')" class="mt-2" />
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
+                <x-input-label for="termino_4_por" :value="__('Instalación Carpinteria(%) *')" />
+                <x-text-input id="termino_4_por" class="block w-full" type="number" 
+                    min="0" step="any" name="termino_4_por" value="{{ old('termino_4_por', $proyecto?->termino_4_por ?? 15) }}"/>
+                <x-input-error :messages="$errors->get('termino_4_por')" class="mt-2" />
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-3/12 lg:w-2/12 2xl:w-1.5/12 md:flex-0">
-                <x-input-label for="entrega_obra_por" :value="__('Se Entrega Obra(%) *')" />
-                <x-text-input id="entrega_obra_por" class="block w-full" type="number" 
-                    min="0" step="any" name="entrega_obra_por" value="{{ old('entrega_obra_por', $proyecto?->entrega_obra_por ?? 2) }}"/>
-                <x-input-error :messages="$errors->get('entrega_obra_por')" class="mt-2" />
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
+                <x-input-label for="termino_5_por" :value="__('Instalación Accesorios(%) *')" />
+                <x-text-input id="termino_5_por" class="block w-full" type="number" 
+                    min="0" step="any" name="termino_5_por" value="{{ old('termino_5_por', $proyecto?->termino_5_por ?? 3) }}"/>
+                <x-input-error :messages="$errors->get('termino_5_por')" class="mt-2" />
+            </div>
+            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
+                <x-input-label for="termino_6_por" :value="__('Entrega de Obra(%) *')" />
+                <x-text-input id="termino_6_por" class="block w-full" type="number" 
+                    min="0" step="any" name="termino_6_por" value="{{ old('termino_6_por', $proyecto?->termino_6_por ?? 2) }}"/>
+                <x-input-error :messages="$errors->get('termino_6_por')" class="mt-2" />
             </div>
             
 
@@ -217,38 +223,87 @@
             </div>
         </div>
 
-        <div class="flex  flex-wrap w-full max-w-full shrink-0 p-2 rounded-2xl border-2 border-gray-200">
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="aprov_diseno_p">({{ old('aprov_diseno_por', $proyecto?->aprov_diseno_por ?? 50) }}%) -> 
-                    <span id="aprov_diseno_spa">$ {{ number_format(old('aprov_diseno_por', $proyecto?->aprov_diseno_por) * $valor, 2, '.', ',') }}</span></p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4 p-4 rounded-xl border border-gray-200 bg-white shadow">
+
+            <!-- Inicio de Diseño -->
+            <div class="p-3 rounded-lg bg-blue-50 border border-blue-100 hover:shadow-md transition">
+                <h3 class="font-semibold text-gray-700 text-sm">Inicio de Diseño</h3>
+                <p id="termino_1_p" class="text-xs text-gray-500 mt-1">
+                    {{ old('termino_1_por', $proyecto?->termino_1_por ?? 30) }}%
+                </p>
+                <p id="termino_1_spa" class="text-base font-bold text-blue-800">
+                    $ {{ number_format(old('termino_1_por', $proyecto?->termino_1_por) * $valor, 2, '.', ',') }}
+                </p>
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="ini_carpinteria_p">({{ old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por ?? 15) }}%) -> 
-                    <span id="ini_carpinteria_spa">$ {{ number_format(old('ini_carpinteria_por', $proyecto?->ini_carpinteria_por) * $valor, 2, '.', ',') }}</span></p>
+
+            <!-- Inicio de Obra Blanca -->
+            <div class="p-3 rounded-lg bg-green-50 border border-green-100 hover:shadow-md transition">
+                <h3 class="font-semibold text-gray-700 text-sm">Inicio de Obra Blanca</h3>
+                <p id="termino_2_p" class="text-xs text-gray-500 mt-1">
+                    {{ old('termino_2_por', $proyecto?->termino_2_por ?? 20) }}%
+                </p>
+                <p id="termino_2_spa" class="text-base font-bold text-green-800">
+                    $ {{ number_format(old('termino_2_por', $proyecto?->termino_2_por) * $valor, 2, '.', ',') }}
+                </p>
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="ini_enchape_p">({{ old('ini_enchape_por', $proyecto?->ini_enchape_por ?? 30) }}%) -> 
-                    <span id="ini_enchape_spa">$ {{ number_format(old('ini_enchape_por', $proyecto?->ini_enchape_por) * $valor, 2, '.', ',') }}</span></p>
+
+            <!-- Corte Carpinteria -->
+            <div class="p-3 rounded-lg bg-purple-50 border border-purple-100 hover:shadow-md transition">
+                <h3 class="font-semibold text-gray-700 text-sm">Inicio Corte Carpinteria</h3>
+                <p id="termino_3_p" class="text-xs text-gray-500 mt-1">
+                    {{ old('termino_3_por', $proyecto?->termino_3_por ?? 30) }}%
+                </p>
+                <p id="termino_3_spa" class="text-base font-bold text-purple-800">
+                    $ {{ number_format(old('termino_3_por', $proyecto?->termino_3_por) * $valor, 2, '.', ',') }}
+                </p>
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="ini_griferia_p">({{ old('ini_griferia_por', $proyecto?->ini_griferia_por ?? 3) }}%) -> 
-                    <span id="ini_griferia_spa">$ {{ number_format(old('ini_griferia_por', $proyecto?->ini_griferia_por) * $valor, 2, '.', ',') }}</span></p>
+
+            <!-- Instalación Carpinteria -->
+            <div class="p-3 rounded-lg bg-yellow-50 border border-yellow-100 hover:shadow-md transition">
+                <h3 class="font-semibold text-gray-700 text-sm">Instalación Carpinteria</h3>
+                <p id="termino_4_p" class="text-xs text-gray-500 mt-1">
+                    {{ old('termino_4_por', $proyecto?->termino_4_por ?? 15) }}%
+                </p>
+                <p id="termino_4_spa" class="text-base font-bold text-yellow-800">
+                    $ {{ number_format(old('termino_4_por', $proyecto?->termino_4_por) * $valor, 2, '.', ',') }}
+                </p>
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0">
-                <x-input-label class="font-semibold" :value="__('Se Inicia Enchape')" />
-                <p id="entrega_obra_p">({{ old('entrega_obra_por', $proyecto?->entrega_obra_por ?? 2) }}%) -> 
-                    <span id="entrega_obra_spa">$ {{ number_format(old('entrega_obra_por', $proyecto?->entrega_obra_por) * $valor, 2, '.', ',') }}</span></p>
+
+            <!-- Instalación Accesorios -->
+            <div class="p-3 rounded-lg bg-pink-50 border border-pink-100 hover:shadow-md transition">
+                <h3 class="font-semibold text-gray-700 text-sm">Instalación Accesorios</h3>
+                <p id="termino_5_p" class="text-xs text-gray-500 mt-1">
+                    {{ old('termino_5_por', $proyecto?->termino_5_por ?? 3) }}%
+                </p>
+                <p id="termino_5_spa" class="text-base font-bold text-pink-800">
+                    $ {{ number_format(old('termino_5_por', $proyecto?->termino_5_por) * $valor, 2, '.', ',') }}
+                </p>
             </div>
-            <div class="w-[50%] max-w-full p-3 shrink-0 md:w-4/12 lg:w-3/12 2xl:w-2/12 md:flex-0 font-semibold text-xl">
-                <x-input-label class="font-semibold text-xl" :value="__('Totales')" />
-                <p id="total_p" class="text-red-500">({{ $suma??100 }}%) -> <span id="total_spa">$ {{$valor}}</span></p>
+
+            <!-- Entrega de Obra -->
+            <div class="p-3 rounded-lg bg-indigo-50 border border-indigo-100 hover:shadow-md transition">
+                <h3 class="font-semibold text-gray-700 text-sm">Entrega de Obra</h3>
+                <p id="termino_6_p" class="text-xs text-gray-500 mt-1">
+                    {{ old('termino_6_por', $proyecto?->termino_6_por ?? 2) }}%
+                </p>
+                <p id="termino_6_spa" class="text-base font-bold text-indigo-800">
+                    $ {{ number_format(old('termino_6_por', $proyecto?->termino_6_por) * $valor, 2, '.', ',') }}
+                </p>
+            </div>
+
+            <!-- Totales -->
+            <div class="col-span-1 sm:col-span-2 md:col-span-3 2xl:col-span-6 p-4 rounded-lg bg-red-100 border border-red-200 flex flex-col items-center justify-center shadow">
+                <h3 class="font-bold text-red-800 text-lg">Totales</h3>
+                <p id="total_p" class="text-sm font-medium text-red-700 mt-1">
+                    ({{ $suma ?? 100 }}%)
+                </p>
+                <p id="total_spa" class="text-xl font-extrabold text-red-900">
+                    {{$valor}}
+                </p>
             </div>
         </div>
-        <x-input-error :messages="$errors->get('total_p')" class="mt-2" />
+
+        <input id="total_p_back" type="hidden">
 
         <div class="flex items-center justify-end mt-4">
             <x-secondary-button class="ms-4" href="{{ route('comercial.index') }}">

@@ -242,14 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resetModal();
     });
 
-    //const entregablesDiv = document.getElementById("entregables-div");
-
     const inputs = [
-        "aprov_diseno_por",
-        "ini_carpinteria_por",
-        "ini_enchape_por",
-        "ini_griferia_por",
-        "entrega_obra_por",
+        "termino_1_por",
+        "termino_2_por",
+        "termino_3_por",
+        "termino_4_por",
+        "termino_5_por",
+        "termino_6_por"
     ];
 
     // 🔹 Función para obtener el total de entregables
@@ -263,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return total;
     }
 
-    // 🔹 Función para actualizar los <p> y <span>
+    // 🔹 Función para actualizar los porcentajes y montos
     function actualizarResumen() {
         const total = calcularTotalEntregables();
 
@@ -272,27 +271,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         inputs.forEach(id => {
             const input = document.getElementById(id);
-            const porcentaje = parseFloat(input.value || 0);
+            const porcentaje = parseFloat(input?.value || 0);
             const monto = (total * porcentaje / 100).toFixed(2);
 
-            // Actualizar el <p> con el porcentaje y monto
+            // actualizar porcentaje
             const p = document.getElementById(id.replace("_por", "_p"));
             if (p) {
-                p.innerHTML = `(${porcentaje}%) -> <span id="${id.replace("_por", "_spa")}">${formatCurrency(monto)}</span>`;
+                p.textContent = `${porcentaje}%`;
+            }
+
+            // actualizar monto
+            const span = document.getElementById(id.replace("_por", "_spa"));
+            if (span) {
+                span.textContent = formatCurrency(monto);
             }
 
             acumuladoMonto += parseFloat(monto);
             acumuladoPorcentaje += porcentaje;
         });
 
-        // Actualizar total (porcentaje y monto)
+        // actualizar total
         const totalP = document.getElementById("total_p");
         const totalSpa = document.getElementById("total_spa");
 
         if (totalP) {
-            totalP.innerHTML = `(${acumuladoPorcentaje}%) -> <span id="total_spa">$ ${formatCurrency(acumuladoMonto)}</span>`;
-        } else if (totalSpa) {
-            totalSpa.textContent = `$ ${acumuladoMonto.toFixed(2)}`;
+            totalP.textContent = `(${acumuladoPorcentaje}%)`;
+        }
+        if (totalSpa) {
+            totalSpa.textContent = formatCurrency(acumuladoMonto);
         }
     }
 
@@ -301,15 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(id)?.addEventListener("input", actualizarResumen);
     });
 
-    // 🔹 Escuchar cambios en entregables (cuando se agregan o eliminan)
-    entregablesDiv.addEventListener("DOMSubtreeModified", () => {
-        actualizarResumen();
-    });
+    // 🔹 Escuchar cambios en entregables
+    entregablesDiv.addEventListener("DOMSubtreeModified", actualizarResumen);
 
     // 🔹 Inicializar al cargar
     actualizarResumen();
-});
 
+});
 
 document.addEventListener("DOMContentLoaded", function() {
     const departamentos = window.departamentos;

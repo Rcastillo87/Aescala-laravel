@@ -143,11 +143,12 @@ class ComercialController extends Controller
                 'dias_trabajo' => 'required|integer|min:1',
                 'area_privada' => 'nullable|integer|min:0',
 
-                "aprov_diseno_por"    => 'required|integer|min:0|max:100',
-                "ini_carpinteria_por" => 'required|integer|min:0|max:100',
-                "ini_enchape_por"     => 'required|integer|min:0|max:100',
-                "ini_griferia_por"    => 'required|integer|min:0|max:100',
-                "entrega_obra_por"    => 'required|integer|min:0|max:100',
+                "termino_1_por" => 'required|integer|min:0|max:100',
+                "termino_2_por" => 'required|integer|min:0|max:100',
+                "termino_3_por" => 'required|integer|min:0|max:100',
+                "termino_4_por" => 'required|integer|min:0|max:100',
+                "termino_5_por" => 'required|integer|min:0|max:100',
+                "termino_6_por" => 'required|integer|min:0|max:100',
 
                 'opcion' => ['required', 'boolean'],
                 'por_inicia' => [
@@ -170,10 +171,10 @@ class ComercialController extends Controller
                 'entregables.*.items.*' => ['string', 'max:255'],
             ]);
 
-            $suma = $req->aprov_diseno_por + $req->ini_carpinteria_por + $req->ini_enchape_por + $req->ini_griferia_por + $req->entrega_obra_por;
+            $suma = $req->termino_1_por + $req->termino_2_por + $req->termino_3_por + $req->termino_4_por + $req->termino_5_por + $req->termino_6_por;
             if ($suma !== 100) {
                 return response()->json([
-                    'errors' => ['total_p' => ['La suma de los porcentajes debe ser exactamente 100.']]
+                    'errors' => ['total_p_back' => ['La suma de los porcentajes debe ser exactamente 100.']]
                 ], 422);
             }    
 

@@ -7,8 +7,8 @@
         @page { margin: 90px 50px 80px 50px; }
         body {
             font-family: "Arial Narrow", Arial, sans-serif;
-            font-size: 11pt;
-            line-height: 1.6;
+            font-size: 10pt;
+            line-height: 1.4;
             color: #222;
         }
         /* Header con logo fijo */
@@ -81,7 +81,7 @@
         }
         /* Firmas */
         .firmas {
-            margin-top: 60px;
+            margin-top: 30px;
             width: 100%;
             border: 1px solid #000;
             border-collapse: collapse;
@@ -94,7 +94,7 @@
             padding: 8px;
             text-align: center;
             font-family: "Calibri", sans-serif;
-            font-size: 11pt;
+            font-size: 9pt;
         }
         .firmas strong {
             display: block;
@@ -122,34 +122,24 @@
 <!-- Título del contrato -->
 <h1 class="titulo">CONTRATO DE OBRA CIVIL N.º {{ $id_proyecto }}</h1>
 <h2 class="subtitulo">Del {{ $fecha_contrato }}</h2>
+  
+  <p>
+Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representación propia, quien para efectos del presente contrato se denominará EL <strong>EL CONTRATANTE</strong>; y <strong>{{ $nombre_repre }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt_repre }} identificado con {{ $tipo_doc_repre }} Nº {{ $documento_repre }} expedida en {{ $ciudad_dpt_repre }}, actuando en representación legal de la empresa <strong>{{ $razon_social }}</strong>. persona jurídica inscrita en cámara de comercio de {{ $ciudad_dpt_empresa }}, con NIT N° {{ $nit }} quien para efectos del presente contrato se llamará <strong>EL CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regirá por las siguientes cláusulas: 
+  </p>
 
 <p>
-    Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad,
-    domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }}
-    N.º {{ $documento_cliente }}, actuando en nombre propio, quien en adelante se denominará
-    <strong>EL CONTRATANTE</strong>; y <strong>{{ $nombre_repre }}</strong>, mayor de edad,
-    identificado con {{ $tipo_doc_repre }} N.º {{ $documento_repre }} expedida en {{ $ciudad_dpt_repre }},
-    en calidad de representante legal de <strong>{{ $razon_social }}</strong>, NIT {{ $nit }},
-    domiciliada en {{ $ciudad_dpt_empresa }}, quien en adelante se denominará
-    <strong>EL CONTRATISTA</strong>, acuerdan celebrar el presente contrato de obra civil,
-    sujeto a las siguientes cláusulas:
+<strong>PRIMERA. OBJETO: </strong> En desarrollo del presente contrato, EL CONTRATISTA se obliga con EL CONTRATANTE a ejecutar las obras de remodelación y/o elaboración de OBRA BLANCA del bien inmueble ubicado en la dirección {{ $direccion_proye }}, con un área privada de {{ $area_privada_proye }} m² conforme las características que se detallan a continuación
 </p>
-
-<h3>Primera. Objeto</h3>
-<p>
-    EL CONTRATISTA se obliga con EL CONTRATANTE a ejecutar las obras de remodelación
-    y/o elaboración de obra blanca en el inmueble ubicado en {{ $ciudad_dpt }},
-    dirección {{ $direccion_proye }}, con un área privada de {{ $area_privada_proye }} m²,
-    conforme a los siguientes entregables:
-</p>
-
+  
 <table class="presupuesto">
     <tr>
         <th style="width: 60%;">Entregables</th>
         <th style="width: 30%;">Precios</th>
         <th style="width: 10%;">Tiempos</th>
     </tr>
-    @php $rowspan = count($entregables); @endphp
+    @php 
+        $rowspan = count($entregables);
+    @endphp
     @foreach($entregables as $index => $e)
         <tr>
             <td>
@@ -160,31 +150,32 @@
                     @endforeach
                 </ul>
             </td>
-            <td>{{ $e['precio'] }}</td>
+            <td>$ {{ $e['precio'] }}</td>
             @if ($index === 0)
-                <td class="tiempo" rowspan="{{ $rowspan }}">
+                <td class="tiempo" rowspan="{{ $rowspan +1}}">
                     {{ $dias_trabajo }} días trabajables
                 </td>
             @endif
         </tr>
     @endforeach
+    <tr style="color: #ddb499;">
+        <td style="color: #cc0011;"><strong>Total</strong></td>
+        <td style="color: #cc0011;"><strong>$ {{ $valor_total }}</strong></td>
+    </tr>
 </table>
 
-<h3>Segunda. Plazo</h3>
 <p>
-    El plazo de ejecución será de {{ $dias_proye }} días hábiles
-    ({{ $meses_proye }} {{ $tx_meses_proye }}),
-    contados a partir de la aceptación del diseño por parte de EL CONTRATANTE y del pago inicial correspondiente.
+    <strong>SEGUNDA. PLAZO: </strong>El plazo para la ejecución del presente contrato, será por el término {{ $dias_proye }} días hábiles ({{ $meses_proye }}) MESES, manifestando igualmente que dependerá de la aceptación del diseño por parte de EL CONTRATANTE. En este caso, solo cuando se acepte por parte de EL CONTRATANTE el diseño y sus modificaciones, se entenderá que deberá iniciar la obra. Sin embargo, expone EL CONTRATANTE que, si aquel realiza el primer pago dispuesto en la cláusula siguiente de manera tardía a la fecha de inicio de obra, el término se entenderá dispuesto desde la fecha de pago. Parágrafo primero. EL CONTRATANTE se obliga a firmar los formatos donde se expongan los diseños que se realizaran en la obra, y desde la fecha de la firma de los mismos se contará el plazo dispuesto en la obra, junto con el respectivo pago. Parágrafo segundo. EL CONTRATANTE acepta que EL CONTRATISTA suspenda la obra si a la fecha dispuesta para pago EL CONTRATANTE no realiza el pago debido. Parágrafo tercero.  Si llegase a existir suspensión de la obra con ocasión de EL CONTRATANTE, este acepta con la firma de este escrito que EL CONTRATISTA retome el conteo del término que faltare para la entrega de la obra desde el momento que EL CONTRATANTE realice el pago debidamente.
 </p>
-
-<h3>Tercera. Valor del contrato</h3>
+  
 <p>
-    EL CONTRATANTE pagará la suma total de
+    <strong>TERCERA. VALOR DEL CONTRATO: </strong>EL CONTRATANTE pagará la suma total de
     <strong>{{ $tx_valor_total }} pesos (${{ $valor_total }})</strong>.
 </p>
 
-<h3>Cuarta. Forma de pago</h3>
-<p>Los pagos se realizarán de la siguiente manera:</p>
+<p>
+  <strong>CUARTA. FORMA DE PAGO: </strong>Los pagos se realizarán de la siguiente manera:
+</p>
 <ul>
     <li>50% (${{ $val_term_1 }}) al aprobar el diseño.</li>
     <li>30% (${{ $val_term_2 }}) antes de enchapar pisos.</li>
@@ -192,23 +183,55 @@
     <li>3% (${{ $val_term_4 }}) al iniciar instalación de accesorios.</li>
     <li>2% (${{ $val_term_5 }}) al momento de entrega de la obra.</li>
 </ul>
-
-<h3>Quinta. Sanción por incumplimiento</h3>
+  
+  
 <p>
-    En caso de incumplimiento en los pagos por parte de EL CONTRATANTE, no aplicará la garantía de la obra.
+  <strong>NOTA: </strong>
+</p>
+<ul>
+    <li>la separación de cupo valor $ 3.000.000 se restará del valor del porcentaje de la etapa
+de diseño, el valor de la propuesta se congelará durante seis meses a partir de la fecha de la
+firma..</li>
+    <li>Pasado los seis meses se realizará un ajuste en el presupuesto de la propuesta de acuerdo al
+valor que este establecido en el momento</li>
+</ul>  
+
+<p>
+    <strong>QUINTA. SANCIÓN POR INCUMPLIMIENTO: </strong>Las partes acuerdan que en caso de que EL CONTRATANTE no realice el pago total de la obra dispuesto en la cláusula cuarta no podrá reclamarse garantía de la obra. 
 </p>
 
-<h3>Sexta. Domicilio</h3>
 <p>
-    El domicilio contractual será la ciudad de Cali, Valle.
+    <strong>SEXTA: </strong>El domicilio contractual será la ciudad de Cali, Valle.
 </p>
 
-<h3>Séptima. Garantía</h3>
 <p>
-    La obra cuenta con un (1) año de garantía a partir de su entrega. EL CONTRATANTE reconoce que no existirá
-    responsabilidad del CONTRATISTA por daños causados por manipulación indebida, mal uso o intervención de terceros.
+<strong>SÉPTIMA. RETRACTO: </strong> EL CONTRATANTE deberá notificar del retracto a EL CONTRATISTA por escrito, una vez EL CONTRATISTA sea debidamente notificado parará las obras y entregará la obra en el estado en que se encuentre. En el evento de retracto por parte de EL CONTRATANTE, este autoriza expresamente desde ahora a EL CONTRATISTA a cobrar los valores dispuestos hasta el avance de obra en el que se encuentre al momento del retracto, cobro que podrá realizarse dentro del proceso civil respectivo por EL CONTRATISTA, sin requerimiento o citación para constituir en mora.
 </p>
-
+  
+<p>
+<strong>OCTAVA. GARANTÍA: </strong>EL CONTRATISTA manifiesta que la obra realizada por aquel y la cual es objeto de este contrato tiene UN (01) AÑO de garantía desde la entrega de la obra a EL CONTRATANTE. Sin embargo, EL CONTRATANTE reconoce que no existirá responsabilidad de EL CONTRATISTA cuando existan daños en la obra por manipulación indebida de EL CONTRATANTE o sus dependientes y de terceras personas
+</p>
+  
+<p>
+<strong>NOVENA. MATERIALES: </strong>EL CONTRATISTA manifiesta que los valores dispuestos en la cláusula cuarta de este contrato se cubren a todo costo.
+</p>
+  
+<p>
+<strong>DÉCIMA. JUSTA CAUSA DE TERMINACIÓN DEL CONTRATO Y/O SUSPENSIÓN: </strong>El incumplimiento en los pagos por parte de EL CONTRATANTE es una justa causa para terminar el contrato por parte de EL CONTRATISTA. Son justas causas de suspensión las que provengan de fuerza mayor y caso fortuito, o las que sean generadas por terceros y que no sean responsabilidad de EL CONTRATISTA. Así mismo, serán justas causas para terminar el contrato por cualquiera de las partes las dispuestas en el Código Civil y Código de Comercio.
+</p>
+  
+<p>
+<strong>DÉCIMA PRIMERA. ENTREGA DE LA OBRA: </strong>La obra será entregada con salvaguarda de calidad de la obra, y bajo los parámetros de funcionalidad del bien inmueble, manifestando que si EL CONTRATISTA cumple con el 100% de lo dispuesto como objeto contractual no habrá lugar por parte de EL CONTRATANTE a negarse a recibir el mismo
+</p>
+  
+<p>
+<strong>DÉCIMA SEGUNDA. OBLIGACIONES DEL CONTRATANTE: </strong>EL CONTRATANTE se obliga a cubrir los gastos de energía que realicen las maquinas o elementos de trabajo que use EL CONTRATISTA para el desarrollo adecuado del contrato, manifestando que dichos costos se cargarán en efecto al recibo de servicios públicos de EL CONTRATANTE y serán asumidos en su totalidad por él, manifestando EL CONTRATANTE que desde ahora asume los mencionados pagos y desobliga a EL CONTRATISTA de ello. Igualmente, EL CONTRATANTE se obliga a dejar autorización previa para la visita de EL CONTRATISTA durante el término de ejecución de la obra, en caso de incumplimiento en ello, que impida la ejecución por parte de EL CONTRATISTA, desde ahora EL CONTRATANTE asume la responsabilidad y autoriza expresamente que se suspenda la obra en el término que dure sin ingresar al inmueble de objeto de la misma, pudiendo EL CONTRATISTA retrasar la obra, para lo cual EL CONTRATANTE lo autoriza anticipadamente.
+</p>
+  
+<p>
+<strong>DÉCIMA TERCERA. DERECHOS DE AUTOR: </strong>La obra y diseño realizada por EL CONTRATISTA es única y corresponde a su diseño y la de sus colaboradores, y EL CONTRATANTE acepta con la firma de este contrato que EL CONTRATISTA podrá tomar fotografías de la obra y publicarlas en sus redes sociales para conocimiento de su público.
+</p>
+  
 <p>
     En constancia se firma en dos ejemplares el día {{ $fecha_contrato }}.
 </p>
