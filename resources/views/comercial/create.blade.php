@@ -44,8 +44,8 @@
                 <!-- Vista previa -->
                 <div id="firma-preview"
                     class="border border-gray-300 rounded-lg w-full h-40 flex items-center justify-center bg-gray-50 overflow-hidden">
-                    @if($proyecto && $proyecto->firma_base64)
-                        <img src="{{ $proyecto->firma_base64 }}" 
+                    @if($proyecto && $proyecto->img_firma)
+                        <img src="{{ $proyecto->img_firma }}" 
                             alt="Firma previa" 
                             class="w-full h-full object-contain">
                     @else
@@ -64,10 +64,10 @@
                 </x-secondary-button>
 
                 <!-- Input hidden donde guardamos el base64 -->
-                <input type="hidden" name="firma_base64" id="firma_base64"
-                    value="{{ old('firma_base64', $proyecto ? $proyecto->firma_base64 : '') }}">
+                <input type="hidden" name="img_firma" id="img_firma"
+                    value="{{ old('img_firma', $proyecto ? $proyecto->img_firma : '') }}">
 
-                <x-input-error :messages="$errors->get('firma_base64')" class="mt-2" />
+                <x-input-error :messages="$errors->get('img_firma')" class="mt-2" />
             </div>
 
             <hr class="w-full my-2">
@@ -191,7 +191,7 @@
                     <x-input-label for="por_inicia" :value="__('Porcentaje de Inicio(%) *')" />
                     <x-text-input 
                         type="number" 
-                        value="{{ old('por_inicia', $proyecto?->por_inicia ?? 0) }}" 
+                        value="{{ old('por_inicia', $proyecto?->por_inicia ?? '') }}" 
                         name="por_inicia" 
                         id="por_inicia" 
                     />
@@ -302,8 +302,6 @@
                 </p>
             </div>
         </div>
-
-        <input id="total_p_back" type="hidden">
 
         <div class="flex items-center justify-end mt-4">
             <x-secondary-button class="ms-4" href="{{ route('comercial.index') }}">

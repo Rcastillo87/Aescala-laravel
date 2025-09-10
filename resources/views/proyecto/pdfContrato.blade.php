@@ -98,7 +98,14 @@
         }
         .firmas strong {
             display: block;
-            margin-bottom: 40px;
+            margin-bottom: 0px;
+        }
+        .firmas img {
+            max-width: 100%;
+            max-height: 100px; /* ajusta la altura máxima */
+            object-fit: contain; /* mantiene proporción */
+            display: block;
+            margin: 10px auto;
         }
         /* Footer */
         footer {
@@ -124,7 +131,7 @@
 <h2 class="subtitulo">Del {{ $fecha_contrato }}</h2>
   
   <p>
-Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representación propia, quien para efectos del presente contrato se denominará EL <strong>EL CONTRATANTE</strong>; y <strong>{{ $nombre_repre }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt_repre }} identificado con {{ $tipo_doc_repre }} Nº {{ $documento_repre }} expedida en {{ $ciudad_dpt_repre }}, actuando en representación legal de la empresa <strong>{{ $razon_social }}</strong>. persona jurídica inscrita en cámara de comercio de {{ $ciudad_dpt_empresa }}, con NIT N° {{ $nit }} quien para efectos del presente contrato se llamará <strong>EL CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regirá por las siguientes cláusulas: 
+Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representación propia, quien para efectos del presente contrato se denominará EL <strong>EL CONTRATANTE</strong>; y <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, mayor de edad, domiciliado en {{ env('IDENTI_REPRESENTANTE_EXPED') }} identificado con {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }} expedida en {{ env('IDENTI_REPRESENTANTE_EXPED') }}, actuando en representación legal de la empresa <strong>{{ env('RAZON') }}</strong>. persona jurídica inscrita en cámara de comercio de {{ env('CIU_DPT_EMPRE') }}, con NIT N° {{ env('NIT') }} quien para efectos del presente contrato se llamará <strong>EL CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regirá por las siguientes cláusulas: 
   </p>
 
 <p>
@@ -143,7 +150,7 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
     @foreach($entregables as $index => $e)
         <tr>
             <td>
-                <strong style="color: #cc5200;">{{ $e['titulo'] }}</strong>
+                <strong style="color: #cc5200;">Cant: {{ $e['cantidad'] }} - {{ $e['titulo'] }}</strong>
                 <ul style="margin-top: 6px; padding-left: 16px;">
                     @foreach($e['items'] as $item)
                         <li>{{ $item }}</li>
@@ -177,13 +184,13 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
   <strong>CUARTA. FORMA DE PAGO: </strong>Los pagos se realizarán de la siguiente manera:
 </p>
 <ul>
-    <li>50% (${{ $val_term_1 }}) al aprobar el diseño.</li>
-    <li>30% (${{ $val_term_2 }}) antes de enchapar pisos.</li>
-    <li>15% (${{ $val_term_3 }}) al iniciar acabados de segunda etapa.</li>
-    <li>3% (${{ $val_term_4 }}) al iniciar instalación de accesorios.</li>
-    <li>2% (${{ $val_term_5 }}) al momento de entrega de la obra.</li>
+    @if($por_term_1!=0) <li>{{ $por_term_1 }}% (${{ $val_term_1 }}) al inicio de diseño.</li> @endif
+    @if($por_term_2!=0) <li>{{ $por_term_2 }}% (${{ $val_term_2 }}) al inicio de inicio de obra blanca.</li> @endif
+    @if($por_term_3!=0) <li>{{ $por_term_3 }}% (${{ $val_term_3 }}) al inicio de corte carpinteria.</li> @endif
+    @if($por_term_4!=0) <li>{{ $por_term_4 }}% (${{ $val_term_4 }}) al momento de instalación carpinteria.</li> @endif
+    @if($por_term_5!=0) <li>{{ $por_term_5 }}% (${{ $val_term_5 }}) al momento de instalación accesorios.</li> @endif
+    @if($por_term_6!=0) <li>{{ $por_term_6 }}% (${{ $val_term_6 }}) al momento de entrega de la obra.</li> @endif
 </ul>
-  
   
 <p>
   <strong>NOTA: </strong>
@@ -240,17 +247,19 @@ valor que este establecido en el momento</li>
     <tr>
         <td>
             <strong>EL CONTRATANTE</strong>
-            <br><br><br>
-            {{ $nombre_cliente }}<br>
-            {{ $tipo_doc_cliente_acro }} N.º {{ $documento_cliente }}
+            <img src="{{ $img_firma }}" alt="Firma cliente">
+            <div>
+                {{ $nombre_cliente }}<br>
+                {{ $tipo_doc_cliente_acro }} N.º {{ $documento_cliente }}
+            </div>
         </td>
         <td>
             <strong>EL CONTRATISTA</strong>
-            <br><br><br>
-            {{ $nombre_repre }}<br>
-            {{ $tipo_doc_repre_acro }} N.º {{ $documento_repre }}<br>
+            <img src="{{ $img_firma }}" alt="Firma representante">
+            {{ env('NOMBRE_REPRESENTANTE') }}<br>
+            {{ env('TIPO_IDENT_REPRESENTANTE_ACRO') }} N.º {{ env('IDENTI_REPRESENTANTE') }}<br>
             Representante Legal<br>
-            {{ $razon_social }}
+            {{ env('RAZON') }}
         </td>
     </tr>
 </table>

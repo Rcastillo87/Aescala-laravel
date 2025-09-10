@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("signature-pad");
     const clearButton = document.getElementById("clear-signature");
     const saveButton = document.getElementById("save-signature");
-    const hiddenInput = document.getElementById("firma_base64");
+    const hiddenInput = document.getElementById("img_firma");
     const preview = document.getElementById("firma-preview");
     let signaturePad;
 

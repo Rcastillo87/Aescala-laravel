@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Rules\Base64PngOrNull;
 
 use App\Models\Proyecto;
 use App\Models\User;
@@ -162,6 +163,7 @@ class ComercialController extends Controller
                         }
                     }
                 ],
+                'img_firma' => [new Base64PngOrNull],
 
                 'entregables' => ['required', 'array', 'min:1'],
                 'entregables.*.id' => ['required', 'integer', 'distinct', 'exists:entregables,id'],
