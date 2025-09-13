@@ -15,5 +15,9 @@ class Entregables extends Model
     protected $fillable = [
         'nombre_estregable'
     ];
-    
+
+    public function defaults()
+    {
+        return $this->hasMany(EntregablesDefault::class, 'id_estregable', 'id');
+    }
 }

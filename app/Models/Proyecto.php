@@ -11,7 +11,6 @@ class Proyecto extends Model
     use HasFactory;
 
     protected $table = 'proyectos';
-    protected $primaryKey = 'id';
     public $timestamps = true;
     
     const CREATED_AT = 'createdAt';

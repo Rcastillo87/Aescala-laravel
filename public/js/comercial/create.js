@@ -90,15 +90,19 @@ document.addEventListener('DOMContentLoaded', () => {
         newItem.dataset.itemNumber = number;
 
         newItem.innerHTML = `
-            <label class="block font-medium text-sm text-gray-700 dark:text-gray-300 item-label whitespace-nowrap">Item ${number} *</label>
-            <input type="text" name="items[]" required class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
-            dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm item-input block w-full"/>
+            <label class="block font-medium text-sm text-gray-700 dark:text-gray-300 item-label whitespace-nowrap">
+                Item ${number} *
+            </label>
+            <textarea name="items[]" required
+                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
+                    focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 
+                    dark:focus:ring-indigo-600 rounded-md shadow-sm item-input block w-full"></textarea>
             <a href="#" class="remove-item bg-red-500 text-white px-4 py-2 rounded">
                 <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+                        stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
                 </svg>
-            </a>
-        `;
+            </a>`;
         return newItem;
     }
 
@@ -312,6 +316,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🔹 Inicializar al cargar
     actualizarResumen();
+
+    document.getElementById('id_entregable').addEventListener('change', function() {
+        const option = this.options[this.selectedIndex];
+        const data = option.getAttribute('data-datax');
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+
+                itemsContainer.innerHTML = "";
+                parsed.defaults.forEach((def, index) => {
+                    const itemCount = itemsContainer.querySelectorAll('.item-group').length;
+                    const newItem = createItem(itemCount + 1);
+                    newItem.querySelector('textarea').value = def.descripccion;
+                    itemsContainer.appendChild(newItem);
+                });
+
+            } catch (e) {
+                console.error("Error al parsear data-datax:", e);
+            }
+        }
+        
+    });
 
 });
 

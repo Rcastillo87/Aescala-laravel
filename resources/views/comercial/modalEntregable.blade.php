@@ -11,6 +11,7 @@
                         autocomplete="off"
                         name="id_entregable" 
                         id="id_entregable"
+                        :datax="true"
                         :options="$entregables" 
                         :data="['id', 'nombre_estregable']"
                         class="block mt-1 w-full"

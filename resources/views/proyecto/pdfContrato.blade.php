@@ -85,28 +85,41 @@
             width: 100%;
             border: 1px solid #000;
             border-collapse: collapse;
+            table-layout: fixed; /* fuerza columnas iguales */
         }
         .firmas td {
             width: 50%;
-            height: 160px; /* más alto para firmas */
+            height: 160px;
             border: 1px solid #000;
-            vertical-align: top;
             padding: 8px;
             text-align: center;
-            font-family: "Calibri", sans-serif;
-            font-size: 9pt;
+            vertical-align: bottom; /* texto al final */
+            position: relative;
         }
         .firmas strong {
-            display: block;
-            margin-bottom: 0px;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
         }
-        .firmas img {
+        .firmas img,
+        .firmas .espacio-firma {
             max-width: 100%;
-            max-height: 100px; /* ajusta la altura máxima */
-            object-fit: contain; /* mantiene proporción */
+            max-height: 100px;
+            height: 100px; /* espacio fijo */
+            margin: 0 auto 5px auto;
             display: block;
-            margin: 10px auto;
         }
+        .firmas .espacio-firma {
+            border-bottom: 1px dashed #000; /* línea punteada para firma física */
+        }
+        .firmas .datos-firma {
+            font-family: "Calibri", sans-serif;
+            font-size: 9pt;
+            height: 66px;
+        }
+
         /* Footer */
         footer {
             position: fixed;
@@ -123,12 +136,12 @@
 </head>
 <body>
 <header>
-    <img src="{{ public_path('img/logo.png') }}" alt="Logo Empresa">
+    <img src="{{ asset('img/logo.png') }}" alt="Logo Empresa">
 </header>
 
 <!-- Título del contrato -->
 <h1 class="titulo">CONTRATO DE OBRA CIVIL N.º {{ $id_proyecto }}</h1>
-<h2 class="subtitulo">Del {{ $fecha_contrato }}</h2>
+<h2 class="subtitulo">DEL MES DE {{ $fecha_contrato }}</h2>
   
   <p>
 Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representación propia, quien para efectos del presente contrato se denominará EL <strong>EL CONTRATANTE</strong>; y <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, mayor de edad, domiciliado en {{ env('IDENTI_REPRESENTANTE_EXPED') }} identificado con {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }} expedida en {{ env('IDENTI_REPRESENTANTE_EXPED') }}, actuando en representación legal de la empresa <strong>{{ env('RAZON') }}</strong>. persona jurídica inscrita en cámara de comercio de {{ env('CIU_DPT_EMPRE') }}, con NIT N° {{ env('NIT') }} quien para efectos del presente contrato se llamará <strong>EL CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regirá por las siguientes cláusulas: 
@@ -172,7 +185,14 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 </table>
 
 <p>
-    <strong>SEGUNDA. PLAZO: </strong>El plazo para la ejecución del presente contrato, será por el término {{ $dias_proye }} días hábiles ({{ $meses_proye }}) MESES, manifestando igualmente que dependerá de la aceptación del diseño por parte de EL CONTRATANTE. En este caso, solo cuando se acepte por parte de EL CONTRATANTE el diseño y sus modificaciones, se entenderá que deberá iniciar la obra. Sin embargo, expone EL CONTRATANTE que, si aquel realiza el primer pago dispuesto en la cláusula siguiente de manera tardía a la fecha de inicio de obra, el término se entenderá dispuesto desde la fecha de pago. Parágrafo primero. EL CONTRATANTE se obliga a firmar los formatos donde se expongan los diseños que se realizaran en la obra, y desde la fecha de la firma de los mismos se contará el plazo dispuesto en la obra, junto con el respectivo pago. Parágrafo segundo. EL CONTRATANTE acepta que EL CONTRATISTA suspenda la obra si a la fecha dispuesta para pago EL CONTRATANTE no realiza el pago debido. Parágrafo tercero.  Si llegase a existir suspensión de la obra con ocasión de EL CONTRATANTE, este acepta con la firma de este escrito que EL CONTRATISTA retome el conteo del término que faltare para la entrega de la obra desde el momento que EL CONTRATANTE realice el pago debidamente.
+    <strong>SEGUNDA. PLAZO: </strong>El plazo para la ejecución del presente contrato, será por el término {{ $dias_proye }} días hábiles ({{ $meses_proye }}) MESES, los cuales se manifiesta que igualmente que dependerá de la aceptación del diseño por parte de EL CONTRATANTE. En este caso, solo cuando se acepte por parte de EL CONTRATANTE el diseño y sus modificaciones, se entenderá que deberá iniciar la obra. Sin embargo, expone EL CONTRATANTE que, si aquel realiza el primer pago dispuesto en la cláusula siguiente de manera tardía a la fecha de inicio de obra, el término se entenderá dispuesto desde la fecha de pago. Parágrafo primero. EL CONTRATANTE se obliga a firmar los formatos donde se expongan los diseños que se realizaran en la obra, y desde la fecha de la firma de los mismos se contará el plazo dispuesto en la obra, junto con el respectivo pago. Parágrafo segundo. EL CONTRATANTE acepta que EL CONTRATISTA suspenda la obra si a la fecha dispuesta para pago EL CONTRATANTE no realiza el pago debido. Parágrafo tercero.  Si llegase a existir suspensión de la obra con ocasión de EL CONTRATANTE, este acepta con la firma de este escrito que EL CONTRATISTA retome el conteo del término que faltare para la entrega de la obra desde el momento que EL CONTRATANTE realice el pago debidamente. Parágrafo cuarto: las partes de común acuerdo aceptan la prórroga del plazo pactado, por el término de 30 días hábiles en caso de que EL CONTRATISTA informe imprevistos en la obra generado por terceros como, por ejemplo: proveedores.
+</p>
+
+<p>
+    <strong>COMPROMISO. - EL CONTRATISTA </strong>se compromete a la compra de materiales, entrega de la obra con las especificaciones técnicas, dentro del presupuesto y en los tiempos pactados, detalles que se encuentran adjuntos al presente documento. 
+</p>
+<p>
+    Además, deberá velar y será su responsabilidad la de tomar las medidas necesarias para evitar accidentes laborales. Así como mantener la obra con las condiciones de higiene y seguridad exigidas por la ley y los reglamentos. AESCALA ARQUITECTURA se compromete, a: corroborar que todas las personas que van a ejecutar las obras están afiliadas al sistema de riesgos laborales; que es responsabilidad de AESCALA ARQUITECTURA supervisar que los trabajadores tienen sus implementos de seguridad; por consiguiente, en caso de accidente laboral la contratante y/o cliente no es responsable.
 </p>
   
 <p>
@@ -181,27 +201,37 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 </p>
 
 <p>
-  <strong>CUARTA. FORMA DE PAGO: </strong>Los pagos se realizarán de la siguiente manera:
+  <strong>CUARTA. FORMA DE PAGO: </strong>EL CONTRATANTE pagará de la siguiente manera:
 </p>
 <ul>
-    @if($por_term_1!=0) <li>{{ $por_term_1 }}% (${{ $val_term_1 }}) al inicio de diseño.</li> @endif
-    @if($por_term_2!=0) <li>{{ $por_term_2 }}% (${{ $val_term_2 }}) al inicio de inicio de obra blanca.</li> @endif
-    @if($por_term_3!=0) <li>{{ $por_term_3 }}% (${{ $val_term_3 }}) al inicio de corte carpinteria.</li> @endif
-    @if($por_term_4!=0) <li>{{ $por_term_4 }}% (${{ $val_term_4 }}) al momento de instalación carpinteria.</li> @endif
-    @if($por_term_5!=0) <li>{{ $por_term_5 }}% (${{ $val_term_5 }}) al momento de instalación accesorios.</li> @endif
-    @if($por_term_6!=0) <li>{{ $por_term_6 }}% (${{ $val_term_6 }}) al momento de entrega de la obra.</li> @endif
+    @if($por_term_1!=0) 
+        <li>({{ $por_term_1 }}%) correspondiente (${{ $val_term_1 }}) a la fecha de aprobación de diseño de obra previo al inicio de la misma.</li> 
+    @endif
+    @if($por_term_2!=0) 
+        <li>({{ $por_term_2 }}%) correspondiente (${{ $val_term_2 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que se va a enviar corte de carpintería.</li> 
+    @endif
+    @if($por_term_3!=0) 
+        <li>({{ $por_term_3 }}%) correspondiente (${{ $val_term_3 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalación de carpintería.</li> 
+    @endif
+    @if($por_term_4!=0) 
+        <li>({{ $por_term_4 }}%) correspondiente (${{ $val_term_4 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalación de accesorios, grifería y mesón.</li> 
+    @endif
+    @if($por_term_5!=0) 
+        <li>({{ $por_term_5 }}%) correspondiente (${{ $val_term_5 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que hará entrega de la obra.</li> 
+    @endif
 </ul>
-  
-<p>
-  <strong>NOTA: </strong>
-</p>
+
+<p><strong>Parágrafo primero:</strong> EL CONTRATISTA no iniciará la obra hasta que EL CONTRATANTE no demuestre que ha realizado el primer pago correspondiente al CINCUENTA POR CIENTO (50%) de la obra.</p>
+
+<p><strong>Parágrafo segundo:</strong> EL CONTRATISTA podrá suspender la obra si EL CONTRATANTE no realiza los pagos al momento de ser notificado para hacerlo conforme lo estipulado en esta cláusula.</p>
+
+<p><strong>Parágrafo tercero:</strong> EL CONTRATISTA queda facultado por EL CONTRATANTE para suspender la obra si este último no realiza los pagos debidos, para lo cual los plazos dispuestos en la cláusula segunda se retomarán una vez se haya efectuado los pagos correspondientes por EL CONTRATANTE.</p>
+
+<p><strong>NOTA:</strong></p>
 <ul>
-    <li>la separación de cupo valor $ 3.000.000 se restará del valor del porcentaje de la etapa
-de diseño, el valor de la propuesta se congelará durante seis meses a partir de la fecha de la
-firma..</li>
-    <li>Pasado los seis meses se realizará un ajuste en el presupuesto de la propuesta de acuerdo al
-valor que este establecido en el momento</li>
-</ul>  
+    <li>La separación de cupo valor $3.000.000 se restará del valor del porcentaje de la etapa de diseño; el valor de la propuesta se congelará durante seis meses a partir de la fecha de la firma.</li>
+    <li>Pasado los seis meses se realizará un ajuste en el presupuesto de la propuesta de acuerdo al valor establecido en el momento.</li>
+</ul>
 
 <p>
     <strong>QUINTA. SANCIÓN POR INCUMPLIMIENTO: </strong>Las partes acuerdan que en caso de que EL CONTRATANTE no realice el pago total de la obra dispuesto en la cláusula cuarta no podrá reclamarse garantía de la obra. 
@@ -216,7 +246,7 @@ valor que este establecido en el momento</li>
 </p>
   
 <p>
-<strong>OCTAVA. GARANTÍA: </strong>EL CONTRATISTA manifiesta que la obra realizada por aquel y la cual es objeto de este contrato tiene UN (01) AÑO de garantía desde la entrega de la obra a EL CONTRATANTE. Sin embargo, EL CONTRATANTE reconoce que no existirá responsabilidad de EL CONTRATISTA cuando existan daños en la obra por manipulación indebida de EL CONTRATANTE o sus dependientes y de terceras personas
+<strong>OCTAVA. GARANTÍA: </strong>EL CONTRATISTA manifiesta que la obra realizada por aquel y la cual es objeto de este contrato tiene UN (01) AÑO de garantía desde la entrega de la obra a EL CONTRATANTE. Sin embargo, EL CONTRATANTE reconoce que no existirá responsabilidad de EL CONTRATISTA cuando existan daños en la obra por manipulación indebida de EL CONTRATANTE o sus dependientes y de terceras personas.
 </p>
   
 <p>
@@ -228,7 +258,7 @@ valor que este establecido en el momento</li>
 </p>
   
 <p>
-<strong>DÉCIMA PRIMERA. ENTREGA DE LA OBRA: </strong>La obra será entregada con salvaguarda de calidad de la obra, y bajo los parámetros de funcionalidad del bien inmueble, manifestando que si EL CONTRATISTA cumple con el 100% de lo dispuesto como objeto contractual no habrá lugar por parte de EL CONTRATANTE a negarse a recibir el mismo
+<strong>DÉCIMA PRIMERA. ENTREGA DE LA OBRA: </strong>La obra será entregada con salvaguarda de calidad de la obra, y bajo los parámetros de funcionalidad del bien inmueble, manifestando que si EL CONTRATISTA cumple con el 100% de lo dispuesto como objeto contractual no habrá lugar por parte de EL CONTRATANTE a negarse a recibir el mismo.
 </p>
   
 <p>
@@ -243,23 +273,33 @@ valor que este establecido en el momento</li>
     En constancia se firma en dos ejemplares el día {{ $fecha_contrato }}.
 </p>
 
-<table class="firmas">
+<table class="firmas"> 
     <tr>
         <td>
             <strong>EL CONTRATANTE</strong>
-            <img src="{{ $img_firma }}" alt="Firma cliente">
-            <div>
+            @if(!empty($img_firma) && file_exists(public_path('img/'.$img_firma)))
+                <img src="{{ asset('img/'.$img_firma) }}" alt="Firma cliente">
+            @else
+                <div class="espacio-firma"></div>
+            @endif
+            <div class="datos-firma">
                 {{ $nombre_cliente }}<br>
                 {{ $tipo_doc_cliente_acro }} N.º {{ $documento_cliente }}
             </div>
         </td>
         <td>
             <strong>EL CONTRATISTA</strong>
-            <img src="{{ $img_firma }}" alt="Firma representante">
-            {{ env('NOMBRE_REPRESENTANTE') }}<br>
-            {{ env('TIPO_IDENT_REPRESENTANTE_ACRO') }} N.º {{ env('IDENTI_REPRESENTANTE') }}<br>
-            Representante Legal<br>
-            {{ env('RAZON') }}
+            @if(file_exists(public_path('img/firmaRepre.png')))
+                <img src="{{ asset('img/firmaRepre.png') }}" alt="Firma representante">
+            @else
+                <div class="espacio-firma"></div>
+            @endif
+            <div class="datos-firma">
+                {{ env('NOMBRE_REPRESENTANTE') }}<br>
+                {{ env('TIPO_IDENT_REPRESENTANTE_ACRO') }} N.º {{ env('IDENTI_REPRESENTANTE') }}<br>
+                Representante Legal<br>
+                {{ env('RAZON') }}
+            </div>
         </td>
     </tr>
 </table>

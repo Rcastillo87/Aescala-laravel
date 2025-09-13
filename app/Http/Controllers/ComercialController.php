@@ -123,7 +123,7 @@ class ComercialController extends Controller
                 $ciudades = $arayDtp[$departamentoIndex]['ciudades'];
             }
         }
-        $entregables = Entregables::all()->toArray();
+        $entregables = Entregables::with('defaults')->get()->toArray();
         $tipoDocs = Proyecto::$tipoDocumento;
         return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs', 'entregables', 'entregableProye', 'valor', 'suma'));
     }
