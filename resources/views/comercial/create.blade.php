@@ -39,7 +39,7 @@
             
             <!-- Campo de firma -->
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label :value="__('Firma *')" />
+                <x-input-label :value="__('Firma')" />
 
                 <!-- Vista previa -->
                 <div id="firma-preview"
