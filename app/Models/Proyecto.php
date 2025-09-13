@@ -40,8 +40,10 @@ class Proyecto extends Model
         'termino_6_por',
         'opcion',
         'por_inicia',
-        'img_firma'
-        //'fec_begin_cont'
+        'img_firma',
+        'fec_inicio',
+        'fec_fin_estimado',
+        'fec_fin_real'
     ];
 
     protected $casts = [
