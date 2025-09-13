@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 @include('proyecto.filter')
-<div class="flex flex-wrap md:flex-nowrap justify-between text-center border-2 p-3 rounded-lg border-gray-200 mb-3">
+<div class="flex flex-wrap md:flex-nowrap justify-start text-center border-2 p-3 rounded-lg border-gray-200 mb-3">
     <!-- Sección de etiquetas -->
     <div class="flex flex-wrap gap-4 md:gap-2">
         <span class="flex items-center text-center">
@@ -18,13 +18,6 @@
             <hr class="border-2 bg-red-500 rounded-lg w-[55px] p-[3px] ml-1">
         </span>
     </div>
-
-    <!-- Botón responsive -->
-    @if (Auth::user()->isNotColab)
-        <x-secondary-button class="mt-4 md:mt-0" href="{{ route('proyecto.create')}}">
-            Crear Proyectos
-        </x-secondary-button>
-    @endif
 </div>
     @forelse ($items as $item)
         @php
