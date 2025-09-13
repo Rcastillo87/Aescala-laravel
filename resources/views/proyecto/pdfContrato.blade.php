@@ -111,9 +111,6 @@
             margin: 0 auto 5px auto;
             display: block;
         }
-        .firmas .espacio-firma {
-            border-bottom: 1px dashed #000; /* línea punteada para firma física */
-        }
         .firmas .datos-firma {
             font-family: "Calibri", sans-serif;
             font-size: 9pt;
@@ -277,8 +274,8 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
     <tr>
         <td>
             <strong>EL CONTRATANTE</strong>
-            @if(!empty($img_firma) && file_exists(public_path('img/'.$img_firma)))
-                <img src="{{ asset('img/'.$img_firma) }}" alt="Firma cliente">
+            @if(!empty($img_firma))
+                <img src="{{ $img_firma }}" alt="Firma cliente">
             @else
                 <div class="espacio-firma"></div>
             @endif
