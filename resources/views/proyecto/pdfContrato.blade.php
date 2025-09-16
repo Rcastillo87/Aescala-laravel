@@ -287,7 +287,7 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
         <td>
             <strong>EL CONTRATISTA</strong>
             @if(file_exists(public_path('img/firmaRepre.png')))
-                <img src="{{ asset('img/firmaRepre.png') }}" alt="Firma representante">
+                <img src="{{ public_path('img/firmaRepre.png') }}" alt="Firma representante">
             @else
                 <div class="espacio-firma"></div>
             @endif

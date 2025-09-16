@@ -221,6 +221,7 @@ class ProyectoController extends Controller
                     Rule::exists('users', 'id'),
                 ],
             'dias_trabajo_begin' => 'required|integer|min:1',
+            'observacion' => 'nullable|string',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d']
         ]; 
 

@@ -43,7 +43,8 @@ class Proyecto extends Model
         'img_firma',
         'fec_inicio',
         'fec_fin_estimado',
-        'fec_fin_real'
+        'fec_fin_real',
+        'observacion'
     ];
 
     protected $casts = [

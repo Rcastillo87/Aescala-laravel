@@ -44,7 +44,6 @@
             @csrf
             <div class="flex flex-wrap border border-gray-200 rounded-lg">
                 <input type="hidden" name="id_proyecto_begin" id="id_proyecto_begin">
-                <input type="hidden" name="dias_trabajo_begin" id="dias_trabajo_begin">
                 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="fec_inicio" :value="__('Fecha Ini Proyecto *')" />
@@ -108,6 +107,18 @@
                         class="block mt-1 w-full"
                     />
                     <x-input-error :messages="$errors->get('id_user_carpinteria')" class="mt-2" />
+                </div>
+
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <x-input-label for="dias_trabajo_begin" :value="__('Días Duración del Proyecto')" />
+                    <x-text-input id="dias_trabajo_begin" class="block w-full" type="number" name="dias_trabajo_begin"/>
+                    <x-input-error :messages="$errors->get('dias_trabajo_begin')" class="mt-2" />
+                </div>
+
+                <div class="w-full max-w-full p-3 shrink-0 lg:w-8/12 2xl:w-6/12 md:flex-0">
+                    <x-input-label for="observacion" :value="__('Comentario')" />
+                    <textarea id="observacion" class="block mt-1 w-full h-20" type="text" name="observacion" autofocus></textarea>
+                    <x-input-error :messages="$errors->get('observacion')" class="mt-2" />
                 </div>
                 
                 <div class="flex w-full justify-between m-2">

@@ -851,10 +851,12 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("txDocumento").textContent = window.tipoDoc[proyecto.tipo_doc_cliente][0] + ': ' + proyecto.cedula_cliente;
             document.getElementById("txTelefono").textContent = proyecto.telefono_cliente ?? '';
             document.getElementById("txAreaPrivada").textContent = proyecto.area_privada ?? '';
+            document.getElementById("txDiasProyecto").textContent = proyecto.dias_trabajo;
+
+            document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
 
             // 🔹 Campos ocultos obligatorios
             document.getElementById("id_proyecto_begin").value = proyecto.id ?? '';
-            document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
         });
     });
 

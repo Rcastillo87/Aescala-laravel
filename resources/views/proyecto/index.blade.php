@@ -110,6 +110,12 @@
                             <span class="text-md text-black">{{ explode(' ', $item->fec_fin_real)[0] }}</span>
                         </div>
                     @endif
+                    @if($item->observacion)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Observacion</p>
+                            <span class="text-md text-black">{{ $item->observacion }}</span>
+                        </div>
+                    @endif
                 </div>
                 <div class="flex flex-col text-center w-[120px] border-l-2 px-2 mx-2 mt-1">
                     <p class="flex text-gray-500 text-lg font-bold mx-2">Opciones</p>
