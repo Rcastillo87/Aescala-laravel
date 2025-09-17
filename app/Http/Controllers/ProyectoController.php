@@ -205,7 +205,7 @@ class ProyectoController extends Controller
                 'integer',
                 Rule::exists('proyectos', 'id'),
             ],
-            'id_user' => [
+            'id_user_proy' => [
                     'required',
                     'integer',
                     Rule::exists('users', 'id'),
@@ -228,7 +228,9 @@ class ProyectoController extends Controller
         $data = $req->validate($valbase);
         $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo_begin']);
         $data['dias_trabajo'] = $data['dias_trabajo_begin'];
-        $data['id_estado'] = 1;
+        $data['id_user'] = $data['id_user_proy'];
+        $pro = Proyecto::find($data['id_proyecto_begin']);
+        $data['id_estado'] = ($pro->id_estado==2)?1:$pro->id_estado;
         try {
             DB::beginTransaction();
             Proyecto::updateOrCreate(['id' => $data['id_proyecto_begin']], $data);

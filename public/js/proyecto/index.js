@@ -853,7 +853,12 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("txAreaPrivada").textContent = proyecto.area_privada ?? '';
             document.getElementById("txDiasProyecto").textContent = proyecto.dias_trabajo;
 
+            document.getElementById("id_user_proy").value = proyecto.id_user;
+            document.getElementById("id_user_obra_blanca").value = proyecto.id_user_obra_blanca;
+            document.getElementById("id_user_carpinteria").value = proyecto.id_user_carpinteria;
+
             document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
+            document.getElementById("observacion").textContent = proyecto.observacion ?? '';
 
             // 🔹 Campos ocultos obligatorios
             document.getElementById("id_proyecto_begin").value = proyecto.id ?? '';

@@ -122,7 +122,7 @@
                     <div class="flex flex-wrap justify-start gap-1 p-1">
 
                         <!-- Botón Inicio de proyecto -->
-                        <div class="relative @if(Auth::user()->isNotColab && ($item->id_estado==2)) @else hidden @endif">
+                        <div class="relative @if(Auth::user()->isNotColab) @else hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
                                data-beginProyec='@json($item)' x-on:click="$dispatch('open-modal', 'beginProyec-modal')" x-data="" 
                                class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 

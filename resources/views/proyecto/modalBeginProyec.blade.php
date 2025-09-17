@@ -72,11 +72,11 @@
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="id_user" :value="__('Arquitecto Encargado *')" />
                     <x-select-input 
-                        name="id_user" 
-                        id="id_user"
+                        name="id_user_proy" 
+                        id="id_user_proy"
                         :options="$colaUsers" 
                         :data="['id', 'nombre_completo']"
-                        :selected="old('id_user', $proyecto?$proyecto->id_user:'')" 
+                        :selected="old('id_user')" 
                         class="block mt-1 w-full" 
                         required
                     />
