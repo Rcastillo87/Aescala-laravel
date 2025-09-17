@@ -848,7 +848,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("txUbicacion").textContent = txCui;
             document.getElementById("txDireccion").textContent = proyecto.direccion ?? '';
             document.getElementById("txContacto").textContent = proyecto.nombre_cliente ?? '';
-            document.getElementById("txDocumento").textContent = window.tipoDoc[proyecto.tipo_doc_cliente][0] + ': ' + proyecto.cedula_cliente;
+            document.getElementById("txDocumento").textContent = 
+                (window.tipoDoc?.[proyecto.tipo_doc_cliente] ?? "N/A") + 
+                ": " + 
+                (proyecto.cedula_cliente ?? "N/A");
             document.getElementById("txTelefono").textContent = proyecto.telefono_cliente ?? '';
             document.getElementById("txAreaPrivada").textContent = proyecto.area_privada ?? '';
             document.getElementById("txDiasProyecto").textContent = proyecto.dias_trabajo;
