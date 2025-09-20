@@ -19,6 +19,8 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('firmarContrato/{id}', [ComercialController::class, 'firmarContrato'])->name('firmarContrato');
+
 // routes/web.php
 Route::get('/sw.js', function () {
     return response()->view('sw')

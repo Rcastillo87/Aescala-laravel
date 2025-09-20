@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\Base64PngOrNull;
+use Illuminate\Support\Str;
 
 use App\Models\Proyecto;
 use App\Models\User;
@@ -223,6 +224,97 @@ class ComercialController extends Controller
             DB::rollBack();
             return response()->json(['error' => 'Error inesperado: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function firmarContrato($id){
+
+        $proyecto = Proyecto::with('entreProyecto')->findOrFail($id);
+        $dptArray = json_decode(
+            file_get_contents(storage_path('json/jsonCityColombia.json')), 
+            true
+        );
+        $ciudad_dpt = $dptArray[$proyecto->departamento]['departamento'] . ', ' .
+                    $dptArray[$proyecto->departamento]['ciudades'][$proyecto->ciudad];
+
+        $meses   = ceil($proyecto->dias_trabajo / 24);
+        $txMeses = $this->numeroATexto($meses);
+        $total   = $proyecto->entreProyecto()
+                    ->selectRaw('SUM(valor_total * cantidad) as total')
+                    ->value('total');
+        $txTotal = $this->numeroATexto($total);
+
+        $valTerm1 = ceil($total * $proyecto->termino_1_por / 100);
+        $valTerm2 = ceil($total * $proyecto->termino_2_por / 100);
+        $valTerm3 = ceil($total * $proyecto->termino_3_por / 100);
+        $valTerm4 = ceil($total * $proyecto->termino_4_por / 100);
+        $valTerm5 = ceil($total * $proyecto->termino_5_por / 100);
+        $valTerm6 = ceil($total * $proyecto->termino_6_por / 100);
+
+        $carbon = Carbon::parse($proyecto->fec_begin_cont);
+        $carbon->locale('es');
+        $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
+
+        // Preparar entregables para la vista
+        $entregables = $proyecto->entreProyecto->map(function($e){
+            return [
+                "cantidad" => $e->cantidad,
+                "titulo" => $e->entregable->nombre_estregable,
+                "items"  => explode("||", $e->tx_entregable),
+                "precio" => number_format($e->valor_total, 0, ',', '.')
+            ];
+        })->toArray();
+
+        $path = public_path('img/firmaRepre.png');
+        if (file_exists($path)) {
+            $imageData = file_get_contents($path);
+            $imageInfo = getimagesize($path);
+            $mime = $imageInfo['mime'];
+            $base64 = 'data:' . $mime . ';base64,' . base64_encode($imageData);
+        } else {
+            $base64 = null;
+        }
+
+        // Preparar datos para la vista
+        $data = [
+            "id_proyecto"         => $id,
+            "fecha_contrato"      => mb_strtoupper($fechaTexto, 'UTF-8'),
+            "nombre_cliente"      => Str::title($proyecto->nombre_cliente),
+            "ciudad_dpt"          => $ciudad_dpt,
+            "tipo_doc_cliente"    => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][1] ?? '',
+            "tipo_doc_cliente_acro" => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][0] ?? '',
+            "documento_cliente"   => number_format($proyecto->cedula_cliente, 0, ',', '.'),
+            "direccion_proye"     => $proyecto->direccion,
+            "area_privada_proye"  => $proyecto->area_privada,
+            "dias_proye"          => $proyecto->dias_trabajo,
+            "meses_proye"         => $meses,
+            "tx_meses_proye"      => Str::title($txMeses),
+            "tx_valor_total"      => Str::title($txTotal),
+            "valor_total"         => number_format($total, 0, ',', '.'),
+            "val_term_1"          => number_format($valTerm1, 0, ',', '.'),
+            "val_term_2"          => number_format($valTerm2, 0, ',', '.'),
+            "val_term_3"          => number_format($valTerm3, 0, ',', '.'),
+            "val_term_4"          => number_format($valTerm4, 0, ',', '.'),
+            "val_term_5"          => number_format($valTerm5, 0, ',', '.'),
+            "val_term_6"          => number_format($valTerm6, 0, ',', '.'),
+            "por_term_1"          => $proyecto->termino_1_por,
+            "por_term_2"          => $proyecto->termino_2_por,
+            "por_term_3"          => $proyecto->termino_3_por,
+            "por_term_4"          => $proyecto->termino_4_por,
+            "por_term_5"          => $proyecto->termino_5_por,
+            "por_term_6"          => $proyecto->termino_6_por,
+            "img_firma"           => $proyecto->img_firma,
+            "entregables"         => $entregables,
+            "dias_trabajo"        => $proyecto->dias_trabajo,
+            'imgRepre'            => $base64,
+        ];
+
+        return view('auth.firmarContrato', compact('data'));
+    }
+
+    public function numeroATexto($numero)
+    {
+        $formatter = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
+        return $formatter->format($numero);
     }
 
 }

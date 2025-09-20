@@ -5,6 +5,17 @@
     <title>Contrato de Obra Civil N.º {{ $id_proyecto }}</title>
     <style>
         @page { margin: 90px 50px 80px 50px; }
+        ul {
+            margin: 0 0 10px 20px;
+            padding-left: 20px;
+            list-style-type: disc;
+        }
+
+        li {
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+
         body {
             font-family: "Arial Narrow", Arial, sans-serif;
             font-size: 10pt;
@@ -286,8 +297,8 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
         </td>
         <td>
             <strong>EL CONTRATISTA</strong>
-            @if(file_exists(public_path('img/firmaRepre.png')))
-                <img src="{{ public_path('img/firmaRepre.png') }}" alt="Firma representante">
+            @if(!empty($imgRepre))
+                <img src="{{ $imgRepre }}" alt="Firma representante">
             @else
                 <div class="espacio-firma"></div>
             @endif

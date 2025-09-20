@@ -783,6 +783,16 @@ class ProyectoController extends Controller
                 ];
             })->toArray();
 
+            $path = public_path('img/firmaRepre.png');
+            if (file_exists($path)) {
+                $imageData = file_get_contents($path);
+                $imageInfo = getimagesize($path);
+                $mime = $imageInfo['mime'];
+                $base64 = 'data:' . $mime . ';base64,' . base64_encode($imageData);
+            } else {
+                $base64 = null;
+            }
+
             // Preparar datos para la vista
             $data = [
                 "id_proyecto"         => $proyecto->id,
@@ -813,7 +823,8 @@ class ProyectoController extends Controller
                 "por_term_6"          => $proyecto->termino_6_por,
                 "img_firma"           => $proyecto->img_firma,
                 "entregables"         => $entregables,
-                "dias_trabajo"        => $proyecto->dias_trabajo
+                "dias_trabajo"        => $proyecto->dias_trabajo,
+                'imgRepre'            => $base64,
             ];
 
             // Generar PDF desde la vista HTML
