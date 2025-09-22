@@ -365,16 +365,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const checkOpcion = document.getElementById("checkOpcion");
     const inputExtra = document.getElementById("inputExtra");
     const inputPorcentaje = document.getElementById("por_inicia");
+    const inputOpcion = document.getElementById("opcion");
 
     checkOpcion.addEventListener("change", () => {
         if (checkOpcion.checked) {
             inputExtra.classList.remove("hidden");
             inputPorcentaje.required = true;
             inputPorcentaje.value = 30;
+            inputOpcion.value = 1;
         } else {
             inputExtra.classList.add("hidden");
             inputPorcentaje.required = false;
             inputPorcentaje.value = "";
+            inputOpcion.value = 0;
         }
     });
 });

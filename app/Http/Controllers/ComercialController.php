@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\Base64PngOrNull;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 use App\Models\Proyecto;
 use App\Models\User;
@@ -39,7 +40,7 @@ class ComercialController extends Controller
         ->paginate(10)
         ->appends(request()->query());
 
-        $header = ['ID', 'Nombre Proyecto', 'Nombre Cliente', 'Ubicación', 'Direccion', 'Telefono', 'Opciones'];
+        $header = ['ID', 'Nombre Proyecto', 'Nombre Cliente', 'Ubicación', 'Direccion', 'Telefono', 'Estado', 'Opciones'];
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
         return view('comercial.index', compact('title', 'items', 'festivos', 'departamentos', 'header'));
     }
@@ -152,7 +153,7 @@ class ComercialController extends Controller
                 "termino_5_por" => 'required|integer|min:0|max:100',
                 "termino_6_por" => 'required|integer|min:0|max:100',
 
-                'opcion' => ['required', 'boolean'],
+                'opcion' => ['required', 'integer', Rule::in([0, 1])],
                 'por_inicia' => [
                     'nullable',
                     'integer',
@@ -181,7 +182,7 @@ class ComercialController extends Controller
                 ], 422);
             }    
 
-            if ($data['opcion']) {
+            if (($data['opcion']==1) && $req->img_firma) {
                 $data['id_estado'] = 2;
             }
 
@@ -226,7 +227,10 @@ class ComercialController extends Controller
         }
     }
 
-    public function firmarContrato($id){
+    public function firmarContrato($token){
+
+        $data = Crypt::decryptString($token);
+        [$id, $cedula] = explode('||', $data);
 
         $proyecto = Proyecto::with('entreProyecto')->findOrFail($id);
         $dptArray = json_decode(
@@ -317,4 +321,30 @@ class ComercialController extends Controller
         return $formatter->format($numero);
     }
 
+    public function guardarFirma(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:proyectos,id',
+            'img_firma' => 'required|string',
+        ]);
+
+        try {
+            $proyecto = Proyecto::findOrFail($request->id);
+            if(!$proyecto->id_estado){
+                $proyecto->id_estado = 2;
+            }
+            $proyecto->img_firma = $request->img_firma;
+            $proyecto->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'La firma se guardó correctamente ✅'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al guardar la firma: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

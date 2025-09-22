@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 
 class Proyecto extends Model
 {
@@ -61,12 +61,22 @@ class Proyecto extends Model
         5 => 'Posventas'
     ];
 
+    public static $estado0 = [
+        1 => 'Pendiente Firma',
+        2 => 'Separación de Cupo',
+    ];
+
     public static $ClassEstado = [
         1 => 'span-green',
         2 => 'span-yellow',
         3 => 'span-blue',
         4 => 'span-red',
         5 => 'span-black'
+    ];
+
+    public static $ClassEstado0 = [
+        1 => 'span-blue',
+        2 => 'span-red',
     ];
 
     public static $tipoDocumento = [
@@ -79,6 +89,16 @@ class Proyecto extends Model
     {
         return '<span class="'.(self::$ClassEstado[$this->id_estado] ?? 'default-class').'">'
              . (self::$estado[$this->id_estado] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getSpanEstado0Attribute()
+    {
+        if(!$this->img_firma){
+            return '<span class="'.(self::$ClassEstado0[1]).'">'
+                 . (self::$estado0[1] ?? 'Desconocido') . '</span>'; 
+        }
+        return '<span class="'.(self::$ClassEstado[2] ?? 'default-class').'">'
+             . (self::$estado[2]) . '</span>';
     }
 
 
@@ -109,6 +129,12 @@ class Proyecto extends Model
             ->first();
         
         return ($totals->ingresos ?? 0) - ($totals->gastos ?? 0);
+    }
+    
+    public function getTokenEncripAttribute()
+    {
+        $token = Crypt::encryptString($this->id . '||' . $this->cedula_cliente);
+        return rtrim(env('APP_URL'), '/') . '/firmarContrato/' . urlencode($token);
     }
 
     // Relación con el modelo User

@@ -20,6 +20,8 @@ Route::get('/', function () {
 });
 
 Route::get('firmarContrato/{id}', [ComercialController::class, 'firmarContrato'])->name('firmarContrato');
+Route::post('guardarFirma', [ComercialController::class, 'guardarFirma'])->name('guardarFirma');
+Route::get('contratoPdf/{id}', [ProyectoController::class, 'contratoPdf'])->name('contratoPdf');
 
 // routes/web.php
 Route::get('/sw.js', function () {
