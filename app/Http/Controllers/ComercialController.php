@@ -330,7 +330,7 @@ class ComercialController extends Controller
 
         try {
             $proyecto = Proyecto::findOrFail($request->id);
-            if(!$proyecto->id_estado){
+            if($proyecto->opcion==1){
                 $proyecto->id_estado = 2;
             }
             $proyecto->img_firma = $request->img_firma;
