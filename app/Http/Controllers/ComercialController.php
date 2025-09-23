@@ -187,6 +187,7 @@ class ComercialController extends Controller
             }
 
             $data['id_usuario_comercial'] = Auth::user()->id;
+            $data['dias_contrato'] = $req->dias_trabajo;
         
             DB::beginTransaction();
             $datosProyecto = collect($data)
@@ -289,7 +290,7 @@ class ComercialController extends Controller
             "documento_cliente"   => number_format($proyecto->cedula_cliente, 0, ',', '.'),
             "direccion_proye"     => $proyecto->direccion,
             "area_privada_proye"  => $proyecto->area_privada,
-            "dias_proye"          => $proyecto->dias_trabajo,
+            "dias_proye"          => $proyecto->dias_contrato,
             "meses_proye"         => $meses,
             "tx_meses_proye"      => Str::title($txMeses),
             "tx_valor_total"      => Str::title($txTotal),

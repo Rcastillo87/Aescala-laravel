@@ -220,14 +220,24 @@ class ProyectoController extends Controller
                     'integer',
                     Rule::exists('users', 'id'),
                 ],
-            'dias_trabajo_begin' => 'required|integer|min:1',
+            'dias_trabajo_begin' => 'nullable|integer|min:1',
+            'conFechaFin_b' => 'required|integer|in:0,1',
             'observacion' => 'nullable|string',
-            'fec_inicio' => ['required', 'date', 'date_format:Y-m-d']
+            'fec_inicio_begin' => ['required', 'date', 'date_format:Y-m-d'],
+            'fec_fin_estimado_b' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio_begin']
         ]; 
 
         $data = $req->validate($valbase);
-        $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo_begin']);
-        $data['dias_trabajo'] = $data['dias_trabajo_begin'];
+        if($data['conFechaFin_b']==0){
+            $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $data['dias_trabajo_begin']);
+            $data['dias_trabajo'] = $data['dias_trabajo_begin'];
+        } else {
+            $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
+            $data['dias_trabajo'] = ceil( (new Festivos)->contarDiasHabiles($data['fec_inicio_begin'], $data['fec_fin_estimado_b'], $festivos) );
+            $data['fec_fin_estimado'] = $data['fec_fin_estimado_b'];
+        }
+
+        $data['fec_inicio'] = $data['fec_inicio_begin'];
         $data['id_user'] = $data['id_user_proy'];
         $pro = Proyecto::find($data['id_proyecto_begin']);
         $data['id_estado'] = ($pro->id_estado==2)?1:$pro->id_estado;
@@ -804,7 +814,7 @@ class ProyectoController extends Controller
                 "documento_cliente"   => number_format($proyecto->cedula_cliente, 0, ',', '.'),
                 "direccion_proye"     => $proyecto->direccion,
                 "area_privada_proye"  => $proyecto->area_privada,
-                "dias_proye"          => $proyecto->dias_trabajo,
+                "dias_proye"          => $proyecto->dias_contrato,
                 "meses_proye"         => $meses,
                 "tx_meses_proye"      => Str::title($txMeses),
                 "tx_valor_total"      => Str::title($txTotal),

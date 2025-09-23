@@ -25,6 +25,7 @@ class Proyecto extends Model
         'tipo_doc_cliente',
         'nombre_cliente',
         'telefono_cliente',
+        'dias_contrato',
         'dias_trabajo',
         'id_estado',
         'id_user',

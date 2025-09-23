@@ -174,6 +174,50 @@ async function deleteTarea(id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
+    const conFechaFin = document.getElementById('checkboxFecha');
+    const fechaFinContainer = document.getElementById('fechaFinBegin');
+    const diasTrabajoContainer = document.getElementById('diasTrabajoBegin');
+    const fechaFinInput = document.getElementById('fec_fin_estimado_b');
+    const diasTrabajoInput = document.getElementById('dias_trabajo_begin');
+    const conFechaFinInput = document.getElementById('conFechaFin_b');
+
+    // Función para alternar visibilidad
+    function toggleFields() {
+        if (conFechaFin.checked) {
+            conFechaFinInput.value = 1;
+            fechaFinContainer.classList.remove('hidden');
+            diasTrabajoContainer.classList.add('hidden');
+            fechaFinInput.required = true;
+            diasTrabajoInput.required = false;
+            if(diasTrabajoInput.value < '1'){
+                diasTrabajoInput.value = '1';
+            }
+        } else {
+            conFechaFinInput.value = 0;
+            fechaFinContainer.classList.add('hidden');
+            diasTrabajoContainer.classList.remove('hidden');
+            fechaFinInput.required = false;
+            diasTrabajoInput.required = true;
+        }
+    }
+
+    // Event listener para el checkbox
+    conFechaFin.addEventListener('change', toggleFields);
+
+    // Inicializar el estado
+    toggleFields();
+
+    // Inicializar el datepicker de Flowbite
+    if (typeof window.Datepicker !== 'undefined') {
+        new Datepicker(fechaFinInput, {
+            format: 'yyyy-mm-dd',
+            autohide: true
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del DOM
     const conFechaFin = document.getElementById('conFechaFin');
     const fechaFinContainer = document.getElementById('fechaFinContainer');
     const diasTrabajoContainer = document.getElementById('diasTrabajoContainer');
@@ -862,6 +906,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
             document.getElementById("observacion").textContent = proyecto.observacion ?? '';
+
+            document.getElementById("fec_inicio_begin").value = proyecto.fec_inicio?.split('T')[0] ?? '';
+            document.getElementById("fec_fin_estimado_b").value = proyecto.fec_fin_estimado?.split('T')[0] ?? '';
 
             // 🔹 Campos ocultos obligatorios
             document.getElementById("id_proyecto_begin").value = proyecto.id ?? '';
