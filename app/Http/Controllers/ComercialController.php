@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Rules\Base64PngOrNull;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FirmaContratoMail;
 
 use App\Models\Proyecto;
 use App\Models\User;
@@ -348,4 +350,32 @@ class ComercialController extends Controller
             ], 500);
         }
     }
+
+
+    public function sendLinkByEmail(Request $request)
+    {
+        $request->validate([
+            'link' => 'required|url',
+            'email' => 'required|email',
+            'id' => 'required|exists:proyectos,id'
+        ]);
+
+        try {
+            $linkContrato = $request->link;
+            $proyecto = Proyecto::findOrFail($request->id);
+            Mail::to($request->email)->send(
+                new FirmaContratoMail($linkContrato, $proyecto->nombre_cliente)
+            );
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'El enlace se envió correctamente al correo proporcionado ✅',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Error al enviar el enlace: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

@@ -1,6 +1,9 @@
 function setModalData(element) {
     const link = element.getAttribute('data-link');
+    const id = element.getAttribute('data-id');
     document.getElementById("sendLink").value =  link;
+    document.getElementById("id_proyect_link").value =  id;
+
 }
 
 // Copiar al portapapeles
@@ -27,6 +30,7 @@ function copyLink() {
 function sendLinkByEmail() {
     const link = document.getElementById("sendLink").value;
     const email = document.getElementById("emailDestino").value;
+    const id = document.getElementById("id_proyect_link").value;
 
     if (!email) {
         Swal.fire({
@@ -37,15 +41,16 @@ function sendLinkByEmail() {
         return;
     }
 
-    fetch("{{ route('proyecto.enviarLink') }}", {
+    fetch("sendLinkByEmail", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify({
             email: email,
-            link: link
+            link: link,
+            id: id
         })
     })
     .then(res => res.json())
@@ -55,6 +60,8 @@ function sendLinkByEmail() {
             title: '¡Enviado!',
             text: 'El link fue enviado al correo.',
             confirmButtonColor: '#3085d6'
+        }).then(() => {
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: 'sendLink-modal' }));
         });
     })
     .catch(error => {

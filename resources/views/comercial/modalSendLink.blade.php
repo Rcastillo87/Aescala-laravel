@@ -4,6 +4,7 @@
 
         <!-- Input oculto con el link -->
         <input type="hidden" id="sendLink" value="">
+        <input type="hidden" id="id_proyect_link" value="">
 
         <!-- Input visible para correo -->
         <div class="mb-4">
@@ -32,7 +33,7 @@
                     <!-- Enviar correo -->
                     <button type="button" 
                             onclick="sendLinkByEmail()"
-                            class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition hidden">
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
                         Enviar por correo
                     </button>
                 </div>

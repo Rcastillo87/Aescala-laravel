@@ -74,6 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [ComercialController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ComercialController::class, 'edit'])->name('edit');
         Route::post('/save', [ComercialController::class, 'save'])->name('save');
+        Route::post('/sendLinkByEmail', [ComercialController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
     });
 
     Route::prefix('herramienta')->name('herramienta.')->group(function () {

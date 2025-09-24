@@ -52,7 +52,7 @@
                             </div>
                             <!-- Botón link Firma -->
                             <div class="relative inline-flex">
-                                <a tabindex="0" data-tooltip-target="tooltip-hover-encrip-{{$item->id}}" data-tooltip-trigger="hover" 
+                                <a tabindex="0" data-tooltip-target="tooltip-hover-encrip-{{$item->id}}" data-tooltip-trigger="hover" data-id="{{ $item->id }}"
                                     data-link="{{ $item->tokenEncrip }}" x-on:click="$dispatch('open-modal', 'sendLink-modal')" x-data="" onclick="setModalData(this)"
                                     class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4 
                                         focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
