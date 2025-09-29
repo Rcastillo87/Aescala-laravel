@@ -14,6 +14,7 @@ use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\TareasController;
 use App\Http\Controllers\ComercialController;
+use App\Http\Controllers\OtrosiController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -156,6 +157,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('cotizacion')->name('cotizacion.')->group(function () {
         Route::get('/index', [CotizacionController::class, 'index'])->name('index');
         Route::get('/create', [CotizacionController::class, 'create'])->name('create');
+    });
+
+    Route::prefix('otro_si')->name('otro_si.')->group(function () {
+        Route::get('/index', [OtrosiController::class, 'index'])->name('index');
+        Route::get('/create', [OtrosiController::class, 'create'])->name('create');
     });
 
 });
