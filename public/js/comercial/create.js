@@ -383,7 +383,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const form = document.getElementById("formComercial");
 
     form.addEventListener("submit", async (e) => {
@@ -400,57 +399,67 @@ document.addEventListener("DOMContentLoaded", () => {
             cancelButtonText: "Cancelar",
         });
 
-        // Si confirma, se envía el formulario
         if (result.isConfirmed) {
-        try {
-            const response = await fetch(saveUrl, {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
-                    "Accept": "application/json"
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                if (data.errors) {
-                    for (const [field, messages] of Object.entries(data.errors)) {
-                        const input = document.querySelector(`[name="${field}"]`);
-
-                        if (!input) continue;
-
-                        // buscar x-input-error si existe
-                        let errorContainer = input.parentNode.querySelector("x-input-error");
-
-                        if (errorContainer) {
-                            // si es componente Blade, colocamos mensaje dentro
-                            errorContainer.innerHTML = messages.join(", ");
-                        } else {
-                            // si no existe, lo creamos dinámicamente
-                            errorContainer = document.createElement("p");
-                            errorContainer.classList.add("input-error", "text-red-600", "text-sm", "mt-2");
-                            errorContainer.textContent = messages.join(", ");
-                            input.insertAdjacentElement("afterend", errorContainer);
-                        }
-                    }
-                } else if (data.error) {
-                    Swal.fire("Error", data.error, "error");
-                }
-                return;
-            }
-
-            if (data.success) {
-                Swal.fire({
-                    icon: "success",
-                    title: data.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    window.location.href = data.redirect;
+            try {
+                const response = await fetch(saveUrl, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                        "Accept": "application/json"
+                    },
+                    body: formData
                 });
-            }
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    let mensajesGlobales = [];
+
+                    if (data.errors) {
+                        for (const [field, messages] of Object.entries(data.errors)) {
+                            const input = document.querySelector(`[name="${field}"]`);
+                            mensajesGlobales.push(...messages);
+
+                            if (input) {
+                                let errorContainer = input.parentNode.querySelector("x-input-error");
+
+                                if (errorContainer) {
+                                    errorContainer.innerHTML = messages.join(", ");
+                                } else {
+                                    errorContainer = document.createElement("p");
+                                    errorContainer.classList.add("input-error", "text-red-600", "text-sm", "mt-2");
+                                    errorContainer.textContent = messages.join(", ");
+                                    input.insertAdjacentElement("afterend", errorContainer);
+                                }
+                            }
+                        }
+
+                        // Mostrar también en Swal
+                        if (mensajesGlobales.length > 0) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Errores de validación",
+                                html: `<ul class="text-left">
+                                        ${mensajesGlobales.map(m => `<li>• ${m}</li>`).join("")}
+                                       </ul>`
+                            });
+                        }
+                    } else if (data.error) {
+                        Swal.fire("Error", data.error, "error");
+                    }
+                    return;
+                }
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = data.redirect;
+                    });
+                }
             } catch (error) {
                 Swal.fire("Error", "Ocurrió un error inesperado", "error");
                 console.error(error);
@@ -458,4 +467,3 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-

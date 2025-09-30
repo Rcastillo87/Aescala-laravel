@@ -171,10 +171,9 @@
                 <x-input-error :messages="$errors->get('termino_6_por')" class="mt-2" />
             </div>
             
-
             <div class="flex items-center gap-x-4 w-full max-w-full p-3 shrink-0 md:w-12/12 lg:w-6/12 2xl:w-4/12">
                 <label class="inline-flex items-center w-[30%] space-x-2">
-                    <input type="hidden" name="opcion" id="opcion" value="{{ old('opcion', $proyecto?->opcion, 0)}}">
+                    <input type="hidden" name="opcion" id="opcion"  value="{{ old('opcion', $proyecto?->opcion ?? 0) }}">
                     <input 
                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
                         dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
