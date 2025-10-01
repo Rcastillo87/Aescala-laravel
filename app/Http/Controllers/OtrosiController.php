@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Zonas;
+use App\Models\Area;
 use App\Models\Otrosi;
 use App\Models\User;
 

@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ZonaEntregable extends Model
+class AreaEntregable extends Model
 {
     use HasFactory;
 
-    protected $table = 'zona_entregables';
+    protected $table = 'area_entregables';
     protected $primaryKey = null; 
     public $incrementing = false; 
     public $timestamps = false;
 
     protected $fillable = [
-        'id_zonas',
+        'id_area',
         'entregable'
     ];
 }
