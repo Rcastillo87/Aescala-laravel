@@ -144,7 +144,7 @@
 </head>
 <body>
 <header>
-    <img src="{{ asset('img/logo.png') }}" alt="Logo Empresa">
+    <img src="{{ public_path('img/logo.png') }}" alt="Logo Empresa">
 </header>
 
 <!-- Título del contrato -->
