@@ -158,7 +158,7 @@ class ComercialController extends Controller
                 "termino_5_por" => 'required|integer|min:0|max:100',
                 "termino_6_por" => 'required|integer|min:0|max:100',
 
-                'opcion' => ['required', 'integer', Rule::in([0, 1])],
+                'opcion' => ['nullable', 'integer', Rule::in([0, 1])],
                 'por_inicia' => [
                     'nullable',
                     'integer',

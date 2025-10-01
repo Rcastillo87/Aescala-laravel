@@ -213,19 +213,22 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 </p>
 <ul>
     @if($por_term_1!=0) 
-        <li>({{ $por_term_1 }}%) correspondiente (${{ $val_term_1 }}) a la fecha de aprobación de diseño de obra previo al inicio de la misma.</li> 
+        <li>({{ $por_term_1 }}%) correspondiente (${{ $val_term_1 }}) para dar inicio a la etapa de diseño.</li> 
     @endif
     @if($por_term_2!=0) 
-        <li>({{ $por_term_2 }}%) correspondiente (${{ $val_term_2 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que se va a enviar corte de carpintería.</li> 
+        <li>({{ $por_term_2 }}%) correspondiente (${{ $val_term_2 }}) al momento de aprobado diseño para dar inicio a la obra.</li> 
     @endif
     @if($por_term_3!=0) 
-        <li>({{ $por_term_3 }}%) correspondiente (${{ $val_term_3 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalación de carpintería.</li> 
+        <li>({{ $por_term_3 }}%) correspondiente (${{ $val_term_3 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que se va a enviar corte de carpintería.</li> 
     @endif
     @if($por_term_4!=0) 
-        <li>({{ $por_term_4 }}%) correspondiente (${{ $val_term_4 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalación de accesorios, grifería y mesón.</li> 
+        <li>({{ $por_term_4 }}%) correspondiente (${{ $val_term_4 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalación de carpintería.</li> 
     @endif
     @if($por_term_5!=0) 
-        <li>({{ $por_term_5 }}%) correspondiente (${{ $val_term_5 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que hará entrega de la obra.</li> 
+        <li>({{ $por_term_5 }}%) correspondiente (${{ $val_term_5 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalación de accesorios, grifería y mesón.</li> 
+    @endif
+    @if($por_term_6!=0) 
+        <li>({{ $por_term_6 }}%) correspondiente (${{ $val_term_6 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que hará entrega de la obra.</li> 
     @endif
 </ul>
 
