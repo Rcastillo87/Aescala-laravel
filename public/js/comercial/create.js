@@ -323,7 +323,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data) {
             try {
                 const parsed = JSON.parse(data);
+                if (parsed.defaults && Array.isArray(parsed.defaults) && parsed.defaults.length > 0) {
+                    itemsContainer.innerHTML = "";
+                    parsed.defaults.forEach((def, index) => {
+                        const itemCount = itemsContainer.querySelectorAll('.item-group').length;
+                        const newItem = createItem(itemCount + 1);
+                        newItem.querySelector('textarea').value = def.descripccion; 
+                        itemsContainer.appendChild(newItem);
+                    });
+                }
+            } catch (e) {
+                console.error("Error al parsear data-datax:", e);
+            }
+        }
+    });
 
+    /*document.getElementById('id_entregable').addEventListener('change', function() {
+        const option = this.options[this.selectedIndex];
+        const data = option.getAttribute('data-datax');
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
                 itemsContainer.innerHTML = "";
                 parsed.defaults.forEach((def, index) => {
                     const itemCount = itemsContainer.querySelectorAll('.item-group').length;
@@ -331,13 +351,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     newItem.querySelector('textarea').value = def.descripccion;
                     itemsContainer.appendChild(newItem);
                 });
-
+                const itemCount = itemsContainer.querySelectorAll('.item-group').length;
+                const newItem = createItem(itemCount + 1);
+                itemsContainer.appendChild(newItem);
             } catch (e) {
                 console.error("Error al parsear data-datax:", e);
             }
         }
-        
-    });
+    });*/
 
 });
 
