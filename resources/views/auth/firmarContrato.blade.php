@@ -104,7 +104,7 @@
 
         // Ajustar tamaño del canvas para buena calidad (retina)
         function resizeCanvas() {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const ratio = Math.min(window.devicePixelRatio || 1, 2); //const ratio = Math.max(window.devicePixelRatio || 1, 1);
             const container = document.getElementById("signature-pad-container");
             const rect = container.getBoundingClientRect();
 
@@ -126,8 +126,10 @@
             signaturePad = new SignaturePad(canvas, {
                 penColor: "#111",     // color de la firma
                 backgroundColor: "rgba(255,255,255,0)", // fondo transparente
-                minWidth: 0.8,        // grosor mínimo del trazo
-                maxWidth: 2.5,        // grosor máximo del trazo
+                //minWidth: 0.8,        // grosor mínimo del trazo
+                //maxWidth: 2.5,        // grosor máximo del trazo
+                minWidth: 0.7,   // 🔹 más liviano
+                maxWidth: 2.2,   // 🔹 balance entre visibilidad y peso
                 throttle: 16,         // suaviza la escritura
             });
         }
