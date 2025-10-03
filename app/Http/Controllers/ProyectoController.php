@@ -770,6 +770,7 @@ class ProyectoController extends Controller
             $total   = $proyecto->entreProyecto()
                         ->selectRaw('SUM(valor_total * cantidad) as total')
                         ->value('total');
+            $total = $total - $proyecto->descuento;
             $txTotal = $this->numeroATexto($total);
 
             $valTerm1 = ceil($total * $proyecto->termino_1_por / 100);
@@ -792,6 +793,14 @@ class ProyectoController extends Controller
                     "precio" => number_format($e->valor_total, 0, ',', '.')
                 ];
             })->toArray();
+            if($proyecto->descuento > 0){
+                $entregables[] = [
+                    "cantidad" => 1,
+                    "titulo" => 'Descuento',
+                    "items"  => ['Descuento Aceptado por Gerencia'],
+                    "precio" => '-'.number_format($proyecto->descuento, 0, ',', '.')
+                ];
+            }
 
             $path = public_path('img/firmaRepre.png');
             if (file_exists($path)) {
@@ -835,6 +844,7 @@ class ProyectoController extends Controller
                 "entregables"         => $entregables,
                 "dias_trabajo"        => $proyecto->dias_trabajo,
                 'imgRepre'            => $base64,
+                "descuento"           => $proyecto->descuento ?? 0,
             ];
 
             // Generar PDF desde la vista HTML

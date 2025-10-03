@@ -147,6 +147,7 @@ class ComercialController extends Controller
                 'tipo_doc_cliente' => ['required', 'integer', Rule::in(array_keys(Proyecto::$tipoDocumento))],
                 'dias_trabajo' => 'required|integer|min:1',
                 'area_privada' => 'nullable|integer|min:0',
+                'descuento' => 'nullable|integer|min:0',
 
                 "termino_1_por" => 'required|integer|min:0|max:100',
                 "termino_2_por" => 'required|integer|min:0|max:100',
@@ -248,6 +249,7 @@ class ComercialController extends Controller
         $total   = $proyecto->entreProyecto()
                     ->selectRaw('SUM(valor_total * cantidad) as total')
                     ->value('total');
+        $total = $total - $proyecto->descuento;
         $txTotal = $this->numeroATexto($total);
 
         $valTerm1 = ceil($total * $proyecto->termino_1_por / 100);
@@ -270,6 +272,14 @@ class ComercialController extends Controller
                 "precio" => number_format($e->valor_total, 0, ',', '.')
             ];
         })->toArray();
+        if($proyecto->descuento > 0){
+            $entregables[] = [
+                "cantidad" => 1,
+                "titulo" => 'Descuento',
+                "items"  => ['Descuento Aceptado por Gerencia'],
+                "precio" => '-'.number_format($proyecto->descuento, 0, ',', '.')
+            ];
+        }
 
         $path = public_path('img/firmaRepre.png');
         if (file_exists($path)) {
@@ -313,6 +323,7 @@ class ComercialController extends Controller
             "entregables"         => $entregables,
             "dias_trabajo"        => $proyecto->dias_trabajo,
             'imgRepre'            => $base64,
+            "descuento"           => $proyecto->descuento ?? 0,
         ];
 
         return view('auth.firmarContrato', compact('data'));
