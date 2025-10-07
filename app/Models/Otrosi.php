@@ -13,11 +13,10 @@ class Otrosi extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'descripcion',
-        'cantidad',
-        'valor',
         'id_proyecto',
-        'id_user_encargado'
+        'id_user_encargado',
+        'numero',
+        'fecha_creacion'
     ];
 
     public function proyecto()
@@ -29,4 +28,10 @@ class Otrosi extends Model
     {
         return $this->belongsTo(User::class, 'id_user_encargado', 'id');
     }
+
+    public function area_entregable()
+    {
+        return $this->hasMany(AreaEntregable::class, 'id_otro_si');
+    }
+
 }

@@ -16,6 +16,15 @@ class AreaEntregable extends Model
 
     protected $fillable = [
         'id_area',
-        'entregable'
+        'id_otro_si',
+        'descripccion',
+        'cantidad',
+        'valor'
     ];
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'id_area', 'id');
+    }
+
 }
