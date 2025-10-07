@@ -37,6 +37,9 @@ class ComercialController extends Controller
         ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
             return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
         })
+        ->when(Auth::user()->id_rol == 4, function($query) {
+            $query->where('id_usuario_comercial', Auth::id());
+        })
         ->whereNull('id_estado')
         ->orderBy('id', 'desc')
         ->paginate(10)
