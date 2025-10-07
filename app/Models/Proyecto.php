@@ -45,7 +45,8 @@ class Proyecto extends Model
         'fec_inicio',
         'fec_fin_estimado',
         'fec_fin_real',
-        'observacion'
+        'observacion',
+        'descuento'
     ];
 
     protected $casts = [

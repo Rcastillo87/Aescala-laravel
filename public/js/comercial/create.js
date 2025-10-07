@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let signaturePad;
 
     function resizeCanvas() {
-        const ratio = window.devicePixelRatio || 1;
+        const ratio = Math.min(window.devicePixelRatio || 1, 2); //window.devicePixelRatio || 1;
         const container = document.getElementById("signature-pad-container");
         const rect = container.getBoundingClientRect();
 
@@ -23,8 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
         resizeCanvas();
         signaturePad = new SignaturePad(canvas, {
             penColor: "#111",
-            minWidth: 0.8,
-            maxWidth: 2.5,
+            //minWidth: 0.8,
+            //maxWidth: 2.5,
+            minWidth: 0.7,  // 🔹 un poco más delgado
+            maxWidth: 2.2,  // 🔹 control para que no quede muy "gruesa"
             throttle: 16, // suaviza el trazo
             velocityFilterWeight: 0.7,
         });

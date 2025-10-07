@@ -129,6 +129,13 @@
                 <x-input-error :messages="$errors->get('area_privada')" class="mt-2" />
             </div>
 
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="descuento" :value="__('Descuento Aceptado por Gerencia')" />
+                <x-text-input id="descuento" class="block w-full" type="number" 
+                    min="0" step="any" name="descuento" value="{{ old('descuento', $proyecto?->descuento ?? 0) }}"/>
+                <x-input-error :messages="$errors->get('descuento')" class="mt-2" />
+            </div>
+
             <hr class="w-full my-2">
             <div class="mx-auto px-2 py-2 flex justify-start w-full">
                 <h2 class="text-xl font-bold text-[#242e68]">Porcentajes </h2>
