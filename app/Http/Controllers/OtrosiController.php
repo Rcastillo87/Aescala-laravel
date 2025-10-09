@@ -32,13 +32,15 @@ class OtrosiController extends Controller
         ->paginate(10)
         ->appends(request()->query());
 
+        $proyectos = Proyecto::whereIN('id_estado', [1, 3, 5])->get(['id', 'nombre_proyecto'])->toArray();
         $user = User::where('id_rol', 3)->get()->toArray();
         $headers = ['Nombre Proyecto', 'En Cargado', 'Numero', 'Fecha de Creacion', 'Opciones'];
-        return view('otrosi.index', compact( 'title', 'items', 'headers', 'user'));
+        return view('otrosi.index', compact( 'title', 'items', 'headers', 'user', 'proyectos'));
     }
 
-    public function create( ) 
+    public function save(Request $request) 
     {
+
 
     }
 

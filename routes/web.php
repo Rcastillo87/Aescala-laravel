@@ -161,7 +161,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('otro_si')->name('otro_si.')->group(function () {
         Route::get('/index', [OtrosiController::class, 'index'])->name('index');
-        Route::get('/create', [OtrosiController::class, 'create'])->name('create');
+        Route::get('/save', [OtrosiController::class, 'save'])->name('save');
         Route::get('/otroSiPdf/{id}', [OtrosiController::class, 'otroSiPdf'])->name('otroSiPdf');
     });
 
