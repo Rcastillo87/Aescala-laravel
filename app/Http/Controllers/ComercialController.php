@@ -37,6 +37,12 @@ class ComercialController extends Controller
         ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
             return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
         })
+        ->when(Request('telefono_cliente'), function ($query, $telefono_cliente) { 
+            return $query->whereRaw('LOWER(telefono_cliente) LIKE LOWER(?)', ["%$telefono_cliente%"]);
+        })
+        ->when(Request('direccion'), function ($query, $direccion) { 
+            return $query->whereRaw('LOWER(direccion) LIKE LOWER(?)', ["%$direccion%"]);
+        })
         ->whereNull('id_estado')
         ->orderBy('id', 'desc')
         ->paginate(10)
