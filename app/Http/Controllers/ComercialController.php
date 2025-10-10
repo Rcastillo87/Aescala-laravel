@@ -87,9 +87,9 @@ class ComercialController extends Controller
                 $arrTx = implode('</li><li>', $arr);
                 $valor = 0;
                 $entregableProye .= 
-                    '<div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm" data-entregable-id="1">
+                    '<div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm" data-entregable-id="'.$value->id_entregable.'">
                         <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-lg text-[#242e68]">opcion 1</h3>
+                            <h3 class="font-bold text-lg text-[#242e68]">'.$value->entregable->nombre_estregable.'</h3>
                             <button class="remove-entregable text-red-500 hover:text-red-700">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"></path>
@@ -104,7 +104,7 @@ class ComercialController extends Controller
                         <div class="bg-gray-50 p-2 rounded">
                             <h4 class="font-medium text-sm mb-1">Items:</h4>
                             <ul class="list-disc pl-5 text-sm space-y-1">
-                                <li>ertfhdfjdyfjh</li>
+                                <li>'.$arrTx.'</li>
                             </ul>
                         </div>
                         '.$arrItem.'
