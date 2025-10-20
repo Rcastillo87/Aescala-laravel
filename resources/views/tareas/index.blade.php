@@ -26,7 +26,7 @@
             $card = 
             "<div data-id='$proy->id' draggable='true' class='draggable card-proyecto cursor-pointer w-[280px] border-gray-400 border bg-white rounded-md text-start proys-center px-2 py-1'>
                 <p class='text-lg font-bold'>Proyecto: <span class='text-md font-semibold text-gray-600'>$proy->nombre_proyecto</span></p>
-                <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($proy->user->nombre_completo)."</span></p>
+                <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($proy->user->nombre_completo?? 'Sin asignar')."</span></p>
                 <p class='text-lg font-bold'>Estado: <span class='text-md font-semibold text-gray-600'>$proy->spanEstado</span></p>
             </div>";
             $proyectos .= $card;
@@ -59,7 +59,7 @@
                 <p class='text-lg font-bold'>Proyecto Estado: <span class='text-md font-semibold text-gray-600'>".$item->proyecto->spanEstado."</span></p>
                 <p class='text-lg font-bold'>Tarea: <span class='text-md font-semibold text-gray-600'>".$item->tareaTipo->nombre_tarea."</span></p>
                 <p class='text-lg font-bold'>Tarea Estado: <span class='text-md font-semibold text-gray-600'>".$item->spanEstado."</span></p>
-                <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($item->user->nombre_completo)."</span></p>
+                <p class='text-lg font-bold'>Encargado: <span class='text-md font-semibold text-gray-600'>".strtolower($item->user->nombre_completo?? 'Sin asignar')."</span></p>
                 <div class='flex my-2'>
                     <div class='flex flex-col items-center justify-center border-2 rounded-xl w-[250px] ".$bgTarea." p-2'>
                         <p class='text-white text-2xl font-bold'>".$diasTrascurridosTarea."/".$diasTarea." | ". $porcenTarea ."%</p>
