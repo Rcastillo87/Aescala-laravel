@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+    @include('comercial.filter')
     <div class="flex justify-end text-center mb-3">
         <x-secondary-button class="ms-4" href="{{ route('comercial.create')}}">
             Crear Proyecto
