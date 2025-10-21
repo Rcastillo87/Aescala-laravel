@@ -762,8 +762,7 @@ class ProyectoController extends Controller
             $pdf = PDF::loadView('proyecto.pdfContrato', $data);
             
             // Devolver el PDF para visualización en el navegador
-            return $pdf->stream('contrato-' . $proyecto->id . '.pdf')
-                ->header('Content-Type', 'text/html; charset=UTF-8');
+            return $pdf->stream('contrato-' . $proyecto->id . '.pdf');
 
         } catch (\Exception $e) {
             Log::error('Error generando contrato PDF: ' . $e->getMessage());

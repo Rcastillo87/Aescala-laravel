@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use NumberFormatter;
 
 class Otrosi extends Model
 {
@@ -32,6 +35,81 @@ class Otrosi extends Model
     public function area_entregable()
     {
         return $this->hasMany(AreaEntregable::class, 'id_otro_si');
+    }
+
+    public function getOtroSiAttribute()
+    {
+        $dptArray = json_decode(
+            file_get_contents(storage_path('json/jsonCityColombia.json')), 
+            true
+        );
+
+        $ciudad_dpt = $dptArray[$this->proyecto->departamento]['departamento'] . ', ' .
+                    $dptArray[$this->proyecto->departamento]['ciudades'][$this->proyecto->ciudad];
+
+        // Calcular totales
+        $subtotal = $this->area_entregable()
+                    ->selectRaw('SUM(valor * cantidad) as subtotal')
+                    ->value('subtotal');
+        $valorTotal = $subtotal; // acá podrías sumar IVA si aplica
+        $txTotal = $this->numeroATexto($valorTotal);
+
+        // Preparar adicionales
+        $adicionales = $this->area_entregable;
+
+        $arr = [];
+        foreach ($adicionales as $item) {
+            $area = $item->area->nombre_area;
+            if (!isset($arr[$area])) {
+                $arr[$area] = [
+                    "espacio"       => $area,
+                    "items"         => [],
+                    "subtotal"      => 0
+                ];
+            }
+            $arr[$area]["items"][] = [
+                "descripcion"   => $item->descripccion,
+                "cantidad"      => $item->cantidad,
+                "valor_unitario"=> number_format($item->valor, 0, ',', '.'),
+                "valor_total"   => number_format($item->valor * $item->cantidad, 0, ',', '.'),
+            ];
+            $arr[$area]["subtotal"] += $item->valor * $item->cantidad;
+        }
+
+        $carbon = Carbon::now()->locale('es');
+        $fechaOtroSi = $carbon->translatedFormat('d \d\e F \d\e Y');
+
+        $path = public_path('img/firmaRepre.png');
+        $base64 = null;
+        if (file_exists($path)) {
+            $imageData = file_get_contents($path);
+            $imageInfo = getimagesize($path);
+            $mime = $imageInfo['mime'];
+            $base64 = 'data:' . $mime . ';base64,' . base64_encode($imageData);
+        }
+
+        return [
+            "id_proyecto"       => $this->id,
+            "num_otro_si"       => $this->numero,
+            "fecha_otro_si"     => mb_strtoupper($fechaOtroSi, 'UTF-8'),
+            "nombre_cliente"    => Str::title($this->proyecto->nombre_cliente),
+            "tipo_doc_cliente"  => Proyecto::$tipoDocumento[$this->proyecto->tipo_doc_cliente][1] ?? '',
+            "tipo_doc_cliente_acro" => Proyecto::$tipoDocumento[$this->proyecto->tipo_doc_cliente][0] ?? '',
+            "documento_cliente" => number_format($this->proyecto->cedula_cliente, 0, ',', '.'),
+            "ciudad_dpt"        => $ciudad_dpt,
+            "adicionales"       => $arr,
+            "subtotal"          => number_format($subtotal, 0, ',', '.'),
+            "valor_total"       => number_format($valorTotal, 0, ',', '.'),
+            "img_firma"         => '',
+            "imgRepre"          => $base64,
+            "nombre_proyecto" => $this->proyecto->nombre_proyecto
+        ];
+    }
+
+    public function numeroATexto($numero)
+    {
+        $formatter = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
+        return $formatter->format($numero);
     }
 
 }

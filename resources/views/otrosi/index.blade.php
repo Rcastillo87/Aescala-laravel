@@ -3,9 +3,7 @@
 
     @include('otrosi.filter')
     <div class="flex justify-end text-center mb-3">
-        <x-secondary-button class="ms-4" 
-            data-tooltip-trigger="hover" x-data="" 
-            x-on:click="$dispatch('open-modal', 'modalOtrosi-modal')">
+        <x-secondary-button class="ms-4" href="{{ route('otro_si.create')}}">
             Crear Otro Si
         </x-secondary-button>
     </div>
@@ -48,7 +46,7 @@
                                 </div>
 
                                 <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
-                                data-data='@json($item)' x-on:click="$dispatch('open-modal', 'modalOtrosi-modal')" x-data="" 
+                                href="{{ route('otro_si.edit', ['id' => $item->id]) }}"
                                 class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
                                         focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -79,7 +77,6 @@
             </div>
         @endif
     </div>
-    @include('otrosi.modalOtrosi')
 @endsection
 
 @section('scripts')
