@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        <meta charset="utf-8">
+        <!--<meta charset="utf-8">-->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ config('app.name', 'Laravel') }}</title>
         <meta name="description" content="Aescala App es una plataforma para la gestión y seguimiento de proyectos de arquitectura civil.">
