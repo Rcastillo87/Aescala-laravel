@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Contrato de Obra Civil N.º {{ $id_proyecto }}</title>
     <style>
         @page { margin: 90px 50px 80px 50px; }
