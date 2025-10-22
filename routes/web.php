@@ -165,6 +165,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/edit/{id}', [OtrosiController::class, 'edit'])->name('edit');
         Route::get('/create', [OtrosiController::class, 'create'])->name('create');
         Route::get('/otroSiPdf/{id}', [OtrosiController::class, 'otroSiPdf'])->name('otroSiPdf');
+        Route::get('/plantilla_otrosi', function () {
+            $path = storage_path('plantillas/cargue_otro_si.xlsx');
+            if (!file_exists($path)) abort(404);
+            return response()->download($path);
+        })->name('plantilla_otrosi');
+        Route::POST('/valiPlantilla', [OtrosiController::class, 'valiPlantilla'])->name('valiPlantilla');
     });
 
 });

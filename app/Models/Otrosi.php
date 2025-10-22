@@ -19,7 +19,8 @@ class Otrosi extends Model
         'id_proyecto',
         'id_user_encargado',
         'numero',
-        'fecha_creacion'
+        'fecha_creacion',
+        'plantilla'
     ];
 
     public function proyecto()
