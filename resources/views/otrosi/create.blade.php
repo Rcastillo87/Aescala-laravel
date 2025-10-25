@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-full px-2">
-    <form method="POST" action="{{ route('otro_si.save') }}" id="formOtroSi"> 
+    <form method="POST" action="{{ route('otro_si.save') }}" enctype="multipart/form-data" id="formOtroSi"> 
         @csrf
 
         <div class="flex justify-end">
@@ -51,7 +51,7 @@
 
             <hr class="w-full my-2">
             <div class="mx-auto px-2 py-2 justify-start w-full">
-                <h2 class="text-xl font-bold text-[#242e68]">Entregables</h2>
+                <h2 class="text-xl font-bold text-[#242e68]">Items del Otro Si</h2>
                 <div class="flex w-full items-center space-x-2">
                     <div id="entregables-div" class="mt-2 space-y-2 w-full">
 
