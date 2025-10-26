@@ -26,6 +26,12 @@
                             {{ $item->fecha_creacion }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                            {!! $item->spanEstado !!}
+                        </td>
+                        <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                            {{ $item->fecha_firma }}
+                        </td>
+                        <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             <div class=" flex items-center justify-center space-x-2">
 
                                 <a tabindex="0" 
@@ -57,7 +63,47 @@
                                     Editar
                                     <div class="tooltip-arrow" data-popper-arrow></div>
                                 </div>
-                                
+
+                                <!-- Botón link Firma -->
+                                <a tabindex="0" data-tooltip-target="tooltip-hover-encrip-{{$item->id}}" data-tooltip-trigger="hover" data-id="{{ $item->id }}"
+                                    data-link="{{ $item->tokenEncrip }}" x-on:click="$dispatch('open-modal', 'sendLink-modal')" x-data="" onclick="setModalData(this)"
+                                    class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4 
+                                        focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"/>
+                                    </svg>
+                                </a>
+                                <div id="tooltip-hover-encrip-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                    Link Firma
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+
+                                @if ($item->estado == 2)
+                                    <!-- Botón link Firma -->
+                                    <a tabindex="0" 
+                                        data-tooltip-target="tooltip-hover-recahzo-{{$item->id}}" data-tooltip-trigger="hover"
+                                        x-on:click="
+                                            $dispatch('open-modal', 'modalRechazoOtrosi-modal');
+                                            $nextTick(() => { 
+                                                const textarea = document.getElementById('sugerencia_cliente');
+                                                if (textarea) textarea.value = '{{ $item->sugerencia_cliente }}';
+                                            });
+                                        "
+                                        x-data="" 
+                                        x-on:click="$dispatch('open-modal', 'modalRechazoOtrosi-modal')"
+
+                                        class="flex items-center justify-center w-10 h-10 text-white bg-red-700 hover:bg-white hover:text-red-800 border-2 border-red-800 focus:ring-4 
+                                            focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                        </svg>
+                                    </a>
+                                    <div id="tooltip-hover-recahzo-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                        Sugerencia de Rechazo
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div>
+                                @endif
+
                             </div>
                         </td>
                     </tr>
@@ -77,8 +123,10 @@
             </div>
         @endif
     </div>
+    @include('comercial.modalSendLink')
+    @include('otrosi.modalRechazoOtrosi')
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/otro_si/index.js')}}"></script>
+    <script src="{{asset('js/comercial/index.js')}}"></script>
 @endsection

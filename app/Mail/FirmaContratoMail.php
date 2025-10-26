@@ -12,16 +12,19 @@ class FirmaContratoMail extends Mailable
 
     public $linkContrato;
     public $nombre;
+    public $callLink;
 
-    public function __construct($linkContrato,  $nombre)
+
+    public function __construct($linkContrato,  $nombre, $callLink = 'Firmar de Contrato')
     {
         $this->linkContrato = $linkContrato;
         $this->nombre = $nombre;
+        $this->callLink = $callLink;
     }
 
     public function build()
     {
-        return $this->subject('Firma de Contrato - ' . env('RAZON'))
+        return $this->subject($this->callLink . ' - ' . env('RAZON'))
                     ->view('emails.firmaContrato')
                     ->with([
                         'linkContrato' => $this->linkContrato,

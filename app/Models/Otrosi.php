@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use NumberFormatter;
 
 class Otrosi extends Model
@@ -20,8 +21,30 @@ class Otrosi extends Model
         'id_user_encargado',
         'numero',
         'fecha_creacion',
-        'plantilla'
+        'fecha_firma',
+        'plantilla',
+        'estado',
+        'sugerencia_cliente',
+        'img_firma',
     ];
+
+    public static $estadoTX = [
+        0 => 'Firma Pendiente',
+        1 => 'Firmado',
+        2 => 'Rechazado'
+    ];
+
+    public static $ClassEstado = [
+        0 => 'span-blue',
+        1 => 'span-green',
+        2 => 'span-red'
+    ];
+
+    public function getSpanEstadoAttribute()
+    {
+        return '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
+             . (self::$estadoTX[$this->estado] ?? 'Desconocido') . '</span>';
+    }
 
     public function proyecto()
     {
@@ -36,6 +59,12 @@ class Otrosi extends Model
     public function area_entregable()
     {
         return $this->hasMany(AreaEntregable::class, 'id_otro_si');
+    }
+
+    public function getTokenEncripAttribute()
+    {
+        $token = Crypt::encryptString($this->id . '||' . $this->numero. '||' . $this->fecha_creacion);
+        return rtrim(env('APP_URL'), '/') . '/firmarOtroSi/' . urlencode($token);
     }
 
     public function getOtroSiAttribute()
@@ -103,7 +132,8 @@ class Otrosi extends Model
             "valor_total"       => number_format($valorTotal, 0, ',', '.'),
             "img_firma"         => '',
             "imgRepre"          => $base64,
-            "nombre_proyecto" => $this->proyecto->nombre_proyecto
+            "nombre_proyecto" => $this->proyecto->nombre_proyecto,
+            "img_firma"         => $this->img_firma,
         ];
     }
 

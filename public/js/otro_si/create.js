@@ -14,7 +14,7 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
     });
 
     try {
-        const response = await fetch('valiPlantilla', {
+        const response = await fetch( valUrl , {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -61,7 +61,7 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
 
         // ✅ Construcción del encabezado del proyecto
         let header = `
-            <div class="bg-[#242e68] text-white p-4 rounded-t-lg shadow-md mt-6">
+            <div class="bg-[#242e68] text-white p-4 mt-6">
                 <h2 class="text-xl text-[#242e68] font-bold">📁 Proyecto: ${result.nombre_proyecto}</h2>
             </div>
         `;
@@ -169,5 +169,43 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
         });
         console.error('Error:', error);
         input.value = '';
+    }
+});
+
+document.getElementById("btnDescargar").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    let base64Data = this.getAttribute("data-excel");
+    const filename = this.getAttribute("data-filename") || "archivo.xlsx";
+
+    // ✅ Quitar prefijo si existe
+    if (base64Data.includes(",")) {
+        base64Data = base64Data.split(",")[1];
+    }
+
+    try {
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        const blob = new Blob([byteArray], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error("❌ Error al decodificar el archivo:", error);
+        alert("El archivo no se pudo descargar correctamente. Verifique que sea un Excel válido.");
     }
 });

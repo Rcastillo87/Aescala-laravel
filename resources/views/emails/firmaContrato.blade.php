@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Firma de Contrato</title>
+    <title>{{ $callLink }}</title>
 </head>
 <body style="margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background-color:#f4f6f8; color:#333;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f6f8; padding:20px;">
@@ -24,7 +24,7 @@
                     <tr>
                         <td align="center" style="padding-bottom:15px;">
                             <h1 style="margin:0; font-size:22px; font-weight:bold; color:#242E68;">
-                                Firma de Contrato
+                                {{ $callLink }}
                             </h1>
                         </td>
                     </tr>
@@ -35,7 +35,7 @@
                             <p style="margin:0 0 15px;">Estimado(a) <strong>{{ $nombre }}</strong>,</p>
 
                             <p style="margin:0 0 20px;">
-                                Tiene un contrato pendiente de firma con 
+                                Tiene pendiente la {{ $callLink }} con
                                 <strong>{{ env('RAZON') }}</strong>.  
                                 Para proceder, haga clic en el siguiente botón:
                             </p>
@@ -46,7 +46,7 @@
                                    style="background-color:#242E68; color:#ffffff; text-decoration:none; 
                                           padding:14px 32px; border-radius:6px; font-weight:bold; 
                                           display:inline-block; font-size:16px;">
-                                    Firmar Contrato
+                                    Firmar
                                 </a>
                             </p>
 

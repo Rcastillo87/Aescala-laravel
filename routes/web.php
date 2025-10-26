@@ -24,6 +24,10 @@ Route::get('firmarContrato/{id}', [ComercialController::class, 'firmarContrato']
 Route::post('guardarFirma', [ComercialController::class, 'guardarFirma'])->name('guardarFirma');
 Route::get('contratoPdf/{id}', [ProyectoController::class, 'contratoPdf'])->name('contratoPdf');
 
+Route::get('firmarOtroSi/{id}', [OtrosiController::class, 'firmarOtroSi'])->name('firmarOtroSi');
+Route::post('guardarFirmaOtroSi', [OtrosiController::class, 'guardarFirmaOtroSi'])->name('guardarFirmaOtroSi');
+Route::get('otroSiPdfPublic/{id}', [OtrosiController::class, 'otroSiPdfPublic'])->name('otroSiPdfPublic');
+
 // routes/web.php
 Route::get('/sw.js', function () {
     return response()->view('sw')
@@ -171,6 +175,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return response()->download($path);
         })->name('plantilla_otrosi');
         Route::POST('/valiPlantilla', [OtrosiController::class, 'valiPlantilla'])->name('valiPlantilla');
+        Route::post('/sendLinkByEmail', [OtrosiController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
     });
 
 });

@@ -28,7 +28,7 @@
                          autofocus />
                     </div>
 
-                    @if (Auth::user()->isNotcolab || true) 
+                    @if (Auth::user()->isAdmin) 
                         <div class="p-2 shrink-0 w-[40]">
                             <x-input-label for="id_userSerch" :value="__('Encargado')" />
                             <x-select-input 

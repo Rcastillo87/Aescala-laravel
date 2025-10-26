@@ -1,6 +1,9 @@
 <x-modal name="sendLink-modal" maxWidth="xl">
     <div class="p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">Enviar Link Para Firmar Contrato</h2>
+        @php
+            $text = Request::is('*otro_si*')? 'de Firmar Otro Si' : 'Firmar de Contrato';
+        @endphp
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">Enviar Link {{$text}}</h2>
 
         <!-- Input oculto con el link -->
         <input type="hidden" id="sendLink" value="">

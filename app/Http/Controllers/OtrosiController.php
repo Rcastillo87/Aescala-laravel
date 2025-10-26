@@ -2,39 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Area;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FirmaContratoMail;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
+use App\Rules\Base64PngOrNull;
 
 use App\Models\Otrosi;
 use App\Models\User;
 use App\Models\Proyecto;
+use App\Models\Area;
 
 class OtrosiController extends Controller
 {
     public function index( ) 
     {
         $title = 'Lista de Otro Si';
+        $usuario = Auth::user();
+
         $items = Otrosi::with(['proyecto', 'user_encargado'])
-        ->whereHas('proyecto', function ($query) {
-            if (request('nombre_proyecto')) {
-                $query->where('nombre_proyecto', 'like', '%' . request('nombre_proyecto') . '%');
-            }
-        })
-        ->whereHas('user_encargado', function ($query) {
-            if (request('id_userSerch')) {
-                $query->where('id', request('id_userSerch'));
-            }
-        })
-        ->paginate(10)
-        ->appends(request()->query());
+            ->whereHas('proyecto', function ($query) {
+                if (request('nombre_proyecto')) {
+                    $query->where('nombre_proyecto', 'like', '%' . request('nombre_proyecto') . '%');
+                }
+            })
+            ->whereHas('user_encargado', function ($query) {
+                if (request('id_userSerch')) {
+                    $query->where('id', request('id_userSerch'));
+                }
+            })
+            ->when(!$usuario->isAdmin, function ($query) use ($usuario) {
+                $query->where('id_user_encargado', $usuario->id);
+            })
+            ->paginate(10)
+            ->appends(request()->query());
 
         $user = User::where('id_rol', 3)->get()->toArray();
-        $headers = ['Nombre Proyecto', 'En Cargado', 'Numero', 'Fecha de Creacion', 'Opciones'];
+        $headers = ['Nombre Proyecto', 'En Cargado', 'Numero', 'Fecha de Creacion', 'Estado', 'Fecha Firma', 'Opciones'];
         return view('otrosi.index', compact( 'title', 'items', 'headers', 'user'));
     }
 
@@ -54,7 +63,7 @@ class OtrosiController extends Controller
 
     public function form($id = null)
     {
-        $otroSi = $id ? Otrosi::find($id) : null;
+        $item = $id ? Otrosi::with(['proyecto', 'area_entregable.area'])->find($id) : null;
         $colaUsers = User::where('id_rol', 3)
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
@@ -68,14 +77,121 @@ class OtrosiController extends Controller
             })
             ->get(['id', 'nombre_proyecto'])->toArray();
 
-        $item = '';
-        return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item'));
+        if(!$id) {
+            $itemsOtroSi = '';
+        } else {
+            $itemsOtroSi = $this->renderHtml($item);
+        }
+
+        return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'itemsOtroSi'));
     }
 
+    public function renderHtml($otroSi)
+    {
+        // Encabezado
+        $html = '<div class="bg-[#242e68] text-white p-4 mt-6">
+                <h2 class="text-xl text-[#242e68] font-bold">📁 Proyecto: '. e($otroSi->proyecto->nombre_proyecto) .'</h2>
+            </div>';
+
+        // Inicio de la tabla
+        $html .= '
+            <div class="overflow-x-auto w-full border border-gray-200 rounded-b-lg shadow-md">
+                <table class="min-w-full w-full text-sm text-left text-gray-700 border-collapse table-auto">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 50%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                    </colgroup>
+                    <thead class="bg-gray-100 border-b border-gray-200">
+                        <tr>
+                            <th class="px-4 py-2 font-semibold text-[#242e68]">Área</th>
+                            <th class="px-4 py-2 font-semibold text-[#242e68]">Material / Actividad</th>
+                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Cantidad</th>
+                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Valor Unitario</th>
+                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+        ';
+
+        // Agrupar por id_area para crear filas por Área
+        $groups = $otroSi->area_entregable->groupBy('id_area');
+
+        $totalGeneral = 0;
+        $hiddenInputs = '';
+        // hidden input del proyecto (id_proyecto_excel)
+        $hiddenInputs .= '<input type="hidden" name="id_proyecto_excel" value="' . e($otroSi->id_proyecto) . '">';
+
+        foreach ($groups as $idArea => $rows) {
+            // nombre del área (si existe relación)
+            $first = $rows->first();
+            $areaNombre = $first->area->nombre_area ?? 'Área ' . $idArea;
+
+            $subtotalArea = 0;
+            $rowCount = $rows->count();
+            foreach ($rows as $index => $ent) {
+                $cantidad = (int) $ent->cantidad;
+                $valor = (int) $ent->valor;
+                $subtotal = $cantidad * $valor;
+                $subtotalArea += $subtotal;
+
+                $html .= '<tr>';
+                if ($index === 0) {
+                    $html .= '<td class="px-4 py-2 font-semibold align-top" rowspan="' . $rowCount . '">' . e($areaNombre) . '</td>';
+                }
+                $html .= '<td class="px-4 py-2">' . e($ent->descripccion) . '</td>';
+                $html .= '<td class="px-4 py-2 text-right">' . number_format($cantidad, 0, ',', '.') . '</td>';
+                $html .= '<td class="px-4 py-2 text-right">$ ' . number_format($valor, 0, ',', '.') . '</td>';
+                $html .= '<td class="px-4 py-2 text-right">$ ' . number_format($subtotal, 0, ',', '.') . '</td>';
+                $html .= '</tr>';
+
+                // hidden inputs (estructura: entregables[<id_area>][items][<index>][...])
+                // repetimos id_area y area_nombre por cada item — igual que en la versión JS anterior
+                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][id_area]" value="' . e($idArea) . '">';
+                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][area_nombre]" value="' . e($areaNombre) . '">';
+                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][items][' . $index . '][material]" value="' . e($ent->descripccion) . '">';
+                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][items][' . $index . '][cantidad]" value="' . e($cantidad) . '">';
+                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][items][' . $index . '][valor_unitario]" value="' . e($valor) . '">';
+            }
+
+            // fila subtotal por área
+            $html .= '
+                <tr class="bg-gray-50 font-semibold">
+                    <td colspan="4" class="px-4 py-2 text-right text-[#242e68]">Subtotal ' . e($areaNombre) . '</td>
+                    <td class="px-4 py-2 text-right text-[#242e68]">$ ' . number_format($subtotalArea, 0, ',', '.') . '</td>
+                </tr>
+            ';
+
+            $totalGeneral += $subtotalArea;
+        }
+
+        // pie (total general)
+        $html .= '
+                </tbody>
+                <tfoot class="bg-[#f7f9ff] font-bold text-[#242e68] border-t-2 border-[#242e68]">
+                    <tr>
+                        <td colspan="4" class="px-4 py-3 text-right text-lg">Total General</td>
+                        <td class="px-4 py-3 text-right text-lg">$ ' . number_format($totalGeneral, 0, ',', '.') . '</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        ';
+
+        // agregar hidden inputs al final del bloque
+        $html .= $hiddenInputs;
+
+        // cerrar contenedor
+        $html .= '</div>';
+        return  $html;
+    }
 
     public function save(Request $request)
     {
         $request->validate([
+            'id' => 'nullable|integer|exists:otro_si,id',
             'id_proyecto' => 'required|exists:proyectos,id|same:id_proyecto_excel',
             'id_proyecto_excel' => 'required|exists:proyectos,id',
             'plantilla_otro_si' => 'required|file|mimes:xlsx,xls',
@@ -100,16 +216,25 @@ class OtrosiController extends Controller
             $mimeType = $file->getMimeType();
             $base64Documento = 'data:' . $mimeType . ';base64,' . base64_encode($fileContent);
 
-            // 🔢 Calcular número consecutivo
-            $ultimoNumero = Otrosi::where('id_proyecto', $request->id_proyecto)->max('numero');
-            $nuevoNumero = $ultimoNumero ? $ultimoNumero + 1 : 1;
+            if($request->id){
+                $otroSi = Otrosi::find($request->id);
+                $otroSi->area_entregable()->delete();
+                $msg = 'actualizado';
+                $otroSi->estado = 0;
+                $otroSi->sugerencia_cliente = null;
+
+            } else {
+                $otroSi = new Otrosi();
+                $ultimoNumero = Otrosi::where('id_proyecto', $request->id_proyecto)->max('numero');
+                $nuevoNumero = $ultimoNumero ? $ultimoNumero + 1 : 1;
+                $otroSi->numero = $nuevoNumero;
+                $otroSi->fecha_creacion = now();
+                $otroSi->id_user_encargado = Auth::id();
+                $msg = 'creado';
+            }
 
             // 🧾 Crear registro principal
-            $otroSi = new Otrosi();
             $otroSi->id_proyecto = $request->id_proyecto;
-            $otroSi->id_user_encargado = Auth::id();
-            $otroSi->numero = $nuevoNumero;
-            $otroSi->fecha_creacion = now();
             $otroSi->plantilla = $base64Documento;
             $otroSi->save();
 
@@ -133,8 +258,7 @@ class OtrosiController extends Controller
             }
 
             DB::commit();
-
-            return redirect()->route('otro_si.index')->with('success', 'Otro Sí creado correctamente');
+            return redirect()->route('otro_si.index')->with('success', 'Otro Sí '. $msg .' correctamente');
 
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
@@ -300,6 +424,86 @@ class OtrosiController extends Controller
         }
 
         return response()->json($resp, 200);
+    }
+
+    public function firmarOtroSi($token)
+    {
+        $data = Crypt::decryptString($token);
+        [$id, $numero, $fecha_creacion] = explode('||', $data);
+
+        $otroSi = Otrosi::with(['proyecto', 'user_encargado', 'area_entregable', 'area_entregable.area'])->findOrFail($id);
+        $data = $otroSi->otroSi;
+        return view('auth.firmarOtroSi', compact('data', 'otroSi'));
+    }
+
+    public function guardarFirmaOtroSi(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'id_otro_si' => 'required|exists:otro_si,id',
+                'firma_base64' => [new Base64PngOrNull],
+                'sugerencia_cliente' => 'nullable|string',
+                'estado' => 'required|in:1,2'
+            ]);
+
+            $otroSi = Otrosi::findOrFail($request->id_otro_si);
+
+            if($request->estado==1){
+                $otroSi->img_firma = $request->firma_base64;
+                $otroSi->fecha_firma = now();
+                $smg = 'Firma guardada correctamente.';
+            } else {
+                $otroSi->sugerencia_cliente = $request->sugerencia_cliente;
+                $smg = 'Sugerencia guardada correctamente.';
+            } 
+
+            $otroSi->estado = $request->estado;
+            $otroSi->save();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => $smg
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function otroSiPdfPublic($id)
+    {
+        $this->otroSiPdf($id);
+    }
+
+    public function sendLinkByEmail(Request $request)
+    {
+        $request->validate([
+            'link' => 'required|url',
+            'email' => 'required|email',
+            'id' => 'required|exists:otro_si,id'
+        ]);
+
+        try {
+            $linkContrato = $request->link;
+            $otrosi = Otrosi::with('proyecto')->findOrFail($request->id);
+            Mail::to($request->email)->send(
+                new FirmaContratoMail($linkContrato, $otrosi->proyecto->nombre_cliente, 'Firmar de Otro Sí')
+            );
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'El enlace se envió correctamente al correo proporcionado ✅',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Error al enviar el enlace: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

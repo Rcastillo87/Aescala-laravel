@@ -13,11 +13,16 @@
                     Descargar Plantilla
                 </x-secondary-button>
             @else
-                <x-secondary-button  href="#" data-plantilla="{{ $item->plantilla }}" id="downloadPlantillaBtn">
+                <x-secondary-button
+                        href="#"
+                        id="btnDescargar" 
+                        data-excel="{{ $item->plantilla }}" 
+                        data-filename="Plantilla - {{ $item->proyecto->nombre_proyecto }}.xlsx"
+                    >
                     <svg class="w-6 h-6 mr-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4"/>
                     </svg>
-                    Descargar Plantilla
+                    Plantilla Actual
                 </x-secondary-button>
             @endif
         </div>
@@ -26,17 +31,35 @@
         <div class="flex flex-wrap -mx-3">
 
             <input type="hidden" name="id_user_encargado" id="id_user_encargado" value="{{ old('id_user_encargado', Auth::user()->id) }}">
+            <input type="hidden" name="id" id="id" value="{{ old('id', $item->id ?? null) }}">
 
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-4/12 md:flex-0">
-                <x-input-label for="id_proyecto" :value="__('Proyecto *')" />
-                <x-select-input 
-                    name="id_proyecto" 
-                    id="id_proyecto" 
-                    :options="$proyectos" :data="['id', 'nombre_proyecto']"
-                    :selected="old('id_proyecto', $item->id_proyecto ?? '')" 
-                    class="block mt-1 w-full" required />
-                <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
-            </div>
+            @if($item)
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-4/12 md:flex-0">
+                    <x-input-label for="id_proyecto" :value="__('Proyecto *')" />
+                    <x-select-input 
+                        name="id_proyecto_visible"
+                        :options="$proyectos"
+                        :data="['id', 'nombre_proyecto']"
+                        :selected="old('id_proyecto', $item->id_proyecto ?? '')"
+                        class="block mt-1 w-full pointer-events-none bg-gray-100 text-gray-600 cursor-not-allowed"
+                        required
+                    />
+                    <input type="hidden" name="id_proyecto" value="{{ old('id_proyecto', $item->id_proyecto ?? '') }}">
+                    <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
+                </div>
+            @else
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-4/12 md:flex-0">
+                    <x-input-label for="id_proyecto" :value="__('Proyecto *')" />
+                    <x-select-input 
+                        name="id_proyecto" 
+                        id="id_proyecto" 
+                        :options="$proyectos" :data="['id', 'nombre_proyecto']"
+                        :selected="old('id_proyecto', $item->id_proyecto ?? '')" 
+                        class="block mt-1 w-full" required />
+                    <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
+                </div>
+            @endif
+
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-6/12 2xl:w-4/12 md:flex-0">
                 <x-file-input
@@ -54,7 +77,7 @@
                 <h2 class="text-xl font-bold text-[#242e68]">Items del Otro Si</h2>
                 <div class="flex w-full items-center space-x-2">
                     <div id="entregables-div" class="mt-2 space-y-2 w-full">
-
+                        {!! $itemsOtroSi !!}
                     </div>
                 </div>
             </div>
@@ -76,8 +99,7 @@
 @section('scripts')
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script>
-        const saveUrl = "{{ route('otro_si.save') }}";
+        const valUrl = "{{ route('otro_si.valiPlantilla') }}";
     </script>
     <script src="{{ asset('js/otro_si/create.js') }}"></script>
-
 @endsection
