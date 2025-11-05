@@ -137,14 +137,16 @@ class User extends Authenticatable
         1 => 'Administrador',
         2 => 'Usuario',
         3 => 'Colaborador',
-        4 => 'Comercial'
+        4 => 'Comercial',
+        5 => 'Cartera'
     ];
 
     public static $ClassRol = [
         1 => 'span-blue',
         2 => 'span-yellow',
         3 => 'span-gray',
-        4 => 'span-red'
+        4 => 'span-red',
+        5 => 'span-green',
     ];
 
     public static $estado = [

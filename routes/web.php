@@ -15,6 +15,7 @@ use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\TareasController;
 use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\OtrosiController;
+use App\Http\Controllers\CarteraController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -176,6 +177,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('plantilla_otrosi');
         Route::POST('/valiPlantilla', [OtrosiController::class, 'valiPlantilla'])->name('valiPlantilla');
         Route::post('/sendLinkByEmail', [OtrosiController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
+    });
+
+    Route::prefix('cartera')->name('cartera.')->group(function () {
+        Route::get('/index', [CarteraController::class, 'index'])->name('index');
     });
 
 });

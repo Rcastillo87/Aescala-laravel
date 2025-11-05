@@ -141,7 +141,7 @@ class Proyecto extends Model
                 "cantidad" => $e->cantidad,
                 "titulo" => $e->entregable->nombre_estregable,
                 "items"  => explode("||", $e->tx_entregable),
-                "precio" => number_format($e->valor_total, 0, ',', '.')
+                "precio" => number_format($e->valor_total * $e->cantidad, 0, ',', '.')
             ];
         })->toArray();
         if($this->descuento > 0){
@@ -279,5 +279,12 @@ class Proyecto extends Model
     public function entreProyecto()
     {
         return $this->hasMany(EntregableProye::class, 'id_proyecto', 'id');
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->entreProyecto()
+            ->selectRaw('SUM(valor_total * cantidad) as total')
+            ->value('total') - $this->descuento;
     }
 }
