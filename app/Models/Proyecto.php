@@ -280,6 +280,11 @@ class Proyecto extends Model
     {
         return $this->hasMany(EntregableProye::class, 'id_proyecto', 'id');
     }
+    
+    public function pagos()
+    {
+        return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
+    }
 
     public function getTotalAttribute()
     {
@@ -287,4 +292,42 @@ class Proyecto extends Model
             ->selectRaw('SUM(valor_total * cantidad) as total')
             ->value('total') - $this->descuento;
     }
+
+    public function getPagosAttribute()
+    {
+        $arrayPagos = [];
+        $total = $this->total;
+        $txtArr = [
+            1 => 'Punto 1: Pago inicial para el inicio de la etapa de diseño.',
+            2 => 'Punto 2: Pago al aprobar el diseño para comenzar la obra.',
+            3 => 'Punto 3: Pago correspondiente al corte de carpintería.',
+            4 => 'Punto 4: Pago al iniciar la instalación de carpintería.',
+            5 => 'Punto 5: Pago al comenzar la instalación de accesorios, grifería y mesón.',
+            6 => 'Punto 6: Pago final por la entrega de la obra.',
+        ];
+
+        for ($i = 1; $i <= 6; $i++) {
+            $campo = "termino_{$i}_por";
+            if (isset($this->$campo) && $this->$campo > 0) {
+                $pago = $this->pagos()->where([
+                    'campo_desc' => $campo,
+                    'tipo' => 1
+                ])->first();
+
+                $arrayPagos[] = [
+                    'id_proyecto' => $this->id,
+                    'msg' => $txtArr[$i],
+                    'termino' => $campo,
+                    'porcentaje' => $this->$campo,
+                    'valor_apagar' => ceil($total * $this->$campo / 100),
+                    'pago' => (bool) $pago,
+                    'valor_pagado' => $pago ? $pago->valor_pagado : 0,
+                    'fecha_pago' => $pago ? $pago->fecha_pago : '',
+                    'campo_desc' => $pago ? $pago->campo_desc : '',
+                ];
+            }
+        }
+        return $arrayPagos;
+    }
+
 }

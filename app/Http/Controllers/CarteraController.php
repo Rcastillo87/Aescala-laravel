@@ -38,4 +38,20 @@ class CarteraController extends Controller
 
         return view('cartera.index', compact( 'title', 'items_1', 'items_2', 'headers_1', 'headers_2'));
     }
+
+    public function pagos($id)
+    {
+        $item = Proyecto::findOrFail($id);
+        $pagos = $item->pagos;
+        return response()->json([
+            'status' => true,
+            'message' => 'Consulta exitosa',
+            'data' => $pagos,
+        ], 200);
+    }
+
+
+
+
+
 }
