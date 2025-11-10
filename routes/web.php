@@ -182,6 +182,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('cartera')->name('cartera.')->group(function () {
         Route::get('/index', [CarteraController::class, 'index'])->name('index');
         Route::get('/pagos/{id}', [CarteraController::class, 'pagos'])->name('pagos');
+        Route::post('/save', [CarteraController::class, 'save'])->name('save');
     });
 
 });

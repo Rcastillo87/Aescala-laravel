@@ -11,8 +11,8 @@
                         <th class="px-4 py-3">%</th>
                         <th class="px-4 py-3 text-right">Valor a Pagar</th>
                         <th class="px-4 py-3 text-right">Valor Pagado</th>
-                        <th class="px-4 py-3">Fecha</th>
-                        <th class="px-4 py-3">Estado</th>
+                        <th class="px-4 py-3">Fecha de Pago</th>
+                        <th class="px-4 py-3">Estado del Pago</th>
                     </tr>
                 </thead>
                 <tbody id="tablaPagos" class="divide-y divide-gray-100 text-center">

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 
-    <div class="relative overflow-x-auto rounded-lg border border-gray-200">
+    <div class="relative overflow-x-auto rounded-lg border border-gray-200 mb-4">
         <h3 class="text-xl font-medium leading-6 text-gray-900 p-4">Cartera de Proyectos</h3>
         <table class="w-full text-left text-sm text-gray-500">
             <x-table-header :headers="$headers_1" />
@@ -21,7 +21,7 @@
                             {!! $item->spanEstado !!}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            $ {{ number_format(0, 0, ',', '.') }} / $ {{ number_format($item->total, 0, ',', '.') }}
+                            $ {{ number_format($item->totalPagado, 0, ',', '.') }} / $ {{ number_format($item->total, 0, ',', '.') }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             <div class=" flex items-center justify-center space-x-2">
@@ -108,6 +108,7 @@
         @endif
     </div>
     @include('cartera.modalPagos')
+    @include('cartera.modalFormPago')
 @endsection
 
 @section('scripts')

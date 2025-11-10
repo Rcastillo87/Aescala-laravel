@@ -20,7 +20,8 @@ class Pagos extends Model
         'tipo',
         'campo_desc',
         'valor_pagado',
-        'fecha_pago'
+        'fecha_pago',
+        'comentario'
     ];
 
     // Relación con el modelo fecha_pago
