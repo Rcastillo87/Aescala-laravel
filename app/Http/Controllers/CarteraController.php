@@ -34,9 +34,9 @@ class CarteraController extends Controller
             ->paginate(10, ['*'], 'page_otrosi')
             ->appends(request()->query());
 
-        $headers_1 = ['Proyecto', 'Cliente', 'En Cargado',  'Estado Proyecto', 'Pagos / Total', 'Opciones'];
+        $headers_1 = ['Proyecto', 'Cliente', 'En Cargado',  'Estado Proyecto', 'Pagos / Total', 'Paz & Salvo', 'Opciones'];
 
-        $headers_2 = ['Proyecto', 'Numero Otro Si',  'En Cargado', 'Estado Otro Si', 'Opciones'];
+        $headers_2 = ['Otro Si',  'Cliente', 'En Cargado', 'Estado Otro Si', 'Pagos / Total', 'Paz & Salvo', 'Opciones'];
 
         return view('cartera.index', compact( 'title', 'items_1', 'items_2', 'headers_1', 'headers_2'));
     }
@@ -76,7 +76,7 @@ class CarteraController extends Controller
             }
 
             // Crear el registro
-            Pagos::create([
+            $pago = Pagos::create([
                 'id_proyecto' => $request->proyecto_id,
                 'tipo' => $request->tipo,
                 'campo_desc' => $request->campo_desc,
@@ -85,8 +85,13 @@ class CarteraController extends Controller
                 'comentario' => $request->comentario,
             ]);
 
-            DB::commit();
+            if($pago->valance){
+                $proyecto = Proyecto::find($request->proyecto_id);
+                $proyecto->paz_salvo = 1;
+                $proyecto->save();
+            }
 
+            DB::commit();
             return response()->json([
                 'status' => true,
                 'message' => 'Pago registrado correctamente.',

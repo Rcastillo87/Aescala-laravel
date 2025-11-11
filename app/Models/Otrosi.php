@@ -61,6 +61,11 @@ class Otrosi extends Model
         return $this->hasMany(AreaEntregable::class, 'id_otro_si');
     }
 
+    public function pagos()
+    {
+        return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
+    }
+
     public function getTokenEncripAttribute()
     {
         $token = Crypt::encryptString($this->id . '||' . $this->numero. '||' . $this->fecha_creacion);
@@ -141,6 +146,19 @@ class Otrosi extends Model
     {
         $formatter = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
         return $formatter->format($numero);
+    }
+
+
+    public function getTotalDeveAttribute()
+    {
+        return $this->area_entregable()
+                    ->selectRaw('SUM(valor * cantidad) as subtotal')
+                    ->value('subtotal');
+    }
+
+    public function getTotalPagoAttribute()
+    {
+        return $this->pagos()->where(['id_proyecto' => $this->id_proyecto, 'tipo' => 2])->sum('valor_pagado');
     }
 
 }

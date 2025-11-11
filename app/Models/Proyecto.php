@@ -49,7 +49,8 @@ class Proyecto extends Model
         'fec_fin_estimado',
         'fec_fin_real',
         'observacion',
-        'descuento'
+        'descuento',
+        'paz_salvo'
     ];
 
     protected $casts = [
@@ -222,6 +223,12 @@ class Proyecto extends Model
         return $array[0];
     }
 
+    public function getApazAttribute()
+    {
+        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>': 
+            '<span class="span-red">NO</span>';
+    }
+
     public function getTotalFinanzasAttribute()
     {
         $totals = $this->finanzas()
@@ -284,6 +291,11 @@ class Proyecto extends Model
     public function pagos()
     {
         return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
+    }
+
+    public function otro_si()
+    {
+        return $this->belongsTo(Otrosi::class, 'id_proyecto', 'id');
     }
 
     public function getTotalAttribute()
