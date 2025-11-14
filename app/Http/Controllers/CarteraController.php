@@ -118,4 +118,20 @@ class CarteraController extends Controller
         ], 200);
     }
 
+    public function pagosOtroSi($id)
+    {
+        $item = Otrosi::with('pagos')->findOrFail($id);
+        $deve = ($item->totalDeve ?? 0) - ($item->totalPago ?? 0);
+        $pagos = $item->pagos()->where('tipo', 2)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Consulta exitosa',
+            'data' => [
+                'id_proyecto' => $item->id_proyecto,
+                'pagados' => $pagos,
+                'deve' => $deve,
+            ],
+        ], 200);
+    }
+
 }

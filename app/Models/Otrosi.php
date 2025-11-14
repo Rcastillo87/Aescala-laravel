@@ -63,7 +63,7 @@ class Otrosi extends Model
 
     public function pagos()
     {
-        return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
+        return $this->hasMany(Pagos::class, 'id_proyecto', 'id_proyecto');
     }
 
     public function getTokenEncripAttribute()

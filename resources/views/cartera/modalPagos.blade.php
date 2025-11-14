@@ -2,24 +2,15 @@
     <div class="p-6" x-data>
         <h2 id="txTitulo" class="text-2xl font-bold mb-6 text-gray-800 text-center"></h2>
 
+        <div class="flex justify-end my-2">
+            <x-primary-button id="btnModalFormpagoForm">
+                Añadir Pago
+            </x-primary-button>
+        </div>
+
         <!-- Tabla responsive -->
-        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-md bg-white">
-            <table class="min-w-full text-sm text-gray-700">
-                <thead class="bg-green-700 text-white text-center uppercase">
-                    <tr>
-                        <th class="px-4 py-3 text-left">Descripción</th>
-                        <th class="px-4 py-3">%</th>
-                        <th class="px-4 py-3 text-right">Valor a Pagar</th>
-                        <th class="px-4 py-3 text-right">Valor Pagado</th>
-                        <th class="px-4 py-3">Fecha de Pago</th>
-                        <th class="px-4 py-3">Estado del Pago</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaPagos" class="divide-y divide-gray-100 text-center">
-                    <!-- Se llena dinámicamente -->
-                    
-                </tbody>
-            </table>
+        <div id="tablaPagos" class="overflow-x-auto rounded-xl border border-gray-200 shadow-md bg-white">
+
         </div>
 
         <!-- Botones inferiores -->

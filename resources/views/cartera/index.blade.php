@@ -100,8 +100,7 @@
                                     data-tooltip-target="tooltip-hover-pagos-{{$item->id}}" 
                                     data-tooltip-trigger="hover"
                                     x-on:click="$dispatch('open-modal', 'modalPagos-modal')" 
-                                    x-data=""
-                                    onclick="mostrarPagos({{ $item->id }}, '{{ $item->nombre_proyecto }}')"
+                                    onclick="mostrarPagosOtroSi({{ $item->id }}, 'Otro si N° {{ $item->numero }} - {{ strtolower($item->proyecto->nombre_proyecto) }}')"
                                     class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4 
                                         focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

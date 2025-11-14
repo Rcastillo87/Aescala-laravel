@@ -18,8 +18,28 @@ async function mostrarPagos(id, nombreProyecto) {
 
         const data = result.data;
         document.getElementById('txTitulo').textContent = 'Pagos del Proyecto: ' + nombreProyecto;
+        document.getElementById('btnModalFormpagoForm').classList.add('hidden');
 
-        const tbody = document.getElementById('tablaPagos');
+        const contenedor = document.getElementById('tablaPagos');
+        const tablaHTML = `
+        <table class="min-w-full text-sm text-gray-700">
+            <thead class="bg-green-700 text-white text-center uppercase">
+                <tr>
+                    <th class="px-4 py-3 text-left">Descripción</th>
+                    <th class="px-4 py-3">%</th>
+                    <th class="px-4 py-3 text-right">Valor a Pagar</th>
+                    <th class="px-4 py-3 text-right">Valor Pagado</th>
+                    <th class="px-4 py-3">Fecha de Pago</th>
+                    <th class="px-4 py-3">Estado del Pago</th>
+                </tr>
+            </thead>
+            <tbody id="bodyTablaPagos" class="divide-y divide-gray-100 text-center">
+                </tbody>
+        </table>
+        `;
+        contenedor.innerHTML = tablaHTML;
+
+        const tbody = document.getElementById('bodyTablaPagos');
         tbody.innerHTML = '';
 
         // Inicializamos acumuladores
@@ -105,6 +125,113 @@ async function mostrarPagos(id, nombreProyecto) {
         console.error(error);
     }
 }
+
+async function mostrarPagosOtroSi(id, nombreOtroSi) {
+    try {
+        Swal.fire({
+            title: 'Cargando pagos...',
+            text: 'Por favor espera',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        const response = await fetch(`pagosOtroSi/${id}`);
+        const result = await response.json();
+        Swal.close();
+
+        if (!result.status) {
+            Swal.fire('Error', result.message, 'error');
+            return;
+        }
+
+        const data = result.data;
+        const pagos = data.pagados ?? [];
+        const deuda = data.deve ?? 0;
+
+        // Título
+        document.getElementById('txTitulo').textContent = `Pagos de ${nombreOtroSi}`;
+
+        // Botón "Añadir Pago"
+        const btnAdd = document.getElementById('btnModalFormpagoForm');
+
+        if (deuda > 0) {
+            // Habilitar
+            btnAdd.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnAdd.removeAttribute('disabled');
+
+            btnAdd.setAttribute(
+                'onclick',
+                `abrirModalPago(${data.id_proyecto}, ${id}, '${nombreOtroSi}')`
+            );
+
+        } else {
+            // Deshabilitar
+            btnAdd.classList.add('opacity-50', 'cursor-not-allowed');
+            btnAdd.setAttribute('disabled', true);
+
+            btnAdd.removeAttribute('onclick');
+        }
+
+        // Tabla
+        const tabla = document.getElementById('tablaPagos');
+        tabla.innerHTML = `
+            <table class="min-w-full border-collapse">
+                <thead class="bg-gray-100 text-gray-700 text-sm border-b">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Descripción</th>
+                        <th class="px-4 py-3 text-right">Valor Pagado</th>
+                        <th class="px-4 py-3 text-center">Fecha</th>
+                        <th class="px-4 py-3 text-left">Comentario</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyPagos"></tbody>
+            </table>
+        `;
+
+        const tbody = document.getElementById('tbodyPagos');
+
+        if (pagos.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-5 text-gray-500 text-center italic">
+                        No hay pagos registrados para este OtroSí.
+                    </td>
+                </tr>
+            `;
+        } else {
+            pagos.forEach(pago => {
+                const fila = `
+                    <tr class="hover:bg-gray-50 transition-all border-b">
+                        <td class="px-4 py-3">${pago.campo_desc ?? '-'}</td>
+                        <td class="px-4 py-3 text-right">$${Number(pago.valor_pagado).toLocaleString()}</td>
+                        <td class="px-4 py-3 text-center">${pago.fecha_pago ?? '-'}</td>
+                        <td class="px-4 py-3">${pago.comentario ?? '-'}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', fila);
+            });
+        }
+
+        // Fila de deuda pendiente
+        tbody.insertAdjacentHTML('beforeend', `
+            <tr class="bg-gray-100 font-bold">
+                <td colspan="2" class="px-4 py-3 text-right text-gray-700">Saldo pendiente:</td>
+                <td colspan="2" class="px-4 py-3 text-left text-red-600">
+                    $${deuda.toLocaleString()}
+                </td>
+            </tr>
+        `);
+
+        // Abrir modal
+        window.dispatchEvent(new CustomEvent('open-modal', { detail: 'modalPagos-modal' }));
+
+    } catch (error) {
+        Swal.close();
+        Swal.fire('Error', 'No se pudo obtener la información de los pagos.', 'error');
+        console.error(error);
+    }
+}
+
 
 function abrirModalPago(idProyecto, campoDesc, mensaje, valorApagar, nombreProyecto) {
     // Cierra el modal principal
