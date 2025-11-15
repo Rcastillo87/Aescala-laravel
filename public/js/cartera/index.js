@@ -285,4 +285,3 @@ document.getElementById('formPago').addEventListener('submit', async function (e
         console.error(error);
     }
 });
-
