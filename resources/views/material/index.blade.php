@@ -2,7 +2,26 @@
 @section('content')
 
     @include('material.filter')
-    <div class="flex justify-end text-center mb-3">
+    <div class="flex justify-between  mb-3">
+
+        <div class="flex flex-wrap md:flex-nowrap justify-start text-center border-2 p-3 bg-gray-100 rounded-lg border-gray-200">
+            <!-- Sección de etiquetas -->
+            <div class="flex flex-wrap gap-4 md:gap-2">
+                <span class="flex items-center text-center ml-2">
+                    Sin inventario(stock = 0)
+                    <hr class="border-2 bg-red-200 rounded-lg w-[55px] p-[3px] ml-1">
+                </span>
+                <span class="flex items-center text-center">
+                    Poco invertario (stock &lt;= stock minimo)
+                    <hr class="border-2 bg-orange-200 rounded-lg w-[55px] p-[3px] ml-1">
+                </span>
+                <span class="flex items-center text-center ml-2">
+                    Inventario suficiente (stock &gt; stock minimo)
+                    <hr class="border-2 bg-white rounded-lg w-[55px] p-[3px] ml-1">
+                </span>
+            </div>
+        </div>
+
         <x-secondary-button class="ms-4" href="{{ route('material.create')}}">
             Crear Material
         </x-secondary-button>

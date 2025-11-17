@@ -59,6 +59,17 @@
                             class="block mt-1 w-full" 
                         />
                     </div>
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="rango" :value="__('Rango Material')" />
+                        <select name="rango" id="rango" class="block mt-1 w-full border-gray-300 
+                            focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option class="bg-gray-100" value="" @if(Request('rango') == '') selected @endif>-- Seleccione --</option>
+                            <option class="bg-red-200" value="1" @if(Request('rango') == '1') selected @endif>Rojo</option>
+                            <option class="bg-orange-200" value="2" @if(Request('rango') == '2') selected @endif>Naranja</option>
+                            <option value="3" @if(Request('rango') == '3') selected @endif>Blanco</option>
+                        </select>
+                    </div>
+
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
                              text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"

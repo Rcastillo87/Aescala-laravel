@@ -33,6 +33,16 @@ class MaterialController extends Controller
         ->when(Request('tipo'), function ($query, $tipo) { 
             return $query->where('tipo', $tipo);
         })
+        ->when(Request('rango'), function ($query, $rango) { 
+            if($rango == 1) {
+                return $query->where('cantidad', '=', 0);
+            } elseif($rango == 2) {
+                return $query->where('cantidad', '>', 'cantidad_min')
+                             ->where('cantidad', '<=', DB::raw('cantidad_min'));
+            } elseif($rango == 3) {
+                return $query->where('cantidad', '>', DB::raw('cantidad_min'));
+            }
+        })
         ->when(Request('estado'), function ($query, $estado) { 
             return $query->where('activo', $estado);
         })

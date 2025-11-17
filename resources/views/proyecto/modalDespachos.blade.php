@@ -2,7 +2,8 @@
 <x-modal name="despachos-modal" maxWidth="6xl">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4">Despachos</h2>
-        <div id="listaDespachos"  class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2"></div>
+        <div id="listaDespachos" class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2"></div>
+        <div id="totalFacturado" class="flex w-full max-w-full my-2 justify-center"></div>
         <div class="flex justify-between">
             <a href="#" tabindex="0"
                 x-on:click="$dispatch('close-modal', 'despachos-modal')"

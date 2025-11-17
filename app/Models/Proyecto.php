@@ -141,7 +141,7 @@ class Proyecto extends Model
                 "cantidad" => $e->cantidad,
                 "titulo" => $e->entregable->nombre_estregable,
                 "items"  => explode("||", $e->tx_entregable),
-                "precio" => number_format($e->valor_total, 0, ',', '.')
+                "precio" => number_format($e->valor_total * $e->cantidad, 0, ',', '.')
             ];
         })->toArray();
         if($this->descuento > 0){

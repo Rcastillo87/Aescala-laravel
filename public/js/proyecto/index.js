@@ -672,6 +672,7 @@ async function renderDespachos(despachos, id) {
     boton.setAttribute('data-id', id);
     boton.classList.remove('hidden');
     
+    let total_fact = 0;
     despachos.forEach(despacho => {
         const card = document.createElement('div');
         card.className = 'w-full max-w-full';
@@ -723,19 +724,37 @@ async function renderDespachos(despachos, id) {
         
         // Renderizar items
         const tbody = document.getElementById(`items-${despacho.codigo}`);
+        let suma = 0;
         despacho.items.forEach(item => {
             const row = document.createElement('tr');
             row.className = 'bg-white border-b';
             row.innerHTML = `
                 <td class="px-3 py-2">${item.nombre_material}</td>
                 <td class="px-3 py-2">${item.cantidad}</td>
-                <td class="px-3 py-2">${item.valor_unidad.toLocaleString()}</td>
+                <td class="px-3 py-2">$ ${item.valor_unidad.toLocaleString()}</td>
                 <td class="px-3 py-2 tipo-container">${item.isCobro}</td>
                 <td class="px-3 py-2 tipo-container">${item.spanTipo}</td>
             `;
+            suma += item.cantidad * item.valor_unidad;
             tbody.appendChild(row);
         });
+        total_fact += suma;
+        const row = document.createElement('tr');
+        row.className = 'bg-white border-b font-bold text-md';
+        row.innerHTML = `
+            <td class="px-3 py-2 text-red-500">Total: </td>
+            <td colspan="4" class="px-3 py-2">$ ${suma.toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
     });
+
+    const txtotalFacturado = document.getElementById('totalFacturado');
+    const htmlfacturado = `
+        <div class="bg-white border border-gray-200 rounded-lg shadow p-3">
+            <h2 class="text-red-500 text-lg font-semibold">Total Facturado en Despachos: <span class="text-black">$ ${total_fact.toLocaleString()}</span></h2>
+        </div>
+    `;
+    txtotalFacturado.innerHTML = htmlfacturado;
 }
 
 document.querySelectorAll('[data-accordion-target]').forEach(button => {

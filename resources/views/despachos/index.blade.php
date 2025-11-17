@@ -7,20 +7,22 @@
             <div class="flex flex-col lg:flex-row gap-4">
                 <!-- Primera columna -->
                 <div class="w-full lg:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
+
                     <div>
-                        <x-input-label for="id_proyecto" :value="__('Proyecto *')" />
+                        <x-input-label for="id_proyecto" :value="__('Seleccione Proyecto *')" />
                         <x-select-input 
+                            placeholder="Busqueda.."
+                            autocomplete="off"
                             name="id_proyecto" 
                             id="id_proyecto"
-                            :datax="true"
                             :options="$proyectos" 
                             :data="['id', 'nombre_proyecto']"
                             :selected="old('id_proyecto')" 
-                            class="block mt-1 w-full" 
-                            required
+                            class="block mt-1 w-full"
                         />
-                        <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
+                        <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
                     </div>
+
                     <div>
                         <x-input-label for="id_user" :value="__('Entregó a colaborador *')" />
                         <x-select-input 

@@ -16,6 +16,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     });
 
+    new TomSelect("#id_proyecto",{
+        create: true,
+        sortField: {
+            field: "text",
+            direction: "asc"
+        },
+        onInitialize: function() {
+            this.wrapper.classList.add("tom-select-custom");
+        }
+    });
+
     // Obtener datos de materiales
     const materialesData = JSON.parse(document.getElementById('arrayMateriales').value);
     const addedMaterials = new Set(); // Para trackear materiales añadidos
