@@ -9,7 +9,7 @@ class InventarioSolicitud extends Model
 {
     use HasFactory;
 
-    protected $table = 'inventario_solicitud';
+    protected $table = 'inventario_solicituds';
 
     // Personalizar los nombres de las columnas de marca de tiempo
     const CREATED_AT = 'createdAt';
@@ -22,7 +22,8 @@ class InventarioSolicitud extends Model
         'valor_unidad',
         'id_material',
         'id_proyecto',
-        'id_user'
+        'id_user',
+        'id_solicitud'
     ];
 
     // Relación con el modelo InventarioMaterial

@@ -284,13 +284,16 @@
         <!-- Nombre - Fecha - Cédula (líneas finas) -->
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
             <tr>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 35%;">
+                <td style="padding: 4px; border-bottom: 1px solid #666; width: 30%;">
                     <strong>Nombre:</strong>
                 </td>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 25%;">
+                <td style="padding: 4px; border-bottom: 1px solid #666; width: 20%;">
                     <strong>Fecha:</strong>
                 </td>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 25%;">
+                <td style="padding: 4px; border-bottom: 1px solid #666; width: 20%;">
+                    <strong>Telefono:</strong>
+                </td>
+                <td style="padding: 4px; border-bottom: 1px solid #666; width: 250%;">
                     <strong>Cédula:</strong>
                 </td>
             </tr>

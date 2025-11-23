@@ -660,6 +660,11 @@ class ProyectoController extends Controller
         ];
 
         $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
+        $pdf->setPaper('letter', 'portrait');
+        $pdf->set_option('isHtml5ParserEnabled', true);
+        $pdf->set_option('isRemoteEnabled', true);
+        $pdf->set_option('defaultFont', 'DejaVu Sans');
+
         if( Request('view') ){
             return $pdf->stream('factura-'.Request('id').'.pdf');
         }

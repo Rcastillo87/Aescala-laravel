@@ -14,6 +14,7 @@ use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\TareasController;
 use App\Http\Controllers\ComercialController;
+use App\Http\Controllers\SolicitudController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -157,7 +158,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [CotizacionController::class, 'index'])->name('index');
         Route::get('/create', [CotizacionController::class, 'create'])->name('create');
     });
-
+    
+    Route::prefix('solicitud')->name('solicitud.')->group(function () {
+        Route::get('/index', [SolicitudController::class, 'index'])->name('index');
+        Route::get('/create', [SolicitudController::class, 'create'])->name('create');
+        Route::post('/save', [SolicitudController::class, 'save'])->name('save');
+    });
 });
 
 require __DIR__.'/auth.php';
