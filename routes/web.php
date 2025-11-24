@@ -142,7 +142,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('proveedor')->name('proveedor.')->group(function () {
         Route::get('/index', [ProveedorController::class, 'index'])->name('index');
         Route::get('/create', [ProveedorController::class, 'create'])->name('create');
-        Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->name('edit');
         Route::post('/save', [ProveedorController::class, 'save'])->name('save');
         Route::get('/editStatus/{id}', [ProveedorController::class, 'editStatus'])->name('editStatus');
     });
@@ -163,6 +162,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [SolicitudController::class, 'index'])->name('index');
         Route::get('/create', [SolicitudController::class, 'create'])->name('create');
         Route::post('/save', [SolicitudController::class, 'save'])->name('save');
+        Route::get('/listaSolicitud/{id}', [SolicitudController::class, 'listaSolicitud'])->name('listaSolicitud');
     });
 });
 
