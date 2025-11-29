@@ -163,6 +163,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [SolicitudController::class, 'create'])->name('create');
         Route::post('/save', [SolicitudController::class, 'save'])->name('save');
         Route::get('/listaSolicitud/{id}', [SolicitudController::class, 'listaSolicitud'])->name('listaSolicitud');
+        Route::get('/createDespachoSolicitud/{id}', [SolicitudController::class, 'createDespachoSolicitud'])->name('createDespachoSolicitud');
+        Route::post('/saveSolicitud', [SolicitudController::class, 'saveSolicitud'])->name('saveSolicitud');
+        Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
     });
 });
 

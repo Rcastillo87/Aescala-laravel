@@ -19,6 +19,7 @@ class SolicitudItems extends Model
         'id_solicitud',
         'id_material',
         'cantidad',
+        'cantidad_solicitada',
         'estado'
     ];
 

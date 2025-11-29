@@ -13,6 +13,7 @@
                         <th class="px-3 py-2 border">Cantidad Despachada</th>
                         <th class="px-3 py-2 border">Fecha del Despacho</th>
                         <th class="px-3 py-2 border">Código del Despacho</th>
+                        <th class="px-3 py-2 border">Opciones</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyListaItems">

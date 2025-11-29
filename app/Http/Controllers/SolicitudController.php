@@ -12,6 +12,7 @@ use App\Models\InventarioMaterial;
 use App\Models\Proyecto;
 use App\Models\SolicitudItems;
 use App\Models\User;
+use App\Models\Despachos;
 
 class SolicitudController extends Controller
 {
@@ -52,9 +53,9 @@ class SolicitudController extends Controller
         $estados = SolicitudMaterial::$estados;
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
         
-        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Items Entregados', 'Estado', 'Opciones'];
+        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Opciones'];
         if(!Auth::User()->isAdmin) {
-            $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Items Entregados', 'Estado', 'Opciones'];
+            $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Opciones'];
         }
         return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'userColab'));
     }
@@ -120,6 +121,7 @@ class SolicitudController extends Controller
                     'id_solicitud' => $solicitud->id,
                     'id_material'  => $material['id_material'],
                     'cantidad'     => $material['cantidad'],
+                    'cantidad'     => $material['cantidad_solicitada'],
                     'estado'       => 1
                 ]);
             }
@@ -135,45 +137,177 @@ class SolicitudController extends Controller
     {
         $estado = SolicitudItems::$estados;
         $solicitud = SolicitudItems::Join('inventario_materiales', 'solicitud_items.id_material', '=', 'inventario_materiales.id')
+            ->Join('solicitud_material', 'solicitud_material.id', '=', 'solicitud_items.id_solicitud')
             ->leftJoin('inventario_solicituds', 'solicitud_items.id_solicitud', '=', 'inventario_solicituds.id_solicitud')
             ->where('solicitud_items.id_solicitud', $id)
             ->select(
+                'solicitud_material.id_proyecto',
                 'inventario_materiales.nombre_material', 
-                'solicitud_items.cantidad as cantidad_sol', 
+                'solicitud_items.cantidad_solicitada as cantidad_sol', 
                 'inventario_solicituds.cantidad as cantidad_des', 
                 'solicitud_items.estado', 
                 'inventario_solicituds.createdAt',
                 'inventario_solicituds.codigo'
                 )
+            ->distinct()
             ->get()
             ->map(function ($item) {
                 $span = $estado[$item->estado] ?? 'Desconocido';
                 $item['span_estado'] = $span;
                 return $item;
             });
-            /*
-            $solicitud = SolicitudItems::with([
-                'material',
-                'despachado'
-            ])
-            ->where('id_solicitud', $id)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'material'      => $item->material->nombre_material,
-                    'cantidad_sol'  => $item->cantidad??'',
-                    'cantidad_des'  => $item->despachado?->cantidad??'',//sum('cantidad'),
-                    'spanEstado'    => $item->spanEstado,
-                    'cod_despacho'  => $item->despachado?->codigo??'',
-                    'fecha_despacho' => $item->despachado?->createdAt??''//optional($item->despachos->last())->createdAt
-                ];
-            });
-            */
 
             return response()->json([
                 'status' => true,
                 'data' => $solicitud,
             ], 200);
+    }
+
+    public function createDespachoSolicitud($id)
+    {
+        $solicitud = SolicitudMaterial::with('proyecto')->find($id);
+
+        $solItemsArray = SolicitudItems::with(['material', 'despachado'])
+            ->where('id_solicitud', $id)
+            ->whereIn('estado', [1, 2])
+            ->get()
+            ->map(function ($item) {
+                $cantidad_inventario = (int) $item->material->cantidad;
+                $cantidad_solicitada = (int) $item->cantidad;
+                $diff = $cantidad_inventario - $cantidad_solicitada;
+
+                // Ajustes de lógica para valores negativos
+                if ($diff <= 0) {
+                    $pendiente = abs($diff);
+                    $cantidad_disponible = 0;
+                } else {
+                    $pendiente = 0;
+                    $cantidad_disponible = $diff;
+                }
+
+                return [
+                    'id_material' => $item->id_material,
+                    'nombre_material' => $item->material->nombre_material,
+                    'descripccion' => $item->material->descripccion,
+                    'unidades' => $item->material->unidades,
+                    'spanTipo' => $item->material->spanTipo,
+                    'valor_unidad' => (float) $item->valor_unidad,
+                    'cantidad_inventario' => $cantidad_inventario,
+                    'cantidad_solicitada' => $cantidad_solicitada - $pendiente,
+                    'cantidad_disponible' => $cantidad_disponible,
+                    'pendiente' => $pendiente,
+                    'estado' => $item->estado,
+                    'estadoSpan' => $item->estadoSpan
+                ];
+            })->toArray();
+
+        $title = "Despacho de Solicitud";
+
+        return view('solicitud.createDespachoSolicitud', compact('title', 'solicitud', 'solItemsArray'));
+    }
+
+    public function saveSolicitud(Request $request)
+    {
+        $request->validate([
+            'id_solicitud' => [
+                'required',
+                'integer',
+                Rule::exists('solicitud_material', 'id'),
+            ],
+            'materiales' => ['required', 'array', 'min:1'],
+            'materiales.*.id_material' => [
+                'required',
+                'integer',
+                Rule::exists('inventario_materiales', 'id'),
+                function ($attribute, $value, $fail) {
+                    $material = InventarioMaterial::find($value);
+                    if (!$material || $material->activo != 1) {
+                        $fail('El material seleccionado no está disponible, recargue la paguina.');
+                    }
+                }
+            ],
+            'materiales.*.cantidad' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1];
+                    $materialId = $request->input("materiales.{$index}.id_material");
+                    $material = InventarioMaterial::find($materialId);
+
+                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
+                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
+                    }
+                }
+            ],
+            'materiales.*.cancelo' => ['required', 'integer', 'in:0,1']
+        ]);
+
+        $solMaterial = SolicitudMaterial::find($request->id_solicitud);
+        $codigo = Despachos::generarCodigoUnico();//codigo de este despacho unico para este depacho
+        $dato = [
+            'tipo' => 1,
+            'codigo' => $codigo,
+            'id_user' => Auth::user()->id,
+            'id_proyecto' => $solMaterial->id_proyecto,
+        ];
+
+        DB::beginTransaction();
+        try {
+
+            foreach ($request->materiales as $item) {
+                $material = InventarioMaterial::find($item['id_material']);
+                $solItem = SolicitudItems::where([
+                    'id_solicitud' => $request->id_solicitud,
+                    'id_material'  => $item['id_material']
+                ])->first();
+
+                $diff = $item['cantidad'] - $solItem->cantidad;// Diferencia entre solicitado y lo que ingresa el usuario
+
+                // Determinar estado
+                if ($diff == 0 && $item['cancelo'] == 0) {
+                    $estado = 3; // Completo
+                } elseif ($item['cancelo'] == 1) {
+                    $estado = 4; // Cancelado
+                } else {
+                    $estado = 2; // Parcial
+                }
+                $upd = ['estado' => $estado];// Actualización del item
+
+                if ($estado != 4) {
+                    $material->decrement('cantidad', $item['cantidad']);// Descontar del inventario SOLO la cantidad despachada
+                    $upd['cantidad'] = $solItem->cantidad - $item['cantidad'];// Actualizar cantidad pendiente
+                }
+
+                SolicitudItems::where([
+                    'id_solicitud' => $request->id_solicitud,
+                    'id_material'  => $item['id_material']
+                ])->update($upd);
+
+                $dato['id_material'] = $item['id_material'];
+                $dato['cantidad'] = $item['cantidad'];
+                $dato['valor_unidad'] = $material['valor_unidad'];
+                $dato['cobro'] = 1;
+                Despachos::create($dato);
+            }
+
+            // Actualizar estado de la solicitud
+            $solItemCount = SolicitudItems::where('id_solicitud', $request->id_solicitud)
+                ->whereIn('estado', [1, 2])
+                ->count();
+
+            $estado = $solItemCount == 0 ? 3 : 2;
+            $solMaterial->update(['estado' => $estado]);
+
+            DB::commit();
+            return redirect()->route('solicitud.index')->with('success', "Despacho realizado con exito");
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
     }
 
 }

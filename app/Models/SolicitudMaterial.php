@@ -63,7 +63,7 @@ class SolicitudMaterial extends Model
 
     public function getTotalItemsSolicitudAttribute()
     {
-        return $this->items()->sum('cantidad');
+        return $this->items()->whereNotIn('estado', [3, 4])->sum('cantidad');
     }
 
     public function getTotalItemsEntregadoAttribute()
