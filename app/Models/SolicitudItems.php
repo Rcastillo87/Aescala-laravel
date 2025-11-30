@@ -50,7 +50,7 @@ class SolicitudItems extends Model
 
     public function despachado()
     {
-        return $this->hasMany(InventarioSolicitud::class, 'id_solicitud', 'id_solicitud');
+        return $this->hasMany(Despachos::class, 'id_solicitud', 'id_solicitud');
     }
     
     public function material()

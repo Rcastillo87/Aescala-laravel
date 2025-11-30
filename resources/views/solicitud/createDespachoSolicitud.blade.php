@@ -37,7 +37,7 @@
             <div id="itemsContainer" class="w-full flex items-stretch gap-2">
                 @foreach($solItemsArray as $key => $m)
 
-                    <div class="lg:w-1/2 bg-white px-2 py-1 border-2 m-1 space-y-1 border-blue-500 rounded-xl">
+                    <div class="item-card lg:w-1/2 bg-white px-2 py-1 border-2 m-1 space-y-1 border-blue-500 rounded-xl">
                         <div class="flex items-center">
                             <p class="text-md font-bold text-gray-500">Material:
                                 <span class="ml-2 text-black">{{$m['nombre_material']}}</span>
@@ -49,14 +49,14 @@
                             <!-- Inventario -->
                             <div class="flex items-center text-[12px] font-bold px-2 h-8
                                         text-white rounded bg-gradient-to-tr from-red-600 to-red-400
-                                        whitespace-nowrap">
+                                        whitespace-nowrap inventario-value">
                                 En inventario: {{ $m['unidades'] }} {{ $m['cantidad_inventario'] }}
                             </div>
 
                             <!-- Pendiente -->
                             <div class="flex items-center text-[12px] font-bold px-2 h-8 border border-gray-300 
                                         rounded bg-white whitespace-nowrap">
-                                Pendiente: {{ $m['pendiente'] }}
+                                Pendiente: <span class="pendiente-value">{{ $m['pendiente'] }}</span>
                             </div>
 
                             <!-- Solicitado -->
@@ -67,10 +67,12 @@
                                     type="number"
                                     value="{{ $m['cantidad_solicitada'] }}"
                                     max="{{ min( $m['cantidad_inventario'], $m['cantidad_solicitada'] ) }}"
-                                    min="1"
+                                    min="{{ min( $m['cantidad_inventario'], 1)}}"
                                     name="materiales[{{ $key }}][cantidad]"
-                                    class="text-[12px] border border-gray-300 rounded-md shadow-sm w-full h-7 px-1"
-                                    onchange="calculateTotal(this, {{ $m['cantidad_solicitada'] }}, {{ $m['cantidad_inventario'] }})"
+                                    
+                                    data-inv="{{ $m['cantidad_solicitada'] }}"
+
+                                    class="text-[12px] border border-gray-300 rounded-md shadow-sm w-full h-7 px-1 input-cantidad"
                                 >
                             </label>
                         </div>
@@ -105,7 +107,7 @@
 
             <div class="mt-4 flex justify-end gap-3">
                 <a href="{{ route('solicitud.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">Cancelar</a>
-                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Despachar</button>
+                <button type="submit" id="btnEnviar" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Despachar</button>
             </div>
         </div>
     </form>
@@ -113,41 +115,5 @@
 @endsection
 
 @section('scripts')
-<script>
-document.getElementById('btnEnviar').addEventListener('click', function () {
-
-    // Mostrar SweetAlert cargando
-    Swal.fire({
-        title: 'Enviando...',
-        text: 'Por favor espera',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    // Enviar formulario manualmente
-    document.getElementById('miFormulario').submit();
-});
-</script>
-
-@if ($errors->any())
-<script>
-    let listaErrores = `
-        <ul style="text-align:left;margin-left:10px;">
-            @foreach ($errors->all() as $error)
-                <li>• {{ $error }}</li>
-            @endforeach
-        </ul>
-    `;
-
-    Swal.fire({
-        title: "Errores en la solicitud",
-        html: listaErrores,
-        icon: "error",
-        confirmButtonText: "Corregir"
-    });
-</script>
-@endif
-
+    <script src="{{asset('js/solicitud/createDespachoSolicitud.js')}}"></script>
 @endsection

@@ -25,7 +25,8 @@ class Despachos extends Model
         'id_proyecto',
         'cantidad',
         'valor_unidad',
-        'cobro'
+        'cobro',
+        'id_solicitud'
     ];
 
     protected $appends = ['spanEstado', 'isCobro'];
@@ -75,6 +76,12 @@ class Despachos extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
+    // Relación con el modelo Proyecto
+    public function proyecto()
+    {
+        return $this->belongsTo(Proyecto::class, 'id_proyecto');
+    }
+
     public function despachos(int $id, $codigo = null, $cobro = null)
     {
 
@@ -82,14 +89,11 @@ class Despachos extends Model
         ? "strftime('%Y-%m-%d', createdAt)" 
         : "DATE_FORMAT(createdAt, '%Y-%m-%d')";
 
-        $lista =  Despachos::with('user')
+        $lista =  self::with('user')
                         ->where('id_proyecto', $id)
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        /*->when($cobro, function ($query) {
-                            return $query->where('cobro', 1);
-                        })*/
                         ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
                         ->distinct()
                         ->get()
@@ -103,16 +107,13 @@ class Despachos extends Model
                         })
                         ->toArray();
 
-        $items = Despachos::with(['material' => function($query) {
+        $items = self::with(['material' => function($query) {
                             $query->select('id', 'nombre_material', 'tipo');
                         }])
                         ->where('id_proyecto', $id)
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        /*->when($cobro, function ($query) {
-                            return $query->where('cobro', 1);
-                        })*/
                         ->select('codigo', 'id_material', 'cantidad', 'valor_unidad', 'cobro')
                         ->get()
                         ->map(function ($item) {

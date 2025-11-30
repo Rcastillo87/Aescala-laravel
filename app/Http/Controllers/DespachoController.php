@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Models\Despachos;
 use App\Models\Proyecto;
 use App\Models\InventarioMaterial;
-use Illuminate\Routing\Route;
 
 class DespachoController extends Controller
 {

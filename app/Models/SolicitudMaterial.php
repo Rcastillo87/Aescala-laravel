@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\MaterialController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -58,7 +57,7 @@ class SolicitudMaterial extends Model
 
     public function despachado()
     {
-        return $this->hasMany(InventarioSolicitud::class, 'id_solicitud', 'id');
+        return $this->hasMany(Despachos::class, 'id_solicitud', 'id');
     }
 
     public function getTotalItemsSolicitudAttribute()
