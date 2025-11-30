@@ -63,7 +63,8 @@ class Proyecto extends Model
         2 => 'Nuevo',
         3 => 'Entregado',
         4 => 'Cancelado',
-        5 => 'Posventas'
+        5 => 'Posventas',
+        6 => 'Borrar Firma'
     ];
 
     public static $estado0 = [

@@ -16,10 +16,8 @@ function cambiarEstado(itemId, estadoActual) {
         didOpen: () => {
             const swalContainer = Swal.getPopup();
 
-            // Crear etiqueta (label) e input de fecha
             const label = document.createElement('label');
-            label.textContent = 'Ingrese fecha de entrega';
-            label.setAttribute('for', 'fechaDua');
+            label.textContent = 'Ingrese fecha de entrega del Proyecto';
             label.className = 'swal2-label mt-2 text-center';
             label.style.display = 'none';
 
@@ -29,11 +27,9 @@ function cambiarEstado(itemId, estadoActual) {
             fechaInput.className = 'swal2-input mt-1';
             fechaInput.style.display = 'none';
 
-            // Insertar en el popup
             swalContainer.appendChild(label);
             swalContainer.appendChild(fechaInput);
 
-            // Mostrar si se selecciona estado 3
             const select = swalContainer.querySelector('select');
             select.addEventListener('change', (e) => {
                 selectedEstado = parseInt(e.target.value);
@@ -42,12 +38,28 @@ function cambiarEstado(itemId, estadoActual) {
                 fechaInput.style.display = mostrar ? 'block' : 'none';
             });
         },
-        preConfirm: () => {
+        preConfirm: async () => {
             const fechaDua = document.getElementById('fechaDua')?.value;
 
-            if (parseInt(selectedEstado) === 3 && !fechaDua) {
+            if (selectedEstado === 3 && !fechaDua) {
                 Swal.showValidationMessage('Debes ingresar una fecha de entrega.');
                 return false;
+            }
+
+            // 🔥 NUEVA VALIDACIÓN: Confirmación adicional para estado 6
+            if (selectedEstado === 6) {
+                const confirmDelete = await Swal.fire({
+                    title: '¿Eliminar firma del contrato?',
+                    text: "Este proceso eliminará la firma asociada al proyecto. ¿Seguro que desea continuar?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, borrar firma',
+                    cancelButtonText: 'Cancelar'
+                });
+
+                if (!confirmDelete.isConfirmed) {
+                    return false; // Evita enviar
+                }
             }
 
             return fetch(`editStatus/${itemId}`, {

@@ -258,13 +258,24 @@ class ProyectoController extends Controller
     public function editStatus(Request $request, $id)
     {
         $proyecto = Proyecto::findOrFail($id);
-        $proyecto->id_estado = $request->estado;
+        $estado   = (int) $request->estado;
 
-        if ((int)$request->estado === 3) {
+        // Estado 6 → reset
+        if ($estado === 6) {
+            $proyecto->update([
+                'img_firma'   => null,
+                'id_estado'   => null,
+                'fec_fin_real'=> null
+            ]);
+            return response()->json(['success' => true, 'message' => 'Se ha borrado la firma exitosamente.']);
+        }
+
+        // Estado 3 → requiere fecha_dua
+        if ($estado === 3) {
             if (!$request->filled('fecha_dua')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'La fecha de entrega (DUA) es obligatoria para este estado.'
+                    'message' => 'La fecha DUA es obligatoria para este estado.'
                 ], 422);
             }
 
@@ -272,20 +283,16 @@ class ProyectoController extends Controller
             Tarea::where('id_proyecto', $id)
                 ->whereIn('id_tarea_estado', [1, 2])
                 ->update([
-                    'fec_fin_real' => $request->fecha_dua,
+                    'fec_fin_real'    => $request->fecha_dua,
                     'id_tarea_estado' => 3
                 ]);
-
         } else {
             $proyecto->fec_fin_real = null;
         }
 
+        $proyecto->id_estado = $estado;
         $proyecto->save();
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Estado actualizado correctamente.'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente.']);
     }
 
     public function saveTarea (Request $request)
