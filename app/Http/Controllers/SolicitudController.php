@@ -117,12 +117,16 @@ class SolicitudController extends Controller
             ]);
 
             foreach ($validated['materiales'] as $material) {
+
+                $itemMaterial = InventarioMaterial::find($material['id_material']);
+
                 SolicitudItems::create([
                     'id_solicitud' => $solicitud->id,
                     'id_material'  => $material['id_material'],
                     'cantidad'     => $material['cantidad'],
                     'cantidad_solicitada'     => $material['cantidad'],
-                    'estado'       => 1
+                    'estado'       => 1,
+                    'aprobado'    => $itemMaterial->aprobar == 1 ? 0 : 1,
                 ]);
             }
 
@@ -152,6 +156,7 @@ class SolicitudController extends Controller
                 'solicitud_items.cantidad_solicitada as cantidad_sol', 
                 'inventario_solicituds.cantidad as cantidad_des', 
                 'solicitud_items.estado', 
+                'solicitud_items.aprobado', 
                 'inventario_solicituds.createdAt',
                 'inventario_solicituds.codigo'
                 )
@@ -175,6 +180,7 @@ class SolicitudController extends Controller
         $solItemsArray = SolicitudItems::with(['material', 'despachado'])
             ->where('id_solicitud', $id)
             ->whereIn('estado', [1, 2])
+            ->where('aprobado', 1)
             ->get()
             ->map(function ($item) {
                 $cantidad_inventario = (int) $item->material->cantidad;

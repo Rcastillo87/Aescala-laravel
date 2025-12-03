@@ -20,7 +20,8 @@ class SolicitudItems extends Model
         'id_material',
         'cantidad',
         'cantidad_solicitada',
-        'estado'
+        'estado',
+        'aprobado'
     ];
 
     public static $estados = [
@@ -39,6 +40,10 @@ class SolicitudItems extends Model
 
     public function getSpanEstadoAttribute()
     {
+        if ($this->aprobado == 0) {
+            return '<span class="span-black">Require Aprobacion</span>';
+        }
+
         return '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
              . (self::$estados[$this->estado] ?? 'Desconocido') . '</span>';
     }
