@@ -164,6 +164,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/save', [SolicitudController::class, 'save'])->name('save');
         Route::get('/listaSolicitud/{id}', [SolicitudController::class, 'listaSolicitud'])->name('listaSolicitud');
         Route::get('/createDespachoSolicitud/{id}', [SolicitudController::class, 'createDespachoSolicitud'])->name('createDespachoSolicitud');
+        Route::get('/createAprobarSolicitud/{id}', [SolicitudController::class, 'createAprobarSolicitud'])->name('createAprobarSolicitud');
         Route::post('/saveSolicitud', [SolicitudController::class, 'saveSolicitud'])->name('saveSolicitud');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
     });

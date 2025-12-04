@@ -28,6 +28,7 @@
     <form method="POST" id="formSolicitud" action="{{ route('solicitud.saveSolicitud') }}">
         @csrf
         <input type="hidden" name="id_solicitud" value="{{ $solicitud->id }}">
+        <input type="hidden" name="isAnalista" value="{{ $isAnalista ? 1 : 0 }}">
 
         {{-- Contenedor solicitado por ti --}}
         <div class="w-full h-full text-center border-2 border-gray-400 rounded-2xl p-4">
@@ -54,7 +55,7 @@
                             </div>
 
                             <!-- Pendiente -->
-                            <div class="flex items-center text-[12px] font-bold px-2 h-8 border border-gray-300 
+                            <div class="flex items-center text-[12px] font-bold px-2 h-8 border border-gray-300 @if($isAnalista) hidden @endif
                                         rounded bg-white whitespace-nowrap">
                                 Pendiente: <span class="pendiente-value">{{ $m['pendiente'] }}</span>
                             </div>
@@ -66,8 +67,8 @@
                                 <input 
                                     type="number"
                                     value="{{ $m['cantidad_solicitada'] }}"
-                                    max="{{ min( $m['cantidad_inventario'], $m['cantidad_solicitada'] ) }}"
-                                    min="{{ min( $m['cantidad_inventario'], 1)}}"
+                                    @if(!$isAnalista) max="{{ min( $m['cantidad_inventario'], $m['cantidad_solicitada'] ) }}" @endif
+                                    min="{{ !$isAnalista ? min( $m['cantidad_inventario'], 1) : 1}}"
                                     name="materiales[{{ $key }}][cantidad]"
                                     
                                     data-inv="{{ $m['cantidad_solicitada'] }}"
@@ -88,7 +89,7 @@
                                     class="w-4 h-4 text-blue-600"
                                 >
                                 <label for="materiales_{{$key}}_cancelo" class="ml-2 text-sm font-medium">
-                                    Cancelar Despacho
+                                    {{ !$isAnalista ? 'Cancelar Despacho' : 'Cancelo Item' }} 
                                 </label>
                             </div>
                             <p>Tipo: {!! $m['spanTipo'] !!} </p>
@@ -107,7 +108,7 @@
 
             <div class="mt-4 flex justify-end gap-3">
                 <a href="{{ route('solicitud.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">Cancelar</a>
-                <button type="submit" id="btnEnviar" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Despachar</button>
+                <button type="submit" id="btnEnviar" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">{{ !$isAnalista ? 'Despachar' : 'Aprobar' }}</button>
             </div>
         </div>
     </form>

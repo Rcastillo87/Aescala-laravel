@@ -60,7 +60,8 @@
             </div>
 
             <!-- Botón alineado a la derecha siempre en la parte inferior -->
-            <div class="flex justify-end mt-6">
+            <div class="flex justify-end mt-6 space-x-4">
+                <a href="{{ route('solicitud.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">Cancelar</a>
                 <x-primary-button id="btnSubmit" type="submit">
                     Guardar
                 </x-primary-button>

@@ -1,15 +1,42 @@
-document.getElementById('btnEnviar').addEventListener('click', function () {
-    // Mostrar SweetAlert cargando
-    Swal.fire({
-        title: 'Enviando...',
-        text: 'Por favor espera',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+document.addEventListener("DOMContentLoaded", function () {
+
+    const btn = document.getElementById('btnEnviar');
+    const form = document.getElementById('formSolicitud');
+
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        let accion = btn.textContent.trim();
+
+        let mensaje = accion === 'Despachar'
+            ? '¿Deseas despachar los materiales solicitados?'
+            : '¿Deseas aprobar los items solicitados?';
+
+        Swal.fire({
+            title: 'Confirmar acción',
+            text: mensaje,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: accion,
+            cancelButtonText: 'Cancelar',
+        }).then(result => {
+
+            if (result.isConfirmed) {
+
+                Swal.fire({
+                    title: accion + '...',
+                    text: 'Por favor espera',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Aquí SI se envía el formulario
+                form.submit();
+            }
+
+        });
     });
-    // Enviar formulario manualmente
-    document.getElementById('miFormulario').submit();
+
 });
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -13,12 +13,13 @@ use App\Models\Proyecto;
 use App\Models\SolicitudItems;
 use App\Models\User;
 use App\Models\Despachos;
+use App\Http\Requests\SaveSolicitudRequest;
 
 class SolicitudController extends Controller
 {
     public function index( ) 
     {
-        if(Auth::user()->isAdmin){
+        if(Auth::user()->isAdmin || Auth::user()->isAnalista){
             $cola = Request('id_userSerch');
         } else {
             $cola = Auth::user()->id;
@@ -34,10 +35,15 @@ class SolicitudController extends Controller
             ->when($cola, function ($query, $id_user) {
                 $query->where('id_user', $id_user);
             })
+            ->when(Auth::user()->isAnalista, function ($query) {
+                return $query->whereHas('items', function ($q) {
+                    $q->where('aprobado', 0);
+                });
+            })
             ->when(request('id_estado'), function ($query, $id_estado) {
                 $query->where('estado', $id_estado);
             })
-            ->when(!Auth::User()->isAdmin, function ($query) {
+            ->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista), function ($query) {
                 $query->where('id_user', Auth::User()->id);
             })
             ->paginate(10)
@@ -65,7 +71,9 @@ class SolicitudController extends Controller
         $title = 'Crear Solicitud de Material';
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
             ->when(!Auth::user()->isAdmin, function ($query) {
-                $query->where('id_user', Auth::user()->id);
+                $query->where('id_user', Auth::user()->id)
+                    ->orwhere('id_user_obra_blanca', Auth::user()->id)
+                    ->orwhere('id_user_carpinteria', Auth::user()->id);
             })
             ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
@@ -173,27 +181,42 @@ class SolicitudController extends Controller
             ], 200);
     }
 
-    public function createDespachoSolicitud($id)
+    public function createDespachoSolicitud($id){
+        return $this->createSolicitud($id, false);
+    }
+
+    public function createAprobarSolicitud($id){
+        return $this->createSolicitud($id, true);
+    }
+
+    public function createSolicitud($id, $isAnalista)
     {
         $solicitud = SolicitudMaterial::with('proyecto')->find($id);
 
         $solItemsArray = SolicitudItems::with(['material', 'despachado'])
             ->where('id_solicitud', $id)
-            ->whereIn('estado', [1, 2])
-            ->where('aprobado', 1)
+            ->where(function ($query) use ($isAnalista) {
+                if ($isAnalista) {
+                    $query->where('aprobado', 0);
+                } else {
+                    $query->whereIn('estado', [1, 2])->where('aprobado', 1);
+                }
+            })
             ->get()
-            ->map(function ($item) {
+            ->map(function ($item) use ($isAnalista) {
                 $cantidad_inventario = (int) $item->material->cantidad;
                 $cantidad_solicitada = (int) $item->cantidad;
                 $diff = $cantidad_inventario - $cantidad_solicitada;
 
                 // Ajustes de lógica para valores negativos
-                if ($diff <= 0) {
-                    $pendiente = abs($diff);
-                    $cantidad_disponible = 0;
-                } else {
+                if($isAnalista) {
                     $pendiente = 0;
-                    $cantidad_disponible = $diff;
+                } else {
+                    if ($diff <= 0) {
+                        $pendiente = abs($diff);
+                    } else {
+                        $pendiente = 0;
+                    }
                 }
 
                 return [
@@ -205,75 +228,68 @@ class SolicitudController extends Controller
                     'valor_unidad' => (float) $item->valor_unidad,
                     'cantidad_inventario' => $cantidad_inventario,
                     'cantidad_solicitada' => $cantidad_solicitada - $pendiente,
-                    'cantidad_disponible' => $cantidad_disponible,
                     'pendiente' => $pendiente,
                     'estado' => $item->estado,
                     'estadoSpan' => $item->estadoSpan
                 ];
             })->toArray();
 
-        $title = "Despacho de Solicitud";
+        $title = $isAnalista ? "Aprobar items para despacho" : "Despacho de Solicitud";
 
-        return view('solicitud.createDespachoSolicitud', compact('title', 'solicitud', 'solItemsArray'));
+        return view('solicitud.createDespachoSolicitud', compact('title', 'solicitud', 'solItemsArray', 'isAnalista'));
     }
 
-    public function saveSolicitud(Request $request)
+    public function saveSolicitud(SaveSolicitudRequest $request)
     {
-        $request->validate([
-            'id_solicitud' => [
-                'required',
-                'integer',
-                Rule::exists('solicitud_material', 'id'),
-            ],
-            'materiales' => ['required', 'array', 'min:1'],
-            'materiales.*.id_material' => [
-                'required',
-                'integer',
-                Rule::exists('inventario_materiales', 'id'),
-                function ($attribute, $value, $fail) {
-                    $material = InventarioMaterial::find($value);
-                    if (!$material || $material->activo != 1) {
-                        $fail('El material seleccionado no está disponible, recargue la paguina.');
-                    }
-                }
-            ],
-            'materiales.*.cantidad' => [
-                'nullable',
-                'integer',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $materialId = $request->input("materiales.{$index}.id_material");
-                    $material = InventarioMaterial::find($materialId);
-
-                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
-                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
-                    }
-                }
-            ],
-            'materiales.*.cancelo' => ['required', 'integer', 'in:0,1']
-        ]);
-
-        $solMaterial = SolicitudMaterial::find($request->id_solicitud);
-        $codigo = Despachos::generarCodigoUnico();//codigo de este despacho unico para este depacho
-        $dato = [
-            'id_solicitud' => $request->id_solicitud,
-            'tipo' => 1,
-            'codigo' => $codigo,
-            'id_user' => Auth::user()->id,
-            'id_proyecto' => $solMaterial->id_proyecto,
-        ];
+        $validated = $request->validated();
 
         DB::beginTransaction();
         try {
 
-            foreach ($request->materiales as $item) {
+            $arr = $validated['materiales'];
+            $idSolicitud = $validated['id_solicitud'];
+
+            //Aprobar items si es analista
+            if($validated['isAnalista']){
+                foreach ($arr as $item) {
+                    if ($item['cancelo'] == 1) {
+                        $update = ['aprobado' => 1, 'estado' => 4]; // Cancelado
+                    } else {
+                        $update = ['aprobado' => 1, 'cantidad'  => $item['cantidad'], 'cantidad_solicitada'  => $item['cantidad']]; // Aprobado
+                    }
+
+                    SolicitudItems::where([
+                        'id_solicitud' => $idSolicitud,
+                        'id_material'  => $item['id_material']
+                    ])->update($update);
+                }
+                DB::commit();
+                return redirect()->route('solicitud.index')->with('success', "Aprobacion de items realizada con exito");
+            }
+
+            //Proceso de despacho
+            $solMaterial = SolicitudMaterial::find($idSolicitud);
+            $codigo = Despachos::generarCodigoUnico();//codigo de este despacho unico para este depacho
+            $dato = [
+                'id_solicitud' => $idSolicitud,
+                'tipo' => 1,
+                'codigo' => $codigo,
+                'id_user' => Auth::user()->id,
+                'id_proyecto' => $solMaterial->id_proyecto,
+            ];
+
+            foreach ($arr as $item) {
+
+                if (isset($item['cantidad']) && ($item['cantidad'] == 0) && $item['cancelo'] == 0) {
+                    continue; // Salta al siguiente ciclo
+                }
 
                 if ($item['cancelo'] == 1) {
                     $estado = 4; // Cancelado
                 } else {
                     $material = InventarioMaterial::find($item['id_material']);
                     $solItem = SolicitudItems::where([
-                        'id_solicitud' => $request->id_solicitud,
+                        'id_solicitud' => $idSolicitud,
                         'id_material'  => $item['id_material']
                     ])->first();
 
@@ -302,14 +318,14 @@ class SolicitudController extends Controller
                 }
 
                 SolicitudItems::where([
-                    'id_solicitud' => $request->id_solicitud,
+                    'id_solicitud' => $idSolicitud,
                     'id_material'  => $item['id_material']
                 ])->update($upd);
 
             }
 
             // Actualizar estado de la solicitud
-            $solItemCount = SolicitudItems::where('id_solicitud', $request->id_solicitud)
+            $solItemCount = SolicitudItems::where('id_solicitud', $idSolicitud)
                 ->whereIn('estado', [1, 2])
                 ->count();
 

@@ -128,6 +128,11 @@ class User extends Authenticatable
         return ($this->id_rol == 4)? true: false;
     }
 
+    public function getIsAnalistaAttribute()
+    {
+        return ($this->id_rol == 5)? true: false;
+    }
+
     public function getNewProyectAttribute()
     {
         return Proyecto::where('id_estado', 2)->count();
@@ -137,14 +142,16 @@ class User extends Authenticatable
         1 => 'Administrador',
         2 => 'Usuario',
         3 => 'Colaborador',
-        4 => 'Comercial'
+        4 => 'Comercial',
+        5 => 'Analista'
     ];
 
     public static $ClassRol = [
         1 => 'span-blue',
         2 => 'span-yellow',
         3 => 'span-gray',
-        4 => 'span-red'
+        4 => 'span-red',
+        5 => 'span-green',
     ];
 
     public static $estado = [
