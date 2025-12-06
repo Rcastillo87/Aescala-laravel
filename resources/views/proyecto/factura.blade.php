@@ -277,24 +277,34 @@
 
     <div style="margin-top: 0px; font-size: 10px; page-break-inside: avoid;">
 
-        <h3 style="font-size: 11px; margin-bottom: 8px; text-align:left;">
+        <h2 style="font-size: 11px; margin-bottom: 5px; text-align:left;">
             Quien Recibe:
-        </h3>
+        </h2>
 
         <!-- Nombre - Fecha - Cédula (líneas finas) -->
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
             <tr>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 30%;">
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 55%;">
                     <strong>Nombre:</strong>
                 </td>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 20%;">
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 20%;">
+                    <strong>Tipo Documento:</strong>
+                </td>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 25%;">
+                    <strong>Documento:</strong>
+                </td>
+            </tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9px;">
+            <tr>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 20%;">
                     <strong>Fecha:</strong>
                 </td>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 20%;">
-                    <strong>Telefono:</strong>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 20%;">
+                    <strong>Teléfono:</strong>
                 </td>
-                <td style="padding: 4px; border-bottom: 1px solid #666; width: 250%;">
-                    <strong>Cédula:</strong>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 60%;">
+                    <strong>Observaciones:</strong>
                 </td>
             </tr>
         </table>
