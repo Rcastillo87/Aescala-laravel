@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -136,6 +137,23 @@ class User extends Authenticatable
     public function getNewProyectAttribute()
     {
         return Proyecto::where('id_estado', 2)->count();
+    }
+
+    public function getnewSolicitudAttribute()
+    {
+        return SolicitudMaterial::when(Auth::user()->isColab, function ($query) {
+                $query->where('id_user', Auth::user()->id)->where('estado', 1);
+            })
+            ->when(Auth::user()->isAnalista, function ($query) {
+                return $query->whereHas('items', function ($q) {
+                    $q->where('aprobado', 0);
+                });
+            })
+            ->when(Auth::user()->isAdmin, function ($query) {
+                $query->where('estado', 1);
+            })
+            ->count();
+
     }
 
     public static $roles = [

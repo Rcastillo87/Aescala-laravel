@@ -46,6 +46,7 @@ class SolicitudController extends Controller
             ->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista), function ($query) {
                 $query->where('id_user', Auth::User()->id);
             })
+            ->orderBy('id', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 
