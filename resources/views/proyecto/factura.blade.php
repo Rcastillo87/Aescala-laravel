@@ -274,5 +274,57 @@
             </tbody>
         </table>
     </div>
+
+    <div style="margin-top: 0px; font-size: 10px; page-break-inside: avoid;">
+
+        <h2 style="font-size: 11px; margin-bottom: 5px; text-align:left;">
+            Quien Recibe:
+        </h2>
+
+        <!-- Nombre - Fecha - Cédula (líneas finas) -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
+            <tr>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 55%;">
+                    <strong>Nombre:</strong>
+                </td>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 20%;">
+                    <strong>Tipo Documento:</strong>
+                </td>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 25%;">
+                    <strong>Documento:</strong>
+                </td>
+            </tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9px;">
+            <tr>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 20%;">
+                    <strong>Fecha:</strong>
+                </td>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 20%;">
+                    <strong>Teléfono:</strong>
+                </td>
+                <td style="padding: 6px; border-bottom: 1px solid #666; width: 60%;">
+                    <strong>Observaciones:</strong>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Firma y Observaciones en un mismo bloque -->
+        <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
+            <tr>
+                <!-- Firma izquierda -->
+                <td style="width: 60%; padding-left: 10px; border: 1px solid #666; height: 70px; vertical-align: top;">
+                    <strong>Observaciones:</strong>
+                </td>
+   
+                <!-- Observación derecha -->
+                <td style="width: 40%; padding-left: 10px; border: 1px solid #666; height: 70px; vertical-align: top;">
+                    <strong>Firma:</strong>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
 </body>
 </html>

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -128,9 +129,36 @@ class User extends Authenticatable
         return ($this->id_rol == 4)? true: false;
     }
 
+    public function getIscarteraAttribute()
+    {
+        return ($this->id_rol == 5)? true: false;
+    }
+
+    public function getIsAnalistaAttribute()
+    {
+        return ($this->id_rol == 6)? true: false;
+    }
+
     public function getNewProyectAttribute()
     {
         return Proyecto::where('id_estado', 2)->count();
+    }
+
+    public function getnewSolicitudAttribute()
+    {
+        return SolicitudMaterial::when(Auth::user()->isColab, function ($query) {
+                $query->where('id_user', Auth::user()->id)->where('estado', 1);
+            })
+            ->when(Auth::user()->isAnalista, function ($query) {
+                return $query->whereHas('items', function ($q) {
+                    $q->where('aprobado', 0);
+                });
+            })
+            ->when(Auth::user()->isAdmin, function ($query) {
+                $query->where('estado', 1);
+            })
+            ->count();
+
     }
 
     public static $roles = [
@@ -138,7 +166,8 @@ class User extends Authenticatable
         2 => 'Usuario',
         3 => 'Colaborador',
         4 => 'Comercial',
-        5 => 'Cartera'
+        5 => 'Cartera',
+        6 => 'Analista'
     ];
 
     public static $ClassRol = [
@@ -147,6 +176,7 @@ class User extends Authenticatable
         3 => 'span-gray',
         4 => 'span-red',
         5 => 'span-green',
+        5 => 'span-back',
     ];
 
     public static $estado = [

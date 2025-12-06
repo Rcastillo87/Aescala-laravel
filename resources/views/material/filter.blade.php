@@ -59,6 +59,38 @@
                             class="block mt-1 w-full" 
                         />
                     </div>
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="rango" :value="__('Rango Material')" />
+                        <select name="rango" id="rango" class="block mt-1 w-full border-gray-300 
+                            focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option class="bg-gray-100" value="" @if(Request('rango') == '') selected @endif>-- Seleccione --</option>
+                            <option class="bg-red-200" value="1" @if(Request('rango') == '1') selected @endif>Rojo</option>
+                            <option class="bg-orange-200" value="2" @if(Request('rango') == '2') selected @endif>Naranja</option>
+                            <option value="3" @if(Request('rango') == '3') selected @endif>Blanco</option>
+                        </select>
+                    </div>
+
+                    <div class="w-full max-w-full px-2 pt-10 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                        <input type="hidden" name="aprobar" value="0">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                name="aprobar" 
+                                value="1" 
+                                class="sr-only peer"
+                                {{ old('aprobar', $material->aprobar ?? false) ? 'checked' : '' }}
+                            >
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer 
+                                dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute 
+                                after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 
+                                peer-checked:bg-blue-600"></div>
+                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                Aprobacion para el Despacho
+                            </span>
+                        </label>
+                        <x-input-error :messages="$errors->get('aprobar')" class="mt-2" />
+                    </div>
+
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
                              text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"

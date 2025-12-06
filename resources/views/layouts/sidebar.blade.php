@@ -8,145 +8,155 @@
         </a>
         <ul class="space-y-1 font-medium">
             <!-- Grupo: Proyectos -->
-            <li>
-                <button type="button"
-                    class="flex items-center w-full p-2 text-base font-semibold text-white transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700"
-                    aria-controls="dropdown-proyectos" data-collapse-toggle="dropdown-proyectos">
-                    <svg class="w-6 h-6 transition duration-75 text-gray-300 group-hover:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                        viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
-                            d="m20.9532 11.7634-2.0523-2.05225-2.0523 2.05225 2.0523 2.0523 2.0523-2.0523Zm-1.3681-2.73651-4.1046-4.10457L12.06 8.3428l4.1046 4.1046 3.4205-3.42051Zm-4.1047 2.73651-2.7363-2.73638-8.20919 8.20918 2.73639 2.7364 8.2091-8.2092Z" />
-                        <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
-                            d="m12.9306 3.74083 1.8658 1.86571-2.0523 2.05229-1.5548-1.55476c-.995-.99505-3.23389-.49753-3.91799.18657l2.73639-2.73639c.6841-.68409 1.9901-.74628 2.9229.18658Z" />
-                    </svg>
-                    <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Proyectos
-                        @if (Auth::user()['newProyect'] != 0)
-                            <span
-                                class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
-                                {{ Auth::user()['newProyect'] ?? 0 }}
-                            </span>
-                        @endif
-                    </span>
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m1 1 4 4 4-4" />
-                    </svg>
-                </button>
-                <ul id="dropdown-proyectos" class="hidden py-2 space-y-1">
-                    @if (Auth::user()->isComer || Auth::user()->isAdmin)
-                        <li>
-                            <a href="{{ route('comercial.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 18h14M5 18v3h14v-3M5 18l1-9h12l1 9M16 6v3m-4-3v3m-2-6h8v3h-8V3Zm-1 9h.01v.01H9V12Zm3 0h.01v.01H12V12Zm3 0h.01v.01H15V12Zm-6 3h.01v.01H9V15Zm3 0h.01v.01H12V15Zm3 0h.01v.01H15V15Z" />
-                                </svg>
-                                <span class="flex-1 ms-3 whitespace-nowrap">Comercial</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    @if (Auth::user()->isComer || Auth::user()->isAdmin)
-                        <li>
-                            <a href="{{ route('cartera.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h8v-8m-9 4v-4m0 4h9m-9-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v4M3 11h11m6.25 5c0 1.2426-1.0073 2.25-2.25 2.25M20.25 16c0-1.2426-1.0073-2.25-2.25-2.25M20.25 16H21m-3 2.25c-1.2426 0-2.25-1.0074-2.25-2.25M18 18.25V19m-2.25-3c0-1.2426 1.0074-2.25 2.25-2.25M15.75 16H15m3-2.25V13m-1.591 1.409-.5303-.5303m4.2426 4.2426-.5303-.5303m-3.182 0-.5303.5303m4.2426-4.2426-.5303.5303"/>
-                                </svg>
-                                <span class="flex-1 ms-3 whitespace-nowrap">Cartera</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    @if (!Auth::user()->isComer)
-                        <li>
-                            <a href="{{ route('proyecto.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
-                                        d="m20.9532 11.7634-2.0523-2.05225-2.0523 2.05225 2.0523 2.0523 2.0523-2.0523Zm-1.3681-2.73651-4.1046-4.10457L12.06 8.3428l4.1046 4.1046 3.4205-3.42051Zm-4.1047 2.73651-2.7363-2.73638-8.20919 8.20918 2.73639 2.7364 8.2091-8.2092Z" />
-                                    <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
-                                        d="m12.9306 3.74083 1.8658 1.86571-2.0523 2.05229-1.5548-1.55476c-.995-.99505-3.23389-.49753-3.91799.18657l2.73639-2.73639c.6841-.68409 1.9901-.74628 2.9229.18658Z" />
-                                </svg>
-                                <span class="ms-3 flex items-center">
-                                    Proyectos
-                                    @if (Auth::user()['newProyect'] != 0)
-                                        <span
-                                            class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
-                                            {{ Auth::user()['newProyect'] ?? 0 }}
-                                        </span>
-                                    @endif
+            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isCartera)
+                <li>
+                    <button type="button"
+                        class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group hover:text-orange-500hover:bg-gray-100 dark:hover:bg-gray-700"
+                        aria-controls="dropdown-proyectos" data-collapse-toggle="dropdown-proyectos">
+                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                                d="m20.9532 11.7634-2.0523-2.05225-2.0523 2.05225 2.0523 2.0523 2.0523-2.0523Zm-1.3681-2.73651-4.1046-4.10457L12.06 8.3428l4.1046 4.1046 3.4205-3.42051Zm-4.1047 2.73651-2.7363-2.73638-8.20919 8.20918 2.73639 2.7364 8.2091-8.2092Z" />
+                            <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                                d="m12.9306 3.74083 1.8658 1.86571-2.0523 2.05229-1.5548-1.55476c-.995-.99505-3.23389-.49753-3.91799.18657l2.73639-2.73639c.6841-.68409 1.9901-.74628 2.9229.18658Z" />
+                        </svg>
+                        <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Proyectos
+                            @if ((Auth::user()['newProyect'] != 0) && (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser))
+                                <span
+                                    class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
+                                    {{ Auth::user()['newProyect'] ?? 0 }}
                                 </span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('otro_si.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                 <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4m5-13v4a1 1 0 0 1-1 1H5m0 6h9m0 0-2-2m2 2-2 2"/>
-                                 </svg>
-
-                                <span class="ms-3 flex items-center">
-                                    Otro Si
-                                </span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('tareas.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M3 15v3c0 .5523.44772 1 1 1h4v-4m-5 0v-4m0 4h5m-5-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v1.98935M3 11h5v4m9.4708 4.1718-.8696-1.4388-2.8164-.235-2.573-4.2573 1.4873-2.8362 1.4441 2.3893c.3865.6396 1.2183.8447 1.8579.4582.6396-.3866.8447-1.2184.4582-1.858l-1.444-2.38925h3.1353l2.6101 4.27715-1.0713 2.5847.8695 1.4388" />
-                                </svg>
-                                <span class="ms-3">Tareas</span>
-                            </a>
-                        </li>
-
-                        @if (Auth::user()->isNotColab)
+                            @endif
+                        </span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 4 4 4-4" />
+                        </svg>
+                    </button>
+                    <ul id="dropdown-proyectos" class="hidden py-2 space-y-1">
+                        @if (Auth::user()->isComer || Auth::user()->isAdmin)
                             <li>
-                                <a href="{{ route('cotizacion.index') }}"
+                                <a href="{{ route('comercial.index') }}"
                                     class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" fill="none" viewBox="0 0 24 24">
+                                    <svg class="shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                             stroke-width="2"
-                                            d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
+                                            d="M5 18h14M5 18v3h14v-3M5 18l1-9h12l1 9M16 6v3m-4-3v3m-2-6h8v3h-8V3Zm-1 9h.01v.01H9V12Zm3 0h.01v.01H12V12Zm3 0h.01v.01H15V12Zm-6 3h.01v.01H9V15Zm3 0h.01v.01H12V15Zm3 0h.01v.01H15V15Z" />
                                     </svg>
-                                    <span class="ms-3">Cotizaciones</span>
+                                    <span class="flex-1 ms-3 whitespace-nowrap">Comercial</span>
                                 </a>
                             </li>
                         @endif
-                    @endif
-                </ul>
-            </li>
+
+                        @if (Auth::user()->isCartera || Auth::user()->isAdmin)
+                            <li>
+                                <a href="{{ route('cartera.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h8v-8m-9 4v-4m0 4h9m-9-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v4M3 11h11m6.25 5c0 1.2426-1.0073 2.25-2.25 2.25M20.25 16c0-1.2426-1.0073-2.25-2.25-2.25M20.25 16H21m-3 2.25c-1.2426 0-2.25-1.0074-2.25-2.25M18 18.25V19m-2.25-3c0-1.2426 1.0074-2.25 2.25-2.25M15.75 16H15m3-2.25V13m-1.591 1.409-.5303-.5303m4.2426 4.2426-.5303-.5303m-3.182 0-.5303.5303m4.2426-4.2426-.5303.5303"/>
+                                    </svg>
+                                    <span class="flex-1 ms-3 whitespace-nowrap">Cartera</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser)
+                            <li>
+                                <a href="{{ route('proyecto.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                                            d="m20.9532 11.7634-2.0523-2.05225-2.0523 2.05225 2.0523 2.0523 2.0523-2.0523Zm-1.3681-2.73651-4.1046-4.10457L12.06 8.3428l4.1046 4.1046 3.4205-3.42051Zm-4.1047 2.73651-2.7363-2.73638-8.20919 8.20918 2.73639 2.7364 8.2091-8.2092Z" />
+                                        <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                                            d="m12.9306 3.74083 1.8658 1.86571-2.0523 2.05229-1.5548-1.55476c-.995-.99505-3.23389-.49753-3.91799.18657l2.73639-2.73639c.6841-.68409 1.9901-.74628 2.9229.18658Z" />
+                                    </svg>
+                                    <span class="ms-3 flex items-center">
+                                        Proyectos
+                                        @if (Auth::user()['newProyect'] != 0)
+                                            <span
+                                                class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
+                                                {{ Auth::user()['newProyect'] ?? 0 }}
+                                            </span>
+                                        @endif
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ route('otro_si.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4m5-13v4a1 1 0 0 1-1 1H5m0 6h9m0 0-2-2m2 2-2 2"/>
+                                    </svg>
+
+                                    <span class="ms-3 flex items-center">
+                                        Otro Si
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ route('tareas.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M3 15v3c0 .5523.44772 1 1 1h4v-4m-5 0v-4m0 4h5m-5-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v1.98935M3 11h5v4m9.4708 4.1718-.8696-1.4388-2.8164-.235-2.573-4.2573 1.4873-2.8362 1.4441 2.3893c.3865.6396 1.2183.8447 1.8579.4582.6396-.3866.8447-1.2184.4582-1.858l-1.444-2.38925h3.1353l2.6101 4.27715-1.0713 2.5847.8695 1.4388" />
+                                    </svg>
+                                    <span class="ms-3">Tareas</span>
+                                </a>
+                            </li>
+
+                            @if (Auth::user()->isNotColab)
+                                <li>
+                                    <a href="{{ route('cotizacion.index') }}"
+                                        class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                        <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                            height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
+                                        </svg>
+                                        <span class="ms-3">Cotizaciones</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endif
+                    </ul>
+                </li>
+            @endif
 
             <!-- Grupo: Materiales -->
-            @if (!Auth::user()->isComer && Auth::user()->isNotColab)
+            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista)
                 <li>
                     <button type="button"
-                        class="flex items-center w-full p-2 text-base font-semibold text-white transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700"
+                        class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group hover:text-orange-500hover:bg-gray-100 dark:hover:bg-gray-700"
                         aria-controls="dropdown-materiales" data-collapse-toggle="dropdown-materiales">
-                        <svg class="w-6 h-6 transition duration-75 text-gray-300 group-hover:text-white"
+                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                 stroke-width="2"
                                 d="M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
                         </svg>
-                        <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Materiales</span>
+                        <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Materiales
+                            @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin)
+                                @if (Auth::user()['newSolicitud'] != 0)
+                                    <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
+                                        {{ Auth::user()['newSolicitud'] ?? 0 }}
+                                    </span>
+                                @endif
+                            @endif
+                        </span>
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -154,67 +164,87 @@
                         </svg>
                     </button>
                     <ul id="dropdown-materiales" class="hidden py-2 space-y-1">
-                        <li>
-                            <a href="{{ route('material.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
-                                </svg>
-                                <span class="ms-3">Inventario Materiales</span>
-                            </a>
-                        </li>
+                        @if (Auth::user()->isAdmin || Auth::user()->isUser)
+                            <li>
+                                <a href="{{ route('material.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
+                                    </svg>
+                                    <span class="ms-3">Inventario Materiales</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('despachos.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
-                                </svg>
-                                <span class="ms-3">Despacho de Material</span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('despachos.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                                    </svg>
+                                    <span class="ms-3">Despacho de Material</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('proveedor.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 12c.263 0 .524-.06.767-.175a2 2 0 0 0 .65-.491c.186-.21.333-.46.433-.734.1-.274.15-.568.15-.864a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 12 9.736a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 16 9.736c0 .295.052.588.152.861s.248.521.434.73a2 2 0 0 0 .649.488 1.809 1.809 0 0 0 1.53 0 2.03 2.03 0 0 0 .65-.488c.185-.209.332-.457.433-.73.1-.273.152-.566.152-.861 0-.974-1.108-3.85-1.618-5.121A.983.983 0 0 0 17.466 4H6.456a.986.986 0 0 0-.93.645C5.045 5.962 4 8.905 4 9.736c.023.59.241 1.148.611 1.567.37.418.865.667 1.389.697Zm0 0c.328 0 .651-.091.94-.266A2.1 2.1 0 0 0 7.66 11h.681a2.1 2.1 0 0 0 .718.734c.29.175.613.266.942.266.328 0 .651-.091.94-.266.29-.174.537-.427.719-.734h.681a2.1 2.1 0 0 0 .719.734c.289.175.612.266.94.266.329 0 .652-.091.942-.266.29-.174.536-.427.718-.734h.681c.183.307.43.56.719.734.29.174.613.266.941.266a1.819 1.819 0 0 0 1.06-.351M6 12a1.766 1.766 0 0 1-1.163-.476M5 12v7a1 1 0 0 0 1 1h2v-5h3v5h7a1 1 0 0 0 1-1v-7m-5 3v2h2v-2h-2Z" />
-                                </svg>
-                                <span class="ms-3">Proveedores</span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('proveedor.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 12c.263 0 .524-.06.767-.175a2 2 0 0 0 .65-.491c.186-.21.333-.46.433-.734.1-.274.15-.568.15-.864a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 12 9.736a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 16 9.736c0 .295.052.588.152.861s.248.521.434.73a2 2 0 0 0 .649.488 1.809 1.809 0 0 0 1.53 0 2.03 2.03 0 0 0 .65-.488c.185-.209.332-.457.433-.73.1-.273.152-.566.152-.861 0-.974-1.108-3.85-1.618-5.121A.983.983 0 0 0 17.466 4H6.456a.986.986 0 0 0-.93.645C5.045 5.962 4 8.905 4 9.736c.023.59.241 1.148.611 1.567.37.418.865.667 1.389.697Zm0 0c.328 0 .651-.091.94-.266A2.1 2.1 0 0 0 7.66 11h.681a2.1 2.1 0 0 0 .718.734c.29.175.613.266.942.266.328 0 .651-.091.94-.266.29-.174.537-.427.719-.734h.681a2.1 2.1 0 0 0 .719.734c.289.175.612.266.94.266.329 0 .652-.091.942-.266.29-.174.536-.427.718-.734h.681c.183.307.43.56.719.734.29.174.613.266.941.266a1.819 1.819 0 0 0 1.06-.351M6 12a1.766 1.766 0 0 1-1.163-.476M5 12v7a1 1 0 0 0 1 1h2v-5h3v5h7a1 1 0 0 0 1-1v-7m-5 3v2h2v-2h-2Z" />
+                                    </svg>
+                                    <span class="ms-3">Proveedores</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('pedidos.index') }}"
-                                class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 18h14M5 18v3h14v-3M5 18l1-9h12l1 9M16 6v3m-4-3v3m-2-6h8v3h-8V3Zm-1 9h.01v.01H9V12Zm3 0h.01v.01H12V12Zm3 0h.01v.01H15V12Zm-6 3h.01v.01H9V15Zm3 0h.01v.01H12V15Zm3 0h.01v.01H15V15Z" />
-                                </svg>
-                                <span class="ms-3">Pedidos</span>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="{{ route('pedidos.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M5 18h14M5 18v3h14v-3M5 18l1-9h12l1 9M16 6v3m-4-3v3m-2-6h8v3h-8V3Zm-1 9h.01v.01H9V12Zm3 0h.01v.01H12V12Zm3 0h.01v.01H15V12Zm-6 3h.01v.01H9V15Zm3 0h.01v.01H12V15Zm3 0h.01v.01H15V15Z" />
+                                    </svg>
+                                    <span class="ms-3">Pedidos</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin) 
+                            <li>
+                                <a href="{{ route('solicitud.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 13h3.439a.991.991 0 0 1 .908.6 3.978 3.978 0 0 0 7.306 0 .99.99 0 0 1 .908-.6H20M4 13v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6M4 13l2-9h12l2 9"/>
+                                    </svg>
+                                    <span class="ms-3 flex items-center">
+                                        Solicitud de Materiales
+                                        @if (Auth::user()['newSolicitud'] != 0)
+                                        <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
+                                            {{ Auth::user()['newSolicitud'] ?? 0 }}
+                                        </span>
+                                        @endif
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
+
                     </ul>
                 </li>
             @endif
 
             <!-- Elementos individuales -->
-            @if (!Auth::user()->isComer && Auth::user()->isNotColab)
+            @if (Auth::user()->isAdmin || Auth::user()->isUser)
                 <li>
                     <a href="{{ route('herramienta.index') }}"
                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -245,12 +275,12 @@
             @endif
         </ul>
 
-        @if (Auth::check() && Auth::user()->isNotColab)
+        @if (Auth::user()->isAdmin || Auth::user()->isUser)
             <div class="mt-auto pt-4 border-t border-gray-600">
                 <a tabindex="0" data-tooltip-target="tooltip-hover-donwload-db" data-tooltip-trigger="hover"
                     href="{{ route('descargar.db') }}"
                     class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="w-6 h-6 mr-2 text-gray-300 group-hover:text-white" fill="none"
+                    <svg class="w-6 h-6 mr-2 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" fill="none"
                         stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round"

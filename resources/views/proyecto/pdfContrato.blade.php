@@ -17,7 +17,7 @@
         }
 
         body {
-            font-family: "Arial Narrow", Arial, sans-serif;
+            font-family: 'DejaVu Sans', sans-serif, Arial, sans-serif;
             font-size: 10pt;
             line-height: 1.4;
             color: #222;
@@ -152,7 +152,7 @@
 <h2 class="subtitulo">DEL {{ $fecha_contrato }}</h2>
   
   <p>
-Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representación propia, quien para efectos del presente contrato se denominará EL <strong>EL CONTRATANTE</strong>; y <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, mayor de edad, domiciliado en {{ env('IDENTI_REPRESENTANTE_EXPED') }} identificado con {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }} expedida en {{ env('IDENTI_REPRESENTANTE_EXPED') }}, actuando en representación legal de la empresa <strong>{{ env('RAZON') }}</strong>. persona jurídica inscrita en cámara de comercio de {{ env('CIU_DPT_EMPRE') }}, con NIT N° {{ env('NIT') }} quien para efectos del presente contrato se llamará <strong>EL CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regirá por las siguientes cláusulas: 
+Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representación propia, quien para efectos del presente contrato se denominará EL <strong>CONTRATANTE</strong>; y <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, mayor de edad, domiciliado en {{ env('IDENTI_REPRESENTANTE_EXPED') }} identificado con {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }} expedida en {{ env('IDENTI_REPRESENTANTE_EXPED') }}, actuando en representación legal de la empresa <strong>{{ env('RAZON') }}</strong>. persona jurídica inscrita en cámara de comercio de {{ env('CIU_DPT_EMPRE') }}, con NIT N° {{ env('NIT') }} quien para efectos del presente contrato se llamará <strong>CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regirá por las siguientes cláusulas: 
   </p>
 
 <p>

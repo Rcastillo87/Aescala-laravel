@@ -30,15 +30,28 @@ class MaterialController extends Controller
         ->when(is_numeric(Request('valor_unidad')), function ($query) { 
             return $query->where('valor_unidad', Request('valor_unidad'));
         })
+        ->when(Request('aprobar'), function ($query, $aprobar) { 
+            return $query->where('aprobar', $aprobar);
+        })
         ->when(Request('tipo'), function ($query, $tipo) { 
             return $query->where('tipo', $tipo);
+        })
+        ->when(Request('rango'), function ($query, $rango) { 
+            if($rango == 1) {
+                return $query->where('cantidad', '=', 0);
+            } elseif($rango == 2) {
+                return $query->where('cantidad', '>', 'cantidad_min')
+                             ->where('cantidad', '<=', DB::raw('cantidad_min'));
+            } elseif($rango == 3) {
+                return $query->where('cantidad', '>', DB::raw('cantidad_min'));
+            }
         })
         ->when(Request('estado'), function ($query, $estado) { 
             return $query->where('activo', $estado);
         })
         ->paginate(10)
         ->appends(request()->query());
-        $headers = ['Nombre Material', 'Stock', 'Stock Min', 'Valor', 'Fecha Creación', 'Tipo Material', 'Estado', 'Opciones'];
+        $headers = ['Nombre Material', 'Stock', 'Stock Min', 'Valor', 'Fecha Creación', 'Tipo Material', 'Estado / Requiere Aprobacion', 'Opciones'];
         return view('material.index', compact( 'title', 'items', 'headers', 'estado','tipos'));
     }
 
@@ -71,7 +84,8 @@ class MaterialController extends Controller
             'valor_unidad' => 'required|numeric|min:0',
             'tipo' => Rule::in(array_keys(InventarioMaterial::$tipo)),
             'descripccion' => 'nullable|string',
-            'nombre_material' => 'required|string'
+            'nombre_material' => 'required|string',
+            'aprobar' => ['required', 'integer', 'in:0,1']
         ]);
         
         if((Auth::user()->id_rol == 2) && ($data['id'])) {

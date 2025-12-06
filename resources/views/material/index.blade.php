@@ -2,7 +2,26 @@
 @section('content')
 
     @include('material.filter')
-    <div class="flex justify-end text-center mb-3">
+    <div class="flex justify-between  mb-3">
+
+        <div class="flex flex-wrap md:flex-nowrap justify-start text-center border-2 p-3 bg-gray-100 rounded-lg border-gray-200">
+            <!-- Sección de etiquetas -->
+            <div class="flex flex-wrap gap-4 md:gap-2">
+                <span class="flex items-center text-center ml-2">
+                    Sin inventario(stock = 0)
+                    <hr class="border-2 bg-red-200 rounded-lg w-[55px] p-[3px] ml-1">
+                </span>
+                <span class="flex items-center text-center">
+                    Poco invertario (stock &lt;= stock minimo)
+                    <hr class="border-2 bg-orange-200 rounded-lg w-[55px] p-[3px] ml-1">
+                </span>
+                <span class="flex items-center text-center ml-2">
+                    Inventario suficiente (stock &gt; stock minimo)
+                    <hr class="border-2 bg-white rounded-lg w-[55px] p-[3px] ml-1">
+                </span>
+            </div>
+        </div>
+
         <x-secondary-button class="ms-4" href="{{ route('material.create')}}">
             Crear Material
         </x-secondary-button>
@@ -35,13 +54,13 @@
                             ${{ number_format($item->valor_unidad) }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->createdAt }}
+                            {{ explode(' ',  $item->createdAt)[0] }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {!! $item->tipoMaterial !!}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {!! $item->spanEstado !!}
+                            {!! $item->spanEstado !!} {!! $item->spanAprobar !!}
                         </td>
                         <td class="py-2 bg-transparent border-b dark:border-white/40 shadow-transparent flex items-center justify-center">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
@@ -56,6 +75,7 @@
                                 Cambio de Estado
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
+
                             <a data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" href="{{ route('material.edit', $item->id) }}"
                                 class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
                                         focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 me-2">

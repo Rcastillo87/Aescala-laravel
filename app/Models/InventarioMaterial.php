@@ -23,7 +23,8 @@ class InventarioMaterial extends Model
         'valor_unidad',
         'tipo',
         'descripccion',
-        'activo'
+        'activo',
+        'aprobar'
     ];
 
     protected $appends = ['spanTipo', 'unidades'];
@@ -36,6 +37,11 @@ class InventarioMaterial extends Model
     {
         return '<span class="'.(self::$classEstado[$this->activo] ?? 'default-class').'">'
              . (self::$estado[$this->activo] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getSpanAprobarAttribute()
+    {
+        return $this->aprobar == 1 ? '<span class="span-green">SI</span>' : '<span class="span-red">NO</span>';
     }
 
     public function getSpanTipoAttribute()

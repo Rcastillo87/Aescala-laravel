@@ -16,6 +16,7 @@ use App\Http\Controllers\TareasController;
 use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\OtrosiController;
 use App\Http\Controllers\CarteraController;
+use App\Http\Controllers\SolicitudController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -147,7 +148,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('proveedor')->name('proveedor.')->group(function () {
         Route::get('/index', [ProveedorController::class, 'index'])->name('index');
         Route::get('/create', [ProveedorController::class, 'create'])->name('create');
-        Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->name('edit');
         Route::post('/save', [ProveedorController::class, 'save'])->name('save');
         Route::get('/editStatus/{id}', [ProveedorController::class, 'editStatus'])->name('editStatus');
     });
@@ -184,6 +184,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pagos/{id}', [CarteraController::class, 'pagos'])->name('pagos');
         Route::get('/pagosOtroSi/{id}', [CarteraController::class, 'pagosOtroSi'])->name('pagosOtroSi');
         Route::post('/save', [CarteraController::class, 'save'])->name('save');
+    });
+
+    Route::prefix('solicitud')->name('solicitud.')->group(function () {
+        Route::get('/index', [SolicitudController::class, 'index'])->name('index');
+        Route::get('/create', [SolicitudController::class, 'create'])->name('create');
+        Route::post('/save', [SolicitudController::class, 'save'])->name('save');
+        Route::get('/listaSolicitud/{id}', [SolicitudController::class, 'listaSolicitud'])->name('listaSolicitud');
+        Route::get('/createDespachoSolicitud/{id}', [SolicitudController::class, 'createDespachoSolicitud'])->name('createDespachoSolicitud');
+        Route::get('/createAprobarSolicitud/{id}', [SolicitudController::class, 'createAprobarSolicitud'])->name('createAprobarSolicitud');
+        Route::post('/saveSolicitud', [SolicitudController::class, 'saveSolicitud'])->name('saveSolicitud');
+        Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
     });
 
 });
