@@ -30,8 +30,8 @@ class MaterialController extends Controller
         ->when(is_numeric(Request('valor_unidad')), function ($query) { 
             return $query->where('valor_unidad', Request('valor_unidad'));
         })
-        ->when(Request('aprobar'), function ($query, $aprobar) { 
-            return $query->where('aprobar', $aprobar);
+        ->when(request()->filled('aprobar'), function ($query) {
+            return $query->where('aprobar', request('aprobar'));
         })
         ->when(Request('tipo'), function ($query, $tipo) { 
             return $query->where('tipo', $tipo);
