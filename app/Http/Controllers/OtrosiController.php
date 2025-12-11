@@ -73,7 +73,9 @@ class OtrosiController extends Controller
 
         $proyectos = Proyecto::whereIN('id_estado', [1, 3, 5])
             ->when(!Auth::user()->isAdmin, function ($query) {
-                $query->where('id_user', Auth::user()->id);
+                $query->where('id_user', Auth::user()->id)
+                    ->orwhere('id_user_obra_blanca', Auth::user()->id)
+                    ->orwhere('id_user_carpinteria', Auth::user()->id);
             })
             ->get(['id', 'nombre_proyecto'])->toArray();
 
