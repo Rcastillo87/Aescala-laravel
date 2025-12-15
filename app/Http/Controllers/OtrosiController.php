@@ -366,7 +366,6 @@ class OtrosiController extends Controller
                 $area = Area::whereRaw('LOWER(nombre_area) = LOWER(?)', [$nombreArea])->first();
 
                 if (!$area) {
-                    dd($valores, $headers);
                     $errores[] = "Fila $index: el ESPACIO '$nombreArea' no existe en la tabla áreas.";
                     $espacioActual = [
                         'id_area' => 0,

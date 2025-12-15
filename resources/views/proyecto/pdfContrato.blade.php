@@ -280,6 +280,11 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 <p>
 <strong>DECIMA TERCERA. DERECHOS DE AUTOR: </strong>La obra y diseño realizada por EL CONTRATISTA es unica y corresponde a su diseño y la de sus colaboradores, y EL CONTRATANTE acepta con la firma de este contrato que EL CONTRATISTA podra tomar fotografias de la obra y publicarlas en sus redes sociales para conocimiento de su publico.
 </p>
+
+<p>
+<strong>DECIMA CUARTA. SUSPENSION DE ACTIVIDADES EN TEMPORADA DE FIN DE ANO: </strong>
+Las partes acuerdan que los proyectos que se encuentren en ejecucion durante la temporada de Navidad y Año Nuevo podran ser suspendidos con motivo de las vacaciones colectivas, periodo en el cual las empresas y contratistas acostumbran cesar o limitar sus actividades. En consecuencia, EL CONTRATISTA pausara la ejecucion del proyecto durante dicho lapso, el cual no sera considerado como tiempo habil ni computable dentro de los plazos y cronogramas establecidos en el presente contrato.
+</p>
   
 <p>
     En constancia se firma en dos ejemplares el dia {{ $fecha_contrato }}.
