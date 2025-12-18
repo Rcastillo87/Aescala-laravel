@@ -26,6 +26,7 @@ class Otrosi extends Model
         'estado',
         'sugerencia_cliente',
         'img_firma',
+        'paz_salvo',
     ];
 
     public static $estadoTX = [
@@ -58,12 +59,12 @@ class Otrosi extends Model
 
     public function area_entregable()
     {
-        return $this->hasMany(AreaEntregable::class, 'id_otro_si');
+        return $this->hasMany(AreaEntregable::class, 'id_otro_si', 'id');
     }
 
     public function pagos()
     {
-        return $this->hasMany(Pagos::class, 'id_proyecto', 'id_proyecto');
+        return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
     }
 
     public function getTokenEncripAttribute()
@@ -158,7 +159,7 @@ class Otrosi extends Model
 
     public function getTotalPagoAttribute()
     {
-        return $this->pagos()->where(['id_proyecto' => $this->id_proyecto, 'tipo_pago' => 2])->sum('valor_pagado');
+        return $this->pagos()->where(['id_proyecto' => $this->id, 'tipo_pago' => 2])->sum('valor_pagado');
     }
 
 }

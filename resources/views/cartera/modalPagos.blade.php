@@ -9,7 +9,7 @@
                 <input type="hidden" id="proyecto_id" name="proyecto_id">
                 <input type="hidden" id="tipo" name="tipo">
 
-                <div class="w-full max-w-full p-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <div id="id_concepto" class="w-full max-w-full p-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="concepto" :value="__('Concepto de Pago *')" />
                     <x-select-input 
                         name="concepto" 

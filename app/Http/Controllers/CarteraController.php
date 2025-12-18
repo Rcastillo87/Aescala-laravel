@@ -10,6 +10,7 @@ use App\Models\Pagos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CarteraController extends Controller
 {
@@ -43,15 +44,23 @@ class CarteraController extends Controller
 
     public function save(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $val = [
             'proyecto_id'  => 'required|integer',
             'tipo'         => 'required|integer|in:1,2',
             'valor_pagado' => 'required|numeric|min:0',
             'comentario'   => 'nullable|string|max:500',
-            'concepto'     => 'required|integer|between:1,6',
             'fv'           => 'required|string|max:20',
             'fecha_pago'   => 'required|date',
-        ], [
+        ];
+
+        if($request->tipo == 1){
+            //$id = $request->proyecto_id;
+            $val = array_merge($val, ['concepto'     => 'required|integer|between:1,6']);
+        } else {
+            //$id = Otrosi::find($request->proyecto_id)->id_proyecto;
+        }
+
+        $validator = Validator::make($request->all(), $val, [
             // Mensajes personalizados (opcional pero recomendado)
             'required' => 'Este campo es obligatorio.',
             'integer'  => 'Debe ser un número válido.',
@@ -83,17 +92,24 @@ class CarteraController extends Controller
                 'tipo_pago'    => $request->tipo,
                 'valor_pagado' => $request->valor_pagado,
                 'fecha_pago'   => $request->fecha_pago,
-                'comentario'   => $request->comentario,
+                'comentario'   => $request->comentario ?? '',
                 'concepto'     => $request->concepto,
                 'fv'           => $request->fv,
                 'rc'           => $rc,
             ]);
 
             // Si el pago deja en balance
-            if ($pago->valance) {
+            if ($pago->valance && $request->tipo == 1) {
                 $proyecto = Proyecto::find($request->proyecto_id);
                 $proyecto->paz_salvo = 1;
                 $proyecto->save();
+            }
+
+           // Si el pago deja en balance
+            if ($pago->valanceOtroSi && $request->tipo == 2) {
+                $otroSi = Otrosi::find($request->proyecto_id);
+                $otroSi->paz_salvo = 1;
+                $otroSi->save();
             }
 
             DB::commit();
@@ -110,7 +126,7 @@ class CarteraController extends Controller
                 'error'   => $e->getMessage(),
             ], 500);
         }
-    }  
+    }
 
     public function pagos($id)
     {
@@ -133,17 +149,50 @@ class CarteraController extends Controller
     public function pagosOtroSi($id)
     {
         $item = Otrosi::with('pagos')->findOrFail($id);
-        $deve = ($item->totalDeve ?? 0) - ($item->totalPago ?? 0);
-        $pagos = $item->pagos()->where('tipo', 2)->get();
+        $pagos = $item->pagos()->where('tipo_pago', 2)->get();
+        $totalPago = Pagos::where([
+            'id_proyecto' => $item->id,
+            'tipo_pago'   => 2
+        ])->sum('valor_pagado');
+
         return response()->json([
             'status' => true,
             'message' => 'Consulta exitosa',
             'data' => [
-                'id_proyecto' => $item->id_proyecto,
-                'pagados' => $pagos,
-                'deve' => $deve,
+                'pagado' => $pagos,
+                'totalDeve' => $item->totalDeve ?? 0,
+                'totalPago' => $totalPago ?? 0
             ],
         ], 200);
+    }
+
+    public function reciboPDF($idProyecto, $tipo)
+    {
+        $items = Pagos::where([
+            'id_proyecto' => $idProyecto,
+            'tipo_pago'   => $tipo,
+        ])->get();
+
+        if ($items->isEmpty()) {
+            abort(404, 'No hay pagos para este recibo');
+        }
+
+        $proyecto = $items->first()->proyecto;
+
+        $data = [
+            'items'    => $items,
+            'proyecto' => $proyecto,
+            'fecha'    => now()->format('d/m/Y'),
+            'total'    => $items->sum('valor_pago'),
+        ];
+
+        $pdf = Pdf::loadView('proyecto.factura', $data)
+            ->setPaper('letter', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'DejaVu Sans');
+
+        return $pdf->stream('recibo-'.$idProyecto.'.pdf');
     }
 
 }

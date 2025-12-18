@@ -32,6 +32,11 @@ class Pagos extends Model
         return $this->belongsTo(Proyecto::class, 'id_proyecto', 'id');
     }
 
+    public function otro_si()
+    {
+        return $this->belongsTo(Otrosi::class, 'id_proyecto', 'id');
+    }
+
     public function getValanceAttribute()
     {
         $proyecto = $this->proyecto;
@@ -42,6 +47,18 @@ class Pagos extends Model
         ])->sum('valor_pagado');
 
         return $pagado >= $debe;
+    }
+
+    public function getValanceOtroSiAttribute()
+    {
+        $otroSi = $this->otro_si;
+        $totalDeve = $otroSi->totalDeve;
+        $pagado = self::where([
+            'tipo_pago' => $this->tipo_pago,
+            'id_proyecto' => $this->id_proyecto
+        ])->sum('valor_pagado');
+
+        return $pagado >= $totalDeve;
     }
 
 }
