@@ -24,7 +24,7 @@ class CarteraController extends Controller
             //->where('a_paz', 0)
             ->paginate(10, ['*'], 'page_proyectos') 
             ->appends(request()->query());
-
+            
         $items_2 = Otrosi::with(['user_encargado'])
             ->where('estado', 1)
             //->where('a_paz', 0)
@@ -44,77 +44,83 @@ class CarteraController extends Controller
     public function save(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'proyecto_id' => 'required|integer',
-            'tipo' => 'required|integer',
-            'campo_desc' => 'required|string|max:255',
-            'valor_pagado' => 'required|numeric|min:1', // ✅ No permite 0 ni negativos
-            'comentario' => 'nullable|string|max:500',
+            'proyecto_id'  => 'required|integer',
+            'tipo'         => 'required|integer|in:1,2',
+            'valor_pagado' => 'required|numeric|min:0',
+            'comentario'   => 'nullable|string|max:500',
+            'concepto'     => 'required|integer|between:1,6',
+            'fv'           => 'required|string|max:20',
+            'fecha_pago'   => 'required|date',
+        ], [
+            // Mensajes personalizados (opcional pero recomendado)
+            'required' => 'Este campo es obligatorio.',
+            'integer'  => 'Debe ser un número válido.',
+            'numeric'  => 'Debe ser un valor numérico.',
+            'between'  => 'Valor fuera del rango permitido.',
+            'in'       => 'Valor inválido.',
+            'min'      => 'El valor debe ser mayor a 0.',
+            'date'     => 'Fecha inválida.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Hay errores en el formulario.',
-                'errors' => $validator->errors(),
-            ]);
+                'errors'  => $validator->errors(),
+            ], 422);
         }
 
         try {
             DB::beginTransaction();
 
-            // Verificar si ya existe un registro para el mismo proyecto, tipo y campo_desc
-            $existe = Pagos::where('id_proyecto', $request->proyecto_id)
-                ->where('tipo', $request->tipo)
-                ->where('campo_desc', $request->campo_desc)
-                ->exists();
-
-            if ($existe) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Ya existe un pago registrado para este concepto.',
-                ]);
-            }
-
-            // Crear el registro
             $pago = Pagos::create([
-                'id_proyecto' => $request->proyecto_id,
-                'tipo' => $request->tipo,
-                'campo_desc' => $request->campo_desc,
+                'id_proyecto'  => $request->proyecto_id,
+                'tipo_pago'    => $request->tipo,
                 'valor_pagado' => $request->valor_pagado,
-                'fecha_pago' => now(),
-                'comentario' => $request->comentario,
+                'fecha_pago'   => $request->fecha_pago,
+                'comentario'   => $request->comentario,
+                'concepto'     => $request->concepto,
+                'fv'           => $request->fv,
             ]);
 
-            if($pago->valance){
+            // Si el pago deja en balance
+            if ($pago->valance) {
                 $proyecto = Proyecto::find($request->proyecto_id);
                 $proyecto->paz_salvo = 1;
                 $proyecto->save();
             }
 
             DB::commit();
+
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => 'Pago registrado correctamente.',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Error al registrar el pago.',
-                'error' => $e->getMessage(),
-            ]);
+                'error'   => $e->getMessage(),
+            ], 500);
         }
-    }    
+    }  
 
     public function pagos($id)
     {
         $item = Proyecto::findOrFail($id);
         $pagos = $item->pagos;
+        $lista = $item->pagos()->where('tipo_pago', 1)->get();
+        $totalApagar = $item->total ?? 0; 
         return response()->json([
             'status' => true,
             'message' => 'Consulta exitosa',
-            'data' => $pagos,
+            'data' => [
+                'id_proyecto' => $item->id,
+                'pagado' => $lista,
+                'conceptos_pago' => $pagos,
+                'total_apagar' => $totalApagar,
+            ],
         ], 200);
     }
 

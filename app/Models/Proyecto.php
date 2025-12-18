@@ -308,7 +308,7 @@ class Proyecto extends Model
 
     public function getTotalPagadoAttribute()
     {
-        return $this->pagos()->where(['tipo' => 1])->sum('valor_pagado');
+        return $this->pagos()->where(['tipo_pago' => 1])->sum('valor_pagado');
     }
 
     public function getPagosAttribute()
@@ -327,21 +327,11 @@ class Proyecto extends Model
         for ($i = 1; $i <= 6; $i++) {
             $campo = "termino_{$i}_por";
             if (isset($this->$campo) && $this->$campo > 0) {
-                $pago = $this->pagos()->where([
-                    'campo_desc' => $campo,
-                    'tipo' => 1
-                ])->first();
-
                 $arrayPagos[] = [
-                    'id_proyecto' => $this->id,
                     'msg' => $txtArr[$i],
-                    'termino' => $campo,
+                    'termino' => $i,
                     'porcentaje' => $this->$campo,
-                    'valor_apagar' => ceil($total * $this->$campo / 100),
-                    'pago' => (bool) $pago,
-                    'valor_pagado' => $pago ? $pago->valor_pagado : 0,
-                    'fecha_pago' => $pago ? $pago->fecha_pago : '',
-                    'campo_desc' => $pago ? $pago->campo_desc : '',
+                    'valor_apagar' => ceil($total * $this->$campo / 100)
                 ];
             }
         }

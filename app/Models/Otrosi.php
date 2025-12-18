@@ -158,7 +158,7 @@ class Otrosi extends Model
 
     public function getTotalPagoAttribute()
     {
-        return $this->pagos()->where(['id_proyecto' => $this->id_proyecto, 'tipo' => 2])->sum('valor_pagado');
+        return $this->pagos()->where(['id_proyecto' => $this->id_proyecto, 'tipo_pago' => 2])->sum('valor_pagado');
     }
 
 }

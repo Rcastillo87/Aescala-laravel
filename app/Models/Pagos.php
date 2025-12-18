@@ -16,12 +16,14 @@ class Pagos extends Model
     const UPDATED_AT = 'updatedAt';
 
     protected $fillable = [
-        'c',
-        'tipo',
-        'campo_desc',
+        'id_proyecto',
+        'tipo_pago',//1 de proyectos y 2 de otrosi
         'valor_pagado',
         'fecha_pago',
-        'comentario'
+        'concepto',
+        'comentario',
+        'fv',//se ingresa manualmente
+        'rc',//cosecutivo
     ];
 
     // Relación con el modelo fecha_pago
@@ -35,7 +37,7 @@ class Pagos extends Model
         $proyecto = $this->proyecto;
         $debe = $proyecto->total ?? 0;
         $pagado = self::where([
-            'tipo' => $this->tipo,
+            'tipo_pago' => $this->tipo_pago,
             'id_proyecto' => $this->id_proyecto
         ])->sum('valor_pagado');
 
