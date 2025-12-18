@@ -73,6 +73,11 @@ class CarteraController extends Controller
         try {
             DB::beginTransaction();
 
+            $rc = Pagos::where([
+                'id_proyecto'  => $request->proyecto_id,
+                'tipo_pago'    => $request->tipo,
+            ])->max('rc') + 1;
+
             $pago = Pagos::create([
                 'id_proyecto'  => $request->proyecto_id,
                 'tipo_pago'    => $request->tipo,
@@ -81,6 +86,7 @@ class CarteraController extends Controller
                 'comentario'   => $request->comentario,
                 'concepto'     => $request->concepto,
                 'fv'           => $request->fv,
+                'rc'           => $rc,
             ]);
 
             // Si el pago deja en balance

@@ -58,7 +58,7 @@
                 <div class="w-full p-2 md:w-6/12 lg:w-9/12 2xl:w-9/12">
                     <x-input-label for="comentario" :value="__('Comentario')" />
                     <textarea id="comentario" name="comentario"
-                        class="block w-full mt-1 h-28 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+                        class="block w-full mt-1 h-20 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
                         placeholder="Agrega una observación si lo deseas..."></textarea>
                 </div>
 
