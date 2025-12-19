@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Collection;
+
 
 class CarteraController extends Controller
 {
@@ -166,10 +168,10 @@ class CarteraController extends Controller
         ], 200);
     }
 
-    public function reciboPDF($idProyecto, $tipo)
+    public function reciboPDF($id, $tipo)
     {
         $items = Pagos::where([
-            'id_proyecto' => $idProyecto,
+            'id_proyecto' => $id,
             'tipo_pago'   => $tipo,
         ])->get();
 
@@ -177,22 +179,61 @@ class CarteraController extends Controller
             abort(404, 'No hay pagos para este recibo');
         }
 
-        $proyecto = $items->first()->proyecto;
+        if ($tipo == 1) {
+            $proyecto = $items->first()->proyecto;
+            $pagos = $proyecto->Pagos;
+            $totalPago = $proyecto->totalPagado;
+        } else {
+            $otroSi = $items->first()->otro_si;
+            $proyecto = $otroSi->proyecto;
+            $pagos = '';
+            $totalPago = $otroSi->totalPago;
+        }
+
+        $dptArray = json_decode(
+            file_get_contents(storage_path('json/jsonCityColombia.json')), 
+            true
+        );
+
+        $ciudad_dpt = $dptArray[$proyecto->departamento]['departamento'] . ', ' .
+                    $dptArray[$proyecto->departamento]['ciudades'][$proyecto->ciudad];
+
+        $items = $items->map(function ($item) use ($pagos) {
+
+            if($item->tipo_pago == 1) {
+                $descripcion = collect($pagos)->map(function ($concepto) use ($item) {
+                    if ($concepto['termino'] == $item->concepto) {
+                        return $concepto['msg'];
+                    }
+                })->filter()->first();
+            } else {
+                $descripcion = 'Pago Otro Si # ' . $item->rc;
+            }
+
+            return (object) [
+                'rc'           => $item->rc,
+                'fecha_pago'   => $item->fecha_pago,
+                'descripcion'  => $descripcion,
+                'valor_pago'   => $item->valor_pagado
+            ];
+        });
 
         $data = [
             'items'    => $items,
             'proyecto' => $proyecto,
-            'fecha'    => now()->format('d/m/Y'),
-            'total'    => $items->sum('valor_pago'),
+            'ciudad_dpt'    => $ciudad_dpt,
+            'tipo_doc_acro' => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][0] ?? '',
+            'total_pago'    => $totalPago,
+            'logo' => public_path('img/logo.png')
         ];
 
-        $pdf = Pdf::loadView('proyecto.factura', $data)
+        $pdf = Pdf::loadView('cartera.reciboPDF', $data)
             ->setPaper('letter', 'portrait')
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isRemoteEnabled', true)
             ->setOption('defaultFont', 'DejaVu Sans');
 
-        return $pdf->stream('recibo-'.$idProyecto.'.pdf');
+        return $pdf->stream('recibo-'.$id.'.pdf');
     }
 
 }

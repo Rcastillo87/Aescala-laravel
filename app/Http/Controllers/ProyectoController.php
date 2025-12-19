@@ -33,20 +33,20 @@ use App\Models\EntregableProye;
 
 class ProyectoController extends Controller
 {
-    public function index( ) 
+    public function index()
     {
         $year = date('Y');
         $festivos = new Festivos;
         $festivos->festivos($year);
-        $festivos->festivos($year+1);
+        $festivos->festivos($year + 1);
 
-        if(!Request('id_estado')){
-            $est = [1,5]; 
+        if (!Request('id_estado')) {
+            $est = [1, 5];
         } else {
             $est[] = Request('id_estado');
         }
 
-        if(Auth::user()->isnotColab){
+        if (Auth::user()->isnotColab) {
             $cola = Request('id_userSerch');
         } else {
             $cola = Auth::user()->id;
@@ -56,25 +56,25 @@ class ProyectoController extends Controller
         $hoy = Carbon::today();
         $title = 'Lista de Proyectos';
         $estado = Proyecto::$estado;
-        $items = Proyecto::with(['tareas', 'finanzas'])->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) { 
+        $items = Proyecto::with(['tareas', 'finanzas'])->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
             return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
         })
-        ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
-            return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
-        })
-        ->when($est, function ($query, $id_estado) {
-            return $query->whereIN('id_estado', $id_estado);
-        })
-        ->when($cola, function ($query, $id_user) { 
-            return $query->where('id_user', $id_user);
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(10)
-        ->appends(request()->query());
+            ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
+                return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
+            })
+            ->when($est, function ($query, $id_estado) {
+                return $query->whereIN('id_estado', $id_estado);
+            })
+            ->when($cola, function ($query, $id_user) {
+                return $query->where('id_user', $id_user);
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->appends(request()->query());
 
         $userColab = User::where('id_rol', 3)->where('activo', 1)
-        ->get(['id', 'nombre_completo'])
-        ->toArray();
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
 
         $estadoTarea = Tarea::$estado;
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
@@ -87,18 +87,36 @@ class ProyectoController extends Controller
         $headerCotizacion = ['Fec Creacion', 'Nombre Material', 'Cantidad', 'Val Unid', 'SubTotal', 'Opciones'];
         $headerComparativo = ['ID', 'Nombre Item', 'Cant. Desp.', 'Val Unidad Desp.', 'Cant. Cotizada', 'Val Unidad Cotizado'];
 
-	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+        $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
         $proyecto = [];
         $tipoDoc = Proyecto::$tipoDocumento;
         $colaUsers = User::where('id_rol', 3)
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
-        return view('proyecto.index', compact('title', 'items', 'estado', 'departamentos', 'userColab', 'estadoTarea', 'tareaTipo', 'tipoDoc', 'colaUsers',
-            'headerFinanzas', 'tipoFinanzas', 'headerAvance', 'headerCotizacion', 'materiales', 'festivos', 'hoy', 'headerComparativo', 'proyecto'));
+        return view('proyecto.index', compact(
+            'title',
+            'items',
+            'estado',
+            'departamentos',
+            'userColab',
+            'estadoTarea',
+            'tareaTipo',
+            'tipoDoc',
+            'colaUsers',
+            'headerFinanzas',
+            'tipoFinanzas',
+            'headerAvance',
+            'headerCotizacion',
+            'materiales',
+            'festivos',
+            'hoy',
+            'headerComparativo',
+            'proyecto'
+        ));
     }
 
-    public function create() 
+    public function create()
     {
         $anterior = url()->previous();
         session(['proyecto_url' => $anterior]);
@@ -119,7 +137,7 @@ class ProyectoController extends Controller
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
-    
+
         $title = $id ? 'Editar Proyecto' : 'Crear Proyecto';
         $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
         $ciudades = [];
@@ -135,10 +153,10 @@ class ProyectoController extends Controller
 
     public function save(Request $req)
     {
-        if($req->conFechaFin == 0){
-            $val = ['dias_trabajo' => 'nullable|integer|min:1']; 
+        if ($req->conFechaFin == 0) {
+            $val = ['dias_trabajo' => 'nullable|integer|min:1'];
         } else {
-            $val = ['fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio']]; 
+            $val = ['fec_fin_estimado' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio']];
         }
 
         $valbase = [
@@ -155,34 +173,34 @@ class ProyectoController extends Controller
             'fec_fin_real' => ['nullable', 'date', 'date_format:Y-m-d'],
             'id_estado' => Rule::in(array_keys(Proyecto::$estado)),
             'id_user' => [
-                    'required',
-                    'integer',
-                    Rule::exists('users', 'id'),
-                ],
+                'required',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'id_user_obra_blanca' => [
-                    'nullable',
-                    'integer',
-                    Rule::exists('users', 'id'),
-                ],
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'id_user_carpinteria' => [
-                    'nullable',
-                    'integer',
-                    Rule::exists('users', 'id'),
-                ]
-            ]; 
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ]
+        ];
 
         $data = $req->validate(array_merge($val, $valbase));
 
-        if($data['conFechaFin']==1){
+        if ($data['conFechaFin'] == 1) {
             $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
-            $data['dias_trabajo'] = ceil( (new Festivos)
-                ->contarDiasHabiles($data['fec_inicio'], $data['fec_fin_estimado'], $festivos) );
+            $data['dias_trabajo'] = ceil((new Festivos)
+                ->contarDiasHabiles($data['fec_inicio'], $data['fec_fin_estimado'], $festivos));
         } else {
             $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
         }
 
         $msg = ucfirst($req->id ? 'Proyecto editado con éxito' : 'Proyecto creado con éxito');
-    
+
         try {
             DB::beginTransaction();
             Proyecto::updateOrCreate(['id' => $data['id']], $data);
@@ -206,41 +224,41 @@ class ProyectoController extends Controller
                 Rule::exists('proyectos', 'id'),
             ],
             'id_user_proy' => [
-                    'required',
-                    'integer',
-                    Rule::exists('users', 'id'),
-                ],
+                'required',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'id_user_obra_blanca' => [
-                    'nullable',
-                    'integer',
-                    Rule::exists('users', 'id'),
-                ],
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'id_user_carpinteria' => [
-                    'nullable',
-                    'integer',
-                    Rule::exists('users', 'id'),
-                ],
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'dias_trabajo_begin' => 'nullable|integer|min:1',
             'conFechaFin_b' => 'required|integer|in:0,1',
             'observacion' => 'nullable|string',
             'fec_inicio_begin' => ['required', 'date', 'date_format:Y-m-d'],
             'fec_fin_estimado_b' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio_begin']
-        ]; 
+        ];
 
         $data = $req->validate($valbase);
-        if($data['conFechaFin_b']==0){
+        if ($data['conFechaFin_b'] == 0) {
             $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $data['dias_trabajo_begin']);
             $data['dias_trabajo'] = $data['dias_trabajo_begin'];
         } else {
             $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
-            $data['dias_trabajo'] = ceil( (new Festivos)->contarDiasHabiles($data['fec_inicio_begin'], $data['fec_fin_estimado_b'], $festivos) );
+            $data['dias_trabajo'] = ceil((new Festivos)->contarDiasHabiles($data['fec_inicio_begin'], $data['fec_fin_estimado_b'], $festivos));
             $data['fec_fin_estimado'] = $data['fec_fin_estimado_b'];
         }
 
         $data['fec_inicio'] = $data['fec_inicio_begin'];
         $data['id_user'] = $data['id_user_proy'];
         $pro = Proyecto::find($data['id_proyecto_begin']);
-        $data['id_estado'] = ($pro->id_estado==2)?1:$pro->id_estado;
+        $data['id_estado'] = ($pro->id_estado == 2) ? 1 : $pro->id_estado;
         try {
             DB::beginTransaction();
             Proyecto::updateOrCreate(['id' => $data['id_proyecto_begin']], $data);
@@ -265,7 +283,7 @@ class ProyectoController extends Controller
             $proyecto->update([
                 'img_firma'   => null,
                 'id_estado'   => null,
-                'fec_fin_real'=> null
+                'fec_fin_real' => null
             ]);
             return response()->json(['success' => true, 'message' => 'Se ha borrado la firma exitosamente.']);
         }
@@ -295,14 +313,14 @@ class ProyectoController extends Controller
         return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente.']);
     }
 
-    public function saveTarea (Request $request)
+    public function saveTarea(Request $request)
     {
         $data = $request->validate([
             'id' => 'nullable|integer',
-            'id_proyecto' => ['required', 'integer', Rule::exists('proyectos', 'id') ],
-            'id_user' => ['required', 'integer', Rule::exists('users', 'id') ],
+            'id_proyecto' => ['required', 'integer', Rule::exists('proyectos', 'id')],
+            'id_user' => ['required', 'integer', Rule::exists('users', 'id')],
             'id_tarea_estado' => ['required', 'integer', Rule::in(array_keys(Tarea::$estado))],
-            'id_tarea_tipo' => ['required', 'integer', Rule::exists('tarea_tipos', 'id') ],
+            'id_tarea_tipo' => ['required', 'integer', Rule::exists('tarea_tipos', 'id')],
             'descripccion' => 'nullable|string|max:255',
             'fec_inicio' => ['required', 'date', 'date_format:Y-m-d'],
             'fec_fin' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio'],
@@ -311,15 +329,15 @@ class ProyectoController extends Controller
             'dias_trabajo' => 'required|integer|min:1'
         ]);
 
-        if($data['conFechaFin']==1){
+        if ($data['conFechaFin'] == 1) {
             $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
-            $data['dias_trabajo'] = ceil( (new Festivos)
-                ->contarDiasHabiles($data['fec_inicio'], $data['fec_fin'], $festivos) );
+            $data['dias_trabajo'] = ceil((new Festivos)
+                ->contarDiasHabiles($data['fec_inicio'], $data['fec_fin'], $festivos));
         } else {
             $data['fec_fin'] = (new Festivos)->calcularFechaFin($data['fec_inicio'], $data['dias_trabajo']);
         }
 
-        $msg = ucfirst($request->id ? 'Tarea editada' : "Tarea asignada" );
+        $msg = ucfirst($request->id ? 'Tarea editada' : "Tarea asignada");
 
         try {
             DB::beginTransaction();
@@ -335,10 +353,10 @@ class ProyectoController extends Controller
         }
     }
 
-    public function editTarea ($id)
+    public function editTarea($id)
     {
         $tarea = Tarea::find($id);
-        if($tarea){
+        if ($tarea) {
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de tareas.',
@@ -352,11 +370,11 @@ class ProyectoController extends Controller
         }
     }
 
-    public function deleteTarea ()
+    public function deleteTarea()
     {
         $tarea = Tarea::find(Request('id'));
         $idPro = $tarea->id_proyecto;
-        if($tarea){
+        if ($tarea) {
             Avance::where('id_tarea', Request('id'))->delete();
             $tarea->delete();
             if (!Tarea::where('id_tarea_estado', 2)->where('id_proyecto', $idPro)->exists()) {
@@ -396,10 +414,10 @@ class ProyectoController extends Controller
         }
     }
 
-    public function savefinanza (Request $request)
+    public function savefinanza(Request $request)
     {
         $data = $request->validate([
-            'id_proyecto_finanza' => ['required', 'integer', Rule::exists('proyectos', 'id') ],
+            'id_proyecto_finanza' => ['required', 'integer', Rule::exists('proyectos', 'id')],
             'tipo' => ['required', 'integer', Rule::in(array_keys(Finanza::$tipo))],
             'valor' => ['required', 'integer'],
             'concepto' => 'required|string|max:255'
@@ -426,19 +444,19 @@ class ProyectoController extends Controller
         try {
             $id = Tarea::find(Request('id'));
             $listAvance = Tarea::with(['avance', 'tareaTipo'])
-            ->where('id_proyecto', $id->id_proyecto)
-            ->orderBy('fec_inicio', 'desc')
-            ->get()
-            ->map(function ($data) {
-                return [
-                    'id' => $data->id,
-                    'nombre_tarea' => $data->tareaTipo->nombre_tarea,
-                    'fech_ini' => $data->fec_inicio,
-                    'fech_fin' => $data->fec_fin,
-                    'estado' => $data->spanEstado,
-                    'avances' => $data->avance
-                ];
-            })->toArray();
+                ->where('id_proyecto', $id->id_proyecto)
+                ->orderBy('fec_inicio', 'desc')
+                ->get()
+                ->map(function ($data) {
+                    return [
+                        'id' => $data->id,
+                        'nombre_tarea' => $data->tareaTipo->nombre_tarea,
+                        'fech_ini' => $data->fec_inicio,
+                        'fech_fin' => $data->fec_fin,
+                        'estado' => $data->spanEstado,
+                        'avances' => $data->avance
+                    ];
+                })->toArray();
 
             return response()->json([
                 'status' => true,
@@ -454,10 +472,10 @@ class ProyectoController extends Controller
         }
     }
 
-    public function saveAvance (Request $request) 
+    public function saveAvance(Request $request)
     {
         $data = $request->validate([
-            'id_tarea_avance' => ['required', 'integer', Rule::exists('tareas', 'id') ],
+            'id_tarea_avance' => ['required', 'integer', Rule::exists('tareas', 'id')],
             'fec_avance' => ['required', 'date', 'date_format:Y-m-d'],
             'avance' => 'required|string|max:255'
         ]);
@@ -502,33 +520,32 @@ class ProyectoController extends Controller
     {
         try {
             $list = Cotizacion::with(['material'])
-            ->where('id_proyecto', Request('id'))
-            ->selectRaw(
-                'id,
+                ->where('id_proyecto', Request('id'))
+                ->selectRaw(
+                    'id,
                 id_inventario,
                 createdAt,
                 cantidad,
                 valor_unidad'
-            )
-            ->paginate(10)
-            ->through(function ($data) {
-                return [
-                    'id' => $data->id,
-                    'id_inventario' => $data->id_inventario,
-                    'cantidad' => $data->cantidad,
-                    'valor_unidad' => $data->valor_unidad,
-                    'subtotal' => $data->cantidad * $data->valor_unidad,
-                    'createdAt' => explode(' ', $data->createdAt)[0],
-                    'nombre_material' => $data->material->nombre_material
-                ];
-            });
+                )
+                ->paginate(10)
+                ->through(function ($data) {
+                    return [
+                        'id' => $data->id,
+                        'id_inventario' => $data->id_inventario,
+                        'cantidad' => $data->cantidad,
+                        'valor_unidad' => $data->valor_unidad,
+                        'subtotal' => $data->cantidad * $data->valor_unidad,
+                        'createdAt' => explode(' ', $data->createdAt)[0],
+                        'nombre_material' => $data->material->nombre_material
+                    ];
+                });
 
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de avance.',
                 'data' => $list
             ], 200);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -558,7 +575,7 @@ class ProyectoController extends Controller
                     if (!$material || $material->activo != 1) {
                         $fail('El material seleccionado no está disponible.');
                     }
-                    
+
                     $cot = Cotizacion::where('id_proyecto', $idProyecto)->where('id_inventario', $value)->first();
                     if ($cot) {
                         $name = $cot->material->nombre_material;
@@ -574,7 +591,7 @@ class ProyectoController extends Controller
                     $index = explode('.', $attribute)[1];
                     $materialId = $request->input("materiales.{$index}.id_material");
                     $material = InventarioMaterial::find($materialId);
-    
+
                     if ($material && $request->tipo != 2 && $value > $material->cantidad) {
                         $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
                     }
@@ -593,13 +610,12 @@ class ProyectoController extends Controller
                     Cotizacion::create($dato);
                 }
             });
-    
+
             if ($request->wantsJson()) {
                 return response()->json(['success' => true, 'message' => 'Cotización guardada exitosamente']);
             }
-    
+
             return redirect()->route('proyecto.index')->with('success', 'Cotización guardada exitosamente');
-    
         } catch (\Throwable $e) {
             if ($request->wantsJson()) {
                 return response()->json([
@@ -608,7 +624,7 @@ class ProyectoController extends Controller
                     'error' => $e->getMessage()
                 ], 500);
             }
-    
+
             return back()->withErrors(['message' => 'Error al guardar la cotización']);
         }
     }
@@ -672,10 +688,10 @@ class ProyectoController extends Controller
         $pdf->set_option('isRemoteEnabled', true);
         $pdf->set_option('defaultFont', 'DejaVu Sans');
 
-        if( Request('view') ){
-            return $pdf->stream('factura-'.Request('id').'.pdf');
+        if (Request('view')) {
+            return $pdf->stream('factura-' . Request('id') . '.pdf');
         }
-        return $pdf->download('factura-'.Request('id').'.pdf');
+        return $pdf->download('factura-' . Request('id') . '.pdf');
     }
 
     public function pdfDespacho()
@@ -695,36 +711,36 @@ class ProyectoController extends Controller
         ];
 
         $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
-        if( Request('view') ){
-            return $pdf->stream('factura-'.Request('id').'.pdf');
+        if (Request('view')) {
+            return $pdf->stream('factura-' . Request('id') . '.pdf');
         }
-        return $pdf->download('factura-'.Request('id').'.pdf');
+        return $pdf->download('factura-' . Request('id') . '.pdf');
     }
 
     public function listComparativo()
     {
 
         $proyecto = Proyecto::with([
-            'despachos.material', 
+            'despachos.material',
             'cotizacion.material'
         ])->find(Request('id'));
-        
+
         if (!$proyecto) {
             return response()->json(['error' => 'Proyecto no encontrado'], 404);
         }
-        
+
         $idDespachos = $proyecto->despachos->pluck('id_material')->filter()->unique()->toArray();
         $idCotizacion = $proyecto->cotizacion->pluck('id_inventario')->filter()->unique()->toArray();
         $todosLosIds = array_unique(array_merge($idDespachos, $idCotizacion));
 
         $materiales = InventarioMaterial::wherein('id', $todosLosIds)->get(['id', 'nombre_material']);
 
-        $data = []; 
+        $data = [];
         foreach ($materiales as $key => $value) {
             $array = [];
             $despachos = Despachos::where('id_proyecto', request('id'))
-            ->where('id_material', $value['id'])
-            ->get();
+                ->where('id_material', $value['id'])
+                ->get();
 
             // Agrupar por tipo
             $grouped = $despachos->groupBy('tipo');
@@ -744,13 +760,13 @@ class ProyectoController extends Controller
             $total_cantidad = $tipo1_cantidad - $tipo2_cantidad;
             $total_subtotal = $tipo1_subtotal - $tipo2_subtotal;
             $valor_unitario_promedio = $total_cantidad > 0 ? $total_subtotal / $total_cantidad : 0;
-        
+
             $cotizaciones = Cotizacion::where('id_proyecto', Request('id'))->where('id_inventario', $value['id'])->first();
 
             $array['id_material'] = $value['id'];
             $array['nombre_material'] = $value['nombre_material'];
-            $array['cot_cantidad'] = $cotizaciones?$cotizaciones['cantidad']:'0';
-            $array['cot_valor'] = $cotizaciones?$cotizaciones['valor_unidad']:'0';
+            $array['cot_cantidad'] = $cotizaciones ? $cotizaciones['cantidad'] : '0';
+            $array['cot_valor'] = $cotizaciones ? $cotizaciones['valor_unidad'] : '0';
             $array['desp_cantidad'] = $total_cantidad;
             $array['desp_valor'] = $valor_unitario_promedio;
 
@@ -761,7 +777,7 @@ class ProyectoController extends Controller
             'message' => 'Lista de comparativp.',
             'data' => $data
         ], 200);
-    } 
+    }
 
 
     public function contratoPdf($idProyecto)
@@ -772,10 +788,9 @@ class ProyectoController extends Controller
 
             // Generar PDF desde la vista HTML
             $pdf = PDF::loadView('proyecto.pdfContrato', $data);
-            
+
             // Devolver el PDF para visualización en el navegador
             return $pdf->stream('contrato-' . $proyecto->id . '.pdf');
-
         } catch (\Exception $e) {
             Log::error('Error generando contrato PDF: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
