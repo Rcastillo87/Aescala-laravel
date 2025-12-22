@@ -38,8 +38,8 @@
         }
 
         .section {
-            margin-top: 15px;
-            margin-bottom: 15px;
+            margin-top: 0px;
+            margin-bottom: 10px;
         }
 
         .section-title {
@@ -69,12 +69,13 @@
         }
 
         .items td {
-            padding: 6px;
+            padding: 7px;
             border-bottom: 1px solid #ddd;
         }
 
         .text-center { text-align: center; }
         .text-right { text-align: right; }
+        .text-justify { text-align: justify; }
 
         .total-box {
             border-top: 2px solid #444;
@@ -90,7 +91,7 @@
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 20px;
             font-size: 10px;
             color: #666;
             text-align: center;
@@ -165,10 +166,11 @@
         <table class="items">
             <thead>
                 <tr>
-                    <th width="10%">#</th>
-                    <th width="15%">Fecha</th>
-                    <th width="55%">Descripción</th>
-                    <th width="20%" class="text-right">Valor</th>
+                    <th width="8%">Pago #</th>
+                    <th width="12%">Fecha</th>
+                    <th width="35%">Concepto de pago</th>
+                    <th width="22%">Nota</th>
+                    <th width="13%" class="text-right">Valor</th>
                 </tr>
             </thead>
             <tbody>
@@ -176,7 +178,8 @@
                 <tr>
                     <td class="text-center">{{ $item->rc }}</td>
                     <td>{{ $item->fecha_pago }}</td>
-                    <td>{{ $item->descripcion }}</td>
+                    <td class="text-justify">{{ $item->descripcion }}</td>
+                    <td class="text-justify">{{ $item->comentario }}</td>
                     <td class="text-right">
                         $ {{ number_format($item->valor_pago, 0, ',', '.') }}
                     </td>
@@ -190,14 +193,9 @@
     <div class="section">
         <table>
             <tr>
-                <td width="65%">
-                    <div class="section-title">Observaciones</div>
-                    <div class="observaciones"></div>
-                </td>
-                <td width="35%" class="text-right">
+                <td width="100%" class="text-right">
                     <div class="total-box">
-                        TOTAL PAGADO<br>
-                        $ {{ number_format($total_pago, 0, ',', '.') }}
+                        TOTAL PAGADO: $ {{ number_format($total_pago, 0, ',', '.') }}
                     </div>
                 </td>
             </tr>
@@ -206,7 +204,8 @@
 
     <!-- FOOTER -->
     <div class="footer">
-        Documento generado automáticamente • {{ now()->format('d/m/Y H:i') }}
+        {{ env('RAZON') }} | NIT: {{ env('NIT') }} | {{ env('DIREC', '---') }} | Tel: {{ env('TEL', '---') }} <br>
+        Documento generado el {{ now()->format('d/m/Y H:i') }}
     </div>
 
 </div>

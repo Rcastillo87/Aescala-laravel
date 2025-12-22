@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Otrosi;
 use App\Models\Proyecto;
 use App\Models\Pagos;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -21,12 +22,34 @@ class CarteraController extends Controller
         $usuario = Auth::user();
 
         $items_1 = Proyecto::with(['user'])
+            ->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
+                return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
+            })
+            ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
+                return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
+            })
+            ->when(Request('id_userSerch'), function ($query, $id_user) {
+                return $query->where('id_user', $id_user);
+            })
             ->whereIn('id_estado', [1, 3, 5])
             ->WhereRaw('(termino_1_por + termino_2_por + termino_3_por + termino_4_por + termino_5_por + termino_6_por) > 0')
             ->paginate(10, ['*'], 'page_proyectos') 
             ->appends(request()->query());
             
-        $items_2 = Otrosi::with(['user_encargado'])
+        $items_2 = Otrosi::with(['user_encargado', 'proyecto'])
+            ->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
+                return $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
+                    $q->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
+                });
+            })
+            ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
+                return $query->whereHas('proyecto', function ($q) use ($nombre_cliente) {
+                    $q->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
+                });
+            })
+            ->when(Request('id_userSerch'), function ($query, $id_user) {
+                return $query->where('id_user_encargado', $id_user);
+            })
             ->where('estado', 1)
             ->whereHas('proyecto', function ($query) {
                 $query->whereIn('id_estado', [1, 3, 5]);
@@ -34,11 +57,15 @@ class CarteraController extends Controller
             ->paginate(10, ['*'], 'page_otrosi')
             ->appends(request()->query());
 
+        $userColab = User::where('id_rol', 3)->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
+
         $headers_1 = ['Proyecto', 'Cliente', 'En Cargado',  'Estado Proyecto', 'Pagos / Total', 'Paz & Salvo', 'Opciones'];
 
         $headers_2 = ['Otro Si',  'Cliente', 'En Cargado', 'Estado Otro Si', 'Pagos / Total', 'Paz & Salvo', 'Opciones'];
 
-        return view('cartera.index', compact( 'title', 'items_1', 'items_2', 'headers_1', 'headers_2'));
+        return view('cartera.index', compact( 'title', 'items_1', 'items_2', 'headers_1', 'headers_2', 'userColab'));
     }
 
     public function save(Request $request)
@@ -201,7 +228,8 @@ class CarteraController extends Controller
                 'rc'           => $item->rc,
                 'fecha_pago'   => $item->fecha_pago,
                 'descripcion'  => $descripcion,
-                'valor_pago'   => $item->valor_pagado
+                'valor_pago'   => $item->valor_pagado,
+                'comentario'   => $item->comentario
             ];
         });
 
@@ -221,6 +249,51 @@ class CarteraController extends Controller
             ->setOption('defaultFont', 'DejaVu Sans');
 
         return $pdf->stream('recibo-'.$id.'.pdf');
+    }
+
+    public function deletePago($id)
+    {
+        $pago = Pagos::findOrFail($id);
+        $tipo_pago = $pago->tipo_pago;
+        $id_proyecto = $pago->id_proyecto;
+
+        try {
+            DB::beginTransaction();
+
+            $pago->delete();
+
+            if ($tipo_pago == 1) {
+                $proyecto = Proyecto::find($id_proyecto);
+                $totalPagado = $proyecto->totalPagado;
+
+                if ($totalPagado < ($proyecto->total ?? 0)) {
+                    $proyecto->update(['paz_salvo' => 0]);
+                }
+            } elseif ($tipo_pago == 2) {
+                $otroSi = Otrosi::find($id_proyecto);
+                $totalPagado = Pagos::where([
+                    'id_proyecto' => $id_proyecto,
+                    'tipo_pago'   => 2
+                ])->sum('valor_pagado');
+
+                if ($totalPagado < ($otroSi->totalDeve ?? 0)) {
+                    $otroSi->update(['paz_salvo' => 0]);
+                }
+            }
+
+            DB::commit();
+            return response()->json([
+                'status'  => true,
+                'message' => 'Pago eliminado correctamente.',
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => 'Error al eliminar el pago.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
 }

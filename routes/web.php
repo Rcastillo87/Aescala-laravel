@@ -185,6 +185,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pagosOtroSi/{id}', [CarteraController::class, 'pagosOtroSi'])->name('pagosOtroSi');
         Route::post('/save', [CarteraController::class, 'save'])->name('save');
         Route::get('/reciboPDF/{id}/{tipo}', [CarteraController::class, 'reciboPDF'])->name('reciboPDF');
+        Route::post('/deleetePago/{id}', [CarteraController::class, 'deletePago'])->name('deletePago');
     });
 
     Route::prefix('solicitud')->name('solicitud.')->group(function () {

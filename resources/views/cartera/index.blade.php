@@ -3,6 +3,8 @@
 
 <div>
 
+    @include('cartera.filter')
+
     <div class="relative overflow-x-auto rounded-lg border border-gray-200 mb-4">
         <h3 class="text-xl font-medium leading-6 text-gray-900 p-4">Cartera de Proyectos</h3>
         <table class="w-full text-left text-sm text-gray-500">

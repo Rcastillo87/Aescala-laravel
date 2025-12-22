@@ -76,13 +76,14 @@ async function mostrarPagos(id, nombreProyecto, pazSalvo) {
                 const fila = `
                     <tr class="hover:bg-gray-50 transition-all">
                         <th class="px-2 py-1 text-center">${pago.rc}</th>
-                        <th class="px-2 py-1 text-center">${pago.fv}</th>
+                        <th class="px-2 py-1 text-center">${pago.fv??''}</th>
                         <th class="px-2 py-1 text-center">${getConcepto.msg}</th>
                         <td class="px-2 py-1 text-center">$${pago.valor_pagado.toLocaleString()}</td>
                         <td class="px-2 py-1 text-center">$${pago.fecha_pago}</td>
                         <td class="px-2 py-1 text-center w-50">${pago.comentario || '-'}</td>
                         <td class="px-2 py-1 text-center">
-                            <a class="inline-flex items-center justify-center w-9 h-9 rounded-full border-2 bg-red-600 hover:bg-red-700 border-red-700 focus:ring-red-300 text-white transition-all focus:ring-2 focus:ring-offset-1">
+                            <a onclick="deletePago(${pago.id})"
+                                class="inline-flex items-center justify-center w-9 h-9 rounded-full border-2 bg-red-600 hover:bg-red-700 border-red-700 focus:ring-red-300 text-white transition-all focus:ring-2 focus:ring-offset-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -189,12 +190,13 @@ async function mostrarPagosOtroSi(id, nombreOtroSi, pazSalvo) {
                 const fila = `
                     <tr class="hover:bg-gray-50 transition-all">
                         <th class="px-2 py-1 text-center">${pago.rc}</th>
-                        <th class="px-2 py-1 text-center">${pago.fv}</th>
+                        <th class="px-2 py-1 text-center">${pago.fv??''}</th>
                         <td class="px-2 py-1 text-center">$${pago.valor_pagado.toLocaleString()}</td>
                         <td class="px-2 py-1 text-center">$${pago.fecha_pago}</td>
                         <td class="px-2 py-1 text-center w-50">${pago.comentario || '-'}</td>
                         <td class="px-2 py-1 text-center">
-                            <a class="inline-flex items-center justify-center w-9 h-9 rounded-full border-2 bg-red-600 hover:bg-red-700 border-red-700 focus:ring-red-300 text-white transition-all focus:ring-2 focus:ring-offset-1">
+                            <a onclick="deletePago(${pago.id})"
+                                class="inline-flex items-center justify-center w-9 h-9 rounded-full border-2 bg-red-600 hover:bg-red-700 border-red-700 focus:ring-red-300 text-white transition-all focus:ring-2 focus:ring-offset-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -296,3 +298,49 @@ function mostrarErrores(errors) {
         }
     });
 }
+
+deletePago = async (id) => {
+    try {
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará el pago seleccionado.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Eliminando pago...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const response = await fetch(`deleetePago/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+
+            const resData = await response.json();
+            Swal.close();
+
+            if (resData.status) {
+                Swal.fire('Éxito', resData.message, 'success');
+                setTimeout(() => window.location.reload(), 1200);
+            } else {
+                Swal.fire('Error', resData.message, 'error');
+            }
+        }
+    } catch (error) {
+        Swal.close();
+        Swal.fire('Error', 'No se pudo eliminar el pago.', 'error');
+        console.error(error);
+    }
+}
+
