@@ -1,4 +1,4 @@
-async function mostrarPagos(id, nombreProyecto) {
+async function mostrarPagos(id, nombreProyecto, pazSalvo) {
     try {
         Swal.fire({
             title: 'Cargando pagos...',
@@ -21,6 +21,12 @@ async function mostrarPagos(id, nombreProyecto) {
         const data = result.data.pagado;
         const conceptos = result.data.conceptos_pago;
         const totalApagar = result.data.total_apagar;
+
+        if(pazSalvo == 1){
+            document.getElementById('formPago').classList.add('hidden');
+        } else {
+            document.getElementById('formPago').classList.remove('hidden');
+        }
 
         document.getElementById('txTitulo').textContent = 'Pagos del Proyecto: ' + nombreProyecto;
         const select = document.getElementById('concepto');
@@ -114,7 +120,7 @@ async function mostrarPagos(id, nombreProyecto) {
     }
 }
 
-async function mostrarPagosOtroSi(id, nombreOtroSi) {
+async function mostrarPagosOtroSi(id, nombreOtroSi, pazSalvo) {
     try {
         Swal.fire({
             title: 'Cargando pagos...',
@@ -137,6 +143,12 @@ async function mostrarPagosOtroSi(id, nombreOtroSi) {
         const data = result.data.pagado;
         const totalDeve = result.data.totalDeve;
         const totalPago = result.data.totalPago;
+
+        if(pazSalvo == 1){
+            document.getElementById('formPago').classList.add('hidden');
+        } else {
+            document.getElementById('formPago').classList.remove('hidden');
+        }
 
         document.getElementById('txTitulo').textContent = `Pagos de ${nombreOtroSi}`;
         const divselect = document.getElementById('id_concepto');

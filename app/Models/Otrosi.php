@@ -162,4 +162,10 @@ class Otrosi extends Model
         return $this->pagos()->where(['id_proyecto' => $this->id, 'tipo_pago' => 2])->sum('valor_pagado');
     }
 
+    public function getApazAttribute()
+    {
+        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>': 
+            '<span class="span-red">NO</span>';
+    }
+
 }

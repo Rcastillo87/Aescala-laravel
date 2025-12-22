@@ -316,22 +316,23 @@ class Proyecto extends Model
         $arrayPagos = [];
         $total = $this->total;
         $txtArr = [
-            1 => 'Punto 1: Pago inicial para el inicio de la etapa de diseño.',
-            2 => 'Punto 2: Pago al aprobar el diseño para comenzar la obra.',
-            3 => 'Punto 3: Pago correspondiente al corte de carpintería.',
-            4 => 'Punto 4: Pago al iniciar la instalación de carpintería.',
-            5 => 'Punto 5: Pago al comenzar la instalación de accesorios, grifería y mesón.',
-            6 => 'Punto 6: Pago final por la entrega de la obra.',
+            1 => 'correspondiente al inicio de la etapa de diseño.',
+            2 => 'correspondiente a la aprobación del diseño para dar inicio a la obra.',
+            3 => 'correspondiente al corte de carpintería.',
+            4 => 'correspondiente al inicio de la instalación de carpintería.',
+            5 => 'correspondiente al inicio de la instalación de accesorios, grifería y mesón.',
+            6 => 'correspondiente al pago final por la entrega de la obra.',
         ];
 
         for ($i = 1; $i <= 6; $i++) {
             $campo = "termino_{$i}_por";
-            if (isset($this->$campo) && $this->$campo > 0) {
+            if (!empty($this->$campo) && $this->$campo > 0) {
+                $porcentaje = $this->$campo;
                 $arrayPagos[] = [
-                    'msg' => $txtArr[$i],
+                    'msg' => "Pago del {$porcentaje}% - {$txtArr[$i]}",
                     'termino' => $i,
-                    'porcentaje' => $this->$campo,
-                    'valor_apagar' => ceil($total * $this->$campo / 100)
+                    'porcentaje' => $porcentaje,
+                    'valor_apagar' => ceil($total * $porcentaje / 100),
                 ];
             }
         }

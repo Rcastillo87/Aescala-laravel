@@ -24,6 +24,7 @@ class Pagos extends Model
         'comentario',
         'fv',//se ingresa manualmente
         'rc',//cosecutivo
+        'id_user'
     ];
 
     // Relación con el modelo fecha_pago
@@ -39,10 +40,18 @@ class Pagos extends Model
 
     public function getValanceAttribute()
     {
+        if ($this->tipo_pago != 1) {
+            return false;
+        }
+
         $proyecto = $this->proyecto;
+        if (!$proyecto) {
+            return false;
+        }
+
         $debe = $proyecto->total ?? 0;
         $pagado = self::where([
-            'tipo_pago' => $this->tipo_pago,
+            'tipo_pago'   => 1,
             'id_proyecto' => $this->id_proyecto
         ])->sum('valor_pagado');
 
@@ -51,14 +60,22 @@ class Pagos extends Model
 
     public function getValanceOtroSiAttribute()
     {
+        if ($this->tipo_pago != 2) {
+            return false;
+        }
+
         $otroSi = $this->otro_si;
-        $totalDeve = $otroSi->totalDeve;
+        if (!$otroSi) {
+            return false;
+        }
+
+        $totalDebe = $otroSi->totalDeve ?? 0;
         $pagado = self::where([
-            'tipo_pago' => $this->tipo_pago,
+            'tipo_pago'   => 2,
             'id_proyecto' => $this->id_proyecto
         ])->sum('valor_pagado');
 
-        return $pagado >= $totalDeve;
+        return $pagado >= $totalDebe;
     }
 
 }

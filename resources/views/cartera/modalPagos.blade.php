@@ -43,8 +43,8 @@
                 </div>
 
                 <div class="w-full max-w-full p-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                    <x-input-label for="fv" :value="__('Factura de Venta *')" />
-                    <x-text-input id="fv" maxlength="20" class="block mt-1 w-full" type="text" name="fv" required />
+                    <x-input-label for="fv" :value="__('Factura de Venta')" />
+                    <x-text-input id="fv" maxlength="20" class="block mt-1 w-full" type="text" name="fv" />
                     <div data-error-for="fv" class="mt-2 text-sm text-red-600 hidden"></div>
                 </div>
 

@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Collection;
 
 
 class CarteraController extends Controller
@@ -24,13 +23,11 @@ class CarteraController extends Controller
         $items_1 = Proyecto::with(['user'])
             ->whereIn('id_estado', [1, 3, 5])
             ->WhereRaw('(termino_1_por + termino_2_por + termino_3_por + termino_4_por + termino_5_por + termino_6_por) > 0')
-            //->where('a_paz', 0)
             ->paginate(10, ['*'], 'page_proyectos') 
             ->appends(request()->query());
             
         $items_2 = Otrosi::with(['user_encargado'])
             ->where('estado', 1)
-            //->where('a_paz', 0)
             ->whereHas('proyecto', function ($query) {
                 $query->whereIn('id_estado', [1, 3, 5]);
             })
@@ -51,19 +48,15 @@ class CarteraController extends Controller
             'tipo'         => 'required|integer|in:1,2',
             'valor_pagado' => 'required|numeric|min:0',
             'comentario'   => 'nullable|string|max:500',
-            'fv'           => 'required|string|max:20',
+            'fv'           => 'nullable|string|max:20',
             'fecha_pago'   => 'required|date',
         ];
 
         if($request->tipo == 1){
-            //$id = $request->proyecto_id;
             $val = array_merge($val, ['concepto'     => 'required|integer|between:1,6']);
-        } else {
-            //$id = Otrosi::find($request->proyecto_id)->id_proyecto;
         }
 
         $validator = Validator::make($request->all(), $val, [
-            // Mensajes personalizados (opcional pero recomendado)
             'required' => 'Este campo es obligatorio.',
             'integer'  => 'Debe ser un número válido.',
             'numeric'  => 'Debe ser un valor numérico.',
@@ -98,24 +91,18 @@ class CarteraController extends Controller
                 'concepto'     => $request->concepto,
                 'fv'           => $request->fv,
                 'rc'           => $rc,
+                'id_user'      => Auth::id(),
             ]);
 
-            // Si el pago deja en balance
             if ($pago->valance && $request->tipo == 1) {
-                $proyecto = Proyecto::find($request->proyecto_id);
-                $proyecto->paz_salvo = 1;
-                $proyecto->save();
+                Proyecto::find($request->proyecto_id)->update(['paz_salvo' => 1]);
             }
 
-           // Si el pago deja en balance
             if ($pago->valanceOtroSi && $request->tipo == 2) {
-                $otroSi = Otrosi::find($request->proyecto_id);
-                $otroSi->paz_salvo = 1;
-                $otroSi->save();
+                Otrosi::find($request->proyecto_id)->update(['paz_salvo' => 1]);
             }
 
             DB::commit();
-
             return response()->json([
                 'status'  => true,
                 'message' => 'Pago registrado correctamente.',
