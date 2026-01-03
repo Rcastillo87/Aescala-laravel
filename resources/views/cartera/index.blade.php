@@ -136,7 +136,7 @@
 
                                 @if ($item->totalPago > 0)
                                     <a tabindex="0" 
-                                        href="{{ route('cartera.reciboPDF', ['id' => $item->id, 'tipo' => 1]) }}"
+                                        href="{{ route('cartera.reciboPDF', ['id' => $item->id, 'tipo' => 2]) }}"
                                         data-tooltip-target="tooltip-hover-Recibo-{{$item->id}}" 
                                         data-tooltip-trigger="hover" target="_blank"
                                         class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4 

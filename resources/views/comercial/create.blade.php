@@ -136,6 +136,34 @@
                 <x-input-error :messages="$errors->get('descuento')" class="mt-2" />
             </div>
 
+            <div 
+                x-data="{ acepta: {{ old('acepta_trata_datos', $proyecto?->acepta_trata_datos ?? 0) ? 'true' : 'false' }} }"
+                x-on:aceptar-tratamiento.window="acepta = true"
+                x-on:revocar-tratamiento.window="acepta = false"
+                class="w-full max-w-full px-3 pt-6 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12"
+            >
+                <!-- Valor real -->
+                <input type="hidden" name="acepta_trata_datos" :value="acepta ? 1 : 0">
+
+                <label class="inline-flex items-center space-x-2">
+                    <input 
+                        type="checkbox"
+                        x-model="acepta"
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
+                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 
+                        dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    >
+
+                    <button 
+                        type="button"
+                        class="text-blue-600 underline hover:text-blue-800"
+                        x-on:click="$dispatch('open-modal', 'tratamiento-datos-modal')"
+                    >
+                        Acepto el tratamiento de datos personales
+                    </button>
+                </label>
+            </div>
+
             <hr class="w-full my-2">
             <div class="mx-auto px-2 py-2 flex justify-start w-full">
                 <h2 class="text-xl font-bold text-[#242e68]">Porcentajes </h2>
@@ -318,6 +346,7 @@
 </div>
 @include('comercial.modalEntregable')
 @include('comercial.modalFirma')
+@include('comercial.modalTrataDatos')
 @endsection
 
 @section('scripts')

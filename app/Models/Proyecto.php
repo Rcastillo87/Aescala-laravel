@@ -50,7 +50,8 @@ class Proyecto extends Model
         'fec_fin_real',
         'observacion',
         'descuento',
-        'paz_salvo'
+        'paz_salvo',
+        'acepta_trata_datos'
     ];
 
     protected $casts = [

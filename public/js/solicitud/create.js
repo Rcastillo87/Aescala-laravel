@@ -121,6 +121,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
         addedMaterials.delete(String(materialId));
     };
 
+
+    document.getElementById("id_fases").addEventListener("change", function() {
+         const option = this.options[this.selectedIndex];
+        const datax = JSON.parse(option.dataset.datax);
+
+        // Limpiar materiales seleccionados
+        document.getElementById('selectMateriales').innerHTML = '';
+        addedMaterials.clear();
+
+        // Agregar materiales de las fases seleccionadas
+        datax.materiales.forEach(id_material => {
+            addSelectedMaterial(id_material);
+        });
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -13,6 +13,7 @@ use App\Models\Proyecto;
 use App\Models\SolicitudItems;
 use App\Models\User;
 use App\Models\Despachos;
+use App\Models\Fase;
 use App\Http\Requests\SaveSolicitudRequest;
 
 class SolicitudController extends Controller
@@ -79,7 +80,17 @@ class SolicitudController extends Controller
             ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
 	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
-        return view('solicitud.create', compact('title', 'materiales', 'proyectos'));
+        $fases = Fase::all()->map(function ($item) {
+            $ids = explode(',', $item['id_materiales']);
+            return [ 
+                'id' => $item['id'],
+                'name_fase' => "Fase " . $item['id'],
+                'materiales' => $ids//InventarioMaterial::whereIn('id', $ids)->where('activo', 1)->get()->toArray()
+
+            ];
+        });
+        $fases = $fases->toArray();
+        return view('solicitud.create', compact('title', 'materiales', 'proyectos', 'fases'));
     }
 
     public function save(Request $request)

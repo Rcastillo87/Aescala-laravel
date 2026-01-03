@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-
     <div class="relative w-full h-full px-2 overflow-y-hidden">
         <form method="POST" id="formSolicitud" action="{{ route('solicitud.save') }}">
             @csrf
@@ -9,6 +8,21 @@
                 <div class="w-full lg:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
 
                     <input class="hidden" value="{{ Auth::user()->id }}" id="id_user" name="id_user">
+
+                    @if (Auth::user()->isColab || Auth::user()->isAdmin)
+                        <div>
+                            <x-input-label for="id_fases" :value="__('Seleccione la fase')" />
+                            <x-select-input 
+                                id="id_fases"
+                                name="id_fases" 
+                                :options="$fases"
+                                :datax="true"
+                                :data="['id', 'name_fase']"
+                                class="block mt-1 w-full" 
+                            />
+                        </div>
+                    @endif
+
                     <div>
                         <x-input-label for="id_proyecto" :value="__('Seleccione Proyecto *')" />
                         <x-select-input 
@@ -53,9 +67,16 @@
                 </div>
 
                 <!-- Segunda columna -->
-                <div class="w-full h-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
-                    <p class="font-bold text-xl mb-3">Materiales a solicitar</p>
-                    <div id="selectMateriales"></div>
+                <div class="w-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl flex flex-col">
+                    <p class="font-bold text-xl mb-3 shrink-0">
+                        Materiales a solicitar
+                    </p>
+                    <!-- CONTENEDOR CON SCROLL -->
+                    <div
+                        id="selectMateriales"
+                        class="flex-1 overflow-y-auto px-2"
+                        style="max-height: 70vh"
+                    ></div>
                 </div>
             </div>
 
