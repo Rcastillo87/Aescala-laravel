@@ -29,24 +29,54 @@
                             <canvas id="signature-pad" class="absolute top-0 left-0 w-full h-full z-10"></canvas>
                         </div>
 
-                        <!-- Opciones -->
-                        <div class="flex justify-between mt-4">
-                            <!-- Borrar -->
-                            <button type="button" id="clear-signature"
-                                class="flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-                                Borrar Firma
-                            </button>
-
-                            <!-- Guardar -->
-                            <button type="button" id="save-signature"
-                                class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
-                                Guardar Firma
-                            </button>
-                        </div>
-
                         <!-- Campo oculto donde se guarda la firma en Base64 -->
                         <form id="firmaForm" action="{{ route('guardarFirma') }}" method="POST">
                             @csrf
+
+                            <!-- Opciones -->
+                            <div class="flex justify-between mt-4">
+
+                                <div 
+                                    x-data="{ acepta: {{ old('acepta_trata_datos', $proyecto?->acepta_trata_datos ?? 0) ? 'true' : 'false' }} }"
+                                    x-on:aceptar-tratamiento.window="acepta = true"
+                                    x-on:revocar-tratamiento.window="acepta = false"
+                                    class="w-full max-w-full px-3 pt-6 shrink-0 lg:w-6/12 2xl:w-4/12"
+                                >
+                                    <!-- Valor real -->
+                                    <input type="hidden" name="acepta_trata_datos" :value="acepta ? 1 : 0">
+                                    <label class="inline-flex items-center space-x-2">
+                                        <input 
+                                            type="checkbox"
+                                            x-model="acepta"
+                                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
+                                            focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 
+                                            dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                        >
+                                        <button 
+                                            type="button"
+                                            class="text-blue-600 underline hover:text-blue-800"
+                                            x-on:click="$dispatch('open-modal', 'tratamiento-datos-modal')"
+                                        >
+                                            Acepto el tratamiento de datos personales
+                                        </button>
+                                    </label>
+                                </div>
+                                <div class="space-x-3 flex">
+                                    <!-- Borrar -->
+                                    <button type="button" id="clear-signature"
+                                        class="flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+                                        Borrar Firma
+                                    </button>
+
+                                    <!-- Guardar -->
+                                    <button type="button" id="save-signature"
+                                        class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
+                                        Guardar Firma
+                                    </button>
+                                </div>
+                                
+                            </div>
+                            
                             <input type="hidden" name="id" id="id" value="{{ $data['id_proyecto'] }}">
                             <input type="hidden" name="img_firma" id="img_firma">
                         </form>
@@ -85,6 +115,7 @@
 
         </div>
     </div>
+    @include('comercial.modalTrataDatos')
 </x-guest-layout>
 
 <script src="{{ asset('js/comercial/signature_pad.umd.min.js') }}"></script>
@@ -166,6 +197,15 @@
                         icon: "warning",
                         title: "Firma requerida",
                         text: "Por favor, dibuja tu firma antes de guardar.",
+                    });
+                    return;
+                }
+                const acepta = document.querySelector('input[name="acepta_trata_datos"]').value;
+                if (acepta !== '1') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Autorización requerida',
+                        text: 'Debe aceptar el tratamiento de datos personales para continuar.',
                     });
                     return;
                 }

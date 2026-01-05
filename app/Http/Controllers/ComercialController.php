@@ -8,7 +8,6 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\Base64PngOrNull;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\FirmaContratoMail;
@@ -166,6 +165,7 @@ class ComercialController extends Controller
                 "termino_6_por" => 'required|integer|min:0|max:100',
 
                 'opcion' => ['nullable', 'integer', Rule::in([0, 1])],
+                'acepta_trata_datos' => ['required', 'integer', Rule::in([1])],
                 'por_inicia' => [
                     'nullable',
                     'integer',
@@ -255,6 +255,7 @@ class ComercialController extends Controller
         $request->validate([
             'id' => 'required|exists:proyectos,id',
             'img_firma' => 'required|string',
+            'acepta_trata_datos' => ['nullable', 'integer', Rule::in([0, 1])],
         ]);
 
         try {
@@ -263,6 +264,7 @@ class ComercialController extends Controller
                 $proyecto->id_estado = 2;
             }
             $proyecto->img_firma = $request->img_firma;
+            $proyecto->acepta_trata_datos = $request->acepta_trata_datos;
             $proyecto->save();
 
             return response()->json([

@@ -109,6 +109,12 @@ class Proyecto extends Model
              . (self::$estado[2]) . '</span>';
     }
 
+    public function getSpanTratadatosAttribute()
+    {
+        return ($this->acepta_trata_datos==1) ? '<span class="span-green">SI</span>': 
+            '<span class="span-red">NO</span>';
+    }
+
     public function getContratoAttribute()
     {
         $dptArray = json_decode(
