@@ -22,25 +22,17 @@
              <form method="GET" action="{{route("material.index")}}">
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="nombre_material" :value="__('Nombre Material')" />
+                        <x-input-label for="nombre_material" :value="__('Busqueda por Nombre Material')" />
                         <x-text-input id="nombre_material" class="block mt-1 w-full" type="text" name="nombre_material" :value="Request('nombre_material')" 
                          autofocus />
                     </div>
+
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="cantidad" :value="__('Cantidad')" />
-                        <x-text-input id="cantidad" class="block mt-1 w-full" type="number" name="cantidad" :value="Request('cantidad')" 
+                        <x-input-label for="codigo" :value="__('Codigo Material')" />
+                        <x-text-input id="codigo" class="block mt-1 w-full" type="text" name="codigo" :value="Request('codigo')" 
                          autofocus />
                     </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="cantidad_min" :value="__('Cantidad Minima')" />
-                        <x-text-input id="cantidad_min" class="block mt-1 w-full" type="number" name="cantidad_min" :value="Request('cantidad_min')" 
-                         autofocus />
-                    </div>
-                    <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="valor_unidad" :value="__('Valor')" />
-                        <x-text-input id="valor_unidad" class="block mt-1 w-full" type="number" name="valor_unidad" :value="Request('valor_unidad')" 
-                         autofocus />
-                    </div>
+
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="tipo" :value="__('Tipo Material')" />
                         <x-select-input 
@@ -60,7 +52,7 @@
                         />
                     </div>
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="rango" :value="__('Rango Material')" />
+                        <x-input-label for="rango" :value="__('Rango de cantidades')" />
                         <select name="rango" id="rango" class="block mt-1 w-full border-gray-300 
                             focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option class="bg-gray-100" value="" @if(Request('rango') == '') selected @endif>-- Seleccione --</option>
@@ -71,7 +63,7 @@
                     </div>
 
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="aprobar" :value="__('Aprobacion para el Despacho')" />
+                        <x-input-label for="aprobar" :value="__('Aprobación para Despacho')" />
                         <select name="aprobar" id="aprobar" class="block mt-1 w-full border-gray-300 
                             focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="" @if(Request('aprobar') == '') selected @endif>-- Seleccione --</option>
@@ -79,6 +71,18 @@
                             <option value="0" @if(Request('aprobar') == '0') selected @endif>No</option>
                         </select>
                     </div>
+
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="id_proveedor" :value="__('Proveedor')" />
+                        <x-select-input
+                            name="id_proveedor" 
+                            :data="['id', 'razon_social']"
+                            :options="$proveedores" 
+                            :selected="Request('id_proveedor')" 
+                            class="block mt-1 w-full" 
+                        />
+                    </div>
+
 
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
@@ -94,6 +98,22 @@
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     </div>
+
+                    <div class="p-2 shrink-0">
+                        <button id="download-search-excel" class="inline-flex items-center px-3 py-2 text-sm font-medium
+                             text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"
+                                data-tooltip-target="tooltip-search-download" data-tooltip-style="light">
+                            <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01"/>
+                            </svg>
+                        </button>
+                        <div id="tooltip-search-download" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 
+                            bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip ">
+                            Descargar Busqueda en Excel
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </div>
+
                 </div>
             </form>
         </div>

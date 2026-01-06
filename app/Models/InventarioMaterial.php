@@ -17,14 +17,17 @@ class InventarioMaterial extends Model
 
     protected $fillable = [
         'nombre_material',
+        'codigo',
         'cantidad',
         'cantidad_min',
         'id_unidad',
         'valor_unidad',
+        'valor_inventario',
         'tipo',
         'descripccion',
         'activo',
-        'aprobar'
+        'aprobar',
+        'id_proveedor'
     ];
 
     protected $appends = ['spanTipo', 'unidades'];
@@ -97,4 +100,10 @@ class InventarioMaterial extends Model
         1 => 'span-green',
         2 => 'span-red'
     ];
+
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class, 'id_proveedor', 'id');
+    }
 }

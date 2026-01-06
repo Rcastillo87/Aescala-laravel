@@ -11,13 +11,27 @@
                 required autofocus />
                 <x-input-error :messages="$errors->get('nombre_material')" class="mt-2" />
             </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="codigo" :value="__('Codigo Material')" />
+                <x-text-input id="codigo" class="block mt-1 w-full" type="text" name="codigo" :value="old('codigo', $material?$material->codigo:'')" />
+                <x-input-error :messages="$errors->get('codigo')" class="mt-2" />
+            </div>
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="cantidad" :value="__('Cantidad *')" />
                 <x-text-input id="cantidad" class="block mt-1 w-full" step="any" type="number" name="cantidad" :value="old('cantidad', $material?$material->cantidad:'')" required/>
                 <x-input-error :messages="$errors->get('cantidad')" class="mt-2" />
             </div>
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="id_unidad" :value="__('Unidades *')" />
+                <x-input-label for="cantidad_min" :value="__('Cantidad Minima *')" />
+                <x-text-input id="cantidad_min" class="block mt-1 w-full" step="any" type="number" name="cantidad_min" :value="old('cantidad_min', $material?$material->cantidad_min:'')" required/>
+                <x-input-error :messages="$errors->get('cantidad_min')" class="mt-2" />
+            </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="id_unidad" :value="__('Unidad de medida *')" />
                 <x-select-input 
                     name="id_unidad" 
                     :options="$unidades" 
@@ -27,16 +41,19 @@
                 />
                 <x-input-error :messages="$errors->get('id_unidad')" class="mt-2" />
             </div>
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="cantidad_min" :value="__('Cantidad Minima *')" />
-                <x-text-input id="cantidad_min" class="block mt-1 w-full" step="any" type="number" name="cantidad_min" :value="old('cantidad_min', $material?$material->cantidad_min:'')" required/>
-                <x-input-error :messages="$errors->get('cantidad_min')" class="mt-2" />
-            </div>
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="valor_unidad" :value="__('Valor Unidad *')" />
-                <x-text-input id="valor_unidad" class="block mt-1 w-full moneda-cop" step="any" type="number" name="valor_unidad" :value="old('valor_unidad', $material?$material->valor_unidad:'')" required/>
+                <x-input-label for="valor_unidad" :value="__('Valor venta *')" />
+                <x-text-input id="valor_unidad" class="block mt-1 w-full moneda-cop" min="0" step="any" type="number" name="valor_unidad" :value="old('valor_unidad', $material?$material->valor_unidad:'')" required/>
                 <x-input-error :messages="$errors->get('valor_unidad')" class="mt-2" />
             </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="valor_inventario" :value="__('Valor inventario')" />
+                <x-text-input id="valor_inventario" class="block mt-1 w-full moneda-cop" min="0" step="any" type="number" name="valor_inventario" :value="old('valor_inventario', $material?$material->valor_inventario:'')"/>
+                <x-input-error :messages="$errors->get('valor_inventario')" class="mt-2" />
+            </div>
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="tipo" :value="__('Tipo Material')" />
                 <x-select-input 
@@ -47,10 +64,23 @@
                 />
                 <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
             </div>
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="descripccion" :value="__('Descripción')" />
                 <x-text-input id="descripccion" class="block mt-1 w-full" type="text" name="descripccion" :value="old('descripccion', $material?$material->descripccion:'')"/>
                 <x-input-error :messages="$errors->get('descripccion')" class="mt-2" />
+            </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="id_proveedor" :value="__('Proveedor Principal')" />
+                <x-select-input 
+                    name="id_proveedor" 
+                    :options="$proveedores" 
+                    :data="['id', 'razon_social']"
+                    :selected="old('id_proveedor',$material?$material->id_proveedor:'')" 
+                    class="block mt-1 w-full" 
+                />
+                <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
             </div>
             
             <div class="w-full max-w-full px-3 pt-8 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">

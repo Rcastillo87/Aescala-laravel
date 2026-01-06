@@ -45,16 +45,16 @@
                             {{ $item->nombre_material }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->cantidad}} {{ $item->unidades }}
+                            {{ $item->codigo }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->cantidad_min }} {{ $item->unidades }}
+                            ({{ $item->cantidad}} / {{ $item->cantidad_min }}) {{ $item->unidades }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            ${{ number_format($item->valor_unidad) }}
+                            ${{ number_format($item->valor_unidad) }} / ${{ number_format($item->valor_inventario) }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ explode(' ',  $item->createdAt)[0] }}
+                            {{ $item->proveedor?->razon_social ?? '--' }}
                         </td>
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {!! $item->tipoMaterial !!}
