@@ -31,7 +31,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-gray-100">
-        <div class="flex flex-wrap min-h-screen w-full content-center justify-center @if (env('APP_ENV') == 'production') bg-blue-300 @else bg-slate-100 @endif py-10">
+        <div class="flex flex-wrap min-h-screen w-full content-center justify-center {{ (config('app.stage') === 'prod') ? 'bg-blue-300' : 'bg-slate-100' }} py-10">
             {{ $slot }}
         </div>
         @once
