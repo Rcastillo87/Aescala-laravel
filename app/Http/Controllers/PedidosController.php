@@ -169,7 +169,7 @@ class PedidosController extends Controller
                 }
             }
             $codigo = $validated['codigo'];
-            return redirect()->route('proveedor.index')
+            return redirect()->route('pedidos.index')
                         ->with('success', "Pedido con orden: {$codigo} fue registrado correctamente");
         });
     }
@@ -199,6 +199,34 @@ class PedidosController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Error al obtener la lista.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function hPedidoproveedor( $id )
+    {
+        try {
+            $arrhistorial = Pedidos::where('id_proveedor', intval( $id ) )->whereHas('material', function ($query) {
+                $query->where('activo', 1);
+            })->pluck('id_material')->unique()->toArray();
+            if(!$arrhistorial){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'No hay historial de pedidos para este proveedor.',
+                    'data' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Historial de pedidos por proveedor.',
+                'data' => $arrhistorial
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al obtener el historial.',
                 'error' => $e->getMessage()
             ], 500);
         }

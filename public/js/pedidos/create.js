@@ -135,4 +135,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
         addedMaterials.delete(String(materialId));
 
     };
+
+    document.getElementById('id_proveedor').addEventListener('change', function() {
+        const proveedorId = this.value;
+        addedMaterials.clear();
+        document.getElementById('selectMateriales').innerHTML = '';
+
+        fetch(`hPedidoproveedor/${proveedorId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.data.forEach(item => {
+                    addSelectedMaterial( item.toString() );
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching provider info:', error);
+            });
+    });
+
 });
