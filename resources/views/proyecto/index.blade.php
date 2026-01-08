@@ -130,8 +130,8 @@
                         <div class="relative @if(Auth::user()->isNotColab) @else hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
                                data-beginProyec='@json($item)' x-on:click="$dispatch('open-modal', 'beginProyec-modal')" x-data="" 
-                               class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
-                                      focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                               class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-700 hover:bg-white hover:text-cyan-800 border-2 border-cyan-800 focus:ring-4 
+                                      focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
                                 </svg>
@@ -240,6 +240,22 @@
                             </a>
                             <div id="tooltip-hover-comparativo-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                 Despachos Vs Cotizacion 
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+
+                        <!-- Botón despachos -->
+                        <div class="relative">
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-despacho-excel-{{$item->id}}" data-tooltip-trigger="hover"
+                               href="{{ route('proyecto.excelDespachoProyecto', $item->id) }}"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-green-600 hover:bg-white hover:text-green-500 border-2 border-green-500 focus:ring-4 
+                                      focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-400 dark:hover:bg-green-500 dark:focus:ring-green-500 cursor-pointer">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1ZM8 12v6h8v-6H8Z"/>
+                                </svg>
+                            </a>
+                            <div id="tooltip-hover-despacho-excel-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Excel de Despachos
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>

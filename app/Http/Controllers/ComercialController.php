@@ -279,7 +279,6 @@ class ComercialController extends Controller
         }
     }
 
-
     public function sendLinkByEmail(Request $request)
     {
         $request->validate([

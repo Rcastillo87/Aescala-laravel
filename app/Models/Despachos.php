@@ -25,6 +25,7 @@ class Despachos extends Model
         'id_proyecto',
         'cantidad',
         'valor_unidad',
+        'valor_inventario',
         'cobro',
         'id_solicitud'
     ];

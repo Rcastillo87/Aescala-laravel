@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             </div>
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${material.id}">
             <input type="hidden" name="materiales[${materialIndex}][valor_unidad]" value="${material.valor_unidad}">
+            <input type="hidden" name="materiales[${materialIndex}][valor_inventario]" value="${material.valor_inventario}">
         `;
 
 

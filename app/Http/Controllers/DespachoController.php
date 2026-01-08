@@ -73,6 +73,7 @@ class DespachoController extends Controller
                 }
             ],
             'materiales.*.valor_unidad' => ['required', 'integer'],
+            'materiales.*.valor_inventario' => ['required', 'integer'],
             'materiales.*.cobro' => ['required', 'integer', 'in:0,1']
         ]);
 
@@ -94,6 +95,7 @@ class DespachoController extends Controller
                 $dato['id_material'] = $material['id_material'];
                 $dato['cantidad'] = $material['cantidad'];
                 $dato['valor_unidad'] = $material['valor_unidad'];
+                $dato['valor_inventario'] = $material['valor_inventario'];
                 $dato['cobro'] = $material['cobro'];
                 Despachos::create($dato);
 
