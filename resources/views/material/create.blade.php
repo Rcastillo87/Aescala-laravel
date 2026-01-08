@@ -55,6 +55,19 @@
             </div>
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="id_proveedor" :value="__('Proveedor Principal')" />
+                <x-select-input 
+                    id="id_proveedor" 
+                    name="id_proveedor" 
+                    :options="$proveedores" 
+                    :data="['id', 'razon_social']"
+                    :selected="old('id_proveedor',$material?$material->id_proveedor:'')" 
+                    class="block mt-1 w-full" 
+                />
+                <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
+            </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="tipo" :value="__('Tipo Material')" />
                 <x-select-input 
                     name="tipo" 
@@ -69,18 +82,6 @@
                 <x-input-label for="descripccion" :value="__('Descripción')" />
                 <x-text-input id="descripccion" class="block mt-1 w-full" type="text" name="descripccion" :value="old('descripccion', $material?$material->descripccion:'')"/>
                 <x-input-error :messages="$errors->get('descripccion')" class="mt-2" />
-            </div>
-
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="id_proveedor" :value="__('Proveedor Principal')" />
-                <x-select-input 
-                    name="id_proveedor" 
-                    :options="$proveedores" 
-                    :data="['id', 'razon_social']"
-                    :selected="old('id_proveedor',$material?$material->id_proveedor:'')" 
-                    class="block mt-1 w-full" 
-                />
-                <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
             </div>
             
             <div class="w-full max-w-full px-3 pt-8 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
@@ -116,4 +117,7 @@
         </div>
     </form>
 </div>
+@endsection
+@section('scripts')
+    <script src="{{asset('js/material/create.js')}}"></script>
 @endsection
