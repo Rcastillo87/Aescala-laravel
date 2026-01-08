@@ -1,44 +1,46 @@
-CREATE TABLE IF NOT EXISTS `areas` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `nombre_area` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- La exportación de datos fue deseleccionada.
-
--- Volcando estructura para tabla aescala.area_entregables
-CREATE TABLE IF NOT EXISTS `area_entregables` (
-  `id_otro_si` bigint NOT NULL,
-  `id_area` bigint NOT NULL,
-  `descripccion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `cantidad` bigint NOT NULL,
-  `valor` bigint NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- La exportación de datos fue deseleccionada.
-
--- Volcando estructura para tabla aescala.otro_si
-CREATE TABLE IF NOT EXISTS `otro_si` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `id_proyecto` bigint NOT NULL,
-  `id_user_encargado` bigint NOT NULL,
-  `numero` bigint NOT NULL,
-  `fecha_creacion` timestamp NOT NULL,
-  `plantilla` text COLLATE utf8mb4_general_ci NOT NULL,
-  `fecha_firma` timestamp NULL DEFAULT NULL,
-  `estado` int NOT NULL DEFAULT '0',
-  `sugerencia_cliente` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `img_firma` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO `areas` (`id`, `nombre_area`) VALUES
-	(1, 'ROPAS'),
-	(2, 'COCINA'),
-	(3, 'SALA'),
-	(4, 'ZONA DE ESTAR'),
-	(5, 'BAÑO SOCIAL'),
-	(6, 'BAÑO PRIVADO'),
-	(7, 'HABITACION PRINCIPAL'),
-	(8, 'HABITACION AUXILIAR'),
-	(9, 'APTO GENERAL');
+INSERT INTO config_proyecto
+(producto, cantidad, valor_unidad, id_area_trabajo, año, createdAt, updatedAt)
+VALUES
+('panel yeso', 6, 45000, 3, 2025, NULL,  NULL),
+('galones de acronal', 3, 45000, 3, 2025, NULL,  NULL),
+('angulo', 30, 10000, 3, 2025, NULL,  NULL),
+('cemento blanco', 6, 5000, 3, 2025, NULL,  NULL),
+('silicona topex', 3, 15000, 3, 2025, NULL,  NULL),
+('principales', 10, 10000, 3, 2025, NULL,  NULL),
+('omegas', 10, 10000, 3, 2025, NULL,  NULL),
+('cinta papel ', 1, 20000, 3, 2025, NULL,  NULL),
+('tornillos panel', 200, 100, 3, 2025, NULL,  NULL),
+('tornillo estructura', 100, 100, 3, 2025, NULL,  NULL),
+('tiros', 1, 80000, 3, 2025, NULL,  NULL),
+('rejillas', 5, 25000, 3, 2025, NULL,  NULL),
+('cinta negra', 1, 5000, 3, 2025, NULL,  NULL),
+('cable duplex', 1, 200000, 3, 2025, NULL,  NULL),
+('balas', 12, 12000, 3, 2025, NULL,  NULL),
+('balas de 18w', 9, 25000, 3, 2025, NULL,  NULL),
+('tomas', 4, 9000, 3, 2025, NULL,  NULL),
+('interruptores', 3, 9000, 3, 2025, NULL,  NULL),
+('disco de corte', 1, 5000, 3, 2025, NULL,  NULL),
+('pegante ceramica', 40, 25000, 3, 2025, NULL,  NULL),
+('estuco ', 15, 28000, 3, 2025, NULL,  NULL),
+('estuco panel', 3, 48000, 3, 2025, NULL,  NULL),
+('relleno', 30, 26000, 3, 2025, NULL,  NULL),
+('pintura', 3, 250000, 3, 2025, NULL,  NULL),
+('rodillo', 3, 20000, 3, 2025, NULL,  NULL),
+('mastick', 2, 60000, 3, 2025, NULL,  NULL),
+('filos plasticos', 35, 10000, 3, 2025, NULL,  NULL),
+('dilataciones', 6, 10000, 3, 2025, NULL,  NULL),
+('dilataciones en j', 9, 10000, 3, 2025, NULL,  NULL),
+('llaves de regulacion sencilla', 5, 25000, 3, 2025, NULL,  NULL),
+('brocha', 2, 6000, 3, 2025, NULL,  NULL),
+('fragua', 4, 16000, 3, 2025, NULL,  NULL),
+('aseo', 1, 150000, 3, 2025, NULL,  NULL),
+('combo de escobas', 1, 18000, 3, 2025, NULL,  NULL),
+('combo de aseo', 1, 100000, 3, 2025, NULL,  NULL),
+('gastos administrativos', 1, 400000, 3, 2025, NULL,  NULL),
+('transporte', 1, 500000, 3, 2025, NULL,  NULL),
+('bota de escombros', 1, 300000, 3, 2025, NULL,  NULL),
+('mano de obra estuco', 1, 2500000, 3, 2025, NULL,  NULL),
+('mano de obra panel', 1, 1500000, 3, 2025, NULL,  NULL),
+('mano de obra enchape', 1, 2500000, 3, 2025, NULL,  NULL),
+('mano de obra instalacion', 1, 1000000, 3, 2025, NULL,  NULL),
+('ceramica', 1, 3500000, 3, 2025, NULL,  NULL);
