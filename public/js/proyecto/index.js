@@ -963,3 +963,65 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+async function descargarExcelDespachos(id = '') {
+    const btn = event.currentTarget;
+    btn.disabled = true;
+
+    Swal.fire({
+        title: 'Generando reporte',
+        html: `
+            <div class="flex flex-col items-center gap-3">
+                <svg class="animate-spin h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                        stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span class="text-sm text-gray-600">Por favor espera…</span>
+            </div>
+        `,
+        allowOutsideClick: false,
+        showConfirmButton: false
+    });
+
+    try {
+        
+        const route = id ? `excelDespachoProyecto/${id}` : 'excelDespachosGeneral';
+        const response = await fetch(route, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Error al generar el archivo');
+        }
+
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'excelDespachosGeneral.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Reporte generado',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message
+        });
+    } finally {
+        btn.disabled = false;
+    }
+}

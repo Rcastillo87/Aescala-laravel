@@ -13,9 +13,8 @@ use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -795,147 +794,396 @@ class ProyectoController extends Controller
 
     public function excelDespachoProyecto($id)
     {
-        $proyecto = Proyecto::findOrFail($id);
+        try {
 
-        $despachos = Despachos::with('material')
-            ->where('id_proyecto', $id)
-            ->get();
+            $proyecto = Proyecto::find($id);
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Despachos');
+            if (!$proyecto) {
+                return response()->json([
+                    'message' => 'Proyecto no encontrado'
+                ], 404);
+            }
 
-        /* ================= TITULO ================= */
-        $sheet->mergeCells('A1:H1');
-        $sheet->setCellValue('A1', 'Despachos del Proyecto: ' . $proyecto->nombre_proyecto);
-        $sheet->getStyle('A1')->applyFromArray([
-            'font' => [
-                'bold' => true,
-                'size' => 14,
-                'color' => ['rgb' => 'FFFFFF'],
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '1F4ED8'],
-            ],
-        ]);
+            $despachos = Despachos::with('material')
+                ->where('id_proyecto', $id)
+                ->get();
 
-        /* ================= ENCABEZADOS ================= */
-        $headers = [
-            'A3' => 'ID Material',
-            'B3' => 'Nombre Material',
-            'C3' => 'Codigo Despacho',
-            'D3' => 'Cantidad',
-            'E3' => 'Valor Inventario',
-            'F3' => 'Valor Venta',
-            'G3' => 'Tipo',
-            'H3' => 'Fecha Despacho',
-        ];
+            if ($despachos->isEmpty()) {
+                return response()->json([
+                    'message' => 'El proyecto no tiene despachos para exportar'
+                ], 404);
+            }
 
-        foreach ($headers as $cell => $text) {
-            $sheet->setCellValue($cell, $text);
-        }
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->getStyle('A3:H3')->applyFromArray([
-            'font' => [
-                'bold' => true,
-                'color' => ['rgb' => 'FFFFFF'],
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '242E68'],
-            ],
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
+            /* ===============================
+            * TITULO (MISMO ESTILO)
+            * =============================== */
+            $sheet->mergeCells('A1:I1');
+            $sheet->setCellValue(
+                'A1',
+                'REPORTE DE DESPACHOS – ' . $proyecto->nombre_proyecto
+            );
+
+            $sheet->getStyle('A1')->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                    'size' => 16,
+                    'color' => ['rgb' => 'FFFFFF']
                 ],
-            ],
-        ]);
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '1F2937']
+                ]
+            ]);
 
-        $tventa = 0;
-        $tinven = 0;
+            /* ===============================
+            * SUBTITULO (MISMO ESTILO)
+            * =============================== */
+            $sheet->mergeCells('A2:I2');
+            $sheet->setCellValue(
+                'A2',
+                'Fecha de generación: ' . now()->format('Y-m-d H:i')
+            );
 
-        /* ================= DATOS ================= */
-        $row = 4;
-        foreach ($despachos as $despacho) {
-            $sheet->setCellValue('A' . $row, $despacho->material->id ?? '');
-            $sheet->setCellValue('B' . $row, $despacho->material->nombre_material ?? '');
-            $sheet->setCellValue('C' . $row, $despacho->codigo);
-            $sheet->setCellValue('D' . $row, $despacho->cantidad);
-            $sheet->setCellValue('E' . $row, $despacho->valor_inventario * ($despacho->tipo == 1 ? 1 : -1));
-            $sheet->setCellValue('F' . $row, $despacho->valor_unidad * ($despacho->tipo == 1 ? 1 : -1));
-            $sheet->setCellValue('G' . $row, Despachos::$tipo[$despacho->tipo] ?? '');
-            $sheet->setCellValue('H' . $row, optional($despacho->createdAt)->format('Y-m-d'));
+            $sheet->getStyle('A2')->applyFromArray([
+                'font' => [
+                    'italic' => true,
+                    'size' => 10
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ]
+            ]);
+
+            /* ===============================
+            * ENCABEZADOS (MISMO ESTILO)
+            * =============================== */
+            $headers = [
+                'ID Material',
+                'Material',
+                'Código',
+                'Cantidad',
+                'Valor Inventario',
+                'Valor Venta',
+                'Tipo',
+                'Fecha'
+            ];
+
+            $row = 4;
+            $sheet->fromArray($headers, null, "A{$row}");
+
+            $sheet->getStyle("A{$row}:H{$row}")->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                    'color' => ['rgb' => 'FFFFFF']
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '059669']
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN
+                    ]
+                ]
+            ]);
+
+            /* ===============================
+            * DATOS
+            * =============================== */
             $row++;
+            $tventa = 0;
+            $tinven = 0;
 
-            $tventa += $despacho->valor_unidad * ($despacho->tipo == 1 ? 1 : -1);
-            $tinven += $despacho->valor_inventario * ($despacho->tipo == 1 ? 1 : -1);
-        }
+            foreach ($despachos as $despacho) {
 
-        /* ================= CONSOLIDADO ================= */
-        $sheet->mergeCells("A{$row}:D{$row}");
-        $sheet->setCellValue("A{$row}", 'TOTAL CONSOLIDADO');
+                $valorInventario = $despacho->valor_inventario * ($despacho->tipo == 1 ? 1 : -1);
+                $valorVenta      = $despacho->valor_unidad     * ($despacho->tipo == 1 ? 1 : -1);
 
-        $sheet->setCellValue("E{$row}", $tinven);
-        $sheet->setCellValue("F{$row}", $tventa);
+                $sheet->setCellValue("A{$row}", $despacho->material->id ?? '');
+                $sheet->setCellValue("B{$row}", $despacho->material->nombre_material ?? '');
+                $sheet->setCellValue("C{$row}", $despacho->codigo);
+                $sheet->setCellValue("D{$row}", $despacho->cantidad);
+                $sheet->setCellValue("E{$row}", $valorInventario);
+                $sheet->setCellValue("F{$row}", $valorVenta);
+                $sheet->setCellValue("G{$row}", Despachos::$tipo[$despacho->tipo] ?? '');
+                $sheet->setCellValue("H{$row}", optional($despacho->createdAt)->format('Y-m-d'));
 
-        /* ================= FORMATO ================= */
-        $sheet->getStyle("E4:E{$row}")
-            ->getNumberFormat()
-            ->setFormatCode('"$"#,##0');
+                $sheet->getStyle("A{$row}:H{$row}")->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_HAIR
+                        ]
+                    ]
+                ]);
 
-        $sheet->getStyle("F4:F{$row}")
-            ->getNumberFormat()
-            ->setFormatCode('"$"#,##0');
+                $tinven += $valorInventario;
+                $tventa += $valorVenta;
+                $row++;
+            }
 
-        $sheet->getStyle("E{$row}:F{$row}")
-            ->getNumberFormat()
-            ->setFormatCode('"$"#,##0');
+            /* ===============================
+            * FORMATO MONEDA (MISMO ESTILO)
+            * =============================== */
+            $sheet->getStyle("E5:E{$row}")
+                ->getNumberFormat()
+                ->setFormatCode('"$"#,##0');
 
-        $sheet->getStyle("A{$row}:H{$row}")->applyFromArray([
-            'font' => [
-                'bold' => true,
-                'size' => 12,
-                'color' => ['rgb' => 'FFFFFF'],
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_RIGHT,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '059669'], // verde elegante
-            ],
-            'borders' => [
-                'top' => [
-                    'borderStyle' => Border::BORDER_DOUBLE,
+            $sheet->getStyle("F5:F{$row}")
+                ->getNumberFormat()
+                ->setFormatCode('"$"#,##0');
+
+            /* ===============================
+            * TOTAL CONSOLIDADO (MISMO ESTILO)
+            * =============================== */
+            $sheet->mergeCells("A{$row}:D{$row}");
+            $sheet->setCellValue("A{$row}", 'TOTAL CONSOLIDADO');
+            $sheet->setCellValue("E{$row}", $tinven);
+            $sheet->setCellValue("F{$row}", $tventa);
+
+            $sheet->getStyle("A{$row}:H{$row}")->applyFromArray([
+                'font' => [
+                    'bold' => true
                 ],
-            ],
-        ]);
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'DCFCE7']
+                ],
+                'borders' => [
+                    'top' => [
+                        'borderStyle' => Border::BORDER_THICK
+                    ]
+                ]
+            ]);
 
-        foreach (range('A', 'H') as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
+            /* ===============================
+            * AUTO SIZE
+            * =============================== */
+            foreach (range('A', 'H') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                "despachos_proyecto_{$proyecto->id}.xlsx",
+                [
+                    'Content-Type' =>
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Error al generar el Excel del proyecto',
+                'error'   => $e->getMessage(),
+                'line'    => $e->getLine()
+            ], 500);
         }
-
-        /* ================= DESCARGA ================= */
-        $fileName = "despachos_proyecto_{$proyecto->id}.xlsx";
-
-        return response()->streamDownload(
-            function () use ($spreadsheet) {
-                $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-                $writer->save('php://output');
-            },
-            $fileName,
-            [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            ]
-        );
     }
-    
+
+    public function excelDespachosGeneral()
+    {
+        try {
+
+            $despachos = Despachos::with(['material', 'proyecto'])
+                ->whereHas('proyecto', function ($query) {
+                    $query->where('id_estado', 1);
+                })
+                ->get();
+
+            if ($despachos->isEmpty()) {
+                return response()->json([
+                    'message' => 'No hay despachos para exportar'
+                ], 404);
+            }
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            /* ===============================
+            * TITULO
+            * =============================== */
+            $sheet->mergeCells('A1:I1');
+            $sheet->setCellValue('A1', 'REPORTE GENERAL DE DESPACHOS');
+
+            $sheet->getStyle('A1')->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                    'size' => 16,
+                    'color' => ['rgb' => 'FFFFFF']
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '1F2937']
+                ]
+            ]);
+
+            /* ===============================
+            * SUBTITULO
+            * =============================== */
+            $sheet->mergeCells('A2:I2');
+            $sheet->setCellValue('A2', 'Fecha de generación: ' . now()->format('Y-m-d H:i'));
+
+            $sheet->getStyle('A2')->applyFromArray([
+                'font' => [
+                    'italic' => true,
+                    'size' => 10
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ]
+            ]);
+
+            /* ===============================
+            * ENCABEZADOS
+            * =============================== */
+            $headers = [
+                'Proyecto',
+                'ID Material',
+                'Material',
+                'Código',
+                'Cantidad',
+                'Valor Inventario',
+                'Valor Venta',
+                'Tipo',
+                'Fecha'
+            ];
+
+            $row = 4;
+            $sheet->fromArray($headers, null, "A{$row}");
+
+            $sheet->getStyle("A{$row}:I{$row}")->applyFromArray([
+                'font' => [
+                    'bold' => true,
+                    'color' => ['rgb' => 'FFFFFF']
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '059669']
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN
+                    ]
+                ]
+            ]);
+
+            /* ===============================
+            * DATOS
+            * =============================== */
+            $row++;
+            $tventa = 0;
+            $tinven = 0;
+
+            foreach ($despachos as $despacho) {
+
+                $valorInventario = $despacho->valor_inventario * ($despacho->tipo == 1 ? 1 : -1);
+                $valorVenta      = $despacho->valor_unidad     * ($despacho->tipo == 1 ? 1 : -1);
+
+                $sheet->setCellValue("A{$row}", $despacho->proyecto->nombre_proyecto);
+                $sheet->setCellValue("B{$row}", $despacho->material->id);
+                $sheet->setCellValue("C{$row}", $despacho->material->nombre_material);
+                $sheet->setCellValue("D{$row}", $despacho->codigo);
+                $sheet->setCellValue("E{$row}", $despacho->cantidad);
+                $sheet->setCellValue("F{$row}", $valorInventario);
+                $sheet->setCellValue("G{$row}", $valorVenta);
+                $sheet->setCellValue("H{$row}", Despachos::$tipo[$despacho->tipo] ?? '');
+                $sheet->setCellValue("I{$row}", optional($despacho->created_at)->format('Y-m-d'));
+
+                $sheet->getStyle("A{$row}:I{$row}")->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_HAIR
+                        ]
+                    ]
+                ]);
+
+                $tinven += $valorInventario;
+                $tventa += $valorVenta;
+                $row++;
+            }
+            
+            $sheet->getStyle("F5:F{$row}")
+                ->getNumberFormat()
+                ->setFormatCode('"$"#,##0');
+
+            $sheet->getStyle("G5:G{$row}")
+                ->getNumberFormat()
+                ->setFormatCode('"$"#,##0');
+
+            /* ===============================
+            * TOTAL CONSOLIDADO
+            * =============================== */
+            $sheet->mergeCells("A{$row}:E{$row}");
+            $sheet->setCellValue("A{$row}", 'TOTAL CONSOLIDADO');
+            $sheet->setCellValue("F{$row}", $tinven);
+            $sheet->setCellValue("G{$row}", $tventa);
+
+            $row0 = $row - 1;
+            $sheet->getStyle("F{$row0}")
+                ->getNumberFormat()
+                ->setFormatCode('"$"#,##0');
+
+            $sheet->getStyle("G{$row0}")
+                ->getNumberFormat()
+                ->setFormatCode('"$"#,##0');
+
+            $sheet->getStyle("A{$row}:I{$row}")->applyFromArray([
+                'font' => [
+                    'bold' => true
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'DCFCE7']
+                ],
+                'borders' => [
+                    'top' => [
+                        'borderStyle' => Border::BORDER_THICK
+                    ]
+                ]
+            ]);
+
+            /* ===============================
+            * AUTO SIZE
+            * =============================== */
+            foreach (range('A', 'I') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                'excelDespachosGeneral.xlsx',
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Error al generar el Excel',
+                'error'   => $e->getMessage(),
+                'line'    => $e->getLine()
+            ], 500);
+        }
+    }
 }

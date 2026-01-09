@@ -117,6 +117,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listComparativo', [ProyectoController::class, 'listComparativo'])->name('listComparativo');
         Route::get('/contratoPdf/{id}', [ProyectoController::class, 'contratoPdf'])->name('contratoPdf');
         Route::get('/excelDespachoProyecto/{id}', [ProyectoController::class, 'excelDespachoProyecto'])->name('excelDespachoProyecto');
+        Route::get('/excelDespachosGeneral', [ProyectoController::class, 'excelDespachosGeneral'])->name('excelDespachosGeneral');
     });
 
     Route::prefix('tareas')->name('tareas.')->group(function () {

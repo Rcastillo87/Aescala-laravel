@@ -3,20 +3,39 @@
 @include('proyecto.filter')
 <div class="flex flex-wrap md:flex-nowrap justify-start text-center border-2 p-3 rounded-lg border-gray-200 mb-3">
     <!-- Sección de etiquetas -->
-    <div class="flex flex-wrap gap-4 md:gap-2">
-        <span class="flex items-center text-center">
-            Normal (<=80%)
-            <hr class="border-2 bg-green-500 rounded-lg w-[55px] p-[3px] ml-1">
-        </span>
-        <span class="flex items-center text-center ml-2">
-            Próximos a vencer (80-100%)
-            <hr class="border-2 bg-orange-400 rounded-lg w-[55px] p-[3px] ml-1">
-        </span>
+    <div class="flex justify-between w-full items-center">
+        <!-- Leyenda de colores -->
+        <div class="flex flex-wrap gap-4">
+            <span class="flex items-center text-center">
+                Normal (&lt;=80%)
+                <hr class="border-2 bg-green-500 rounded-lg w-[55px] p-[3px] ml-1">
+            </span>
+            <span class="flex items-center text-center">
+                Próximos a vencer (80–100%)
+                <hr class="border-2 bg-orange-400 rounded-lg w-[55px] p-[3px] ml-1">
+            </span>
+            <span class="flex items-center text-center">
+                Atrasados (&gt;=100%)
+                <hr class="border-2 bg-red-500 rounded-lg w-[55px] p-[3px] ml-1">
+            </span>
+        </div>
 
-        <span class="flex items-center text-center ml-2">
-            Atrasados (=> 100%)
-            <hr class="border-2 bg-red-500 rounded-lg w-[55px] p-[3px] ml-1">
-        </span>
+        <!-- Botón descarga Excel -->
+        <div>
+            <button data-tooltip-target="tooltip-hover-excel-general" data-tooltip-trigger="hover"
+                type="button"
+                onclick="descargarExcelDespachos()"
+                class="inline-flex items-center gap-2 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                <!-- Icono Excel -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 2H8a2 2 0 00-2 2v4H4a2 2 0 00-2 2v10a2 2 0 002 2h11a2 2 0 002-2v-4h2a2 2 0 002-2V4a2 2 0 00-2-2zM4 20V10h11v10H4zm13-6h-2V8a2 2 0 00-2-2H8V4h11v10z"/>
+                </svg>
+            </button>
+            <div id="tooltip-hover-excel-general" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                Descaraga Excel Despachos General
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        </div>
     </div>
 </div>
     @forelse ($items as $item)
@@ -247,7 +266,7 @@
                         <!-- Botón despachos -->
                         <div class="relative">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despacho-excel-{{$item->id}}" data-tooltip-trigger="hover"
-                               href="{{ route('proyecto.excelDespachoProyecto', $item->id) }}"
+                               onclick="descargarExcelDespachos({{ $item->id }})"
                                class="flex items-center justify-center w-10 h-10 text-white bg-green-600 hover:bg-white hover:text-green-500 border-2 border-green-500 focus:ring-4 
                                       focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-400 dark:hover:bg-green-500 dark:focus:ring-green-500 cursor-pointer">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
