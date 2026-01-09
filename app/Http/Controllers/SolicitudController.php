@@ -84,16 +84,27 @@ class SolicitudController extends Controller
                 $query->where('aprobar', 0);
             })
         ->get()->toArray();
-        $fases = Fase::all()->map(function ($item) {
-            $ids = explode(',', $item['id_materiales']);
-            return [ 
-                'id' => $item['id'],
-                'name_fase' => "Fase " . $item['id'],
-                'materiales' => $ids//InventarioMaterial::whereIn('id', $ids)->where('activo', 1)->get()->toArray()
 
-            ];
-        });
-        $fases = $fases->toArray();
+        if(Auth::user()->isContratista){
+            $fases = Fase::whereIn('id', [1, 2])->get()->map(function ($item) {
+                $ids = explode(',', $item['id_materiales']);
+                return [ 
+                    'id' => $item['id'],
+                    'name_fase' => "Fase " . $item['id'],
+                    'materiales' => $ids
+                ];
+            })->toArray();
+        } else {
+            $fases = Fase::all()->map(function ($item) {
+                $ids = explode(',', $item['id_materiales']);
+                return [ 
+                    'id' => $item['id'],
+                    'name_fase' => "Fase " . $item['id'],
+                    'materiales' => $ids
+
+                ];
+            })->toArray();
+        }
         return view('solicitud.create', compact('title', 'materiales', 'proyectos', 'fases'));
     }
 

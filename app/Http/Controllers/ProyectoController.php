@@ -90,6 +90,10 @@ class ProyectoController extends Controller
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
+        $contraUsers = User::where('id_rol', 7)
+            ->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
         return view('proyecto.index', compact(
             'title',
             'items',
@@ -108,7 +112,8 @@ class ProyectoController extends Controller
             'festivos',
             'hoy',
             'headerComparativo',
-            'proyecto'
+            'proyecto',
+            'contraUsers'
         ));
     }
 

@@ -88,7 +88,7 @@
                     <x-select-input 
                         name="id_user_obra_blanca" 
                         id="id_user_obra_blanca"
-                        :options="$colaUsers" 
+                        :options="$contraUsers" 
                         :data="['id', 'nombre_completo']"
                         :selected="old('id_user_obra_blanca')" 
                         class="block mt-1 w-full"
@@ -101,7 +101,7 @@
                     <x-select-input 
                         name="id_user_carpinteria" 
                         id="id_user_carpinteria"
-                        :options="$colaUsers" 
+                        :options="$contraUsers" 
                         :data="['id', 'nombre_completo']"
                         :selected="old('id_user_carpinteria')" 
                         class="block mt-1 w-full"
