@@ -2,7 +2,7 @@
 @section('content')
     @include('solicitud.filter')
 
-    @if (Auth::user()->isAdmin || Auth::user()->isColab)
+    @if (Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isContratista)
         <div class="flex justify-end text-center mb-3">
             <x-secondary-button class="ms-4" href="{{ route('solicitud.create')}}">
                 Crear Solicitud
@@ -35,6 +35,11 @@
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {!! $item->spanEstado !!}
                         </td>
+
+                        <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                            {{ $item->observacion }}
+                        </td>
+
                         <td class="py-2 bg-transparent border-b dark:border-white/40 shadow-transparent flex items-center justify-center">
 
                             <a tabindex="0"

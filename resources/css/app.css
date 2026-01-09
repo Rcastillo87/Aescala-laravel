@@ -21,4 +21,7 @@
     .span-black {
         @apply bg-black inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
+    .span-cyan {
+        @apply bg-cyan-400 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+    }
 }

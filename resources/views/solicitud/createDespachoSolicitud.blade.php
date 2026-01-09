@@ -35,10 +35,10 @@
             <p class="font-bold text-xl mb-3">Materiales Solicitados</p>
 
             {{-- Lista de items: UNA COLUMNA SIEMPRE --}}
-            <div id="itemsContainer" class="w-full flex items-stretch gap-2">
+            <div id="itemsContainer" class="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
                 @foreach($solItemsArray as $key => $m)
 
-                    <div class="item-card lg:w-1/2 bg-white px-2 py-1 border-2 m-1 space-y-1 border-blue-500 rounded-xl">
+                    <div class="item-card bg-white px-2 py-1 border-2 space-y-1 border-blue-500 rounded-xl">
                         <div class="flex items-center">
                             <p class="text-md font-bold text-gray-500">Material:
                                 <span class="ml-2 text-black">{{$m['nombre_material']}}</span>

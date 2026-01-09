@@ -56,6 +56,8 @@ function cargarItemsSolicitud(id) {
                         <td class="border px-3 py-2">${item.nombre_material}</td>
                         <td class="border px-3 py-2">${item.cantidad_sol}</td>
                         <td class="border px-3 py-2">${item.span_estado}</td>
+                        <td class="border px-3 py-2">${item.usuario_aprueba??''}</td>
+                        <td class="border px-3 py-2">${item.fecha_aprobacion??''}</td>
                         <td class="border px-3 py-2">${item.cantidad_des ?? ''}</td>
                         <td class="border px-3 py-2">${item.createdAt ?? ''}</td>
                         <td class="border px-3 py-2">${item.codigo ?? ''}</td>

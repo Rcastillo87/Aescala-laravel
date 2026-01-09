@@ -60,10 +60,10 @@ class SolicitudController extends Controller
 
         $estados = SolicitudMaterial::$estados;
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
-        
-        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Opciones'];
+
+        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         if(!Auth::User()->isAdmin) {
-            $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Opciones'];
+            $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
         return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'userColab'));
     }
@@ -79,7 +79,11 @@ class SolicitudController extends Controller
             })
             ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
-	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+	    $materiales = InventarioMaterial::where('activo', 1)
+            ->when(Auth::user()->isContratista, function ($query) {
+                $query->where('aprobar', 0);
+            })
+        ->get()->toArray();
         $fases = Fase::all()->map(function ($item) {
             $ids = explode(',', $item['id_materiales']);
             return [ 
@@ -169,6 +173,7 @@ class SolicitudController extends Controller
                         ->on('solicitud_items.id_material', '=', 'inventario_solicituds.id_material');
                 }
             )
+            ->leftJoin('users', 'solicitud_items.id_user_aprueba', '=', 'users.id')
             ->where('solicitud_items.id_solicitud', $id)
             ->select(
                 'solicitud_material.id_proyecto',
@@ -178,7 +183,10 @@ class SolicitudController extends Controller
                 'solicitud_items.estado', 
                 'solicitud_items.aprobado', 
                 'inventario_solicituds.createdAt',
-                'inventario_solicituds.codigo'
+                'inventario_solicituds.codigo',
+                'solicitud_material.fecha_solicitud',
+                'users.nombre_completo as usuario_aprueba',
+                'solicitud_items.fecha_aprobacion'
                 )
             ->get()
             ->map(function ($item) {
@@ -265,9 +273,9 @@ class SolicitudController extends Controller
             if($validated['isAnalista']){
                 foreach ($arr as $item) {
                     if ($item['cancelo'] == 1) {
-                        $update = ['aprobado' => 1, 'estado' => 4]; // Cancelado
+                        $update = ['aprobado' => 1, 'estado' => 4, 'fecha_aprobacion' => now(), 'id_user_aprueba' => Auth::user()->id]; // Cancelado
                     } else {
-                        $update = ['aprobado' => 1, 'cantidad'  => $item['cantidad'], 'cantidad_solicitada'  => $item['cantidad']]; // Aprobado
+                        $update = ['aprobado' => 1, 'cantidad'  => $item['cantidad'], 'cantidad_solicitada'  => $item['cantidad'], 'fecha_aprobacion' => now(), 'id_user_aprueba' => Auth::user()->id]; // Aprobado
                     }
 
                     SolicitudItems::where([

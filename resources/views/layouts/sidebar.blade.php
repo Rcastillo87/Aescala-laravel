@@ -151,7 +151,7 @@
             @endif
 
             <!-- Grupo: Materiales -->
-            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista)
+            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista || Auth::user()->isContratista)
                 <li>
                     <button type="button"
                         class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group hover:text-orange-500hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -236,7 +236,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin) 
+                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isContratista) 
                             <li>
                                 <a href="{{ route('solicitud.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                     <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

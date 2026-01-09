@@ -165,6 +165,7 @@ export default {
         'span-red',
         'span-gray',
         'span-black',
+        'span-cyan',
 
         // Clases de grid
         'grid',

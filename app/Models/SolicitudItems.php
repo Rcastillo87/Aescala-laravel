@@ -21,7 +21,9 @@ class SolicitudItems extends Model
         'cantidad',
         'cantidad_solicitada',
         'estado',
-        'aprobado'
+        'aprobado',
+        'fecha_aprobacion',
+        'id_user_aprueba'
     ];
 
     public static $estados = [
@@ -61,6 +63,11 @@ class SolicitudItems extends Model
     public function material()
     {
         return $this->belongsTo(InventarioMaterial::class, 'id_material');
+    }
+
+    public function usuario_aprueba()
+    {
+        return $this->belongsTo(User::class, 'id_user_aprueba');
     }
 
 }

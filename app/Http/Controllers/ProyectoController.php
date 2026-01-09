@@ -1105,7 +1105,7 @@ class ProyectoController extends Controller
                 $sheet->setCellValue("F{$row}", $valorInventario);
                 $sheet->setCellValue("G{$row}", $valorVenta);
                 $sheet->setCellValue("H{$row}", Despachos::$tipo[$despacho->tipo] ?? '');
-                $sheet->setCellValue("I{$row}", optional($despacho->created_at)->format('Y-m-d'));
+                $sheet->setCellValue("I{$row}", optional($despacho->createdAt)->format('Y-m-d'));
 
                 $sheet->getStyle("A{$row}:I{$row}")->applyFromArray([
                     'borders' => [

@@ -1,4 +1,4 @@
-<x-modal name="modalSolicitudLista-modal" maxWidth="4xl">
+<x-modal name="modalSolicitudLista-modal" maxWidth="6xl">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4 text-gray-700">Lista items solicitados</h2>
 
@@ -10,6 +10,8 @@
                         <th class="px-3 py-2 border">Material Solicitado</th>
                         <th class="px-3 py-2 border">Cantidad Solicitado</th>
                         <th class="px-3 py-2 border">Estado</th>
+                        <th class="px-3 py-2 border">Quien Aprobo</th>
+                        <th class="px-3 py-2 border">Fecha Aprueba</th>
                         <th class="px-3 py-2 border">Cantidad Despachada</th>
                         <th class="px-3 py-2 border">Fecha del Despacho</th>
                         <th class="px-3 py-2 border">Código del Despacho</th>
