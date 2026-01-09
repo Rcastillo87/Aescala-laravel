@@ -1002,7 +1002,7 @@ async function descargarExcelDespachos(id = '') {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'excelDespachosGeneral.xlsx';
+        a.download = id ? 'excelDespachosProyecto.xlsx' : 'excelDespachosGeneral.xlsx';
         document.body.appendChild(a);
         a.click();
         a.remove();
