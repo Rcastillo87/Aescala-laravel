@@ -119,7 +119,8 @@ class PedidosController extends Controller
                 'integer',
                 'min:1'
             ],
-            'materiales.*.valor_unidad' => ['required', 'integer']
+            'materiales.*.valor_unidad' => ['required', 'integer'],
+            'materiales.*.valor_compra' => ['required', 'integer']
         ]);
 
         // Iniciar transacción
@@ -140,10 +141,12 @@ class PedidosController extends Controller
                 $dato['id_material'] = $material['id_material'];
                 $dato['cantidad'] = $material['cantidad'];
                 $dato['vr_unidad'] = $material['valor_unidad'];
+                $dato['vr_compra'] = $material['valor_compra'];
                 Pedidos::create($dato);
                 
                 $inventarioMaterial = InventarioMaterial::find($material['id_material']);
                 $inventarioMaterial['valor_unidad'] = $material['valor_unidad'];
+                $inventarioMaterial['valor_inventario'] = $material['valor_compra'];
                 if(!isset($validated['id_proyecto'])){
                     $inventarioMaterial->increment('cantidad', $material['cantidad']);
                 }
@@ -165,6 +168,7 @@ class PedidosController extends Controller
                     $dato['id_material'] = $material['id_material'];
                     $dato['cantidad'] = $material['cantidad'];
                     $dato['valor_unidad'] = $material['valor_unidad'];
+                    $dato['valor_inventario'] = $material['valor_compra'];
                     Despachos::create($dato);
                 }
             }

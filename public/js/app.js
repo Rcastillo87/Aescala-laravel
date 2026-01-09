@@ -56,38 +56,22 @@ function formatCurrency(value) {
   }).format(num);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const inputs = document.querySelectorAll("input.moneda-cop");
+document.addEventListener('input', function (e) {
+    if (!e.target.classList.contains('moneda-cop')) return;
 
-  inputs.forEach(input => {
-    let span = null;
+    const input = e.target;
+    const value = parseFloat(input.value) || 0;
 
-    const showFormatted = () => {
-      if (!span) {
-        span = document.createElement("span");
-        span.className = "formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none";
+    let span = input.parentNode.querySelector('.formatted-span');
+
+    if (!span) {
+        span = document.createElement('span');
+        span.className =
+            'formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none';
         input.parentNode.appendChild(span);
-      }
-
-      const value = input.value;
-      span.textContent = value.trim() !== "" ? formatCurrency(value) : "";
-    };
-
-    const hideFormatted = () => {
-      if (span && input.value.trim() === "") {
-        span.remove();
-        span = null;
-      }
-    };
-
-    input.addEventListener("focus", showFormatted);
-    input.addEventListener("input", showFormatted);
-    input.addEventListener("blur", hideFormatted);
-
-    if (input.value.trim() !== "") {
-      showFormatted();
     }
-  });
+
+    span.textContent = value ? formatCurrency(value) : '';
 });
 
 function formatDate(dateString) {

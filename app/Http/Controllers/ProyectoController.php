@@ -820,7 +820,7 @@ class ProyectoController extends Controller
             /* ===============================
             * TITULO (MISMO ESTILO)
             * =============================== */
-            $sheet->mergeCells('A1:I1');
+            $sheet->mergeCells('A1:H1');
             $sheet->setCellValue(
                 'A1',
                 'REPORTE DE DESPACHOS – ' . $proyecto->nombre_proyecto
@@ -844,7 +844,7 @@ class ProyectoController extends Controller
             /* ===============================
             * SUBTITULO (MISMO ESTILO)
             * =============================== */
-            $sheet->mergeCells('A2:I2');
+            $sheet->mergeCells('A2:H2');
             $sheet->setCellValue(
                 'A2',
                 'Fecha de generación: ' . now()->format('Y-m-d H:i')

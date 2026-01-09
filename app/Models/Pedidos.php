@@ -21,6 +21,7 @@ class Pedidos extends Model
         'id_factura',
         'codigo',
         'vr_unidad',
+        'vr_compra',
         'cantidad',
         'fecha'
     ];

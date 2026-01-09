@@ -68,17 +68,27 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
                         onchange="calculateTotal(this, null, ${materialIndex}, ${material.cantidad})">
                 </div>
-                <input type="number" 
-                    value="${material.valor_unidad}"
-                    name="materiales[${materialIndex}][valor_unidad]" 
-                    placeholder="Valor"
-                    class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
-                    focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
-                    onchange="calculateTotal(null, this, ${materialIndex}, ${material.cantidad})">
+                <div class="w-full">
+                    <input type="number"
+                        value="${material.valor_unidad}"
+                        name="materiales[${materialIndex}][valor_unidad]" 
+                        placeholder="Valor venta"
+                        class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
+                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full moneda-cop"
+                        onchange="calculateTotal(null, this, ${materialIndex}, ${material.cantidad})">
+                </div>
+                <div class="w-full">
+                    <input type="number"
+                        value="${material.valor_inventario}"
+                        name="materiales[${materialIndex}][valor_compra]" 
+                        placeholder="Valor compra"
+                        class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
+                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full moneda-cop">
+                </div>
             </div>
-            <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion}</small></p>
+            <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion??''}</small></p>
             <div class="md:flex bg-gradient-to-r text-left md:justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                <p class="font-medium">Costo: <span class="valor">${formatCurrency(material.valor_unidad)}</span> * 
+                <p class="font-medium"><span class="valor">${formatCurrency(material.valor_unidad)}</span> * 
                 <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
                 <p>Tipo: ${material.spanTipo}</p>
             </div>

@@ -4,9 +4,9 @@
     <div class="w-full p-2 max-h-full overflow-y-scroll">
         <form method="POST" action="{{ route('pedidos.save') }}">
             @csrf
-            <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex flex-col xl:flex-row gap-4">
                 <!-- Primera columna -->
-                <div class="w-full lg:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
+                <div class="w-full xl:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
                     <div>
                         <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
                         <x-input-label for="id_material" :value="__('Seleccione Material *')" />
@@ -80,7 +80,7 @@
                 </div>
 
                 <!-- Segunda columna -->
-                <div class="w-full h-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
+                <div class="w-full h-full xl:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
                     <p class="font-bold text-xl mb-3">Materiales Pedidos</p>
                     <div id="selectMateriales"></div>
                 </div>
