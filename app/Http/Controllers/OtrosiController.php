@@ -76,7 +76,7 @@ class OtrosiController extends Controller
                 $query->where('id_user', Auth::user()->id)
                     ->orwhere('id_user_obra_blanca', Auth::user()->id)
                     ->orwhere('id_user_carpinteria', Auth::user()->id);
-            })
+            })->orderBy('nombre_proyecto', 'ASC')
             ->get(['id', 'nombre_proyecto'])->toArray();
 
         if(!$id) {

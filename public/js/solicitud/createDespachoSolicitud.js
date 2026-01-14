@@ -47,17 +47,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const card = this.closest(".item-card");
             const inputCantidad = card.querySelector(".input-cantidad");
+            const checkboxCobro = card.querySelector("input[type=checkbox][name*='cobro']");
 
             if (this.checked) {
                 inputCantidad.disabled = true;
                 inputCantidad.classList.add("bg-gray-200", "cursor-not-allowed");
+                if (checkboxCobro) {
+                    checkboxCobro.checked = false;
+                    checkboxCobro.disabled = true;
+                    checkboxCobro.classList.add("bg-gray-200", "cursor-not-allowed");
+                }
                 card.classList.add("opacity-60");
             } else {
                 inputCantidad.disabled = false;
                 inputCantidad.classList.remove("bg-gray-200", "cursor-not-allowed");
+                if (checkboxCobro) {
+                    checkboxCobro.disabled = false;
+                    checkboxCobro.classList.remove("bg-gray-200", "cursor-not-allowed");
+                }
                 card.classList.remove("opacity-60");
             }
-
         });
     });
 

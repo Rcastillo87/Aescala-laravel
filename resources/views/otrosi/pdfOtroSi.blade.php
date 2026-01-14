@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>OTRO SÍ N.º {{ $num_otro_si }}</title>
+    <title>OTROSÍ N.º {{ $num_otro_si }}</title>
     <style>
         @page {
             margin: 90px 50px 80px 50px;
@@ -161,18 +161,18 @@
         <img src="{{ public_path('img/logo.png') }}" alt="Logo Empresa">
     </header>
     
-    <h1 class="titulo">OTRO SÍ N.º {{ $num_otro_si }}</h1>
+    <h1 class="titulo">OTROSÍ N.º {{ $num_otro_si }}</h1>
     <h2 class="subtitulo">Al Contrato de Remodelación de Vivienda</h2>
     
     <p>
-        Comparecen el día <strong>{{ $fecha_otro_si }}</strong> a la firma del presente "OTRO SÍ" 
+        Comparecen el día <strong>{{ $fecha_otro_si }}</strong> a la firma del presente "OTROSÍ" 
         <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, identificado con 
         {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }}, 
         en representación de la empresa <strong>{{ env('RAZON') }}</strong>, NIT {{ env('NIT') }}, 
         en adelante <strong>"LA CONSTRUCTORA"</strong>; y <strong>{{ $nombre_cliente }}</strong>, 
         identificado con {{ $tipo_doc_cliente }} Nº {{ $documento_cliente }}, 
         en adelante <strong>"EL CLIENTE"</strong>. Conjuntamente denominados las <strong>"Partes"</strong>, 
-        hemos acordado celebrar el presente OTRO SÍ No. {{ $num_otro_si }}.
+        hemos acordado celebrar el presente OTROSÍ No. {{ $num_otro_si }}.
     </p>
     
     <h3 style="margin-top: 25px; color:#243c7a;">ADICIONALES</h3>

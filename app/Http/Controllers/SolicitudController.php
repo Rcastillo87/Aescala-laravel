@@ -256,6 +256,7 @@ class SolicitudController extends Controller
                     'descripccion' => $item->material->descripccion,
                     'unidades' => $item->material->unidades,
                     'spanTipo' => $item->material->spanTipo,
+                    'spanEstadoMate' => $item->material->spanEstado,
                     'valor_unidad' => (float) $item->valor_unidad,
                     'cantidad_inventario' => $cantidad_inventario,
                     'cantidad_solicitada' => $cantidad_solicitada - $pendiente,
@@ -319,6 +320,9 @@ class SolicitudController extends Controller
                     $estado = 4; // Cancelado
                 } else {
                     $material = InventarioMaterial::find($item['id_material']);
+                    if($material->activo != 1){
+                        continue;
+                    }
                     $solItem = SolicitudItems::where([
                         'id_solicitud' => $idSolicitud,
                         'id_material'  => $item['id_material']
@@ -344,7 +348,7 @@ class SolicitudController extends Controller
                     $dato['id_material'] = $item['id_material'];
                     $dato['cantidad'] = $item['cantidad'];
                     $dato['valor_unidad'] = $material['valor_unidad'];
-                    $dato['cobro'] = 1;
+                    $dato['cobro'] = $item['cobro'];
                     Despachos::create($dato);
                 }
 

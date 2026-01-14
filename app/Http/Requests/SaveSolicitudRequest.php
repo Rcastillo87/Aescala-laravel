@@ -29,13 +29,13 @@ class SaveSolicitudRequest extends FormRequest
             'materiales.*.id_material' => [
                 'required',
                 'integer',
-                Rule::exists('inventario_materiales', 'id'),
+                /*Rule::exists('inventario_materiales', 'id'),
                 function ($attribute, $value, $fail) {
                     $material = InventarioMaterial::find($value);
                     if (!$material || $material->activo != 1) {
                         $fail('El material seleccionado no está disponible, recargue la página.');
                     }
-                }
+                }*/
             ],
 
             'materiales.*.cantidad' => [
@@ -63,6 +63,7 @@ class SaveSolicitudRequest extends FormRequest
             ],
 
             'materiales.*.cancelo' => ['required', 'in:0,1'],
+            'materiales.*.cobro' => ['nullable', 'in:0,1'],
         ];
     }
 

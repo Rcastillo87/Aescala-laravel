@@ -79,20 +79,39 @@
                         </div>
 
                         <div class="flex justify-between">
-                            <div class="flex items-center">
-                                <input type="hidden" name="materiales[{{$key}}][cancelo]" value="0">
-                                <input
-                                    id="materiales_{{$key}}_cancelo"
-                                    type="checkbox"
-                                    name="materiales[{{$key}}][cancelo]"
-                                    value="1"
-                                    class="w-4 h-4 text-blue-600"
-                                >
-                                <label for="materiales_{{$key}}_cancelo" class="ml-2 text-sm font-medium">
-                                    {{ !$isAnalista ? 'Cancelar Despacho' : 'Cancelo Item' }} 
-                                </label>
+                            <div>
+                                @if (!$isAnalista)
+                                    <div class="flex items-center">
+                                        <input type="hidden" name="materiales[{{$key}}][cobro]" value="0">
+                                        <input
+                                            id="materiales_{{$key}}_cobro"
+                                            type="checkbox"
+                                            name="materiales[{{$key}}][cobro]"
+                                            value="1"
+                                            class="w-4 h-4 text-blue-600"
+                                            checked
+                                        >
+                                        <label for="materiales_{{$key}}_cobro" class="ml-2 text-sm font-medium">Se Cobra</label>
+                                    </div>
+                                @endif
+                                <div class="flex items-center">
+                                    <input type="hidden" name="materiales[{{$key}}][cancelo]" value="0">
+                                    <input
+                                        id="materiales_{{$key}}_cancelo"
+                                        type="checkbox"
+                                        name="materiales[{{$key}}][cancelo]"
+                                        value="1"
+                                        class="w-4 h-4 text-blue-600"
+                                    >
+                                    <label for="materiales_{{$key}}_cancelo" class="ml-2 text-sm font-medium">
+                                        {{ !$isAnalista ? 'Cancelar Despacho' : 'Cancelo Item' }} 
+                                    </label>
+                                </div>
                             </div>
-                            <p>Tipo: {!! $m['spanTipo'] !!} </p>
+                            <div>
+                                <p>Tipo: {!! $m['spanTipo'] !!} </p>
+                                <p>Estado: {!! $m['spanEstadoMate'] !!} </p>
+                            </div>
                         </div>
 
                         <div class="flex bg-gradient-to-r justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
