@@ -84,3 +84,7 @@ function formatDate(dateString) {
         minute: '2-digit'
     });
 }
+
+    setTimeout(() => {
+        location.reload();
+    }, 30 * 60 * 1000);
