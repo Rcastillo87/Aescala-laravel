@@ -71,13 +71,19 @@ class OtrosiController extends Controller
 
         $title = $id ? 'Editar Otro Si' : 'Crear Otro Si';
 
-        $proyectos = Proyecto::whereIN('id_estado', [1, 3, 5])
+        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5])
             ->when(!Auth::user()->isAdmin, function ($query) {
-                $query->where('id_user', Auth::user()->id)
-                    ->orwhere('id_user_obra_blanca', Auth::user()->id)
-                    ->orwhere('id_user_carpinteria', Auth::user()->id);
-            })->orderBy('nombre_proyecto', 'ASC')
-            ->get(['id', 'nombre_proyecto'])->toArray();
+                $query->where(function ($q) {
+                    $q->where('id_user', Auth::user()->id)
+                    ->orWhere('id_user_obra_blanca', Auth::user()->id)
+                    ->orWhere('id_user_carpinteria', Auth::user()->id);
+                });
+            })
+            ->whereNotNull('cedula_cliente')
+            ->whereNotNull('tipo_doc_cliente')
+            ->orderBy('nombre_proyecto', 'ASC')
+            ->get(['id', 'nombre_proyecto'])
+            ->toArray();
 
         if(!$id) {
             $itemsOtroSi = '';
