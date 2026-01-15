@@ -144,6 +144,11 @@ class User extends Authenticatable
         return ($this->id_rol == 7)? true: false;
     }
 
+    public function getIsTecnicoAttribute()
+    {
+        return ($this->id_rol == 8)? true: false;
+    }
+
     public function getNewProyectAttribute()
     {
         return Proyecto::where('id_estado', 2)->count();
