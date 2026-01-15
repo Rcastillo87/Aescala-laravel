@@ -81,3 +81,20 @@ function cargarItemsSolicitud(id) {
             `;
         });
 }
+
+function confirmDelete(el) {
+    Swal.fire({
+        title: '¿Eliminar Solicitud?',
+        text: '¿Desea eliminar la Solicitud de Material?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            el.closest('form').submit();
+        }
+    });
+}
