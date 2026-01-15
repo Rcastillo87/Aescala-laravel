@@ -166,6 +166,9 @@ export default {
         'span-gray',
         'span-black',
         'span-cyan',
+        'span-purple',
+        'span-orange',
+        'span-indigo',
 
         // Clases de grid
         'grid',
