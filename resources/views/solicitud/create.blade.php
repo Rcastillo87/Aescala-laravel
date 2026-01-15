@@ -9,7 +9,7 @@
 
                     <input class="hidden" value="{{ Auth::user()->id }}" id="id_user" name="id_user">
 
-                    @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isContratista)
+                    @if (!Auth::user()->isAnalista)
                         <div>
                             <x-input-label for="id_fases" :value="__('Seleccione la fase')" />
                             <x-select-input 
