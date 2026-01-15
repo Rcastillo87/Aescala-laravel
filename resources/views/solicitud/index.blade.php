@@ -95,6 +95,29 @@
                                 </div>
                             @endif
 
+                            @if (($item->estado == 1) && !Auth::user()->isAnalista)
+                                <div class="relative">
+                                    <form action="{{ route('solicitud.delete', $item->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <a tabindex="0"
+                                           data-tooltip-target="tooltip-hover-delete-{{ $item->id }}"
+                                           data-tooltip-trigger="hover"
+                                           onclick="confirmDelete(this)"
+                                           class="flex items-center justify-center w-10 h-10 text-white bg-red-600 hover:bg-white hover:text-red-600 border-2 border-red-600 focus:ring-4 
+                                                  focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-500 cursor-pointer">
+                                            ✕
+                                        </a>
+                                    </form>
+                                    <div id="tooltip-hover-delete-{{ $item->id }}"
+                                         role="tooltip"
+                                         class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible">
+                                        Eliminar Solicitud de Material
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div>
+                                </div>
+                            @endif
+                            
                         </td>
                     </tr>
                 @empty
