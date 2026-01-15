@@ -2,7 +2,7 @@
 @section('content')
     @include('solicitud.filter')
 
-    @if (Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isContratista)
+    @if (!Auth::user()->isAnalista)
         <div class="flex justify-end text-center mb-3">
             <x-secondary-button class="ms-4" href="{{ route('solicitud.create')}}">
                 Crear Solicitud
