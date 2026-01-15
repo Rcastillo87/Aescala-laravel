@@ -20,7 +20,7 @@ class SolicitudController extends Controller
 {
     public function index( ) 
     {
-        if(Auth::user()->isAdmin || Auth::user()->isAnalista){
+        if(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isTecnico){
             $cola = Request('id_userSerch');
         } else {
             $cola = Auth::user()->id;
