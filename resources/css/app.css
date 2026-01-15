@@ -24,4 +24,13 @@
     .span-cyan {
         @apply bg-cyan-400 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
     }
+    .span-purple {
+        @apply bg-purple-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+    }
+    .span-orange {
+        @apply bg-orange-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+    }
+    .span-indigo {
+        @apply bg-indigo-500 inline-flex text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded;
+    }
 }
