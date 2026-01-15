@@ -20,7 +20,7 @@ class SolicitudController extends Controller
 {
     public function index( ) 
     {
-        if(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isTecnico){
+        if(Auth::user()->isAdmin || Auth::user()->isAnalista){
             $cola = Request('id_userSerch');
         } else {
             $cola = Auth::user()->id;
@@ -72,7 +72,7 @@ class SolicitudController extends Controller
     {
         $title = 'Crear Solicitud de Material';
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
-            ->when(!Auth::user()->isAdmin, function ($query) {
+            ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico), function ($query) {
                 $query->where('id_user', Auth::user()->id)
                     ->orwhere('id_user_obra_blanca', Auth::user()->id)
                     ->orwhere('id_user_carpinteria', Auth::user()->id);
