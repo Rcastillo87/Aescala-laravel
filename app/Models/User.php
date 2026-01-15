@@ -196,6 +196,7 @@ class User extends Authenticatable
         5 => 'Cartera',
         6 => 'Analista',
         7 => 'Contratista',
+        8 => 'Tecnico'
     ];
 
     public static $ClassRol = [
@@ -206,6 +207,7 @@ class User extends Authenticatable
         5 => 'span-green',
         6 => 'span-black',
         7 => 'span-cyan',
+        8 => 'span-orange'
     ];
 
     public static $estado = [
