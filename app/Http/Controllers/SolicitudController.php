@@ -378,4 +378,13 @@ class SolicitudController extends Controller
         }
     }
 
+    public function delete($id){
+        $item =  SolicitudMaterial::find($id);
+        if($item && ($item->estado != 1)){
+            return back()->with('error', 'Solo se pueden eliminar Solicitudes de Material en estado "Nuevo".');
+        }
+        $item->items()->delete();
+        $item->delete();
+        return redirect()->route('solicitud.index')->with('success', " Solicitudes de Material eliminada con exito");
+    }
 }
