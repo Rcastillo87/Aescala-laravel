@@ -201,6 +201,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/createAprobarSolicitud/{id}', [SolicitudController::class, 'createAprobarSolicitud'])->name('createAprobarSolicitud');
         Route::post('/saveSolicitud', [SolicitudController::class, 'saveSolicitud'])->name('saveSolicitud');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
+        Route::delete('/delete/{id}', [SolicitudController::class, 'delete'])->name('delete');
     });
 
 });
