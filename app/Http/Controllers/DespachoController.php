@@ -18,7 +18,7 @@ class DespachoController extends Controller
     {
         $title = 'Despacho de Material';
         $tipo = Despachos::$tipo;
-        $colaUsers = User::where('id_rol', 3)
+        $colaUsers = User::whereIn('id_rol', [3, 7, 8]) // Tecnico y Contratista y architecto
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
