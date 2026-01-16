@@ -89,12 +89,11 @@ class SolicitudController extends Controller
         } else {
             $arr = [3];
         }
-
         $fases = Fase::whereIn('id', $arr)->get()->map(function ($item) {
             $ids = explode(',', $item['id_materiales']);
             return [ 
                 'id' => $item['id'],
-                'name_fase' => "Fase " . $item['id'],
+                'name_fase' => $item['fase'],
                 'materiales' => $ids
             ];
         })->toArray();
