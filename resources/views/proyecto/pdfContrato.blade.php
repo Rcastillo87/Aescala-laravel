@@ -292,26 +292,6 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 Las partes acuerdan que los proyectos que se encuentren en ejecucion durante la temporada de Navidad y Año Nuevo podran ser suspendidos con motivo de las vacaciones colectivas, periodo en el cual las empresas y contratistas acostumbran cesar o limitar sus actividades. En consecuencia, EL CONTRATISTA pausara la ejecucion del proyecto durante dicho lapso, el cual no sera considerado como tiempo habil ni computable dentro de los plazos y cronogramas establecidos en el presente contrato.
 </p>
 
-@if(!empty($img_firma))
-    <p>
-    <strong>DECIMA QUINTA. TRATAMIENTO DE DATOS PERSONALES:</strong>
-    EL CONTRATANTE declara que ha sido informado de manera clara, previa y suficiente sobre la Politica de Tratamiento de Datos Personales de <strong>{{ env('RAZON') }}</strong>, en cumplimiento de la Ley 1581 de 2012, el Decreto 1377 de 2013 y demas normas concordantes.
-    </p>
-    <p>En constancia de lo anterior, EL CONTRATANTE manifiesta expresamente que:</p>
-    <ul>
-        @if($acepta_tratamiento_datos)
-            <li>
-                <strong>AUTORIZA</strong> de manera libre, previa, expresa, voluntaria e informada el tratamiento de sus datos personales para las finalidades descritas en la Politica de Tratamiento de Datos Personales de la EMPRESA.
-            </li>
-        @else
-            <li>
-                <strong>NO AUTORIZA</strong> el tratamiento de sus datos personales, salvo aquellos estrictamente necesarios para la ejecución del presente contrato, en cumplimiento de obligaciones legales y contractuales.
-            </li>
-        @endif
-    </ul>
-    <p>La presente manifestacion hace parte integral del contrato y se entiende otorgada al momento de la firma del mismo.</p>
-@endif
-
 <p>
     En constancia se firma en dos ejemplares el dia {{ $fecha_contrato }}.
 </p>
