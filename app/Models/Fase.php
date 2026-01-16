@@ -13,6 +13,7 @@ class Fase extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'fase',
         'id_materiales'
     ];
 }

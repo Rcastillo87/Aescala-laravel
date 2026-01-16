@@ -79,32 +79,26 @@ class SolicitudController extends Controller
             })
             ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
-	    $materiales = InventarioMaterial::where('activo', 1)
-            /*->when(Auth::user()->isContratista, function ($query) {
-                $query->where('aprobar', 0);
-            })*/
-        ->get()->toArray();
+        
+	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
 
         if(Auth::user()->isContratista){
-            $fases = Fase::whereIn('id', [1, 2])->get()->map(function ($item) {
-                $ids = explode(',', $item['id_materiales']);
-                return [ 
-                    'id' => $item['id'],
-                    'name_fase' => "Fase " . $item['id'],
-                    'materiales' => $ids
-                ];
-            })->toArray();
+            $arr = [1,2];
+        } else if(Auth::user()->isTecnico){
+            $arr = [4,5];
         } else {
-            $fases = Fase::all()->map(function ($item) {
-                $ids = explode(',', $item['id_materiales']);
-                return [ 
-                    'id' => $item['id'],
-                    'name_fase' => "Fase " . $item['id'],
-                    'materiales' => $ids
-
-                ];
-            })->toArray();
+            $arr = [3];
         }
+
+        $fases = Fase::whereIn('id', $arr)->get()->map(function ($item) {
+            $ids = explode(',', $item['id_materiales']);
+            return [ 
+                'id' => $item['id'],
+                'name_fase' => "Fase " . $item['id'],
+                'materiales' => $ids
+            ];
+        })->toArray();
+
         return view('solicitud.create', compact('title', 'materiales', 'proyectos', 'fases'));
     }
 

@@ -214,22 +214,28 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 </p>
 <ul>
     @if($por_term_1!=0) 
-        <li>({{ $por_term_1 }}%) correspondiente (${{ $val_term_1 }}) para dar inicio a la etapa de diseño.</li> 
+        <li>({{ $por_term_1 }}%) correspondiente a (${{ $val_term_1 }}) para dar inicio a la etapa de diseño.</li> 
     @endif
     @if($por_term_2!=0) 
-        <li>({{ $por_term_2 }}%) correspondiente (${{ $val_term_2 }}) al momento de aprobado diseño para dar inicio a la obra.</li> 
+        <li>({{ $por_term_2 }}%) correspondiente a (${{ $val_term_2 }}) al momento de aprobado diseño para dar inicio a la obra.</li> 
     @endif
-    @if($por_term_3!=0) 
-        <li>({{ $por_term_3 }}%) correspondiente (${{ $val_term_3 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que se va a enviar corte de carpinteria.</li> 
+    @if($por_term_3 != 0) 
+        <li>
+            ({{ $por_term_3 }}%) correspondiente a (${{ $val_term_3 }}) previo a enviar a corte la carpintería.
+        </li> 
     @endif
-    @if($por_term_4!=0) 
-        <li>({{ $por_term_4 }}%) correspondiente (${{ $val_term_4 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalacion de carpinteria.</li> 
+    @if($por_term_4 != 0) 
+        <li>
+            ({{ $por_term_4 }}%) correspondiente a (${{ $val_term_4 }}) previo a iniciar la instalacion de la carpintería.
+        </li> 
     @endif
-    @if($por_term_5!=0) 
-        <li>({{ $por_term_5 }}%) correspondiente (${{ $val_term_5 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que ha comenzado la instalacion de accesorios, griferia y meson.</li> 
+    @if($por_term_5 != 0) 
+        <li>
+            ({{ $por_term_5 }}%) correspondiente a (${{ $val_term_5 }}) previo a iniciar el corte e instalacion del mesón, griferia y accesorios.
+        </li> 
     @endif
     @if($por_term_6!=0) 
-        <li>({{ $por_term_6 }}%) correspondiente (${{ $val_term_6 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que hara entrega de la obra.</li> 
+        <li>({{ $por_term_6 }}%) correspondiente a (${{ $val_term_6 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que hara entrega de la obra.</li> 
     @endif
 </ul>
 
@@ -285,7 +291,27 @@ Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domi
 <strong>DECIMA CUARTA. SUSPENSION DE ACTIVIDADES EN TEMPORADA DE FIN DE ANO: </strong>
 Las partes acuerdan que los proyectos que se encuentren en ejecucion durante la temporada de Navidad y Año Nuevo podran ser suspendidos con motivo de las vacaciones colectivas, periodo en el cual las empresas y contratistas acostumbran cesar o limitar sus actividades. En consecuencia, EL CONTRATISTA pausara la ejecucion del proyecto durante dicho lapso, el cual no sera considerado como tiempo habil ni computable dentro de los plazos y cronogramas establecidos en el presente contrato.
 </p>
-  
+
+@if(!empty($img_firma))
+    <p>
+    <strong>DECIMA QUINTA. TRATAMIENTO DE DATOS PERSONALES:</strong>
+    EL CONTRATANTE declara que ha sido informado de manera clara, previa y suficiente sobre la Politica de Tratamiento de Datos Personales de <strong>{{ env('RAZON') }}</strong>, en cumplimiento de la Ley 1581 de 2012, el Decreto 1377 de 2013 y demas normas concordantes.
+    </p>
+    <p>En constancia de lo anterior, EL CONTRATANTE manifiesta expresamente que:</p>
+    <ul>
+        @if($acepta_tratamiento_datos)
+            <li>
+                <strong>AUTORIZA</strong> de manera libre, previa, expresa, voluntaria e informada el tratamiento de sus datos personales para las finalidades descritas en la Politica de Tratamiento de Datos Personales de la EMPRESA.
+            </li>
+        @else
+            <li>
+                <strong>NO AUTORIZA</strong> el tratamiento de sus datos personales, salvo aquellos estrictamente necesarios para la ejecución del presente contrato, en cumplimiento de obligaciones legales y contractuales.
+            </li>
+        @endif
+    </ul>
+    <p>La presente manifestacion hace parte integral del contrato y se entiende otorgada al momento de la firma del mismo.</p>
+@endif
+
 <p>
     En constancia se firma en dos ejemplares el dia {{ $fecha_contrato }}.
 </p>

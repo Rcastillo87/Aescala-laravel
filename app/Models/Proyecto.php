@@ -205,6 +205,7 @@ class Proyecto extends Model
             "dias_trabajo"        => $this->dias_trabajo,
             'imgRepre'            => $base64,
             "descuento"           => $this->descuento ?? 0,
+            "acepta_tratamiento_datos" => ($this->acepta_trata_datos == 1) ? true : false,
         ];
     }
 
