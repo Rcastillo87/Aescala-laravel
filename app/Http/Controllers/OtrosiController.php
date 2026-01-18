@@ -209,7 +209,7 @@ class OtrosiController extends Controller
             'entregables.*.items' => 'required|array|min:1',
             'entregables.*.items.*.material' => 'required|string',
             'entregables.*.items.*.cantidad' => 'required|integer|min:1',
-            'entregables.*.items.*.valor_unitario' => 'required|integer|min:1'
+            'entregables.*.items.*.valor_unitario' => 'required|integer|min:0'
         ], [
             'id_proyecto.same' => 'El proyecto seleccionado en el Excel debe coincidir con el proyecto principal.'
         ]);
@@ -403,8 +403,8 @@ class OtrosiController extends Controller
             if (!filter_var($cant, FILTER_VALIDATE_INT) || (int)$cant <= 0) {
                 $erroresFila[] = 'CANT debe ser un número entero mayor que 0.';
             }
-            if (!filter_var($valorUnitario, FILTER_VALIDATE_INT) || (int)$valorUnitario <= 0) {
-                $erroresFila[] = 'VALOR UNITARIO debe ser un número entero mayor que 0.';
+            if (!filter_var($valorUnitario, FILTER_VALIDATE_INT) || (int)$valorUnitario < 0) {
+                $erroresFila[] = 'VALOR UNITARIO debe ser un número entero mayor o igual que 0.';
             }
 
             $espacioActual['items'][] = [

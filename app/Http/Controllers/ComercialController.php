@@ -265,6 +265,7 @@ class ComercialController extends Controller
             }
             $proyecto->img_firma = $request->img_firma;
             $proyecto->acepta_trata_datos = $request->acepta_trata_datos;
+            $proyecto->fecha_firma = Carbon::now();
             $proyecto->save();
 
             return response()->json([

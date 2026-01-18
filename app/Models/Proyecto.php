@@ -51,7 +51,8 @@ class Proyecto extends Model
         'observacion',
         'descuento',
         'paz_salvo',
-        'acepta_trata_datos'
+        'acepta_trata_datos',
+        'fecha_firma'
     ];
 
     protected $casts = [
@@ -140,7 +141,7 @@ class Proyecto extends Model
         $valTerm5 = ceil($total * $this->termino_5_por / 100);
         $valTerm6 = ceil($total * $this->termino_6_por / 100);
 
-        $carbon = Carbon::parse($this->fec_begin_cont);
+        $carbon = Carbon::parse($this->fecha_firma);
         $carbon->locale('es');
         $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
 
@@ -206,6 +207,19 @@ class Proyecto extends Model
             'imgRepre'            => $base64,
             "descuento"           => $this->descuento ?? 0,
             "acepta_tratamiento_datos" => ($this->acepta_trata_datos == 1) ? true : false,
+        ];
+    }
+
+    public function getTrataDatosAttribute()
+    {
+        // Preparar datos para la vista
+        return [
+            "nombre_cliente"      => Str::title($this->nombre_cliente),
+            "tipo_doc_cliente"    => self::$tipoDocumento[$this->tipo_doc_cliente][1] ?? '',
+            "tipo_doc_cliente_acro" => self::$tipoDocumento[$this->tipo_doc_cliente][0] ?? '',
+            "documento_cliente"   => number_format($this->cedula_cliente, 0, ',', '.'),
+            "img_firma"           => $this->img_firma,
+            "fecha_contrato"     => Carbon::now()->locale('es')->translatedFormat('d \d\e F \d\e Y'),
         ];
     }
 

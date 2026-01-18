@@ -180,6 +180,27 @@
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
+
+
+                        <!-- Botón tratamiento  de datos -->
+                        <div class="relative @if(Auth::user()->isNotColab && $item->entreProyecto->isNotEmpty() && ($item->acepta_trata_datos==1)) @else hidden @endif">
+                            <a tabindex="0" 
+                            data-tooltip-target="tooltip-hover-trataDatosPDF-{{$item->id}}" 
+                            data-tooltip-trigger="hover" 
+                            href="{{ route('proyecto.trataDatosPDF', $item->id) }}" 
+                            target="_blank"
+                            class="flex items-center justify-center w-10 h-10 text-white bg-orange-700 hover:bg-white hover:text-orange-800 border-2 border-orange-800 focus:ring-4 
+                                focus:outline-none focus:ring-orange-300 font-medium rounded-full text-sm dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="square" stroke-linejoin="round" stroke-width="2" d="M7 19H5a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h1m4-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm7.441 1.559a1.907 1.907 0 0 1 0 2.698l-6.069 6.069L10 19l.674-3.372 6.07-6.07a1.907 1.907 0 0 1 2.697 0Z"/>
+                                </svg>
+                            </a>
+                            <div id="tooltip-hover-trataDatosPDF-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Tratamiento de Datos
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+
                     
                         <!-- Botón Cambio de Estado -->
                         <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">

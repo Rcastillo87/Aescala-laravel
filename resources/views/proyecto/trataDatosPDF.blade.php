@@ -11,8 +11,8 @@
 
         body {
             font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 10pt;
-            line-height: 1.45;
+            font-size: 9.5pt;
+            line-height: 1.15;
             color: #222;
         }
 
@@ -31,18 +31,18 @@
         }
 
         /* ================= TITULOS ================= */
-        h1 {
+        h2 {
             text-align: center;
-            font-size: 14.5pt;
-            margin: 20px 0 6px;
+            font-size: 13pt;
+            margin: 10px 0 6px;
             text-transform: uppercase;
             font-weight: bold;
         }
 
-        h2 {
+        h3 {
             text-align: center;
             font-size: 11pt;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             font-weight: normal;
         }
 
@@ -53,7 +53,7 @@
         }
 
         ul {
-            margin: 6px 0 10px 20px;
+            margin: 4px 0 10px 20px;
             padding: 0;
             font-size: 9.5pt;
         }
@@ -64,7 +64,7 @@
         }
 
         ul ul {
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         /* ================= FIRMAS ================= */
@@ -126,10 +126,10 @@
     <img src="{{ public_path('img/logo.png') }}" alt="Logo empresa">
 </header>
 
-<h1>
+<h2>
     AUTORIZACIÓN PARA EL TRATAMIENTO DE DATOS PERSONALES DE COLABORADORES, PROVEEDORES Y CONTRATISTAS DE {{ env('RAZON') }}
-</h1>
-<h2>DEL {{ $fecha_contrato }}</h2>
+</h2>
+<h3>DEL {{ $fecha_contrato }}</h3>
 
 <p>
     Yo, <strong>{{ $nombre_cliente }}</strong>, identificado(a) con {{ $tipo_doc_cliente }}

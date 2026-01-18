@@ -1191,4 +1191,18 @@ class ProyectoController extends Controller
             ], 500);
         }
     }
+
+    public function trataDatosPDF()
+    {
+        try {
+            $proyecto = Proyecto::find(Request('id'));
+            $data = $proyecto->trataDatos;
+
+            $pdf = Pdf::loadView('proyecto.trataDatosPDF', $data);
+            return $pdf->stream('trataDatosPDF-' . $proyecto->id . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Error generando contrato PDF: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
+    }
 }
