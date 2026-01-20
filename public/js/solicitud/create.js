@@ -237,5 +237,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         // Limpiar mensajes de error si existen
         document.querySelectorAll(".error-msg").forEach(e => e.remove());
+
+        addedMaterials.clear();
     });
 });
