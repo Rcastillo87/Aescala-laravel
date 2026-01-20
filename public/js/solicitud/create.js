@@ -135,6 +135,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
             addSelectedMaterial(id_material);
         });
     });
+
+    document.getElementById("btnLimpiar").addEventListener("click", function(e) {
+        e.preventDefault();
+        // Limpiar todos los campos del formulario
+        const form = document.getElementById("formSolicitud");
+        form.reset();
+
+        // Limpiar el contenedor de materiales seleccionados
+        document.getElementById('selectMateriales').innerHTML = '';
+
+        // Limpiar mensajes de error si existen
+        document.querySelectorAll(".error-msg").forEach(e => e.remove());
+        addedMaterials.clear();
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -223,21 +237,4 @@ document.addEventListener("DOMContentLoaded", () => {
             input.insertAdjacentElement("afterend", div);
         }
     }
-});
-
-document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("btnLimpiar").addEventListener("click", function(e) {
-        e.preventDefault();
-        // Limpiar todos los campos del formulario
-        const form = document.getElementById("formSolicitud");
-        form.reset();
-
-        // Limpiar el contenedor de materiales seleccionados
-        document.getElementById('selectMateriales').innerHTML = '';
-
-        // Limpiar mensajes de error si existen
-        document.querySelectorAll(".error-msg").forEach(e => e.remove());
-
-        addedMaterials.clear();
-    });
 });
