@@ -39,7 +39,7 @@
                     </div>
                     <div>
                         <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
-                        <x-input-label for="id_material" :value="__('Seleccione Material *')" />
+                        <x-input-label for="id_material" :value="__('Seleccione Material')" />
                         <x-select-input 
                             placeholder="Busqueda.."
                             autocomplete="off"
@@ -69,7 +69,7 @@
                 <!-- Segunda columna -->
                 <div class="w-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl flex flex-col">
                     <p class="font-bold text-xl mb-3 shrink-0">
-                        Materiales a solicitar
+                        Materiales a solicitar *
                     </p>
                     <!-- CONTENEDOR CON SCROLL -->
                     <div

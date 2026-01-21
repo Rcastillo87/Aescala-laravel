@@ -36,11 +36,6 @@ class SolicitudController extends Controller
             ->when($cola, function ($query, $id_user) {
                 $query->where('id_user', $id_user);
             })
-            ->when(Auth::user()->isAnalista, function ($query) {
-                return $query->whereHas('items', function ($q) {
-                    $q->where('aprobado', 0);
-                });
-            })
             ->when(request('id_estado'), function ($query, $id_estado) {
                 $query->where('estado', $id_estado);
             })
@@ -134,40 +129,41 @@ class SolicitudController extends Controller
             'observacion' => ['nullable', 'string'],
         ]);
 
-        return DB::transaction(function () use ($validated) {
-
-            $solicitud = SolicitudMaterial::create([
-                'id_user'         => $validated['id_user'],
-                'id_proyecto'     => $validated['id_proyecto'],
-                'fecha_solicitud' => now(),
-                'estado'          => 1,
-                'observacion'     => $validated['observacion'] ?? null,
-            ]);
-
-            foreach ($validated['materiales'] as $material) {
-
-                $itemMaterial = InventarioMaterial::find($material['id_material']);
-
-                SolicitudItems::create([
-                    'id_solicitud' => $solicitud->id,
-                    'id_material'  => $material['id_material'],
-                    'cantidad'     => $material['cantidad'],
-                    'cantidad_solicitada'     => $material['cantidad'],
-                    'estado'       => 1,
-                    'aprobado'    => $itemMaterial->aprobar == 1 ? 0 : 1,
+        try {
+            DB::transaction(function () use ($validated) {
+                $solicitud = SolicitudMaterial::create([
+                    'id_user'         => $validated['id_user'],
+                    'id_proyecto'     => $validated['id_proyecto'],
+                    'fecha_solicitud' => now(),
+                    'estado'          => 1,
+                    'observacion'     => $validated['observacion'] ?? null,
                 ]);
-            }
-
+                foreach ($validated['materiales'] as $material) {
+                    $itemMaterial = InventarioMaterial::find($material['id_material']);
+                    SolicitudItems::create([
+                        'id_solicitud' => $solicitud->id,
+                        'id_material'  => $material['id_material'],
+                        'cantidad'     => $material['cantidad'],
+                        'cantidad_solicitada' => $material['cantidad'],
+                        'estado'       => 1,
+                        'aprobado'     => $itemMaterial->aprobar == 1 ? 0 : 1,
+                    ]);
+                }
+            });
             return response()->json([
                 'status' => true,
                 'message' => 'Solicitud registrada correctamente',
             ], 200);
-        });
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al guardar la solicitud',
+            ], 500);
+        }
     }
 
     public function listaSolicitud($id)
     {
-        $estado = SolicitudItems::$estados;
         $solicitud = SolicitudItems::Join('inventario_materiales', 'solicitud_items.id_material', '=', 'inventario_materiales.id')
             ->Join('solicitud_material', 'solicitud_material.id', '=', 'solicitud_items.id_solicitud')
             ->leftJoin(
@@ -184,6 +180,7 @@ class SolicitudController extends Controller
                 'inventario_materiales.nombre_material', 
                 'solicitud_items.cantidad_solicitada as cantidad_sol', 
                 'inventario_solicituds.cantidad as cantidad_des', 
+                'inventario_solicituds.cobro',
                 'solicitud_items.estado', 
                 'solicitud_items.aprobado', 
                 'inventario_solicituds.createdAt',
@@ -194,8 +191,10 @@ class SolicitudController extends Controller
                 )
             ->get()
             ->map(function ($item) {
-                $span = $estado[$item->estado] ?? 'Desconocido';
+                $span = SolicitudItems::$estados[$item->estado] ?? 'Desconocido';
+                $isCobro = $item->cobro ? ($item->cobro == 1 ? '<span class="span-green">SI</span>':'<span class="span-red">NO</span>') : '';
                 $item['span_estado'] = $span;
+                $item['isCobro'] = $isCobro;
                 return $item;
             });
 

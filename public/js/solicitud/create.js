@@ -142,6 +142,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         const form = document.getElementById("formSolicitud");
         form.reset();
 
+        document.getElementById("id_proyecto").tomselect.clear();
+        document.getElementById("id_material").tomselect.clear();
+    
         // Limpiar el contenedor de materiales seleccionados
         document.getElementById('selectMateriales').innerHTML = '';
 
@@ -156,6 +159,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
+
+        if (!document.querySelector('[name^="materiales["]')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin materiales',
+                text: 'Debe agregar al menos un material, en "Seleccione Material".'
+            });
+            return;
+        }
 
         Swal.fire({
             title: 'Procesando...',
@@ -174,7 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const resp = await fetch(form.action, {
                 method: "POST",
                 headers: {
-                    "X-CSRF-TOKEN": formData.get("_token")
+                    "X-CSRF-TOKEN": formData.get("_token"),
+                    "Accept": "application/json"
                 },
                 body: formData
             });
@@ -226,15 +239,17 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarErrores(errors) {
         document.querySelectorAll(".error-msg").forEach(e => e.remove());
 
-        for (const campo in errors) {
-            const input = document.querySelector(`[name="${campo}"]`);
-            if (!input) continue;
+        Object.keys(errors).forEach(campo => {
+            const campoForm = campo.replace(/\./g, "][");
+            const input = document.querySelector(`[name="${campoForm}"]`)
+                || document.querySelector(`[name="${campoForm}]"]`);
 
+            if (!input) return;
             const div = document.createElement("div");
-            div.classList.add("error-msg", "text-red-600", "mt-1", "text-sm");
+            div.className = "error-msg text-red-600 mt-1 text-sm";
             div.innerText = errors[campo][0];
-
             input.insertAdjacentElement("afterend", div);
-        }
+        });
     }
+
 });
