@@ -23,7 +23,8 @@ class SolicitudItems extends Model
         'estado',
         'aprobado',
         'fecha_aprobacion',
-        'id_user_aprueba'
+        'id_user_aprueba',
+        'nota_aprobacion'
     ];
 
     public static $estados = [

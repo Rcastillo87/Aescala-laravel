@@ -64,6 +64,7 @@ class SaveSolicitudRequest extends FormRequest
 
             'materiales.*.cancelo' => ['required', 'in:0,1'],
             'materiales.*.cobro' => ['nullable', 'in:0,1'],
+            'materiales.*.nota_aprobacion' => ['nullable', 'string'],
         ];
     }
 

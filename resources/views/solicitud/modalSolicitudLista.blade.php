@@ -1,4 +1,4 @@
-<x-modal name="modalSolicitudLista-modal" maxWidth="6xl">
+<x-modal name="modalSolicitudLista-modal" maxWidth="7xl">
     <div class="p-6 overflow-x-auto">
         <h2 class="text-xl font-semibold mb-4 text-gray-700">Lista items solicitados</h2>
         <!-- TABLA DE ITEMS -->
@@ -13,6 +13,9 @@
                     <th class="px-3 py-2 border">Cantidad Despachada</th>
                     <th class="px-3 py-2 border">Fecha del Despacho</th>
                     <th class="px-3 py-2 border">Se Cobro</th>
+                    @if (Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isColab) 
+                        <th class="px-3 py-2 border">Nota Aprobación</th>
+                    @endif
                     <th class="px-3 py-2 border">Código del Despacho</th>
                     <th class="px-3 py-2 border">Opciones</th>
                 </tr>

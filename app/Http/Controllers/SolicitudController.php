@@ -39,6 +39,11 @@ class SolicitudController extends Controller
             ->when(request('id_estado'), function ($query, $id_estado) {
                 $query->where('estado', $id_estado);
             })
+            ->when(request('aprobar') == 1, function ($query) {
+                $query->whereHas('items', function ($q) {
+                    $q->where('aprobado', 0);
+                });
+            })
             ->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista), function ($query) {
                 $query->where('id_user', Auth::User()->id);
             })
@@ -187,7 +192,8 @@ class SolicitudController extends Controller
                 'inventario_solicituds.codigo',
                 'solicitud_material.fecha_solicitud',
                 'users.nombre_completo as usuario_aprueba',
-                'solicitud_items.fecha_aprobacion'
+                'solicitud_items.fecha_aprobacion',
+                'solicitud_items.nota_aprobacion'
                 )
             ->get()
             ->map(function ($item) {
@@ -201,6 +207,7 @@ class SolicitudController extends Controller
             return response()->json([  
                 'status' => true,
                 'data' => $solicitud,
+                'ban' => Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isColab
             ], 200);
     }
 
@@ -276,10 +283,11 @@ class SolicitudController extends Controller
             //Aprobar items si es analista
             if($validated['isAnalista']){
                 foreach ($arr as $item) {
+                    $update = ['aprobado' => 1, 'fecha_aprobacion' => now(), 'id_user_aprueba' => Auth::user()->id, 'nota_aprobacion' => $item['nota_aprobacion'] ?? null];
                     if ($item['cancelo'] == 1) {
-                        $update = ['aprobado' => 1, 'estado' => 4, 'fecha_aprobacion' => now(), 'id_user_aprueba' => Auth::user()->id]; // Cancelado
+                        $update = array_merge($update, ['estado' => 4]); // Cancelado
                     } else {
-                        $update = ['aprobado' => 1, 'cantidad'  => $item['cantidad'], 'cantidad_solicitada'  => $item['cantidad'], 'fecha_aprobacion' => now(), 'id_user_aprueba' => Auth::user()->id]; // Aprobado
+                        $update = array_merge($update, ['cantidad' => $item['cantidad'], 'cantidad_solicitada' => $item['cantidad']]); // Aprobado
                     }
 
                     SolicitudItems::where([

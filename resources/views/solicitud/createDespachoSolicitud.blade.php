@@ -115,9 +115,18 @@
                         </div>
 
                         <div class="flex bg-gradient-to-r justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                            <p class="text-md font-bold text-left text-gray-500">Observación:
-                                <small class="ml-2 text-black">{{$m['descripccion']}}</small>
-                            </p>
+                            @if (Auth::user()->isAnalista)
+                                <p class="text-md font-bold text-left text-gray-500">Nota Aprobación:</p>
+                                <textarea 
+                                    name="materiales[{{$key}}][nota_aprobacion]" 
+                                    rows="2" 
+                                    class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                    ></textarea>
+                            @else
+                                <p class="text-md font-bold text-left text-gray-500">Observación:
+                                    <small class="ml-2 text-black">{{$m['descripccion']}}</small>
+                                </p>
+                            @endif
                         </div>
                         <input type="hidden" name="materiales[{{$key}}][id_material]" value="{{ $m['id_material'] }}">
                     </div>

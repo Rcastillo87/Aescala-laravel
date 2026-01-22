@@ -61,6 +61,7 @@ function cargarItemsSolicitud(id) {
                         <td class="border px-3 py-2">${item.cantidad_des ?? ''}</td>
                         <td class="border px-3 py-2">${item.createdAt ?? ''}</td>
                         <td class="border px-3 py-2">${item.isCobro ?? ''}</td>
+                        <td class="border px-3 py-2 ${data.ban ? '' : 'hidden'}">${item.nota_aprobacion ?? ''}</td>
                         <td class="border px-3 py-2">${item.codigo ?? ''}</td>
                         <td class="border px-3 py-2">
                             ${ bnt }
