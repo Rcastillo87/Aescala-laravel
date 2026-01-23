@@ -4,16 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-
-use App\Models\Herramienta;
-use App\Models\HerramientaPrestamo;
 use App\Models\Proveedor;
-
 
 class ProveedorController extends Controller
 {
-
     public function index( ) 
     {
         $title = 'Lista de Proveedores';
@@ -87,7 +81,6 @@ class ProveedorController extends Controller
 
     public function editStatus($id) 
     {
-        
         try {
             DB::beginTransaction();
             $user = Proveedor::findOrFail($id);
@@ -105,5 +98,4 @@ class ProveedorController extends Controller
             ], 500);
         }
     }
-    
 }

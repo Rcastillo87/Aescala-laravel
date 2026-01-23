@@ -9,6 +9,18 @@
                 <div class="w-full lg:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
 
                     <div>
+                        <x-input-label for="tipo" :value="__('Despacho o Devolución *')" />
+                        <x-select-input 
+                            id="tipo"
+                            name="tipo" 
+                            :options="$tipo" 
+                            :selected="old('tipo')" 
+                            class="block mt-1 w-full" 
+                        />
+                        <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+                    </div> 
+
+                    <div>
                         <x-input-label for="id_proyecto" :value="__('Seleccione Proyecto *')" />
                         <x-select-input 
                             placeholder="Busqueda.."
@@ -31,36 +43,27 @@
                             :options="$colaUsers" 
                             :data="['id', 'nombre_completo']"
                             :selected="old('id_user')" 
-                            class="block mt-1 w-full" 
-                            required
+                            class="block mt-1 w-full bg-gray-100 cursor-not-allowed" 
+                            required  disabled
                         />
                         <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
                     </div>
                     <div>
-                        <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
+                        <input class="hidden" id="arrayMateriales" name="arrayMateriales" disabled>
                         <x-input-label for="id_material" :value="__('Seleccione Material *')" />
                         <x-select-input 
                             placeholder="Busqueda.."
                             autocomplete="off"
                             name="id_material" 
                             id="id_material"
-                            :options="$materiales" 
                             :data="['id', 'nombre_material']"
                             :selected="old('id_material')" 
-                            class="block mt-1 w-full"
+                            class="block mt-1 w-full bg-gray-100 cursor-not-allowed"
+                            disabled
                         />
                         <x-input-error :messages="$errors->get('id_material')" class="mt-2" />
                     </div>
-                    <div>
-                        <x-input-label for="tipo" :value="__('Despacho o Devolución *')" />
-                        <x-select-input 
-                            name="tipo" 
-                            :options="$tipo" 
-                            :selected="old('tipo')" 
-                            class="block mt-1 w-full" 
-                        />
-                        <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
-                    </div> 
+
                 </div>
 
                 <!-- Segunda columna -->

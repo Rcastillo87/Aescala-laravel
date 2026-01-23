@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     new TomSelect("#id_material",{
         create: true,
+        dropdownParent: 'body',
         sortField: {
             field: "text",
             direction: "asc"
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     new TomSelect("#id_proyecto",{
         create: true,
+        dropdownParent: 'body',
         sortField: {
             field: "text",
             direction: "asc"
@@ -28,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     // Obtener datos de materiales
-    const materialesData = JSON.parse(document.getElementById('arrayMateriales').value);
+    const materialesData =  [];
     const addedMaterials = new Set(); // Para trackear materiales añadidos
 
 
@@ -75,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                        min="1"
                        name="materiales[${materialIndex}][cantidad]" 
                        placeholder="Cantidad"
-                       max="${material.cantidad}"
                        class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
                        onchange="calculateTotal(this, ${material.cantidad})">
@@ -153,6 +154,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     const proyectoSelect = document.getElementById('id_proyecto');
     const userSelect = document.getElementById('id_user');
+    const tipoSelect = document.getElementById('tipo');
+    const materialSelect = document.getElementById('id_material').tomselect;
+
     proyectoSelect.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
         const dataAttr = selectedOption.getAttribute('data-datax');
@@ -167,4 +171,63 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     });
 
+
+    proyectoSelect?.addEventListener('change', ejecutarServicioSiCompleto);
+    tipoSelect?.addEventListener('change', ejecutarServicioSiCompleto);
+    function ejecutarServicioSiCompleto() {
+        const tipo = tipoSelect?.value;
+        const idProyecto = proyectoSelect?.value;
+
+        if (tipo && idProyecto) {
+            userSelect.disabled = false;
+            userSelect.classList.remove("bg-gray-100", "cursor-not-allowed");
+            materialSelect.enable();
+            ejecutarServicio(tipo, idProyecto);
+        } else {
+            userSelect.disabled = true;
+            userSelect.classList.add("bg-gray-100", "cursor-not-allowed");
+            materialSelect.disable();
+        }
+    }
+
+    function ejecutarServicio(tipo, idProyecto) {
+        const params = new URLSearchParams({
+            tipo: tipo,
+            id_proyecto: idProyecto
+        });
+
+        fetch(`selectMaterales?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Respuesta del servicio:', data);
+
+            materialSelect.enable();
+            materialSelect.clear();
+            materialSelect.clearOptions();
+            materialesData.length = 0; // 👈 LIMPIAR ARRAY
+            addedMaterials.clear();
+            document.getElementById('selectMateriales').innerHTML = '';
+
+            data.results.forEach(item => {
+                const material = item.material ?? item;
+                materialSelect.addOption({
+                    value: material.id,
+                    text: material.nombre_material
+                });
+                materialesData.push(material);
+            });
+
+            materialSelect.refreshOptions(false);
+            materialSelect.open();
+        })
+
+        .catch(error => {
+            console.error('Error al ejecutar el servicio:', error);
+        });
+    }
 });
