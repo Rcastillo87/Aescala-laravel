@@ -8,7 +8,7 @@
         </a>
         <ul class="space-y-1 font-medium">
             <!-- Grupo: Proyectos -->
-            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isCartera)
+            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isCartera || Auth::user()->isAnalista)
                 <li>
                     <button type="button"
                         class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group hover:text-orange-500hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -79,7 +79,7 @@
                             </li>
                         @endif
 
-                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser)
+                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista)
                             <li>
                                 <a href="{{ route('proyecto.index') }}"
                                     class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
@@ -102,35 +102,33 @@
                                     </span>
                                 </a>
                             </li>
+                            @if (Auth::user()->isAdmin || Auth::user()->isUser)
+                                <li>
+                                    <a href="{{ route('otro_si.index') }}"
+                                        class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                        <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4m5-13v4a1 1 0 0 1-1 1H5m0 6h9m0 0-2-2m2 2-2 2"/>
+                                        </svg>
 
-                            <li>
-                                <a href="{{ route('otro_si.index') }}"
-                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4m5-13v4a1 1 0 0 1-1 1H5m0 6h9m0 0-2-2m2 2-2 2"/>
-                                    </svg>
+                                        <span class="ms-3 flex items-center">
+                                            Otro Si
+                                        </span>
+                                    </a>
+                                </li>
 
-                                    <span class="ms-3 flex items-center">
-                                        Otro Si
-                                    </span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('tareas.index') }}"
-                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M3 15v3c0 .5523.44772 1 1 1h4v-4m-5 0v-4m0 4h5m-5-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v1.98935M3 11h5v4m9.4708 4.1718-.8696-1.4388-2.8164-.235-2.573-4.2573 1.4873-2.8362 1.4441 2.3893c.3865.6396 1.2183.8447 1.8579.4582.6396-.3866.8447-1.2184.4582-1.858l-1.444-2.38925h3.1353l2.6101 4.27715-1.0713 2.5847.8695 1.4388" />
-                                    </svg>
-                                    <span class="ms-3">Tareas</span>
-                                </a>
-                            </li>
-
-                            @if (Auth::user()->isNotColab)
+                                <li>
+                                    <a href="{{ route('tareas.index') }}"
+                                        class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                        <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M3 15v3c0 .5523.44772 1 1 1h4v-4m-5 0v-4m0 4h5m-5-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v1.98935M3 11h5v4m9.4708 4.1718-.8696-1.4388-2.8164-.235-2.573-4.2573 1.4873-2.8362 1.4441 2.3893c.3865.6396 1.2183.8447 1.8579.4582.6396-.3866.8447-1.2184.4582-1.858l-1.444-2.38925h3.1353l2.6101 4.27715-1.0713 2.5847.8695 1.4388" />
+                                        </svg>
+                                        <span class="ms-3">Tareas</span>
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="{{ route('cotizacion.index') }}"
                                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">

@@ -20,7 +20,7 @@
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->proyecto->nombre_proyecto }}
                         </td>
-                        @if (Auth::User()->isAdmin)
+                        @if (Auth::User()->isAdmin || Auth::user()->isAnalista)
                             <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                                 {{ $item->usuario->nombre_completo }}
                             </td>

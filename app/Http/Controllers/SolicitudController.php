@@ -62,7 +62,7 @@ class SolicitudController extends Controller
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
         $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
-        if(!Auth::User()->isAdmin) {
+        if(!(Auth::User()->isAdmin || Auth::user()->isAnalista)) {
             $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
         return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'userColab'));

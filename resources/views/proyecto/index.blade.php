@@ -21,7 +21,7 @@
         </div>
 
         <!-- Botón descarga Excel -->
-        <div>
+        <div class="@if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
             <button data-tooltip-target="tooltip-hover-excel-general" data-tooltip-trigger="hover"
                 type="button"
                 onclick="descargarExcelDespachos()"
@@ -146,7 +146,7 @@
                     <div class="flex flex-wrap justify-start gap-1 p-1">
 
                         <!-- Botón Inicio de proyecto -->
-                        <div class="relative @if(Auth::user()->isNotColab) @else hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
                                data-beginProyec='@json($item)' x-on:click="$dispatch('open-modal', 'beginProyec-modal')" x-data="" 
                                class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-700 hover:bg-white hover:text-cyan-800 border-2 border-cyan-800 focus:ring-4 
@@ -162,7 +162,7 @@
                         </div>
 
                         <!-- Botón Contrato -->
-                        <div class="relative @if(Auth::user()->isNotColab && $item->entreProyecto->isNotEmpty()) @else hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isUser) && $item->entreProyecto->isNotEmpty()) hidden @endif">
                             <a tabindex="0" 
                             data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
                             data-tooltip-trigger="hover" 
@@ -183,7 +183,7 @@
 
 
                         <!-- Botón tratamiento  de datos -->
-                        <div class="relative @if(Auth::user()->isNotColab && $item->entreProyecto->isNotEmpty() && ($item->acepta_trata_datos==1)) @else hidden @endif">
+                        <div class="relative @if($item->acepta_trata_datos == 0 && (!Auth::user()->isAdmin || !Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" 
                             data-tooltip-target="tooltip-hover-trataDatosPDF-{{$item->id}}" 
                             data-tooltip-trigger="hover" 
@@ -203,7 +203,7 @@
 
                     
                         <!-- Botón Cambio de Estado -->
-                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
                                onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
                                class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
@@ -219,7 +219,7 @@
                         </div>
                     
                         <!-- Botón Ingresos & Egresos -->
-                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listFinanzas(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'finanza-modal')"
@@ -236,7 +236,7 @@
                         </div>
 
                         <!-- Botón Cotizacion -->
-                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaCotizacion(0,{{$item->id}})" x-data="" 
                                x-on:click="$dispatch('open-modal', 'cotizacion-modal')"
@@ -270,7 +270,7 @@
                         </div>
 
                         <!-- Botón comparativo -->
-                        <div class="relative @if(!Auth::user()->isNotColab) hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-comparativo-{{$item->id}}" data-tooltip-trigger="hover"
                                 onclick="listComparativo({{$item->id}})" x-data="" 
                                 x-on:click="$dispatch('open-modal', 'compartivo-modal')"
@@ -285,7 +285,7 @@
                         </div>
 
                         <!-- Botón despachos -->
-                        <div class="relative">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despacho-excel-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="descargarExcelDespachos({{ $item->id }})"
                                class="flex items-center justify-center w-10 h-10 text-white bg-green-600 hover:bg-white hover:text-green-500 border-2 border-green-500 focus:ring-4 
@@ -350,7 +350,7 @@
                                 <div class="flex">
                                     <p class="font-semibold text-sm">Tipo Tarea: {{ $tarea->tareaTipo->nombre_tarea }}</p>
                                     <div class="ml-auto flex gap-2 text-sm">
-                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer"
+                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif"
                                             data-tooltip-target="tooltip-hover-avance-{{$tarea->id}}"
                                             onclick="openAvance(0,{{$tarea->id}})"
                                             x-data="" data-tooltip-trigger="hover"
@@ -361,7 +361,7 @@
                                             Avances de la Tarea
                                             <div class="tooltip-arrow" data-popper-arrow></div>
                                         </div>
-                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer" onclick="editTarea({{$tarea->id}})" x-data=""
+                                        <a class="text-blue-600 hover:text-blue-300 cursor-pointer @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif" onclick="editTarea({{$tarea->id}})" x-data=""
                                             x-data data-tooltip-target="tooltip-hover-tarea-{{$tarea->id}}" data-tooltip-trigger="hover">
                                             Editar
                                         </a>

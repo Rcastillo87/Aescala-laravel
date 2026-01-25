@@ -403,7 +403,7 @@ class OtrosiController extends Controller
             if (!filter_var($cant, FILTER_VALIDATE_INT) || (int)$cant <= 0) {
                 $erroresFila[] = 'CANT debe ser un número entero mayor que 0.';
             }
-            if (!filter_var($valorUnitario, FILTER_VALIDATE_INT) || (int)$valorUnitario < 0) {
+            if (filter_var($valorUnitario, FILTER_VALIDATE_INT) === false || (int)$valorUnitario < 0) {
                 $erroresFila[] = 'VALOR UNITARIO debe ser un número entero mayor o igual que 0.';
             }
 
