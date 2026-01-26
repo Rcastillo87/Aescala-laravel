@@ -12,11 +12,14 @@ class ValorArea extends Model
     protected $table = 'valor_area';
     public $timestamps = true;
 
+    const CREATED_AT = 'createdAt';
+    const UPDATED_AT = 'updatedAt';
+
     protected $fillable = [
         'descripccion',
-        'valor_min',
-        'valor_max',
-        'valor',
+        'area_min',
+        'area_max',
+        'valor_intervalo',
         'año'
     ];
 }

@@ -85,6 +85,6 @@ function formatDate(dateString) {
     });
 }
 
-    setTimeout(() => {
-        location.reload();
-    }, 30 * 60 * 1000);
+setTimeout(() => {
+    location.reload();
+}, 30 * 60 * 1000);

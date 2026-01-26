@@ -17,6 +17,8 @@ use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\OtrosiController;
 use App\Http\Controllers\CarteraController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\ConfiguracionController;
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -204,6 +206,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/saveSolicitud', [SolicitudController::class, 'saveSolicitud'])->name('saveSolicitud');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
         Route::delete('/delete/{id}', [SolicitudController::class, 'delete'])->name('delete');
+    });
+
+
+    Route::prefix('configuracion')->name('configuracion.')->group(function () {
+        Route::get('/indexValorArea/{año}', [ConfiguracionController::class, 'indexValorArea'])->name('indexValorArea');
+        Route::post('/saveValorArea', [ConfiguracionController::class, 'saveValorArea'])->name('saveValorArea');
+        Route::get('/listConfigYearModel/{type}/{año}', [ConfiguracionController::class, 'listConfigYearModel'])->name('listConfigYearModel');
     });
 
 });

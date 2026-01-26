@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ConfigAdicionales;
 use App\Models\ConfigPorcentajes;
 use App\Models\ValorArea;
-use App\Http\Requests\RequestConfigAdicional;
+use App\Http\Requests\saveValorAreaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ConfiguracionController extends Controller
 {
@@ -26,81 +27,66 @@ class ConfiguracionController extends Controller
         return self::MODELS[$type];
     }
 
-    private function getConfigData(string $modelClass): array
+    private function save(string $type, array $req)
     {
-        return [
-            'años' => $modelClass::select('año')
-                ->distinct()
-                ->orderByDesc('año')
-                ->pluck('año'),
-            'configActual' => $modelClass::where('año', now()->year)->get(),
-        ];
+        $model = $this->resolveModel($type);
+        $items = $req['items'];
+        $year  = $req['select_año'];
+
+        $exists = $model::where('año', $year)->exists();
+        $message = $exists
+            ? 'Configuración actualizada con éxito'
+            : 'Configuración creada con éxito';
+        try {
+            DB::transaction(function () use ($model, $items, $year) {
+                foreach ($items as $item) {
+                    $data = array_merge($item, ['año' => $year]);
+                    if (!empty($item['id'])) {
+                        $model::where('id', $item['id'])->update($data);
+                    } else {
+                        $model::create($data);
+                    }
+                }
+            });
+
+            return response()->json([
+                'status'  => true,
+                'message' => $message
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Error al guardar la configuración'
+            ], 500);
+        }
     }
 
-    public function listConfigYear(string $type, int $anio): JsonResponse
+    /*funcion de rutas*/
+    public function indexValorArea($año)
+    {
+        $title = 'Configuración: Valor por Área del año ' . $año;
+        $items = ValorArea::where('año', $año)->get()->toArray();
+        $añoActual = Carbon::now()->year;
+        $años0 = ValorArea::select('año')->distinct()->orderByDesc('año')->pluck('año');
+        $años = $años0->contains($añoActual)
+            ? $años0
+            : (clone $años0)->prepend($añoActual);
+        return view('configuracion.indexValorArea', compact('title', 'items', 'años', 'años0'));
+    }
+
+    public function listConfigYearModel(string $type, int $año): JsonResponse
     {
         $model = $this->resolveModel($type);
         return response()->json([
             'status' => true,
-            'data'   => $model::where('año', $anio)->get(),
+            'data'   => $model::where('año', $año)->get(),
         ]);
     }
 
-    public function saveConfigAdicional(string $type, RequestConfigAdicional $request)
+    public function saveValorArea(saveValorAreaRequest $request)
     {
-        return $this->save($type, $request->validated());
-    }
-
-    private function save(string $type, array $data)
-    {
-        $model = $this->resolveModel($type);
-        $isUpdate = !empty($data['id']);
-        $message = $isUpdate ? 'Lista editada con éxito' : 'Lista creada con éxito';
-        try {
-            DB::transaction(function () use ($model, $data, $isUpdate) {
-                if ($isUpdate) {
-                    $model::whereKey($data['id'])->update($data);
-                } else {
-                    $model::create($data);
-                }
-            });
-            return back()->with('success', $message);
-        } catch (\Throwable $e) {
-            report($e);
-            return back()->with('error', 'Error al guardar la configuración');
-        }
-    }
-
-    public function indexConfigAdicional()
-    {
-        return view(
-            'configuracion.indexConfigAdicional',
-            array_merge(
-                ['title' => 'Configuración de Adicionales'],
-                $this->getConfigData(ConfigAdicionales::class)
-            )
-        );
-    }
-
-    public function indexConfigPorcentaje()
-    {
-        return view(
-            'configuracion.indexConfigPorcentaje',
-            array_merge(
-                ['title' => 'Configuración de Porcentajes'],
-                $this->getConfigData(ConfigPorcentajes::class)
-            )
-        );
-    }
-
-    public function indexValorArea()
-    {
-        return view(
-            'configuracion.indexValorArea',
-            array_merge(
-                ['title' => 'Configuración de Valor por Área'],
-                $this->getConfigData(ValorArea::class)
-            )
-        );
+        return $this->save('valor-area', $request->validated());
     }
 }
