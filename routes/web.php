@@ -213,6 +213,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/indexValorArea/{año}', [ConfiguracionController::class, 'indexValorArea'])->name('indexValorArea');
         Route::post('/saveValorArea', [ConfiguracionController::class, 'saveValorArea'])->name('saveValorArea');
         Route::get('/listConfigYearModel/{type}/{año}', [ConfiguracionController::class, 'listConfigYearModel'])->name('listConfigYearModel');
+        Route::get('/indexPorcentajes/{año}', [ConfiguracionController::class, 'indexPorcentajes'])->name('indexPorcentajes');
+        Route::post('/savePorcentajes', [ConfiguracionController::class, 'savePorcentajes'])->name('savePorcentajes');
     });
 
 });

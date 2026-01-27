@@ -52,6 +52,7 @@ async function submitForm() {
             title: 'Guardado',
             text: 'La configuración fue guardada correctamente',
         });
+
         location.reload();
     } catch (error) {
         Swal.fire({
@@ -63,11 +64,17 @@ async function submitForm() {
 }
 
 function showValidationErrors(errors) {
+    let globalMessages = [];
+
     Object.keys(errors).forEach((key) => {
         const messages = errors[key];
         const field = getFieldByName(key);
 
-        if (!field) return;
+        // Error global
+        if (!field) {
+            globalMessages.push(messages[0]);
+            return;
+        }
 
         field.classList.add('border-red-500');
 
@@ -77,6 +84,13 @@ function showValidationErrors(errors) {
 
         field.parentNode.appendChild(error);
     });
+    if (globalMessages.length) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Errores de validación',
+            html: globalMessages.join('<br>')
+        });
+    }
 }
 
 /* ==============================
@@ -155,9 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const block = wrapper.firstElementChild;
 
                 // 🔥 Rellenar valores
-                block.querySelector('[name$="[area_min]"]').value = item.area_min ?? '';
-                block.querySelector('[name$="[area_max]"]').value = item.area_max ?? '';
-                block.querySelector('[name$="[valor_intervalo]"]').value = item.valor_intervalo ?? '';
+                block.querySelector('[name$="[concepto]"]').value = item.concepto ?? '';
+                block.querySelector('[name$="[porcentage]"]').value = item.area_max ?? '';
                 block.querySelector('[name$="[descripccion]"]').value = item.descripccion ?? '';
 
                 // 🔥 Forzar ID vacío (importado)

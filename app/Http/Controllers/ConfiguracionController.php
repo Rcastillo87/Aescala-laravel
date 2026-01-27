@@ -6,6 +6,7 @@ use App\Models\ConfigAdicionales;
 use App\Models\ConfigPorcentajes;
 use App\Models\ValorArea;
 use App\Http\Requests\saveValorAreaRequest;
+use App\Http\Requests\savePorcentajesRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -54,6 +55,7 @@ class ConfiguracionController extends Controller
                 'message' => $message
             ]);
         } catch (\Throwable $e) {
+            dd($e->getMessage());
             report($e);
 
             return response()->json([
@@ -76,6 +78,18 @@ class ConfiguracionController extends Controller
         return view('configuracion.indexValorArea', compact('title', 'items', 'años', 'años0'));
     }
 
+    public function indexPorcentajes($año)
+    {
+        $title = 'Configuración: Porcentajes del año ' . $año;
+        $items = ConfigPorcentajes::where('año', $año)->get()->toArray();
+        $añoActual = Carbon::now()->year;
+        $años0 = ConfigPorcentajes::select('año')->distinct()->orderByDesc('año')->pluck('año');
+        $años = $años0->contains($añoActual)
+            ? $años0
+            : (clone $años0)->prepend($añoActual);
+        return view('configuracion.indexPorcentajes', compact('title', 'items', 'años', 'años0'));
+    }
+
     public function listConfigYearModel(string $type, int $año): JsonResponse
     {
         $model = $this->resolveModel($type);
@@ -88,5 +102,10 @@ class ConfiguracionController extends Controller
     public function saveValorArea(saveValorAreaRequest $request)
     {
         return $this->save('valor-area', $request->validated());
+    }
+
+    public function savePorcentajes(savePorcentajesRequest $request)
+    {
+        return $this->save('porcentajes', $request->validated());
     }
 }

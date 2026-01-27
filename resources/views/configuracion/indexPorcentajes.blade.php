@@ -2,7 +2,7 @@
 
 @section('content')
 
-<form method="POST" id='formValorArea' action="{{ route('configuracion.saveValorArea') }}">
+<form method="POST" id='formValorArea' action="{{ route('configuracion.savePorcentajes') }}">
     @csrf
     <input type="hidden" name="select_año" value="{{ request()->route('año') }}">
 
@@ -18,7 +18,7 @@
                     class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500">
                     @foreach($años as $año)
                         <option
-                            value="{{ route('configuracion.indexValorArea', $año) }}"
+                            value="{{ route('configuracion.indexPorcentajes', $año) }}"
                             @selected(request()->route('año') == $año)
                         >{{ $año }}</option>
                     @endforeach
@@ -31,7 +31,7 @@
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Importar configuración desde
                     </label>
-                    <select id="importe_año"data-type="valor-area"
+                    <select id="importe_año"data-type="porcentajes"
                         class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="">-- Seleccione --</option>
                         @foreach($años0 as $año)
@@ -46,7 +46,14 @@
     <!-- Items -->
     <div class="space-y-4" id="importarAño">
 
+        @php
+            $suma = 0;
+        @endphp
+
         @forelse($items as $item)
+            @php
+                $suma += $item['porcentage'];
+            @endphp
             <div class="border border-gray-200 rounded-lg p-3 bg-white space-y-2">
 
                 <!-- Info -->
@@ -63,22 +70,16 @@
 
                 <div class="flex flex-wrap -mx-3">
                     <input type="hidden" name="items[{{ $loop->index }}][id]" value="{{ $item['id'] ?? '' }}">
-                    <div class="w-full max-w-full px-3 py-1 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                        <x-input-label :value="__('Área mínima')" />
-                        <x-text-input class="block mt-1 w-full" type="number" min="0" step="1" name="items[{{ $loop->index }}][area_min]" 
-                            :value="old('items.' . $loop->index . '.area_min', $item['area_min'] ?? '')" required />
+                    <div class="w-full max-w-full px-3 py-1 shrink-0 md:w-6/12 lg:w-6/12 md:flex-0">
+                        <x-input-label :value="__('Concepto *')" />
+                        <x-text-input class="block mt-1 w-full" type="text" name="items[{{ $loop->index }}][concepto]" 
+                            :value="old('items.' . $loop->index . '.concepto', $item['concepto'] ?? '')" required />
                     </div>
 
                     <div class="w-full max-w-full px-3 py-1 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                        <x-input-label :value="__('Área maxima')" />
-                        <x-text-input class="block mt-1 w-full" type="number" min="0" step="1" name="items[{{ $loop->index }}][area_max]" 
-                            :value="old('items.' . $loop->index . '.area_max', $item['area_max'] ?? '')" required />
-                    </div>
-                    
-                    <div class="relative w-full max-w-full px-3 py-1 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                        <x-input-label :value="__('Valor intervalo')" />
-                        <x-text-input class="block mt-1 w-full moneda-cop" type="number" min="0" step="1" name="items[{{ $loop->index }}][valor_intervalo]" 
-                            :value="old('items.' . $loop->index . '.valor_intervalo', $item['valor_intervalo'] ?? '')" required />
+                        <x-input-label :value="__('Porcentaje *')" />
+                        <x-text-input class="block mt-1 w-full" type="number" min="0" step="1" name="items[{{ $loop->index }}][porcentage]" 
+                            :value="old('items.' . $loop->index . '.porcentage', $item['porcentage'] ?? '')" required />
                     </div>
 
                     <div class="w-full px-3 py-1">
@@ -100,6 +101,26 @@
             </div>
         @endforelse
 
+        @if(!empty($items))
+            <!-- Div con la suma de porcentajes -->
+            <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 mt-4">
+                <div class="flex justify-between items-center">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Suma total de porcentajes:</span>
+                    <span class="text-lg font-bold @if($suma == 100) text-green-600 @else text-red-600 @endif">
+                        {{ $suma }}%
+                    </span>
+                </div>
+                @if($suma != 100)
+                    <div class="mt-2 text-sm text-red-600 dark:text-red-400">
+                        ⚠️ La suma de porcentajes debe ser exactamente 100%
+                    </div>
+                @else
+                    <div class="mt-2 text-sm text-green-600 dark:text-green-400">
+                        ✓ La suma de porcentajes es correcta
+                    </div>
+                @endif
+            </div>
+        @endif
     </div>
 
     <!-- Botones -->
@@ -131,12 +152,12 @@
         <div class="flex flex-wrap -mx-3">
             <input type="hidden" name="items[__INDEX__][id]" value="">
 
-            <div class="w-full max-w-full px-3 py-1 md:w-6/12 lg:w-4/12 2xl:w-3/12">
+            <div class="w-full max-w-full px-3 py-1 shrink-0 md:w-6/12 lg:w-6/12 md:flex-0">
                 <label class="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                    Área mínima
+                    Concepto *
                 </label>
-                <input type="number" min="0" step="1"
-                    name="items[__INDEX__][area_min]"
+                <input type="text"
+                    name="items[__INDEX__][concepto]"
                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
                            focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                     required>
@@ -144,23 +165,12 @@
 
             <div class="w-full max-w-full px-3 py-1 md:w-6/12 lg:w-4/12 2xl:w-3/12">
                 <label class="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                    Área maxima
+                    Porcentaje *
                 </label>
                 <input type="number" min="0" step="1"
-                    name="items[__INDEX__][area_max]"
+                    name="items[__INDEX__][porcentage]"
                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
                            focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                    required>
-            </div>
-
-            <div class="w-full max-w-full px-3 py-1 md:w-6/12 lg:w-4/12 2xl:w-3/12">
-                <label class="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                    Valor intervalo
-                </label>
-                <input type="number" min="0" step="1"
-                    name="items[__INDEX__][valor_intervalo]"
-                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
-                           focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full moneda-cop"
                     required>
             </div>
 
@@ -181,5 +191,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/configuracion/indexValorArea.js')}}"></script>
+    <script src="{{asset('js/configuracion/indexPorcentajes.js')}}"></script>
 @endsection

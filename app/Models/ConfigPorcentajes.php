@@ -12,8 +12,13 @@ class ConfigPorcentajes extends Model
     protected $table = 'config_porcentajes';
     public $timestamps = true;
 
+    const CREATED_AT = 'createdAt';
+    const UPDATED_AT = 'updatedAt';
+
     protected $fillable = [
         'concepto',
-        'porcentage'
+        'porcentage',
+        'año',
+        'descripccion'
     ];
 }
