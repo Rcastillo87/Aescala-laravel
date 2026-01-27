@@ -49,8 +49,7 @@
                                 oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 
                                 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full overflow-hidden resize-none leading-6 py-2"
-                                >{{old('avance')}}
-                            </textarea>
+                                >{{old('avance')}}</textarea>
 
                             <x-input-error :messages="$errors->get('avance')" class="mt-2" />
                         </div>

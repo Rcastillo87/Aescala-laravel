@@ -478,7 +478,7 @@ class ProyectoController extends Controller
         $data = $request->validate([
             'id_tarea_avance' => ['required', 'integer', Rule::exists('tareas', 'id')],
             'fec_avance' => ['required', 'date', 'date_format:Y-m-d'],
-            'avance' => 'required|string|max:255'
+            'avance' => 'required|string|max:1000'
         ]);
 
         $data['id_tarea'] = $data['id_tarea_avance'];
