@@ -215,6 +215,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listConfigYearModel/{type}/{año}', [ConfiguracionController::class, 'listConfigYearModel'])->name('listConfigYearModel');
         Route::get('/indexPorcentajes/{año}', [ConfiguracionController::class, 'indexPorcentajes'])->name('indexPorcentajes');
         Route::post('/savePorcentajes', [ConfiguracionController::class, 'savePorcentajes'])->name('savePorcentajes');
+        Route::get('/indexAdicionales/{año}', [ConfiguracionController::class, 'indexAdicionales'])->name('indexAdicionales');
+        Route::post('/saveAdicionales', [ConfiguracionController::class, 'saveAdicionales'])->name('saveAdicionales');
     });
 
 });

@@ -4,28 +4,18 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class saveValorAreaRequest extends FormRequest
+class ValorAreaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            // Año importado (opcional)
             'select_año' => ['nullable', 'integer', 'digits:4'],
 
-            // Items
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['nullable', 'integer', 'exists:valor_area,id'],
             'items.*.area_min' => ['required', 'integer', 'min:0'],
@@ -35,14 +25,15 @@ class saveValorAreaRequest extends FormRequest
         ];
     }
 
+    /**
+     * Validación adicional
+     */
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
             $items = $this->input('items', []);
 
             foreach ($items as $index => $item) {
-
-                // area_max > area_min
                 if (
                     isset($item['area_min'], $item['area_max']) &&
                     $item['area_max'] <= $item['area_min']
@@ -56,19 +47,19 @@ class saveValorAreaRequest extends FormRequest
         });
     }
 
-    public function messages(): array
+    /**
+     * Nombres amigables para mensajes estándar
+     */
+    public function attributes(): array
     {
         return [
-            'items.required' => 'Debe existir al menos un intervalo.',
-            'items.*.area_min.required' => 'Área mínima es obligatoria.',
-            'items.*.area_max.required' => 'Área máxima es obligatoria.',
-            'items.*.valor_intervalo.required' => 'El valor del intervalo es obligatorio.',
-            'items.*.area_min.integer' => 'Área mínima debe ser un número entero.',
-            'items.*.area_max.integer' => 'Área máxima debe ser un número entero.',
-            'items.*.valor_intervalo.integer' => 'El valor debe ser un número entero.',
-            'items.*.area_min.min' => 'Área mínima no puede ser negativa.',
-            'items.*.area_max.min' => 'Área máxima no puede ser negativa.',
-            'items.*.valor_intervalo.min' => 'El valor no puede ser negativo.',
+            'select_año' => 'Año',
+
+            'items' => 'Intervalos',
+            'items.*.area_min' => 'Área mínima',
+            'items.*.area_max' => 'Área máxima',
+            'items.*.valor_intervalo' => 'Valor del intervalo',
+            'items.*.descripccion' => 'Descripción',
         ];
     }
 }
