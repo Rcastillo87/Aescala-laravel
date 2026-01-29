@@ -46,22 +46,38 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('/descargar-db', function () {
-        $backupDir = '/home/user/backups/databases/aescala';
-
+        $backupDir = storage_path('backups');
         if (!File::exists($backupDir)) {
-            abort(404, 'No hay copias disponibles.');
+            return response()->json([
+                'error' => 'La carpeta de backups no existe'
+            ], 404);
         }
-
+        
         $files = collect(File::files($backupDir))
+            ->filter(fn($file) => 
+                str_ends_with($file->getFilename(), '.sql') || 
+                str_ends_with($file->getFilename(), '.sql.gz')
+            )
             ->sortByDesc(fn($file) => $file->getMTime());
-
-        $latest = $files->first();
-
-        if (!$latest) {
-            abort(404, 'No se encontró ninguna copia de seguridad.');
+        
+        if ($files->isEmpty()) {
+            return response()->json([
+                'error' => 'No hay backups disponibles todavía'
+            ], 404);
         }
-
-        return response()->download($latest->getRealPath(), $latest->getFilename());
+        
+        $latest = $files->first();
+        
+        Log::info('Backup descargado', [
+            'user_id' => auth()->id(),
+            'file' => $latest->getFilename(),
+            'ip' => request()->ip()
+        ]);
+        
+        return response()->download(
+            $latest->getRealPath(), 
+            $latest->getFilename()
+        );
     })->name('descargar.db');
 
     Route::prefix('profile')->name('profile.')->group(function () {
