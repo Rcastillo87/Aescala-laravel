@@ -39,10 +39,13 @@ class MaterialController extends Controller
         })
         ->when(Request('rango'), function ($query, $rango) { 
             if($rango == 1) {
-                return $query->where('cantidad', '=', 0);
+                return $query->where('cantidad', '=', 0)->where('cantidad_min', '<>', 0);
             } elseif($rango == 2) {
-                return $query->where('cantidad', '>', 'cantidad_min')
-                             ->where('cantidad', '<=', DB::raw('cantidad_min'));
+                return $query->where(function($q){
+                    $q->where('cantidad', '>', 'cantidad_min')->where('cantidad', '<=', DB::raw('cantidad_min'));
+                })->orwhere(function($q){
+                    $q->where('cantidad', 0)->where('cantidad_min', 0);
+                });
             } elseif($rango == 3) {
                 return $query->where('cantidad', '>', DB::raw('cantidad_min'));
             }

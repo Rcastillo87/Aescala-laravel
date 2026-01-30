@@ -33,10 +33,10 @@
                 @forelse($items as $item)
                     @php
                         $bg = '';
-                        if($item->cantidad == 0){
+                        if(($item->cantidad == 0) && ($item->cantidad_min <> 0)){
                             $bg = 'bg-red-100';
                         }
-                        if(($item->cantidad <= $item->cantidad_min) && ($item->cantidad > 0)){
+                        if((($item->cantidad <= $item->cantidad_min) && ($item->cantidad > 0)) || (($item->cantidad_min == 0) && ($item->cantidad == 0))){
                             $bg = 'bg-orange-200';
                         }
                     @endphp

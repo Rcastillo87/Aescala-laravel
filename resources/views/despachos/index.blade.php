@@ -2,7 +2,7 @@
 @section('content')
 
     <div class="w-full px-2 max-h-full overflow-y-scroll">
-        <form method="POST" action="{{ route('despachos.save') }}">
+        <form method="POST" id="formDespachos" action="{{ route('despachos.save') }}">
             @csrf
             <div class="flex flex-col lg:flex-row gap-4">
                 <!-- Primera columna -->

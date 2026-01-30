@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Despachos;
 use App\Models\Proyecto;
 use App\Models\InventarioMaterial;
+use Illuminate\Support\Facades\Auth;
 
 class DespachoController extends Controller
 {
@@ -33,21 +34,13 @@ class DespachoController extends Controller
     public function save(Request $request)
     {
         $validated = $request->validate([
-            'id_proyecto' => [
-                'required',
-                'integer',
-                Rule::exists('proyectos', 'id'),
-            ],
-            'id_user' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
-            'tipo' => ['required', 'integer', Rule::in(array_keys(Despachos::$tipo))],
-            'materiales' => ['required', 'array', 'min:1'],
+            'id_proyecto' => ['required','integer', Rule::exists('proyectos', 'id')],
+            'id_user' => ['required','integer', Rule::exists('users', 'id')],
+            'tipo' => ['required','integer', Rule::in(array_keys(Despachos::$tipo))],
+
+            'materiales' => ['required','array','min:1'],
             'materiales.*.id_material' => [
-                'required',
-                'integer',
+                'required','integer',
                 Rule::exists('inventario_materiales', 'id'),
                 function ($attribute, $value, $fail) {
                     $material = InventarioMaterial::find($value);
@@ -57,75 +50,77 @@ class DespachoController extends Controller
                 }
             ],
             'materiales.*.cantidad' => [
-                'required',
-                'integer',
-                'min:1',
+                'required','integer','min:1',
                 function ($attribute, $value, $fail) use ($request) {
                     $index = explode('.', $attribute)[1];
-                    $materialId = $request->input("materiales.{$index}.id_material");
+                    $materialId = $request->input("materiales.$index.id_material");
                     $material = InventarioMaterial::find($materialId);
-    
+
                     if ($material && $request->tipo != 2 && $value > $material->cantidad) {
                         $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
                     }
                 }
             ],
-            'materiales.*.valor_unidad' => ['required', 'integer'],
-            'materiales.*.valor_inventario' => ['required', 'integer'],
-            'materiales.*.cobro' => ['required', 'integer', 'in:0,1']
+            'materiales.*.valor_unidad' => ['required','integer'],
+            'materiales.*.valor_inventario' => ['required','integer'],
+            'materiales.*.cobro' => ['required','integer','in:0,1'],
         ]);
 
-        // Iniciar transacción
-        return DB::transaction(function () use ($validated) {
-            
-            $codigo = Despachos::generarCodigoUnico();//codigo de este despacho unico para este depacho
-            $dato = [
-                'tipo' => $validated['tipo'],
-                'codigo' => $codigo,
-                'id_user' => $validated['id_user'],
-                'id_proyecto' => $validated['id_proyecto'],
-            ];
+        try {
+            $result = DB::transaction(function () use ($validated) {
 
-            // Procesar materiales
-            foreach ($validated['materiales'] as $material) {
+                $codigo = Despachos::generarCodigoUnico();
 
-                // Crear el despacho
-                $dato['id_material'] = $material['id_material'];
-                $dato['cantidad'] = $material['cantidad'];
-                $dato['valor_unidad'] = $material['valor_unidad'];
-                $dato['valor_inventario'] = $material['valor_inventario'];
-                $dato['cobro'] = $material['cobro'];
-                Despachos::create($dato);
+                foreach ($validated['materiales'] as $material) {
 
-                $inventarioMaterial = InventarioMaterial::find($material['id_material']);
-    
-                // **Actualizar inventario**
-                $msg = '';
-                if ($validated['tipo'] == 2) {
-                    // Si el tipo es 2, se suma la cantidad
-                    $msg = 'Devolucion';
-                    //if($material['cobro'] == 1){
-                        $inventarioMaterial->increment('cantidad', $material['cantidad']);
-                    //}
-                } else {
-                    // Si no, se descuenta
-                    $msg = 'Despacho';
-                    //if($material['cobro'] == 1){
-                        $inventarioMaterial->decrement('cantidad', $material['cantidad']);
-                    //}
+                    Despachos::create([
+                        'tipo'             => $validated['tipo'],
+                        'codigo'           => $codigo,
+                        'id_user'          => $validated['id_user'],
+                        'id_user_despacho' => Auth::user()->id,
+                        'id_proyecto'      => $validated['id_proyecto'],
+                        'id_material'      => $material['id_material'],
+                        'cantidad'         => $material['cantidad'],
+                        'valor_unidad'     => $material['valor_unidad'],
+                        'valor_inventario' => $material['valor_inventario'],
+                        'cobro'            => $material['cobro'],
+                    ]);
+
+                    $inventario = InventarioMaterial::find($material['id_material']);
+
+                    if ($validated['tipo'] == 2) {
+                        $inventario->increment('cantidad', $material['cantidad']);
+                        $accion = 'Devolución';
+                    } else {
+                        $inventario->decrement('cantidad', $material['cantidad']);
+                        $accion = 'Despacho';
+                    }
                 }
-            }
 
-            $pdfRoute = route('proyecto.pdfDespacho', [
-                'id' => $validated['id_proyecto'],
-                'codigo' => $codigo,
-                'view' => 1
-            ]);
+                return [
+                    'codigo' => $codigo,
+                    'accion' => $accion,
+                    'pdf_url' => route('proyecto.pdfDespacho', [
+                        'id' => $validated['id_proyecto'],
+                        'codigo' => $codigo,
+                        'view' => 1
+                    ])
+                ];
+            });
 
-            return redirect()->route('despachos.index')
-                ->with('success', "$msg {$codigo} registrado correctamente")
-                ->with('pdf_url', $pdfRoute);
-        });
+            return response()->json([
+                'success' => true,
+                'message' => "{$result['accion']} {$result['codigo']} registrado correctamente",
+                'data' => $result
+            ], 201);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al registrar el despacho',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function selectMaterales(Request $req)

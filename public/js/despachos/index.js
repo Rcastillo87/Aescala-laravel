@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                             focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                         checked
                     >
-                    <label for="materiales[${materialIndex}][cobro]" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    <label for="materiales[${materialIndex}][cobro]" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                         Se cobra
                     </label>
                 </div>
@@ -231,3 +231,138 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
     }
 });
+
+
+
+document.getElementById('formDespachos').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: '¿Deseas realizar el Despacho o Devolución?',
+        text: 'Esta acción guardará los ítems seleccionados.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            submitForm();
+        }
+    });
+});
+
+/* ==============================
+   ENVÍO DEL FORMULARIO (API)
+================================*/
+async function submitForm() {
+    clearErrors();
+
+    const form = document.getElementById('formDespachos');
+    const formData = new FormData(form);
+
+    // 🔄 Spinner de carga
+    Swal.fire({
+        title: 'Procesando...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        if (response.status === 422) {
+            Swal.close();
+            const data = await response.json();
+            showValidationErrors(data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Error inesperado');
+        }
+
+        const data = await response.json();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Proceso exitoso',
+            text: data.message,
+            confirmButtonText: 'Aceptar'
+        }).then(() => {
+            // 👉 si quieres abrir el PDF
+            if (data.data?.pdf_url) {
+                window.open(data.data.pdf_url, '_blank');
+            }
+            location.reload();
+        });
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al procesar la solicitud'
+        });
+    }
+}
+
+/* ==============================
+   MOSTRAR ERRORES
+================================*/
+function showValidationErrors(errors) {
+    let globalMessages = [];
+
+    Object.keys(errors).forEach((key) => {
+        const messages = errors[key];
+        const field = getFieldByName(key);
+
+        if (!field) {
+            globalMessages.push(messages[0]);
+            return;
+        }
+
+        field.classList.add('border-red-500');
+
+        const error = document.createElement('p');
+        error.className = 'mt-1 text-sm text-red-600 error-message';
+        error.innerText = messages[0];
+
+        field.parentNode.appendChild(error);
+    });
+
+    if (globalMessages.length) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Errores de validación',
+            html: globalMessages.join('<br>')
+        });
+    }
+}
+
+/* ==============================
+   LIMPIAR ERRORES
+================================*/
+function clearErrors() {
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+
+    document.querySelectorAll('input, select, textarea')
+        .forEach(el => el.classList.remove('border-red-500'));
+}
+
+function getFieldByName(name) {
+    const formattedName = name.replace(/\.(\d+)\./g, '[$1][') + ']';
+    return document.querySelector(
+        `[name="${name}"], [name="${formattedName}"]`
+    );
+}

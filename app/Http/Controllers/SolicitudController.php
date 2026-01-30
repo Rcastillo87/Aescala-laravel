@@ -306,7 +306,8 @@ class SolicitudController extends Controller
                 'id_solicitud' => $idSolicitud,
                 'tipo' => 1,
                 'codigo' => $codigo,
-                'id_user' => Auth::user()->id,
+                'id_user' => $solMaterial->id_user,
+                'id_user_despacho' => Auth::user()->id,
                 'id_proyecto' => $solMaterial->id_proyecto,
             ];
 

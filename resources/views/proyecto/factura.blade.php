@@ -178,10 +178,26 @@
                 Despacho #{{ $loop->iteration }}: {{ $desp['codigo'] }} - {!! $desp['spanEstado'] !!}
             </div>
             
-            <div style="margin-bottom: 8px;">
-                <div><strong>Fecha:</strong> {{ $desp['createdAt'] }}</div>
-                <div><strong>Responsable:</strong> {{ $desp['nombre_completo'] }}</div>
-            </div>
+            <table width="100%" style="margin-bottom:8px;">
+                <tr>
+                    <td width="33%" valign="top">
+                        <strong>Quien Solicita:</strong><br>
+                        {{ $desp['nombre_completo'] }}
+                    </td>
+                    <td width="34%" valign="top">
+                        @if(!empty($desp['user_despacha']))
+                            <strong>Quien Despacha:</strong><br>
+                            {{ $desp['user_despacha'] }}
+                        @else
+                            &nbsp;
+                        @endif
+                    </td>
+                    <td width="33%" valign="top">
+                        <strong>Fecha:</strong><br>
+                        {{ $desp['createdAt'] }}
+                    </td>
+                </tr>
+            </table>
             
             <table class="tabla-items">
                 <thead>

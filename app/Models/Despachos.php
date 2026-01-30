@@ -22,6 +22,7 @@ class Despachos extends Model
         'codigo',
         'id_material',
         'id_user',
+        'id_user_despacho',
         'id_proyecto',
         'cantidad',
         'valor_unidad',
@@ -77,6 +78,11 @@ class Despachos extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
+    public function user_despacho()
+    {
+        return $this->belongsTo(User::class, 'id_user_despacho');
+    }
+
     // Relación con el modelo Proyecto
     public function proyecto()
     {
@@ -90,12 +96,12 @@ class Despachos extends Model
         ? "strftime('%Y-%m-%d', createdAt)" 
         : "DATE_FORMAT(createdAt, '%Y-%m-%d')";
 
-        $lista =  self::with('user')
+        $lista =  self::with(['user', 'user_despacho'])
                         ->where('id_proyecto', $id)
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user')
+                        ->select('tipo', 'codigo', DB::raw("{$rawDate} as formattedDate"), 'id_user', 'id_user_despacho')
                         ->distinct()
                         ->get()
                         ->map(function ($item) {
@@ -103,7 +109,8 @@ class Despachos extends Model
                                 'codigo' => $item->codigo,
                                 'createdAt' => $item->formattedDate,
                                 'spanEstado' => $item->spanEstado,
-                                'nombre_completo' => $item->user->nombre_completo
+                                'nombre_completo' => $item->user->nombre_completo,
+                                'user_despacha' => $item->user_despacho?->nombre_completo
                             ];
                         })
                         ->toArray();
