@@ -13,36 +13,66 @@ use App\Models\User;
 class UserController extends Controller
 {
 
-    public function index( ) 
-    {
-        $title = 'Lista de Usuarios';
-        $roles = User::$roles;
-        $estado = User::$estado;
-        $items = User::with(['proyectos', 'proyectos.tareas'])->when(Request('nombre_completo'), function ($query, $nombre_completo) { 
-            return $query->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%$nombre_completo%"]);
-        })
-        ->when(Request('email'), function ($query, $email) { 
-            return $query->whereRaw('LOWER(email) LIKE LOWER(?)', ["%$email%"]);
-        })
-        ->when(Request('activo'), function ($query, $activo) { 
-            return $query->where('activo', $activo);
-        })
-        ->when(Request('cedula'), function ($query, $cedula) { 
-            return $query->whereRaw('LOWER(cedula) LIKE LOWER(?)', ["%$cedula%"]);
-        })
-        ->when(Request('telefono'), function ($query, $telefono) { 
-            return $query->whereRaw('LOWER(telefono) LIKE LOWER(?)', ["%$telefono%"]);
-        })
-        ->when(Request('id_rol'), function ($query, $id_rol) { 
-            return $query->where('id_rol', $id_rol);
-        })
-        ->paginate(10)
-        ->appends(request()->query());
-        //$headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Trabajando en', 'Perfil', 'Estado', 'Opciones'];
-        $headers = ['Nombre Completo', 'Documento', 'Correo', 'Telefono', 'Perfil', 'Estado', 'Opciones'];
+public function index()
+{
+    $title  = 'Lista de Usuarios';
+    $roles  = User::$roles;
+    $estado = User::$estado;
+    $perPage = request('per_page', 10);
 
-        return view('user.index', compact('roles', 'title', 'items', 'headers', 'estado'));
-    }
+    $items = User::with(['proyectos', 'proyectos.tareas'])
+        ->when(request('nombre_completo'), fn ($q, $v) =>
+            $q->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%{$v}%"])
+        )
+        ->when(request('email'), fn ($q, $v) =>
+            $q->whereRaw('LOWER(email) LIKE LOWER(?)', ["%{$v}%"])
+        )
+        ->when(request('activo'), fn ($q, $v) =>
+            $q->where('activo', $v)
+        )
+        ->when(request('cedula'), fn ($q, $v) =>
+            $q->whereRaw('LOWER(cedula) LIKE LOWER(?)', ["%{$v}%"])
+        )
+        ->when(request('telefono'), fn ($q, $v) =>
+            $q->whereRaw('LOWER(telefono) LIKE LOWER(?)', ["%{$v}%"])
+        )
+        ->when(request('id_rol'), fn ($q, $v) =>
+            $q->where('id_rol', $v)
+        )
+        ->paginate($perPage)
+        ->withQueryString();
+
+    /** columnas del componente */
+    $columns = [
+        'nombre',
+        'documento',
+        'email',
+        'telefono',
+        'perfil',
+        'estado',
+        'acciones',
+    ];
+
+    /** headers con diseño */
+    $headers = [
+        'nombre'     => 'Nombre Completo',
+        'documento'  => 'Documento',
+        'email'      => 'Correo',
+        'telefono'   => 'Teléfono',
+        'perfil'     => 'Perfil',
+        'estado'     => 'Estado',
+        'acciones'   => 'Opciones',
+    ];
+
+    return view('user.index', compact(
+        'title',
+        'roles',
+        'estado',
+        'items',
+        'columns',
+        'headers'
+    ));
+}
 
     public function create( ) 
     {
