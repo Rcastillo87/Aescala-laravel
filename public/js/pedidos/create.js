@@ -146,21 +146,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     };
 
-    document.getElementById('id_proveedor').addEventListener('change', function() {
-        const proveedorId = this.value;
-        addedMaterials.clear();
-        document.getElementById('selectMateriales').innerHTML = '';
+    const idProveedor = document.getElementById('id_proveedor');
+    if(idProveedor){
+        idProveedor.addEventListener('change', function() {
+            const proveedorId = this.value;
+            addedMaterials.clear();
+            document.getElementById('selectMateriales').innerHTML = '';
 
-        fetch(`hPedidoproveedor/${proveedorId}`)
-            .then(response => response.json())
-            .then(data => {
-                data.data.forEach(item => {
-                    addSelectedMaterial( item.toString() );
+            fetch(`hPedidoproveedor/${proveedorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.data.forEach(item => {
+                        addSelectedMaterial( item.toString() );
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching provider info:', error);
                 });
-            })
-            .catch(error => {
-                console.error('Error fetching provider info:', error);
-            });
-    });
-
+        });
+    }
 });

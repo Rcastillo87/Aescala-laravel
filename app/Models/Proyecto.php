@@ -52,7 +52,9 @@ class Proyecto extends Model
         'descuento',
         'paz_salvo',
         'acepta_trata_datos',
-        'fecha_firma'
+        'fecha_firma',
+        'fecha_ini_dise',
+        'fecha_fin_dise'
     ];
 
     protected $casts = [

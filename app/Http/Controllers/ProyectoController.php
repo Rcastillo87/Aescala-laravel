@@ -239,11 +239,23 @@ class ProyectoController extends Controller
                 'integer',
                 Rule::exists('users', 'id'),
             ],
-            'dias_trabajo_begin' => 'nullable|integer|min:1',
+            'dias_trabajo_begin' => [
+                'required_if:conFechaFin_b,0',
+                'integer',
+                'min:1'
+            ],
             'conFechaFin_b' => 'required|integer|in:0,1',
             'observacion' => 'nullable|string',
             'fec_inicio_begin' => ['required', 'date', 'date_format:Y-m-d'],
-            'fec_fin_estimado_b' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:fec_inicio_begin']
+            'fec_fin_estimado_b' => [
+                'nullable',
+                'date',
+                'required_if:conFechaFin_b,1',
+                'date_format:Y-m-d',
+                'after_or_equal:fec_inicio_begin'
+            ],
+            'fec_ini_dise' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'conFechaDise' => 'required|integer|in:0,1',
         ];
 
         $data = $req->validate($valbase);
@@ -258,9 +270,31 @@ class ProyectoController extends Controller
 
         $data['fec_inicio'] = $data['fec_inicio_begin'];
         $data['id_user'] = $data['id_user_proy'];
+        $data['fecha_ini_dise'] = $data['fec_ini_dise'] ?? null;
         $pro = Proyecto::find($data['id_proyecto_begin']);
-        $data['id_estado'] = ($pro->id_estado == 2) ? 1 : $pro->id_estado;
+        if (($pro->id_estado == 2) && ($data['conFechaDise'] == 0)) {
+            $data['id_estado'] = 1;
+        } elseif ($data['conFechaDise'] == 1) {
+            $data['id_estado'] = 7;
+        } else {
+            $data['id_estado'] = $pro->id_estado;
+        }
+
         try {
+            if(($data['conFechaDise'] == 1) && ($pro->id_estado == 2)) {
+                $tarea =  new Tarea;
+                $tarea['fec_inicio'] = $data['fec_ini_dise'];
+                $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($data['fec_ini_dise'], 10);
+                $tarea['id_proyecto'] = $data['id_proyecto_begin'];
+                $tarea['id_user'] = $data['id_user'];
+                $tarea['id_tarea_estado'] = 2;
+                $tarea['descripccion'] = null;
+                $tarea['id_tarea_tipo'] = 27;
+                $tarea['dias_trabajo'] = 10;
+                $tarea['save'] = 1;
+                $tarea->save();
+            }
+
             DB::beginTransaction();
             Proyecto::updateOrCreate(['id' => $data['id_proyecto_begin']], $data);
             DB::commit();

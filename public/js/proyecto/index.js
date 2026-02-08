@@ -193,6 +193,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const diasTrabajoInput = document.getElementById('dias_trabajo_begin');
     const conFechaFinInput = document.getElementById('conFechaFin_b');
 
+    const conFechaDiseInput = document.getElementById('conFechaDise');
+    const checkboxFechaDise = document.getElementById('checkboxFechaDise');
+    const fechaDiseDiv = document.getElementById('fechaDiseDiv');
+    const fechaDiseInput = document.getElementById('fec_ini_dise');
+
     // Función para alternar visibilidad
     function toggleFields() {
         if (conFechaFin.checked) {
@@ -213,11 +218,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function toggleFields2() {
+        if (checkboxFechaDise.checked) {
+            conFechaDiseInput.value = 1;
+            fechaDiseDiv.classList.remove('hidden');
+            fechaDiseInput.required = true;
+            fechaDiseInput.disabled = false;
+        } else {
+            conFechaDiseInput.value = 0;
+            fechaDiseDiv.classList.add('hidden');
+            fechaDiseInput.required = false;
+            fechaDiseInput.disabled = true;
+        }
+    }
+
     // Event listener para el checkbox
     conFechaFin.addEventListener('change', toggleFields);
+    checkboxFechaDise.addEventListener('change', toggleFields2);
+
 
     // Inicializar el estado
     toggleFields();
+    toggleFields2();
 
     // Inicializar el datepicker de Flowbite
     if (typeof window.Datepicker !== 'undefined') {
@@ -225,44 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
             format: 'yyyy-mm-dd',
             autohide: true
         });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Elementos del DOM
-    const conFechaFin = document.getElementById('conFechaFin');
-    const fechaFinContainer = document.getElementById('fechaFinContainer');
-    const diasTrabajoContainer = document.getElementById('diasTrabajoContainer');
-    const fechaFinInput = document.getElementById('fec_fin');
-    const diasTrabajoInput = document.getElementById('dias_trabajo');
-
-    // Función para alternar visibilidad
-    function toggleFields() {
-        if (conFechaFin.checked) {
-            fechaFinContainer.classList.remove('hidden');
-            diasTrabajoContainer.classList.add('hidden');
-            fechaFinInput.required = true;
-            diasTrabajoInput.required = false;
-            if(diasTrabajoInput.value < '1'){
-                diasTrabajoInput.value = '1';
-            }
-        } else {
-            fechaFinContainer.classList.add('hidden');
-            diasTrabajoContainer.classList.remove('hidden');
-            fechaFinInput.required = false;
-            diasTrabajoInput.required = true;
-        }
-    }
-
-    // Event listener para el checkbox
-    conFechaFin.addEventListener('change', toggleFields);
-
-    // Inicializar el estado
-    toggleFields();
-
-    // Inicializar el datepicker de Flowbite
-    if (typeof window.Datepicker !== 'undefined') {
-        new Datepicker(fechaFinInput, {
+        new Datepicker(fechaDiseInput, {
             format: 'yyyy-mm-dd',
             autohide: true
         });

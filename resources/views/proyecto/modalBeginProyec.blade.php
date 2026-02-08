@@ -70,6 +70,40 @@
                 </div>
 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <label class="inline-flex items-center me-5 cursor-pointer py-7 px-2">
+                        <input type="hidden" name="conFechaFin_b" id="conFechaFin_b" value="0">
+                        <input id="checkboxFecha" name="checkboxFecha" type="checkbox"
+                            class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-purple-300 peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                        <span class="ms-3 text-sm font-medium text-gray-900">Con Fecha Fin</span>
+                    </label>
+                </div>
+                <div id="fechaFinBegin" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 hidden">
+                    <x-input-label for="fec_fin_estimado_b" :value="__('Fecha Fin Estimado *')" />
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </div>
+                        <input datepicker datepicker-format="yyyy-mm-dd" type="text" 
+                                id="fec_fin_estimado_b" name="fec_fin_estimado_b"
+                                datepicker
+                                datepicker-format="yyyy-mm-dd"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                                value="{{ old('fec_fin_estimado_b', now()) }}"
+                                placeholder="Seleccione fecha">
+                    </div>
+                    <x-input-error :messages="$errors->get('fec_fin')" class="mt-2" />
+                </div>
+                <div id="diasTrabajoBegin" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <x-input-label for="dias_trabajo_begin" :value="__('Días Duración del Proyecto *')" />
+                    <x-text-input id="dias_trabajo_begin" class="block w-full" type="number" 
+                                    name="dias_trabajo_begin" value="{{ old('dias_trabajo_begin') }}"/>
+                    <x-input-error :messages="$errors->get('dias_trabajo_begin', 1)" class="mt-2" />
+                </div>
+
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="id_user" :value="__('Arquitecto Encargado *')" />
                     <x-select-input 
                         name="id_user_proy" 
@@ -109,42 +143,34 @@
                     <x-input-error :messages="$errors->get('id_user_carpinteria')" class="mt-2" />
                 </div>
 
-
-
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <label class="inline-flex items-center me-5 cursor-pointer py-7 px-2">
-                    <input type="hidden" name="conFechaFin_b" id="conFechaFin_b" value="0">
-                    <input id="checkboxFecha" name="checkboxFecha" type="checkbox"
-                           class="sr-only peer">
-                    <div class="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-purple-300 peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
-                    <span class="ms-3 text-sm font-medium text-gray-900">Con Fecha Fin</span>
-                </label>
-            </div>
-            <div id="fechaFinBegin" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 hidden">
-                <x-input-label for="fec_fin_estimado_b" :value="__('Fecha Fin Estimado *')" />
-                <div class="relative">
-                    <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                        </svg>
-                    </div>
-                    <input datepicker datepicker-format="yyyy-mm-dd" type="text" 
-                            id="fec_fin_estimado_b" name="fec_fin_estimado_b"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-                            value="{{ old('fec_fin_estimado_b', now()) }}"
-                            placeholder="Seleccione fecha">
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <label class="inline-flex items-center me-5 cursor-pointer py-7 px-2">
+                        <input type="hidden" name="conFechaDise" id="conFechaDise" value="0">
+                        <input id="checkboxFechaDise" name="checkboxFechaDise" type="checkbox"
+                            class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-purple-300 peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                        <span class="ms-3 text-sm font-medium text-gray-900">Con Fecha Diseño</span>
+                    </label>
                 </div>
-                <x-input-error :messages="$errors->get('fec_fin')" class="mt-2" />
-            </div>
-            <div id="diasTrabajoBegin" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="dias_trabajo_begin" :value="__('Días Duración del Proyecto *')" />
-                <x-text-input id="dias_trabajo_begin" class="block w-full" type="number" 
-                                name="dias_trabajo_begin" value="{{ old('dias_trabajo_begin') }}"/>
-                <x-input-error :messages="$errors->get('dias_trabajo_begin', 1)" class="mt-2" />
-            </div>
-
-
-
+                <div id="fechaDiseDiv" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 hidden">
+                    <x-input-label for="fec_ini_dise" :value="__('Fecha Inicio Diseño *')" />
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </div>
+                        <input datepicker datepicker-format="yyyy-mm-dd" type="text" 
+                                id="fec_ini_dise" name="fec_ini_dise"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                                value="{{ old('fec_ini_dise', now()) }}"
+                                placeholder="Seleccione fecha"
+                                datepicker
+                                datepicker-format="yyyy-mm-dd"
+                                disabled>
+                    </div>
+                    <x-input-error :messages="$errors->get('fec_ini_dise')" class="mt-2" />
+                </div>
 
                 <div class="w-full max-w-full p-3 shrink-0 lg:w-8/12 2xl:w-6/12 md:flex-0">
                     <x-input-label for="observacion" :value="__('Comentario')" />

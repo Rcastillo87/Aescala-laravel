@@ -426,6 +426,20 @@
 @endsection
 
 @section('scripts')
+    @if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Error de validación',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+        });
+    </script>
+    @endif
+
+
     <script>
         window.tipoDoc = @json($tipoDoc);
         window.estadosProyecto = @json($estado);

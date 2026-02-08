@@ -158,22 +158,32 @@ class TareasController extends Controller
             $tarea['fec_inicio'] = $pro->fec_inicio;
             $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
         }
-
-        $tarea['id_proyecto'] = $req->proyecto_id;
-        $tarea['id_user'] = $pro->id_user;
-        $tarea['id_tarea_estado'] = 2;
-        $tarea['descripccion'] = null;
-        $tarea['id_tarea_tipo'] = $req->tarea_tipo_id;
-        $tarea['dias_trabajo'] = 10;
-        $tarea['save'] = $pro->id_estado;
+        
         DB::beginTransaction();
         try {
+
+            $idEstado = $pro->id_estado;
+            if ($pro->id_estado == 7) {
+                $pro->id_estado = 1;
+                $pro->save();
+                $idEstado = 1;
+            }
+
+            $tarea['id_proyecto'] = $req->proyecto_id;
+            $tarea['id_user'] = $pro->id_user;
+            $tarea['id_tarea_estado'] = 2;
+            $tarea['descripccion'] = null;
+            $tarea['id_tarea_tipo'] = $req->tarea_tipo_id;
+            $tarea['dias_trabajo'] = 10;
+            $tarea['save'] = $idEstado;
+
             $tarea->save();
             if(isset($tareaOld)){
                 $tareaOld->id_tarea_estado = 3;
                 $tareaOld->fec_fin_real = now();
                 $tareaOld->save();
             }
+
             DB::commit();
             return response()->json([
                 'status' => true,
