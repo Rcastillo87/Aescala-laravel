@@ -101,6 +101,21 @@ class InventarioMaterial extends Model
         2 => 'span-red'
     ];
 
+    public function getRowBgClassAttribute(): string
+    {
+        if ($this->cantidad == 0 && $this->cantidad_min != 0) {
+            return 'bg-red-100';
+        }
+
+        if (
+            ($this->cantidad <= $this->cantidad_min && $this->cantidad > 0) ||
+            ($this->cantidad_min == 0 && $this->cantidad == 0)
+        ) {
+            return 'bg-orange-200';
+        }
+
+        return '';
+    }
 
     public function proveedor()
     {

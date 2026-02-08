@@ -26,6 +26,7 @@ class ComercialController extends Controller
         $festivos = new Festivos;
         $festivos->festivos($year);
         $festivos->festivos($year+1);
+        $perPage = request('per_page', 10);
 
         $hoy = Carbon::today();
         $title = 'Proyectos con Cupo Reservado';
@@ -47,12 +48,11 @@ class ComercialController extends Controller
         })
         ->whereNull('id_estado')
         ->orderBy('id', 'desc')
-        ->paginate(10)
+        ->paginate($perPage)
         ->appends(request()->query());
 
-        $header = ['ID', 'Nombre Proyecto', 'Nombre Cliente', 'Ubicación', 'Direccion', 'Telefono', 'Estado', 'Opciones'];
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
-        return view('comercial.index', compact('title', 'items', 'festivos', 'departamentos', 'header'));
+        return view('comercial.index', compact('title', 'items', 'festivos', 'departamentos'));
     }
 
     public function create() 

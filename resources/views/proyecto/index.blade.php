@@ -410,9 +410,7 @@
     @endforelse
     <!-- Paginador -->
     @if($items->hasPages())
-        <div class="mt-4">
-            {{ $items->appends(request()->query())->links() }}
-        </div>
+        {{ $items->links() }}
     @endif
 
     @include('proyecto.modalAvances')

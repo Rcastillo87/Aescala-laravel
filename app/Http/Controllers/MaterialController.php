@@ -14,58 +14,93 @@ use App\Models\Proveedor;
 class MaterialController extends Controller
 {
 
-    public function index( ) 
+    public function index()
     {
         $title = 'Lista de Materiales';
         $estado = InventarioMaterial::$estado;
-        $tipos = InventarioMaterial::$tipo;
-        $items = InventarioMaterial::when(Request('nombre_material'), function ($query, $nombre_material) { 
-            $palabras = preg_split('/\s+/', trim($nombre_material));
-            foreach ($palabras as $palabra) {
-                $query->whereRaw(
-                    'LOWER(nombre_material) LIKE ?',
-                    ['%' . strtolower($palabra) . '%']
-                );
-            }
-        })
-        ->when(Request('codigo'), function ($query, $codigo) { 
-            return $query->whereRaw('LOWER(codigo) LIKE LOWER(?)', ["%$codigo%"]);
-        })
-        ->when(request()->filled('aprobar'), function ($query) {
-            return $query->where('aprobar', request('aprobar'));
-        })
-        ->when(Request('tipo'), function ($query, $tipo) { 
-            return $query->where('tipo', $tipo);
-        })
-        ->when(Request('rango'), function ($query, $rango) { 
-            if($rango == 1) {
-                return $query->where('cantidad', '=', 0)->where('cantidad_min', '<>', 0);
-            } elseif($rango == 2) {
-                return $query->where(function($q){
-                    $q->where('cantidad', '>', 'cantidad_min')->where('cantidad', '<=', DB::raw('cantidad_min'));
-                })->orwhere(function($q){
-                    $q->where('cantidad', 0)->where('cantidad_min', 0);
-                });
-            } elseif($rango == 3) {
-                return $query->where('cantidad', '>', DB::raw('cantidad_min'));
-            }
-        })
-        ->when(Request('estado'), function ($query, $estado) { 
-            return $query->where('activo', $estado);
-        })
-        ->when(Request('id_proveedor'), function ($query, $id_proveedor) { 
-            return $query->where('id_proveedor', $id_proveedor);
-        });
-        
+        $tipos  = InventarioMaterial::$tipo;
+        $perPage = request('per_page', 10);
+
+        $query = InventarioMaterial::query()
+
+            ->when(request('nombre_material'), function ($q, $nombre) {
+                foreach (preg_split('/\s+/', trim($nombre)) as $palabra) {
+                    $q->whereRaw('LOWER(nombre_material) LIKE ?', ['%' . strtolower($palabra) . '%']);
+                }
+            })
+
+            ->when(request('codigo'), fn ($q, $codigo) =>
+                $q->whereRaw('LOWER(codigo) LIKE LOWER(?)', ["%$codigo%"])
+            )
+
+            ->when(request()->filled('aprobar'),
+                fn ($q) => $q->where('aprobar', request('aprobar'))
+            )
+
+            ->when(request('tipo'),
+                fn ($q, $tipo) => $q->where('tipo', $tipo)
+            )
+
+            ->when(request('rango'), function ($q, $rango) {
+                match ((int) $rango) {
+                    1 => $q->where('cantidad', 0)->where('cantidad_min', '<>', 0),
+                    2 => $q->where(function ($x) {
+                            $x->whereColumn('cantidad', '<=', 'cantidad_min')->where('cantidad', '>', 0);
+                        })->orWhere(function ($x) {
+                            $x->where('cantidad', 0)->where('cantidad_min', 0);
+                        }),
+                    3 => $q->whereColumn('cantidad', '>', 'cantidad_min'),
+                    default => null,
+                };
+            })
+
+            ->when(request('estado'),
+                fn ($q, $estado) => $q->where('activo', $estado)
+            )
+
+            ->when(request('id_proveedor'),
+                fn ($q, $id) => $q->where('id_proveedor', $id)
+            );
+
         if (request('export') == 1) {
-            return $this->exportExcel($items->get());
+            return $this->exportExcel($query->get());
         }
 
-        $items = $items->paginate(10)->appends(request()->query());
+        $items = $query->paginate($perPage)->appends(request()->query());
 
-        $proveedores = Proveedor::where('activo', 1)->get()->toArray();
-        $headers = ['Nombre Material', 'Codigo Material', 'Stock / Stock Min', 'Valor venta / Valor inventario', 'Proveedor Principal', 'Tipo Material', 'Estado / Requiere Aprobacion', 'Opciones'];
-        return view('material.index', compact( 'title', 'items', 'headers', 'estado','tipos', 'proveedores'));
+        $columns = [
+            'nombre_material',
+            'codigo',
+            'stock',
+            'valores',
+            'proveedor',
+            'tipo',
+            'estado',
+            'acciones',
+        ];
+
+        $headers = [
+            'nombre_material' => 'Nombre Material',
+            'codigo'          => 'Código',
+            'stock'           => 'Stock / Stock Min',
+            'valores'         => 'Valor Venta / Inventario',
+            'proveedor'       => 'Proveedor Principal',
+            'tipo'            => 'Tipo Material',
+            'estado'          => 'Estado / Requiere Aprobación',
+            'acciones'        => 'Opciones',
+        ];
+
+        $proveedores = Proveedor::where('activo', 1)->get();
+
+        return view('material.index', compact(
+            'title',
+            'items',
+            'columns',
+            'headers',
+            'estado',
+            'tipos',
+            'proveedores'
+        ));
     }
 
     private function exportExcel($items)

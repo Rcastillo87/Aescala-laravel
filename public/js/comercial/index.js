@@ -1,9 +1,6 @@
 function setModalData(element) {
-    const link = element.getAttribute('data-link');
-    const id = element.getAttribute('data-id');
-    document.getElementById("sendLink").value =  link;
-    document.getElementById("id_proyect_link").value =  id;
-
+    document.getElementById("sendLink").value = element.dataset.link;
+    document.getElementById("id_proyect_link").value = element.dataset.id;
 }
 
 // Copiar al portapapeles
@@ -41,30 +38,43 @@ function sendLinkByEmail() {
         return;
     }
 
+    Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     fetch("sendLinkByEmail", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            "X-CSRF-TOKEN": document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content')
         },
-        body: JSON.stringify({
-            email: email,
-            link: link,
-            id: id
-        })
+        body: JSON.stringify({ email, link, id })
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => {
+        if (!res.ok) throw new Error('Error en servidor');
+        return res.json();
+    })
+    .then(() => {
         Swal.fire({
             icon: 'success',
             title: '¡Enviado!',
             text: 'El link fue enviado al correo.',
             confirmButtonColor: '#3085d6'
         }).then(() => {
-            window.dispatchEvent(new CustomEvent('close-modal', { detail: 'sendLink-modal' }));
+            window.dispatchEvent(
+                new CustomEvent('close-modal', { detail: 'sendLink-modal' })
+            );
         });
     })
-    .catch(error => {
+    .catch(() => {
         Swal.fire({
             icon: 'error',
             title: 'Error',

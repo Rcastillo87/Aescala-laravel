@@ -1,4 +1,4 @@
-<div id="accordion-open" class="mb-4 shadow-md" data-accordion="open">
+<div id="accordion-open" data-accordion="open">
         <h2 id="accordion-open-heading-1" >
             <button type="button" class="dark:bg-gray-800 flex items-center justify-between w-full p-2 font-medium rtl:text-right
              text-gray-500 border border-b-0 border-gray-200 rounded-t-xl gap-3 "
@@ -20,6 +20,7 @@
         <div id="accordion-open-body-1" class="hidden" aria-labelledby="accordion-open-heading-1">
             <div class="p-1 border border-b-1 border-gray-200">
              <form method="GET" action="{{route("comercial.index")}}">
+                <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
                 <div class="flex flex-wrap gap-1">
 
                     <div class="p-2 shrink-0 w-[40]">

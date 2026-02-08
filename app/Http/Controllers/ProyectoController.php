@@ -35,6 +35,7 @@ class ProyectoController extends Controller
         $festivos = new Festivos;
         $festivos->festivos($year);
         $festivos->festivos($year + 1);
+        $perPage = request('per_page', 10);
 
         if (!Request('id_estado')) {
             $est = [1, 5];
@@ -65,7 +66,7 @@ class ProyectoController extends Controller
                 return $query->where('id_user', $id_user);
             })
             ->orderBy('id', 'desc')
-            ->paginate(10)
+            ->paginate($perPage)
             ->appends(request()->query());
 
         $userColab = User::where('id_rol', 3)->where('activo', 1)
@@ -258,7 +259,21 @@ class ProyectoController extends Controller
             'conFechaDise' => 'required|integer|in:0,1',
         ];
 
-        $data = $req->validate($valbase);
+        $arrayAttributes = [
+            'id_proyecto_begin'      => 'proyecto',
+            'id_user_proy'           => 'arquitecto encargado',
+            'id_user_obra_blanca'    => 'contratista de obra blanca',
+            'id_user_carpinteria'    => 'contratista de carpintería',
+            'dias_trabajo_begin'     => 'días de duración del proyecto',
+            'conFechaFin_b'          => 'con fecha fin',
+            'fec_inicio_begin'       => 'fecha de inicio del proyecto',
+            'fec_fin_estimado_b'     => 'fecha fin estimada del proyecto',
+            'fec_ini_dise'           => 'fecha de inicio de diseño',
+            'conFechaDise'           => 'con fecha de diseño',
+            'observacion'            => 'observación',
+        ];
+
+        $data = $req->validate($valbase, [], $arrayAttributes);
         if ($data['conFechaFin_b'] == 0) {
             $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $data['dias_trabajo_begin']);
             $data['dias_trabajo'] = $data['dias_trabajo_begin'];
@@ -270,7 +285,6 @@ class ProyectoController extends Controller
 
         $data['fec_inicio'] = $data['fec_inicio_begin'];
         $data['id_user'] = $data['id_user_proy'];
-        $data['fecha_ini_dise'] = $data['fec_ini_dise'] ?? null;
         $pro = Proyecto::find($data['id_proyecto_begin']);
         if (($pro->id_estado == 2) && ($data['conFechaDise'] == 0)) {
             $data['id_estado'] = 1;

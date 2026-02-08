@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\View\Components\AppLayout;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
@@ -52,9 +53,7 @@ class Proyecto extends Model
         'descuento',
         'paz_salvo',
         'acepta_trata_datos',
-        'fecha_firma',
-        'fecha_ini_dise',
-        'fecha_fin_dise'
+        'fecha_firma'
     ];
 
     protected $casts = [
@@ -272,7 +271,9 @@ class Proyecto extends Model
     public function getTokenEncripAttribute()
     {
         $token = Crypt::encryptString($this->id . '||' . $this->cedula_cliente);
-        return rtrim(env('APP_URL'), '/') . '/firmarContrato/' . urlencode($token);
+        return rtrim(config('app.url'), '/') 
+            . '/firmarContrato/' 
+            . urlencode($token);
     }
 
     // Relación con el modelo User

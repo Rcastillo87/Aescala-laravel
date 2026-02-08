@@ -20,6 +20,7 @@
         <div id="accordion-open-body-1" class="hidden" aria-labelledby="accordion-open-heading-1">
             <div class="p-1 border border-b-1 border-gray-200">
              <form method="GET" action="{{route("proyecto.index")}}">
+                <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_proyecto" :value="__('Nombre Proyecto')" />
