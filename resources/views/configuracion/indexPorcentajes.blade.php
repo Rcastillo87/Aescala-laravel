@@ -191,5 +191,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/configuracion/indexPorcentajes.js')}}"></script>
+    <script src="{{ asset('js/configuracion/indexPorcentajes.js') }}?v={{ filemtime(public_path('js/configuracion/indexPorcentajes.js')) }}"></script>
 @endsection

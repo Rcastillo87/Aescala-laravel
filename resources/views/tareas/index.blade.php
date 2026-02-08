@@ -155,5 +155,5 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script src="{{asset('js/tareas/index.js')}}"></script>
+    <script src="{{ asset('js/tareas/index.js') }}?v={{ filemtime(public_path('js/tareas/index.js')) }}"></script>
 @endsection

@@ -357,6 +357,6 @@
         const saveUrl = "{{ route('comercial.save') }}";
     </script>
     <script src="{{ asset('js/comercial/signature_pad.umd.min.js') }}"></script>
-    <script src="{{ asset('js/comercial/create.js') }}"></script>
+    <script src="{{ asset('js/comercial/create.js') }}?v={{ filemtime(public_path('js/comercial/create.js')) }}"></script>
 
 @endsection

@@ -67,7 +67,8 @@ class Proyecto extends Model
         3 => 'Entregado',
         4 => 'Cancelado',
         5 => 'Posventas',
-        6 => 'Borrar Firma'
+        6 => 'Borrar Firma',
+        7 => 'Diseño'
     ];
 
     public static $estado0 = [
@@ -80,7 +81,9 @@ class Proyecto extends Model
         2 => 'span-yellow',
         3 => 'span-blue',
         4 => 'span-red',
-        5 => 'span-black'
+        5 => 'span-black',
+        6 => 'span-purple',
+        7 => 'span-orange'
     ];
 
     public static $ClassEstado0 = [

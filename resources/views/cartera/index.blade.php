@@ -175,5 +175,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/cartera/index.js')}}"></script>
+    <script src="{{ asset('js/cartera/index.js') }}?v={{ filemtime(public_path('js/cartera/index.js')) }}"></script>
 @endsection

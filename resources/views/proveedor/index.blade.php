@@ -78,5 +78,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/proveedor/index.js')}}"></script>
+    <script src="{{ asset('js/proveedor/index.js') }}?v={{ filemtime(public_path('js/proveedor/index.js')) }}"></script>
 @endsection

@@ -1,9 +1,5 @@
 const CACHE_NAME = 'aescala-v1';
 
-@php
-    $isLocal = app()->environment('local');
-@endphp
-
 const urlsToCache = [
     '/',
     '/favicon.ico',
@@ -13,43 +9,39 @@ const urlsToCache = [
     '{{ asset('img/favicon.svg') }}',
     '{{ asset('img/logo.png') }}',
     '{{ asset('manifest.json') }}',
-    @unless($isLocal)
-        '{{ Vite::asset("resources/css/app.css") }}',
-        '{{ Vite::asset("resources/js/app.js") }}',
-    @endunless
+    '{{ Vite::asset("resources/css/app.css") }}'
 ];
 
 self.addEventListener('install', event => {
-    console.log('SW instalado');
+    self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return Promise.all(
-                urlsToCache.map(url =>
-                    fetch(url)
-                        .then(resp => {
-                            if (resp.ok) {
-                                return cache.put(url, resp.clone());
-                            } else {
-                                console.warn('No cacheó (status != 200):', url, resp.status);
-                            }
-                        })
-                        .catch(err => {
-                            console.warn('No cacheó (error en fetch):', url, err);
-                        })
-                )
-            );
-        })
+        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
     );
 });
 
 self.addEventListener('activate', event => {
-    console.log('SW activado');
+    event.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
+        )
+    );
+    self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
+    if (event.request.destination === 'script') {
+        event.respondWith(
+            fetch(event.request)
+                .then(res => {
+                    const clone = res.clone();
+                    caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+                    return res;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
     event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-        })
+        caches.match(event.request).then(res => res || fetch(event.request))
     );
 });

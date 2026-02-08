@@ -108,5 +108,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/material/index.js')}}"></script>
+    <script src="{{ asset('js/material/index.js') }}?v={{ filemtime(public_path('js/material/index.js')) }}"></script>
 @endsection

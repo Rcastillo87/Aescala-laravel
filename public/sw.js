@@ -11,10 +11,8 @@ const urlsToCache = [
   '/img/web-app-manifest-192x192.png',
   '/img/web-app-manifest-512x512.png',
   '/css/app.css',
-  '/js/app.js',
   '/js/chart.min.js',
 ];
-
 
 self.addEventListener('install', event => {
   console.log('[SW] Instalando...');
@@ -31,15 +29,32 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames =>
       Promise.all(
-        cacheNames.map(cache => {
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => caches.delete(name))
+        /*cacheNames.map(cache => {
           if (cache !== CACHE_NAME) {
             console.log('[SW] Borrando cache viejo:', cache);
             return caches.delete(cache);
           }
-        })
+        })*/
       )
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.destination === 'script') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+  }
 });
 

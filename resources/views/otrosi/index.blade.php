@@ -130,5 +130,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/comercial/index.js')}}"></script>
+    <script src="{{ asset('js/comercial/index.js') }}?v={{ filemtime(public_path('js/comercial/index.js')) }}"></script>
 @endsection

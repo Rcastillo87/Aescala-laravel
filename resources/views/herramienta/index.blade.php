@@ -90,5 +90,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/herramienta/index.js')}}"></script>
+    <script src="{{ asset('js/herramienta/index.js') }}?v={{ filemtime(public_path('js/herramienta/index.js')) }}"></script>
 @endsection

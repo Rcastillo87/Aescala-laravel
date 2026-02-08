@@ -51,5 +51,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/user/index.js')}}"></script>
+    <script src="{{ asset('js/user/index.js') }}?v={{ filemtime(public_path('js/user/index.js')) }}"></script>
 @endsection

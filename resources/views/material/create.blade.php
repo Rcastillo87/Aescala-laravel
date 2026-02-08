@@ -119,5 +119,5 @@
 </div>
 @endsection
 @section('scripts')
-    <script src="{{asset('js/material/create.js')}}"></script>
+    <script src="{{ asset('js/material/create.js') }}?v={{ filemtime(public_path('js/material/create.js')) }}"></script>
 @endsection

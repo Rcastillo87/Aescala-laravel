@@ -100,5 +100,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/pedidos/create.js') }}"></script>
+    <script src="{{ asset('js/pedidos/create.js') }}?v={{ filemtime(public_path('js/pedidos/create.js')) }}"></script>
 @endsection

@@ -180,5 +180,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/configuracion/indexAdicionales.js')}}"></script>
+    <script src="{{ asset('js/configuracion/indexAdicionales.js') }}?v={{ filemtime(public_path('js/configuracion/indexAdicionales.js')) }}"></script>
 @endsection

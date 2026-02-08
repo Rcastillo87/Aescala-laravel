@@ -101,5 +101,5 @@
     <script>
         const valUrl = "{{ route('otro_si.valiPlantilla') }}";
     </script>
-    <script src="{{ asset('js/otro_si/create.js') }}"></script>
+    <script src="{{ asset('js/otro_si/create.js') }}?v={{ filemtime(public_path('js/otro_si/create.js')) }}"></script>
 @endsection

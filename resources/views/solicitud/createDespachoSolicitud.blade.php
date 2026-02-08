@@ -144,5 +144,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{asset('js/solicitud/createDespachoSolicitud.js')}}"></script>
+    <script src="{{ asset('js/solicitud/createDespachoSolicitud.js') }}?v={{ filemtime(public_path('js/solicitud/createDespachoSolicitud.js')) }}"></script>
 @endsection

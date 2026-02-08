@@ -26,6 +26,9 @@
                         <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')" 
                          autofocus />
                     </div>
+                    @php
+                        unset($estado[6]);
+                    @endphp
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado" :value="__('Estado Proyecto')" />
                         <x-select-input 
