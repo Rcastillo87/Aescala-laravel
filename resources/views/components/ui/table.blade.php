@@ -10,7 +10,7 @@
 ])
 
 <div class="relative overflow-x-auto rounded-lg border border-gray-200">
-    <table class="min-w-max text-sm text-gray-700 {{ $tableClass }}">
+    <table class="w-full text-sm text-gray-700 {{ $tableClass }}">
         <thead class="bg-orange-500 text-xs text-white uppercase">
             <tr>
                 @foreach($columns as $col)

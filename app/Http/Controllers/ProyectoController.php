@@ -37,10 +37,14 @@ class ProyectoController extends Controller
         $festivos->festivos($year + 1);
         $perPage = request('per_page', 10);
 
-        if (!Request('id_estado')) {
-            $est = [1, 5];
+        if (Request('id_userSerch') || Request('nombre_proyecto') || Request('nombre_cliente') || request('id_estado')) {
+            if (request('id_estado')) {
+                $est = [request('id_estado')];
+            } else {
+                $est = [];
+            }
         } else {
-            $est[] = Request('id_estado');
+            $est = [1, 5];
         }
 
         if (Auth::user()->isnotColab) {
@@ -59,8 +63,8 @@ class ProyectoController extends Controller
             ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
                 return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
             })
-            ->when($est, function ($query, $id_estado) {
-                return $query->whereIN('id_estado', $id_estado);
+            ->when(!empty($est), function ($query) use ($est) {
+                $query->whereIn('id_estado', $est);
             })
             ->when($cola, function ($query, $id_user) {
                 return $query->where('id_user', $id_user);
