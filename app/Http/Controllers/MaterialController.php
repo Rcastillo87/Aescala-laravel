@@ -21,6 +21,12 @@ class MaterialController extends Controller
         $tipos  = InventarioMaterial::$tipo;
         $perPage = request('per_page', 10);
 
+        if (!Auth::user()->isAlmacenista) {
+            $tipo  = request('tipo');
+        } else {
+            $tipo = 2;
+        }
+
         $query = InventarioMaterial::query()
 
             ->when(request('nombre_material'), function ($q, $nombre) {
@@ -28,19 +34,15 @@ class MaterialController extends Controller
                     $q->whereRaw('LOWER(nombre_material) LIKE ?', ['%' . strtolower($palabra) . '%']);
                 }
             })
-
             ->when(request('codigo'), fn ($q, $codigo) =>
                 $q->whereRaw('LOWER(codigo) LIKE LOWER(?)', ["%$codigo%"])
             )
-
             ->when(request()->filled('aprobar'),
                 fn ($q) => $q->where('aprobar', request('aprobar'))
             )
-
-            ->when(request('tipo'),
+            ->when($tipo,
                 fn ($q, $tipo) => $q->where('tipo', $tipo)
             )
-
             ->when(request('rango'), function ($q, $rango) {
                 match ((int) $rango) {
                     1 => $q->where('cantidad', 0)->where('cantidad_min', '<>', 0),
@@ -204,7 +206,7 @@ class MaterialController extends Controller
             ],
         ]);
         
-        if((Auth::user()->id_rol == 2) && ($data['id'])) {
+        if(!(Auth::user()->isAlmacenista || Auth::user()->isAdmin) && $req->id) {
             $data = array_diff_key($data, ['cantidad' => '']);
         }
 

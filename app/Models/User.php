@@ -149,6 +149,11 @@ class User extends Authenticatable
         return ($this->id_rol == 8)? true: false;
     }
 
+    public function getIsAlmacenistaAttribute()
+    {
+        return ($this->id_rol == 9)? true: false;
+    }
+
     public function getNewProyectAttribute()
     {
         return Proyecto::where('id_estado', 2)->count();
@@ -201,7 +206,8 @@ class User extends Authenticatable
         5 => 'Cartera',
         6 => 'Analista',
         7 => 'Contratista',
-        8 => 'Tecnico'
+        8 => 'Tecnico',
+        9 => 'Almacenista Carpinteria',
     ];
 
     public static $ClassRol = [
@@ -212,7 +218,8 @@ class User extends Authenticatable
         5 => 'span-green',
         6 => 'span-black',
         7 => 'span-cyan',
-        8 => 'span-orange'
+        8 => 'span-orange',
+        9 => 'span-purple',
     ];
 
     public static $estado = [

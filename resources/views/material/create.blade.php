@@ -67,16 +67,20 @@
                 <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
             </div>
 
-            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="tipo" :value="__('Tipo Material')" />
-                <x-select-input 
-                    name="tipo" 
-                    :options="$tipos" 
-                    :selected="old('tipo', $material?$material->tipo:'')" 
-                    class="block mt-1 w-full" 
-                />
-                <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
-            </div>
+            @if (!Auth::user()->isAlmacenista)
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <x-input-label for="tipo" :value="__('Tipo Material')" />
+                    <x-select-input 
+                        name="tipo" 
+                        :options="$tipos" 
+                        :selected="old('tipo', $material?$material->tipo:'')" 
+                        class="block mt-1 w-full" 
+                    />
+                    <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+                </div>
+            @else
+                <input type="hidden" name="tipo" value="2">
+            @endif
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="descripccion" :value="__('Descripción')" />
