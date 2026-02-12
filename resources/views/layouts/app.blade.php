@@ -66,7 +66,7 @@
         @endif
         <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
         <script src="{{asset('js/chart.min.js')}}"></script>
-        <script src="{{asset('js/app.js')}}"></script>
+        <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}"></script>
         @yield('scripts')
     </body>
 </html>
