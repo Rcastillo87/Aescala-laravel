@@ -43,7 +43,7 @@ class ComercialController extends Controller
         ->when(Request('direccion'), function ($query, $direccion) { 
             return  $query->whereRaw('LOWER(direccion) LIKE LOWER(?)', ["%$direccion%"]);
         })
-        ->when(Auth::user()->id_rol == 4, function($query) {
+        ->when(Auth::user()->isComer, function($query) {
             return $query->where('id_usuario_comercial', Auth::id());
         })
         ->whereNull('id_estado')

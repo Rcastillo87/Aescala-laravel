@@ -179,22 +179,20 @@
                     <ul id="dropdown-materiales" class="hidden py-2 space-y-1">
                         @if (Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAlmacenista)
 
-                            @if (Auth::user()->isAlmacenista)
-                                <li>
-                                    <a href="{{ route('material.index') }}"
-                                        class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
-                                        <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
-                                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                            height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
-                                        </svg>
-                                        <span class="ms-3">Inventario Materiales</span>
-                                    </a>
-                                </li>
-                            @endif
-                            @if (!Auth::user()->isAlmacenista)
+                            <li>
+                                <a href="{{ route('material.index') }}"
+                                    class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
+                                    </svg>
+                                    <span class="ms-3">Inventario Materiales</span>
+                                </a>
+                            </li>
+                            @if (Auth::user()->isAdmin || Auth::user()->isUser)
                                 <li>
                                     <a href="{{ route('despachos.index') }}"
                                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
