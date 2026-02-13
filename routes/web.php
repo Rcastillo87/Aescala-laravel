@@ -165,6 +165,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/index', [DespachoController::class, 'index'])->name('index');
         Route::post('/save', [DespachoController::class, 'save'])->name('save');
         Route::get('/selectMaterales', [DespachoController::class, 'selectMaterales'])->name('selectMaterales');
+        Route::get('/indexDespachos', [DespachoController::class, 'indexDespachos'])->name('indexDespachos');
+        Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
     });
 
     Route::prefix('proveedor')->name('proveedor.')->group(function () {

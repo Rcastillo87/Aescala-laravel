@@ -1,6 +1,12 @@
 @extends('layouts.app')
 @section('content')
 
+    <div class="flex justify-end text-center mb-6">
+        <x-secondary-button class="ms-4" href="{{ route('despachos.indexDespachos')}}">
+            Historial Despachos
+        </x-secondary-button>
+    </div>
+
     <div class="w-full px-2 max-h-full overflow-y-scroll">
         <form method="POST" id="formDespachos" action="{{ route('despachos.save') }}">
             @csrf

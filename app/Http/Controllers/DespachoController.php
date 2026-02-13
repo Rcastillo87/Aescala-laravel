@@ -172,5 +172,95 @@ class DespachoController extends Controller
 
         return response()->json(['status' => 'true', 'results' => $materiales], 200);
     }
+
+    public function indexDespachos(Request $request)
+    {
+        $title = 'Historial Despachos de Materiales';
+        $perPage = request('per_page', 10);
+        $colaUsers = User::whereIn('id_rol', [3, 7, 8])
+            ->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
+
+        $materiales = InventarioMaterial::where('activo', 1)->get(['id', 'nombre_material'])->toArray();
+
+        $query = Despachos::query()
+            ->join('proyectos', 'proyectos.id', '=', 'inventario_solicituds.id_proyecto')
+            ->join('users', 'users.id', '=', 'inventario_solicituds.id_user')
+            ->join('inventario_materiales', 'inventario_materiales.id', '=', 'inventario_solicituds.id_material')
+
+            ->when(request('nombre_proyecto'), function ($q) {
+                $q->where('proyectos.nombre_proyecto', 'like', '%' . request('nombre_proyecto') . '%');
+            })
+
+            ->when(request('id_userSerch'), function ($q) {
+                $q->where('inventario_solicituds.id_user', request('id_userSerch'));
+            })
+
+            ->when(request('id_material'), function ($q) {
+                $q->where('inventario_materiales.id', request('id_material'));
+            });
+
+        $items = $query
+            ->select('inventario_solicituds.codigo')
+            ->groupBy('inventario_solicituds.codigo')
+            ->orderByRaw('MAX(inventario_solicituds.createdAt) DESC')
+            ->paginate($perPage)
+            ->appends(request()->query());
+
+
+        $agrupados = Despachos::with(['proyecto', 'user', 'material'])
+            ->whereIn('codigo', $items->pluck('codigo'))
+            ->orderBy('createdAt', 'desc')
+            ->get()
+            ->groupBy('codigo')
+            ->map(function ($group) {
+
+                $first = $group->first();
+
+                return (object)[
+                    'codigo' => $first->codigo,
+                    'id_proyecto' => $first->id_proyecto,
+                    'tipo' =>  $first->spanEstado,
+                    'proyecto' => optional($first->proyecto)->nombre_proyecto ?? 'N/A',
+                    'usuario' => optional($first->user)->nombre_completo ?? 'N/A',
+                    'cantidad_items' => $group->count(),
+                    'total_cobro' => '$ ' . number_format(
+                        $group->where('cobro', 1)
+                            ->sum(fn($item) => $item->cantidad * $item->valor_unidad), 2
+                    ),
+                    'createdAt' => $group->max('createdAt'),
+                ];
+            });
+
+        $items->getCollection()->transform(function ($item) use ($agrupados) {
+            return $agrupados[$item->codigo];
+        });
+
+        $columns = [
+            'codigo',
+            'tipo',
+            'proyecto',
+            'usuario',
+            'cantidad_items',
+            'total_cobro',
+            'createdAt',
+            'acciones',
+        ];
+
+        /** headers con diseño */
+        $headers = [
+            'codigo'     => 'Código',
+            'tipo'       => 'Tipo',
+            'proyecto'   => 'Nombre Proyecto',
+            'usuario'    => 'Usuario que recibe el despacho',
+            'cantidad_items' => 'Cantidad de Items',
+            'total_cobro'     => 'Total a Cobrar',
+            'createdAt'  => 'Fecha de Registro',
+            'acciones'   => 'Opciones',
+        ];
+
+        return view('despachos.indexDespachos', compact('title', 'items', 'colaUsers', 'columns', 'headers', 'materiales'));
+    }
     
 }
