@@ -67,7 +67,8 @@ document.addEventListener('input', function (e) {
     if (!span) {
         span = document.createElement('span');
         span.className =
-            'formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none';
+            'formatted-span right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none';
+            //'formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none';
         input.parentNode.appendChild(span);
     }
 

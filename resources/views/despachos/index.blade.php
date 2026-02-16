@@ -49,19 +49,20 @@
                             :options="$colaUsers" 
                             :data="['id', 'nombre_completo']"
                             :selected="old('id_user')" 
-                            class="block mt-1 w-full bg-gray-100 cursor-not-allowed" 
-                            required  disabled
+                            class="block mt-1 w-full" 
+                            required
                         />
                         <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
                     </div>
                     <div>
-                        <input class="hidden" id="arrayMateriales" name="arrayMateriales" disabled>
+                        <input class="hidden" id="arrayMateriales" value='@json($materiales)'>
                         <x-input-label for="id_material" :value="__('Seleccione Material *')" />
                         <x-select-input 
                             placeholder="Busqueda.."
                             autocomplete="off"
                             name="id_material" 
                             id="id_material"
+                            :options="$materiales"
                             :data="['id', 'nombre_material']"
                             :selected="old('id_material')" 
                             class="block mt-1 w-full bg-gray-100 cursor-not-allowed"
@@ -74,7 +75,7 @@
 
                 <!-- Segunda columna -->
                 <div class="w-full h-full lg:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
-                    <p class="font-bold text-xl mb-3">Materiales a Despachar</p>
+                    <p id="tituloMateriales" class="font-bold text-xl mb-3"></p>
                     <div id="selectMateriales"></div>
                 </div>
             </div>

@@ -28,7 +28,9 @@ class DespachoController extends Controller
             ->get(['id', 'id_user', 'nombre_proyecto'])
             ->toArray();
 
-        return view('despachos.index', compact('title', 'tipo', 'colaUsers', 'proyectos'));
+        $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+
+        return view('despachos.index', compact('title', 'tipo', 'colaUsers', 'proyectos', 'materiales'  ));
     }
 
     public function save(Request $request)
@@ -123,54 +125,45 @@ class DespachoController extends Controller
         }
     }
 
-    public function selectMaterales(Request $req)
+    public function historialMateriales(Request $req)
     {
-        if($req->input('tipo') == 1) {
-            $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
-        } else {
-            $materiales = Despachos::query()
-                ->where('tipo', 1)
-                ->whereHas('material', function ($query) {
-                    $query->where('activo', 1);
-                })
-                ->where('id_proyecto', $req->input('id_proyecto'))
-                ->select(
-                    'id_material',
-                    DB::raw('SUM(cantidad) as total_cantidad'),
-                    DB::raw('(
-                        SELECT valor_unidad
-                        FROM inventario_solicituds d2
-                        WHERE d2.id_material = inventario_solicituds.id_material
-                        AND d2.tipo = 1
-                        ORDER BY d2.createdAt DESC
-                        LIMIT 1
-                    ) as valor_unidad')
-                )
-                ->groupBy('id_material')
-                ->with('material')
-                ->get()
-                ->map(fn ($item) => [
-                    'id'                => $item->material->id,
-                    'nombre_material' => $item->material->nombre_material,
-                    'codigo'         => $item->material->codigo,
-                    'cantidad'        => $item->total_cantidad,
-                    'cantidad_min'    => $item->material->cantidad_min,
-                    'valor_unidad'    => $item->valor_unidad,
-                    'valor_inventario'=> $item->cantidad * $item->valor_unidad,
-                    'descripccion'    => $item->material->descripccion,
-                    'id_unidad'      => $item->material->id_unidad,
-                    'createdAt'      => $item->material->createdAt,
-                    'updatedAt'      => $item->material->updatedAt,
-                    'tipo'           => $item->material->tipo,
-                    'activo'         => $item->material->activo,
-                    'aprobar'        => $item->material->aprobar,
-                    'id_proveedor'   => $item->material->id_proveedor,
-                    'spanTipo'        => $item->material->spanTipo,
-                    'unidades'        => $item->material->unidades,
-                ]);
-        }
+        $despachos = Despachos::with(['material'])
+            ->where('id_proyecto', $req->input('id_proyecto'))
+            ->where('tipo', 1)
+            ->select('*', DB::raw("DATE(createdAt) as fecha"))
+            ->orderBy('createdAt', 'desc')
+            ->get()
 
-        return response()->json(['status' => 'true', 'results' => $materiales], 200);
+            // agrupamos por codigo + fecha
+            ->groupBy(function ($item) {
+                return $item->codigo . '_' . $item->fecha;
+            })
+
+            ->map(function ($group) {
+
+                $first = $group->first();
+
+                return [
+                    'codigo'    => $first->codigo,
+                    'createdAt' => $first->fecha,
+                    'items' => $group->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'id_material' => $item->id_material,
+                            'cantidad' => $item->cantidad,
+                            'valor_unidad' => $item->valor_unidad,
+                            'valor_inventario' => $item->cantidad * $item->valor_unidad,
+                            'cobro' => $item->cobro,
+                            'material_nombre' => optional($item->material)->nombre_material ?? 'N/A',
+                            'spanTipo' => optional($item->material)->spanTipo ?? 'N/A',
+                            'unidades'        => $item->material->unidades,
+                        ];
+                    })->values()
+
+                ];
+            })
+            ->values();
+        return response()->json(['status' => 'true', 'results' => $despachos], 200);
     }
 
     public function indexDespachos(Request $request)

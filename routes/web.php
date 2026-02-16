@@ -164,7 +164,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('despachos')->name('despachos.')->group(function () {
         Route::get('/index', [DespachoController::class, 'index'])->name('index');
         Route::post('/save', [DespachoController::class, 'save'])->name('save');
-        Route::get('/selectMaterales', [DespachoController::class, 'selectMaterales'])->name('selectMaterales');
+        Route::get('/historialMateriales', [DespachoController::class, 'historialMateriales'])->name('historialMateriales');
         Route::get('/indexDespachos', [DespachoController::class, 'indexDespachos'])->name('indexDespachos');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
     });
