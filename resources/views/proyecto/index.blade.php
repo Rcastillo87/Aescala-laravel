@@ -162,13 +162,7 @@
                         </div>
 
                         <!-- Botón Contrato -->
-                        @php
-                            $user = Auth::user();
-                            $canSeeContrato =
-                                ($user->isAdmin || $user->isColab || $user->isUser)
-                                && $item->entreProyecto()->exists();
-                        @endphp
-                        <div class="relative {{ $canSeeContrato ? '' : 'hidden' }}">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isUser) && $item->entreProyecto->isEmpty()) hidden @endif">
                             <a tabindex="0" 
                             data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
                             data-tooltip-trigger="hover" 
