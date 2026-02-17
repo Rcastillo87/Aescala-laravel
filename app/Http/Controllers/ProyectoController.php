@@ -69,6 +69,7 @@ class ProyectoController extends Controller
             ->when($cola, function ($query, $id_user) {
                 return $query->where('id_user', $id_user);
             })
+            ->whereNotNull('id_estado')
             ->orderBy('id', 'desc')
             ->paginate($perPage)
             ->appends(request()->query());
