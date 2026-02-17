@@ -110,7 +110,7 @@ class Proyecto extends Model
             return '<span class="'.(self::$ClassEstado0[1]).'">'
                  . (self::$estado0[1] ?? 'Desconocido') . '</span>'; 
         }
-        return '<span class="'.(self::$ClassEstado[2] ?? 'default-class').'">'
+        return '<span class="'.(self::$ClassEstado0[2] ?? 'default-class').'">'
              . (self::$estado[2]) . '</span>';
     }
 
