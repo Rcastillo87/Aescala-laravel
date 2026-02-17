@@ -162,7 +162,7 @@
                         </div>
 
                         <!-- Botón Contrato -->
-                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isUser) && $item->entreProyecto->isEmpty()) hidden @endif">
+                        <div class="relative @if((Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isUser) && $item->entreProyecto->isNotEmpty()) @else hidden @endif">
                             <a tabindex="0" 
                             data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
                             data-tooltip-trigger="hover" 
