@@ -162,7 +162,7 @@
                         </div>
 
                         <!-- Botón Contrato -->
-                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isUser) && $item->entreProyecto->isEmpty()) hidden @endif">
+                        <div class="relative @if((Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isUser) && $item->entreProyecto->isEmpty()) hidden @endif">
                             <a tabindex="0" 
                             data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
                             data-tooltip-trigger="hover" 
@@ -180,7 +180,6 @@
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
-
 
                         <!-- Botón tratamiento  de datos -->
                         <div class="relative @if($item->acepta_trata_datos == 0 && (!Auth::user()->isAdmin || !Auth::user()->isUser)) hidden @endif">
