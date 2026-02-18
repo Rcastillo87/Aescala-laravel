@@ -44,7 +44,7 @@ class ComercialController extends Controller
             return  $query->whereRaw('LOWER(direccion) LIKE LOWER(?)', ["%$direccion%"]);
         })
         ->when(Auth::user()->isComer, function($query) {
-            return $query->where('id_usuario_comercial', Auth::id());
+            return $query->where('id_user_comercial', Auth::id());
         })
         ->whereNull('id_estado')
         ->orderBy('id', 'desc')
@@ -198,7 +198,7 @@ class ComercialController extends Controller
                 $data['id_estado'] = 2;
             }
 
-            $data['id_usuario_comercial'] = Auth::user()->id;
+            $data['id_user_comercial'] = Auth::user()->id;
             $data['dias_contrato'] = $req->dias_trabajo;
         
             DB::beginTransaction();

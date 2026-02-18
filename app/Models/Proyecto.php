@@ -53,7 +53,7 @@ class Proyecto extends Model
         'descuento',
         'paz_salvo',
         'acepta_trata_datos',
-        'fecha_firma'
+        'fecha_firma',
     ];
 
     protected $casts = [
@@ -111,7 +111,7 @@ class Proyecto extends Model
                  . (self::$estado0[1] ?? 'Desconocido') . '</span>'; 
         }
         return '<span class="'.(self::$ClassEstado0[2] ?? 'default-class').'">'
-             . (self::$estado[2]) . '</span>';
+             . (self::$estado0[2]) . '</span>';
     }
 
     public function getSpanTratadatosAttribute()
