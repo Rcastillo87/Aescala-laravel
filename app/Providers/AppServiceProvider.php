@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use App\Providers\CustomUserProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        RateLimiter::for('device-register', function ($request) {
+            return Limit::perMinute(5)
+                ->by($request->ip());
+        });
+
+        RateLimiter::for('device-location', function ($request) {
+            return Limit::perMinute(30)
+                ->by($request->ip());
+        });
 
         if ($this->app->environment('production')) {
             URL::forceScheme('https');

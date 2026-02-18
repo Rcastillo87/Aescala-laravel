@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 
 class GeorreferenciaController extends Controller
 {
-    public function report(Request $request)
+    public function location(Request $request)
     {
         $data = $request->validate([
+            'device_id' => 'required|integer|exists:dispositivo,id',
             'lat' => 'required|numeric|between:-90,90',
             'lng' => 'required|numeric|between:-180,180',
             'accuracy' => 'nullable|numeric|min:0|max:1000',
@@ -18,10 +19,8 @@ class GeorreferenciaController extends Controller
             'request_at' => 'required|date|before_or_equal:now|after:2020-01-01',
         ]);
 
-        $device = $request->device; // lo inyecta el middleware
-
         Georreferencia::create([
-            'dispositivo_id' => $device->id,
+            'device_id'      => $data['device_id'],
             'lat'            => $data['lat'],
             'lng'            => $data['lng'],
             'accuracy'       => $data['accuracy'] ?? null,
@@ -31,4 +30,5 @@ class GeorreferenciaController extends Controller
 
         return response()->json(['status'=>'ok']);
     }
+
 }

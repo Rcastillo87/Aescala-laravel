@@ -1,23 +1,87 @@
-INSERT INTO config_porcentajes
-(concepto, porcentage, createdAt, updatedAt)
-VALUES
-('(ESTUCO, PANEL, PEGANTE, REJILLA, RODILLOS, PINTURA, CABLE DUPLEX, TRANSPORTE, BOTADA DE ESCOBROS,DESGASTE DE HERRAMIENTA, GASTOS DE ADM)', 34, NULL, NULL),
-('DESMONTE DE ACCESORIOS, GRIFERIA, ENCINTADA DE PUERTAS, VENTANAS Y TOMAS', 1, NULL, NULL),
-('1 BOTADA DE ESCOMBROS', 3, NULL, NULL),
-('RELLENO', 8, NULL, NULL),
-('ESTUCO', 8, NULL, NULL),
-('ESTRUCTURA TAPADO DE PANEL', 3, NULL, NULL),
-('MOV DE PUNTOS ELECTRICOS', 2, NULL, NULL),
-('MASILLADO PANEL', 3, NULL, NULL),
-('BASE PINTURA', 3, NULL, NULL),
-('MORTERO Y/O MATERIAL', 4, NULL, NULL),
-('ENCHAPE (PEGADA PISO)', 8, NULL, NULL),
-('ENCHAPE (PEGADA DE BAÑOS)', 6, NULL, NULL),
-('ENCHAPE (ZONA DE OFICIOS)', 2, NULL, NULL),
-('FRAGUA', 1, NULL, NULL),
-('INSTALACION DE ILUMINACION (TOMAS INTERUPTORES)', 1, NULL, NULL),
-('INSTALACION DE BAÑOS', 1, NULL, NULL),
-('INSTALACION DE ACCESORIOS', 1, NULL, NULL),
-('TERMINACION DE DETALLES (ACABADOS)', 4, NULL, NULL),
-('2 ASEO', 2, NULL, NULL),
-('CUANDO EL CLIENTE RECIBA', 5, NULL, NULL);
+CREATE TABLE dispositivo (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    device_serial VARCHAR(120) NOT NULL,
+    manufacturer VARCHAR(80) NULL,
+    model VARCHAR(80) NULL,
+    brand VARCHAR(80) NULL,
+    device VARCHAR(80) NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY dispositivo_device_serial_unique (device_serial)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE georreferencias (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    device_id BIGINT UNSIGNED NOT NULL,
+    lat DECIMAL(10,8) NOT NULL,
+    lng DECIMAL(11,8) NOT NULL,
+    accuracy DECIMAL(8,2) NULL,
+    speed DECIMAL(8,2) NULL,
+    battery TINYINT UNSIGNED NULL,
+    request_at DATETIME NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_georreferencias_device
+        FOREIGN KEY (device_id)
+        REFERENCES dispositivo(id)
+        ON DELETE CASCADE,
+
+    INDEX idx_device_id (device_id),
+    INDEX idx_request_at (request_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.a_escalago">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:allowBackup="true"
+        android:label="AEscalaGo"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AEscalaGo">
+        <activity android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+org
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AEscalaGo">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AEscalaGo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

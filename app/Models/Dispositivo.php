@@ -21,6 +21,6 @@ class Dispositivo extends Model
 
     public function georreferenciaciones()
     {
-        return $this->hasMany(Georeferencia::class);
+        return $this->hasMany(Georreferencia::class);
     }
 }
