@@ -2,6 +2,8 @@
 
 return [
 
+    'api_secret_key' => env('API_SECRET_KEY', ''),
+
     'stage' => env('APP_STAGE', 'dev'),
 
     /*
