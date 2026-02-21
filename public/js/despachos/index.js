@@ -295,6 +295,7 @@ async function addMaterialDevolucion(data) {
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${item.id_material}">
             <input type="hidden" name="materiales[${materialIndex}][valor_unidad]" value="${item.valor_unidad}">
             <input type="hidden" name="materiales[${materialIndex}][valor_inventario]" value="${item.valor_inventario}">
+            <input type="hidden" name="materiales[${materialIndex}][id_ref_devolucion]" value="${item.id}">
         `;
 
             groupDiv.appendChild(materialDiv);

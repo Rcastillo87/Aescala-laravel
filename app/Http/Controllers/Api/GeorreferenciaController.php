@@ -16,7 +16,7 @@ class GeorreferenciaController extends Controller
             'lng' => 'required|numeric|between:-180,180',
             'accuracy' => 'nullable|numeric|min:0|max:1000',
             'battery'  => 'nullable|integer|min:0|max:100',
-            'request_at' => 'required|date|before_or_equal:now|after:2020-01-01',
+            'request_at' => 'required|string',
         ]);
 
         Georreferencia::create([

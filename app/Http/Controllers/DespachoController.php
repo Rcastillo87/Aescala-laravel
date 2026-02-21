@@ -66,6 +66,7 @@ class DespachoController extends Controller
             'materiales.*.valor_unidad' => ['required','integer'],
             'materiales.*.valor_inventario' => ['required','integer'],
             'materiales.*.cobro' => ['required','integer','in:0,1'],
+            'materiales.*.id_ref_devolucion' => ['nullable','integer', Rule::exists('inventario_solicituds', 'id')],
         ]);
 
         try {
@@ -86,6 +87,7 @@ class DespachoController extends Controller
                         'valor_unidad'     => $material['valor_unidad'],
                         'valor_inventario' => $material['valor_inventario'],
                         'cobro'            => $material['cobro'],
+                        'id_ref_devolucion' => $material['id_ref_devolucion'] ?? null,
                     ]);
 
                     $inventario = InventarioMaterial::find($material['id_material']);

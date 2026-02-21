@@ -92,7 +92,7 @@ class MaterialController extends Controller
             'acciones'        => 'Opciones',
         ];
 
-        $proveedores = Proveedor::where('activo', 1)->get();
+        $proveedores = Proveedor::where('activo', 1)->get(['id', 'razon_social'])->toArray();
 
         return view('material.index', compact(
             'title',

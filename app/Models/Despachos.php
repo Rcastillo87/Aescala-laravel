@@ -28,7 +28,8 @@ class Despachos extends Model
         'valor_unidad',
         'valor_inventario',
         'cobro',
-        'id_solicitud'
+        'id_solicitud',
+        'id_ref_devolucion'
     ];
 
     protected $appends = ['spanEstado', 'isCobro'];
@@ -71,6 +72,11 @@ class Despachos extends Model
     public function material()
     {
         return $this->belongsTo(InventarioMaterial::class, 'id_material');
+    }
+
+    public function ref_devolucion()
+    {
+        return $this->belongsTo(self::class, 'id_ref_devolucion');
     }
 
     public function user()
@@ -118,11 +124,14 @@ class Despachos extends Model
         $items = self::with(['material' => function($query) {
                             $query->select('id', 'nombre_material', 'tipo');
                         }])
+                        ->with(['ref_devolucion' => function($query) {
+                            $query->select('id', 'codigo');
+                        }])
                         ->where('id_proyecto', $id)
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        ->select('codigo', 'id_material', 'cantidad', 'valor_unidad', 'cobro')
+                        ->select('id', 'id_ref_devolucion', 'codigo', 'id_material', 'cantidad', 'valor_unidad', 'cobro')
                         ->get()
                         ->map(function ($item) {
                             return [
@@ -132,7 +141,8 @@ class Despachos extends Model
                                 'valor_unidad' => ($item->cobro==1)?$item->valor_unidad:0,
                                 'isCobro' => $item->isCobro,
                                 'nombre_material' => $item->material->nombre_material ?? null,
-                                'spanTipo' => $item->material->spanTipo ?? null
+                                'spanTipo' => $item->material->spanTipo ?? null,
+                                'ref_devolucion' => $item?->ref_devolucion?->codigo ?? '--'
                             ];
                         })
                         ->toArray();

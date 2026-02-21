@@ -53,8 +53,8 @@ class PedidosController extends Controller
             ];
         });
         
-        $headers = ['ID Factura y/o Orden', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
-        $headerFactura = ['ID', 'Nombre Item', 'Cantidad', 'Valor unidad','Fecha Pedido'];
+        $headers = ['ID Factura', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
+        $headerFactura = ['ID', 'Num Orden o Factura', 'Nombre Item', 'Cantidad', 'Valor unidad','Fecha Pedido'];
 
         return view('pedidos.index', compact('title', 'items', 'headers', 'headerFactura'));
     }
@@ -190,7 +190,8 @@ class PedidosController extends Controller
                     'cantidad' => $data->cantidad,
                     'valor_unidad' => $data->vr_unidad,
                     'fecha' => explode(' ', $data->fecha)[0],
-                    'nombre_material' => $data->material->nombre_material
+                    'nombre_material' => $data->material->nombre_material,
+                    'codigo' => $data->codigo
                 ];
             });
 

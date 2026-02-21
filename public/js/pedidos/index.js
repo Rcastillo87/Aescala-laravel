@@ -29,6 +29,7 @@ async function tableFactura(data) {
             const fila = document.createElement("tr");
             fila.innerHTML = `
                 <td class="py-2 text-center">${service.id}</td>
+                <td class="py-2 text-center">${service.codigo}</td>
                 <td class="py-2 text-center">${service.nombre_material}</td>
                 <td class="py-2 text-center">${service.cantidad}</td>
                 <td class="py-2 text-center">${formatCurrency(service.valor_unidad)}</td>

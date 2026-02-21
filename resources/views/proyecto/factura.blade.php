@@ -67,7 +67,7 @@
             width: 100%; 
             border-collapse: collapse; 
             margin-bottom: 10px; 
-            font-size: 10px;
+            font-size: 9.5px;
         }
         .tabla-items th, .tabla-items td { 
             border: 1px solid #ddd; 
@@ -175,7 +175,7 @@
     @foreach($despacho as $index => $desp)
         <div class="despacho-section">
             <div class="despacho-header">
-                Despacho #{{ $loop->iteration }}: {{ $desp['codigo'] }} - {!! $desp['spanEstado'] !!}
+                {!! $desp['spanEstado'] !!} #{{ $loop->iteration }}: {{ $desp['codigo'] }} 
             </div>
             
             <table width="100%" style="margin-bottom:8px;">
@@ -202,13 +202,14 @@
             <table class="tabla-items">
                 <thead>
                     <tr>
-                        <th style="width: 5%;">#</th>
+                        <th style="width: 4%;">#</th>
                         <th style="width: 40%;">Material</th>
-                        <th style="width: 10%; text-align: center;">Cantidad</th>
-                        <th style="width: 10%;">Se Cobra</th>
-                        <th style="width: 12%; text-align: right;">Valor Unitario</th>
-                        <th style="width: 15%;">Tipo</th>
-                        <th style="width: 13%; text-align: right;">Subtotal</th>
+                        <th style="width: 12%;">Ref Devolucion</th>
+                        <th style="width: 12%;">Tipo</th>
+                        <th style="width: 7%;">Se Cobra</th>
+                        <th style="width: 7%; text-align: center;">Cantidad</th>
+                        <th style="width: 10%; text-align: center;">Val Unitario</th>
+                        <th style="width: 10%; text-align: center;">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -216,11 +217,12 @@
                     <tr>
                         <td style="text-align: center;">{{ $itemIndex + 1 }}</td>
                         <td>{{ $item['nombre_material'] }}</td>
-                        <td style="text-align: center;">{{ $item['cantidad'] }}</td>
-                        <td style="text-align: center;">{!! $item['isCobro'] !!}</td>
-                        <td style="text-align: right;">${{ number_format($item['valor_unidad'], 2, ',', '.') }}</td>
+                        <td style="text-align: center;">{{ $item['ref_devolucion'] }}</td>
                         <td style="text-align: center;">{!! $item['spanTipo'] !!}</td>
-                        <td style="text-align: right;">${{ number_format($item['cantidad'] * $item['valor_unidad'], 2, ',', '.') }}</td>
+                        <td style="text-align: center;">{!! $item['isCobro'] !!}</td>
+                        <td style="text-align: center;">{{ $item['cantidad'] }}</td>
+                        <td style="text-align: center;">${{ number_format($item['valor_unidad'], 2, ',', '.') }}</td>
+                        <td style="text-align: center;">${{ number_format($item['cantidad'] * $item['valor_unidad'], 2, ',', '.') }}</td>
                     </tr>
                     @endforeach
                 </tbody>
