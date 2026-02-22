@@ -87,6 +87,15 @@
                         />
                     </div>
 
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="zona" :value="__('Zona')" />
+                        <x-select-input 
+                            name="zona"
+                            :options="$zonas" 
+                            :selected="Request('zona')" 
+                            class="block mt-1 w-full"
+                        />
+                    </div>
 
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium

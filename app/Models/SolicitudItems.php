@@ -28,7 +28,7 @@ class SolicitudItems extends Model
     ];
 
     public static $estados = [
-        1 => 'Nuevo',
+        1 => 'Pendiente Despacho',
         2 => 'Despacho Parcial',
         3 => 'Despachado',
         4 => 'Cancelado'
@@ -43,12 +43,30 @@ class SolicitudItems extends Model
 
     public function getSpanEstadoAttribute()
     {
+        return implode('', $this->estado());
+    }
+
+    public function getArrEstadosAttribute()
+    {
+        return $this->estado();
+    }
+
+    private function estado()
+    {
+        $span = [];
+
         if ($this->aprobado == 0) {
-            return '<span class="span-black">Require Aprobacion</span>';
+            $span[] = '<span class="span-black">Require Aprobacion</span>';
         }
 
-        return '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
+        if ($this->id_user_aprueba && $this->aprobado == 1) {
+            $span[] = '<span class="span-orange">Aprobado</span>';
+        }
+
+        $span[] = '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
              . (self::$estados[$this->estado] ?? 'Desconocido') . '</span>';
+
+        return $span;
     }
 
     public function solicitud()

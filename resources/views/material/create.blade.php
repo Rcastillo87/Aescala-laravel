@@ -83,6 +83,16 @@
             @endif
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="zona" :value="__('Zona')" />
+                <x-select-input 
+                    name="zona"
+                    :options="$zonas" 
+                    :selected="old('zona', $material?$material->zona:'')" 
+                    class="block mt-1 w-full"
+                />
+            </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="descripccion" :value="__('Descripción')" />
                 <x-text-input id="descripccion" class="block mt-1 w-full" type="text" name="descripccion" :value="old('descripccion', $material?$material->descripccion:'')"/>
                 <x-input-error :messages="$errors->get('descripccion')" class="mt-2" />

@@ -40,7 +40,7 @@
                         </div>
                     @endif
                     <div class="p-2 shrink-0 w-[40]">
-                        <x-input-label for="id_estado" :value="__('Estado')" />
+                        <x-input-label for="id_estado" :value="__('Estado Solicitud')" />
                         <x-select-input 
                             name="id_estado"
                             :options="$estados" 
@@ -49,7 +49,24 @@
                         />
                     </div>
 
-                    <div class="w-full max-w-full px-2 pt-10 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    @php
+                        $arr = [
+                            5 => 'Require Aprobacion',
+                            6 => 'Aprobado'
+                        ];
+                        $arr = array_merge($estadosItems, $arr);
+                    @endphp
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="id_estado_item" :value="__('Estado Item')" />
+                        <x-select-input 
+                            name="id_estado_item"
+                            :options="$arr" 
+                            :selected="Request('id_estado_item')" 
+                            class="block mt-1 w-full" 
+                        />
+                    </div>
+
+                    <!--<div class="w-full max-w-full px-2 pt-10 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <input type="hidden" name="aprobar" value="0">
                         <label class="inline-flex items-center cursor-pointer">
                             <input 
@@ -68,7 +85,7 @@
                             </span>
                         </label>
                         <x-input-error :messages="$errors->get('aprobar')" class="mt-2" />
-                    </div>
+                    </div>-->
 
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium

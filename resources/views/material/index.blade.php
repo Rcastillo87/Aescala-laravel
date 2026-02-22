@@ -42,6 +42,7 @@
             'proveedor'       => 'text-center',
             'tipo'            => 'text-center',
             'estado'          => 'text-center',
+            'zona'           => 'text-center',
             'acciones'        => 'text-center',
         ]"
 
@@ -64,6 +65,9 @@
 
             'estado' => fn($item) =>
                 $item->spanEstado . ' ' . $item->spanAprobar,
+
+            'zona' => fn($item) =>
+                e($zonas[$item->zona] ?? '--'),
 
             'acciones' => fn($item) =>
                 view('material.partials.actions', compact('item'))->render(),

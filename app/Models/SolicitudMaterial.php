@@ -24,14 +24,14 @@ class SolicitudMaterial extends Model
         1 => 'Nuevo',
         2 => 'Despacho Parcial',
         3 => 'Entregado',
-        4 => 'Cancelado'
+        4 => 'Cotizacion'
     ];
 
     public static $ClassEstado = [
         1 => 'span-green',
         2 => 'span-yellow',
         3 => 'span-blue',
-        4 => 'span-red'
+        4 => 'span-orange'
     ];
 
     public function getSpanEstadoAttribute()
@@ -74,5 +74,16 @@ class SolicitudMaterial extends Model
     {
         return $this->despachado()->sum('cantidad');
     }   
+
+    public function getEstadoItemsAttribute()
+    {
+        $arr = [];
+        foreach ($this->items as $item) {
+            $arr = array_merge($arr, $item->arrEstados);
+        }
+        $arr = array_values(array_unique($arr));
+
+        return implode('', $arr);
+    }
     
 }

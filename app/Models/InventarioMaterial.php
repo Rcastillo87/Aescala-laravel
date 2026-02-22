@@ -27,7 +27,8 @@ class InventarioMaterial extends Model
         'descripccion',
         'activo',
         'aprobar',
-        'id_proveedor'
+        'id_proveedor',
+        'zona'
     ];
 
     protected $appends = ['spanTipo', 'unidades'];
@@ -75,6 +76,16 @@ class InventarioMaterial extends Model
     public static $estado = [
         1 => 'Activo',
         2 => 'Desactivado'
+    ];
+
+    public static $zonas = [
+        1 => 'Zona 1',
+        2 => 'Zona 2',
+        3 => 'Zona 3',
+        4 => 'Zona 4',
+        5 => 'Zona 5',
+        6 => 'Zona 6',
+        7 => 'Zona 7'
     ];
 
     public static $tipo = [

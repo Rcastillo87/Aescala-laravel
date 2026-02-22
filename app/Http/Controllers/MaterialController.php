@@ -43,6 +43,9 @@ class MaterialController extends Controller
             ->when($tipo,
                 fn ($q, $tipo) => $q->where('tipo', $tipo)
             )
+            ->when(request('zona'), fn ($q, $zona) =>
+                $q->where('zona', $zona)
+            )
             ->when(request('rango'), function ($q, $rango) {
                 match ((int) $rango) {
                     1 => $q->where('cantidad', 0)->where('cantidad_min', '<>', 0),
@@ -70,6 +73,8 @@ class MaterialController extends Controller
 
         $items = $query->paginate($perPage)->appends(request()->query());
 
+        $zonas = InventarioMaterial::$zonas;
+
         $columns = [
             'nombre_material',
             'codigo',
@@ -78,6 +83,7 @@ class MaterialController extends Controller
             'proveedor',
             'tipo',
             'estado',
+            'zona',
             'acciones',
         ];
 
@@ -89,6 +95,7 @@ class MaterialController extends Controller
             'proveedor'       => 'Proveedor Principal',
             'tipo'            => 'Tipo Material',
             'estado'          => 'Estado / Requiere Aprobación',
+            'zona'           => 'Zonas',
             'acciones'        => 'Opciones',
         ];
 
@@ -101,7 +108,8 @@ class MaterialController extends Controller
             'headers',
             'estado',
             'tipos',
-            'proveedores'
+            'proveedores',
+            'zonas'
         ));
     }
 
@@ -175,7 +183,8 @@ class MaterialController extends Controller
         $unidades = InventarioMaterial::$unidades;
         $tipos = InventarioMaterial::$tipo;
         $proveedores = Proveedor::where('activo', 1)->get()->toArray();
-        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material', 'proveedores'));
+        $zonas = InventarioMaterial::$zonas;
+        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material', 'proveedores', 'zonas'));
     }
 
     public function save(Request $req)
@@ -204,6 +213,7 @@ class MaterialController extends Controller
                 'integer',
                 Rule::exists('inventario_proveedores', 'id')
             ],
+            'zona' => [ 'nullable',  Rule::in(array_keys(InventarioMaterial::$zonas))],
         ]);
         
         if(!(Auth::user()->isAlmacenista || Auth::user()->isAdmin) && $req->id) {

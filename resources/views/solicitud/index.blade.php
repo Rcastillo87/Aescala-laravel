@@ -37,6 +37,10 @@
                         </td>
 
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                            {!! $item->estadoItems !!}
+                        </td>
+
+                        <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->observacion }}
                         </td>
 
@@ -61,7 +65,7 @@
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
 
-                            @if((Auth::user()->isAdmin || Auth::user()->isUser) && ($item->estado == 1 || $item->estado == 2) )
+                            @if((Auth::user()->isAdmin || Auth::user()->isUser) && ($item->estado == 1 || ($item->estado == 2 || $item->estado == 4)) )
                                 <a tabindex="0"
                                     data-tooltip-target="tooltip-despachar-{{$item->id}}"
                                     data-tooltip-trigger="hover" 
@@ -95,7 +99,7 @@
                                 </div>
                             @endif
 
-                            @if (($item->estado == 1) && !Auth::user()->isAnalista)
+                            @if (($item->estado == 2 || $item->estado == 4) && !Auth::user()->isAnalista)
                                 <div class="relative">
                                     <form action="{{ route('solicitud.delete', $item->id) }}" method="POST">
                                         @csrf

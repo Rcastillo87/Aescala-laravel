@@ -26,6 +26,8 @@ class SolicitudController extends Controller
             $cola = Auth::user()->id;
         }
 
+        $estadosItems = SolicitudItems::$estados;
+
         $title = 'Lista de Solicitud de Material';
         $items = SolicitudMaterial::with(['proyecto', 'usuario'])
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
@@ -39,9 +41,18 @@ class SolicitudController extends Controller
             ->when(request('id_estado'), function ($query, $id_estado) {
                 $query->where('estado', $id_estado);
             })
-            ->when(request('aprobar') == 1, function ($query) {
-                $query->whereHas('items', function ($q) {
-                    $q->where('aprobado', 0);
+            ->when(request()->filled('id_estado_item'), function ($query) use ($estadosItems ) {
+                $id_estado_item = request('id_estado_item') + 1;
+                $query->whereHas('items', function ($q) use ($id_estado_item, $estadosItems) {
+                    $map = [
+                        5 => fn($q) => $q->where('aprobado', 0),
+                        6 => fn($q) => $q->where('aprobado', 1)->whereNotNull('id_user_aprueba'),
+                    ];
+                    if (array_key_exists($id_estado_item, $estadosItems)) {
+                        $q->where('estado', $id_estado_item);
+                    } elseif (isset($map[$id_estado_item])) {
+                        $map[$id_estado_item]($q);
+                    }
                 });
             })
             ->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista), function ($query) {
@@ -61,11 +72,11 @@ class SolicitudController extends Controller
         $estados = SolicitudMaterial::$estados;
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
-        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
+        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Observacion', 'Opciones'];
         if(!(Auth::User()->isAdmin || Auth::user()->isAnalista)) {
             $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
-        return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'userColab'));
+        return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'estadosItems', 'userColab'));
     }
 
     public function create( )
@@ -132,6 +143,7 @@ class SolicitudController extends Controller
                 'min:1'
             ],
             'observacion' => ['nullable', 'string'],
+            'cotizar' => ['integer', 'in:0,1']
         ]);
 
         try {
@@ -140,7 +152,7 @@ class SolicitudController extends Controller
                     'id_user'         => $validated['id_user'],
                     'id_proyecto'     => $validated['id_proyecto'],
                     'fecha_solicitud' => now(),
-                    'estado'          => 1,
+                    'estado'          => $validated['cotizar'] == 1 ? 4 : 1,
                     'observacion'     => $validated['observacion'] ?? null,
                 ]);
                 foreach ($validated['materiales'] as $material) {
@@ -186,7 +198,8 @@ class SolicitudController extends Controller
                 'solicitud_items.cantidad_solicitada as cantidad_sol', 
                 'inventario_solicituds.cantidad as cantidad_des', 
                 'inventario_solicituds.cobro',
-                'solicitud_items.estado', 
+                'solicitud_items.estado',
+                'solicitud_items.id_user_aprueba',
                 'solicitud_items.aprobado', 
                 'inventario_solicituds.createdAt',
                 'inventario_solicituds.codigo',
@@ -197,7 +210,7 @@ class SolicitudController extends Controller
                 )
             ->get()
             ->map(function ($item) {
-                $span = SolicitudItems::$estados[$item->estado] ?? 'Desconocido';
+                $span = $item->span_estado;
                 $isCobro = $item->cobro ? ($item->cobro == 1 ? '<span class="span-green">SI</span>':'<span class="span-red">NO</span>') : '';
                 $item['span_estado'] = $span;
                 $item['isCobro'] = $isCobro;
