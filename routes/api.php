@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\DeviceController;
 
 
 Route::get('/ping', function () {
-    return response()->json(['ok' => config('app.api_secret_key')]);
+    return response()->json(['ok' => 'ok']);
 });
 
 Route::prefix('device')->middleware('hmac')->group(function () {

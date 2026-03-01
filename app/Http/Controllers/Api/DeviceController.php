@@ -32,6 +32,12 @@ class DeviceController extends Controller
 
         return response()->json([
             'device_id' => $device->id,
+            'user' => $device->userAsignado()
         ]);
     }
 }
+    /** URL base de tu API Laravel (sin slash final) */
+    //const val BASE_URL = "https://srv685835.hstgr.cloud/api"
+
+    /** Clave secreta HMAC — debe coincidir con API_SECRET_KEY en tu .env */
+    //const val HMAC_SECRET = "5939874c3fa1e3e671e2b88ff1b26711efe26f532b025259d650587e8be103ac"

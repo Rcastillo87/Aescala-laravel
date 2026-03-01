@@ -16,11 +16,18 @@ class Dispositivo extends Model
         'manufacturer',
         'model',
         'brand',
-        'device'
+        'device',
+        'id_user'
     ];
 
     public function georreferenciaciones()
     {
         return $this->hasMany(Georreferencia::class);
     }
+
+    public function userAsignado()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+
 }

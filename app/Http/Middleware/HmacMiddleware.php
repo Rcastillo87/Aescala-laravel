@@ -9,7 +9,7 @@ class HmacMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $secret = '5939874c3fa1e3e671e2b88ff1b26711efe26f532b025259d650587e8be103ac';//config('app.api_secret_key');
+        $secret = config('app.api_secret_key');
 
         $timestamp = $request->header('X-TIMESTAMP');
         $signature = $request->header('X-SIGNATURE');
