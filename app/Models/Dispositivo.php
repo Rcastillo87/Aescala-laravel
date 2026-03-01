@@ -30,4 +30,13 @@ class Dispositivo extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
+    public function ultimaUbicacion()
+    {
+        return $this->hasOne(
+            Georreferencia::class,
+            'device_id', // FK real
+            'id'
+        )->latestOfMany('request_at');
+    }
+
 }

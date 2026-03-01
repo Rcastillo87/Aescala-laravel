@@ -322,8 +322,10 @@
                 </li>
             @endif
 
-            <!-- Elementos individuales -->
+            
             @if (Auth::user()->isAdmin || Auth::user()->isUser)
+
+                <!-- Elementos individuales -->
                 <li>
                     <a href="{{ route('herramienta.index') }}"
                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -336,7 +338,20 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Herramientas</span>
                     </a>
                 </li>
+
+                <li>
+                    <a href="{{ route('tracking.index') }}"
+                        class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" 
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.8 13.938h-.011a7 7 0 1 0-11.464.144h-.016l.14.171c.1.127.2.251.3.371L12 21l5.13-6.248c.194-.209.374-.429.54-.659l.13-.155Z"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Dispositivos En Mapa</span>
+                    </a>
+                </li>
             @endif
+
         </ul>
 
         @if (Auth::user()->isAdmin || Auth::user()->isUser)

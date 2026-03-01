@@ -18,6 +18,7 @@ use App\Http\Controllers\OtrosiController;
 use App\Http\Controllers\CarteraController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\TrackingController;
 
 
 Route::get('/', function () {
@@ -41,6 +42,7 @@ Route::get('/sw.js', function () {
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -79,6 +81,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $latest->getFilename()
         );
     })->name('descargar.db');
+
+    Route::prefix('tracking')->name('tracking.')->middleware(['auth'])->group(function () {
+        Route::get('/index',    [TrackingController::class, 'index'])->name('index');
+        Route::get('/realtime', [TrackingController::class, 'realtime'])->name('realtime');
+        Route::get('/history',  [TrackingController::class, 'history'])->name('history');
+        Route::get('/asination',  [TrackingController::class, 'asination'])->name('asination');
+    });
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');
