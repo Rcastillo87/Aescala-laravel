@@ -150,11 +150,12 @@
 
 <!-- Titulo del contrato -->
 <h1 class="titulo">CONTRATO DE OBRA CIVIL N.º {{ $id_proyecto }}</h1>
-<h2 class="subtitulo">DEL {{ $fecha_contrato }}</h2>
-  
-  <p>
-Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representacion propia, quien para efectos del presente contrato se denominara EL <strong>CONTRATANTE</strong>; y <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, mayor de edad, domiciliado en {{ env('IDENTI_REPRESENTANTE_EXPED') }} identificado con {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }} expedida en {{ env('IDENTI_REPRESENTANTE_EXPED') }}, actuando en representacion legal de la empresa <strong>{{ env('RAZON') }}</strong>. persona juridica inscrita en camara de comercio de {{ env('CIU_DPT_EMPRE') }}, con NIT N° {{ env('NIT') }} quien para efectos del presente contrato se llamara <strong>CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regira por las siguientes clausulas: 
-  </p>
+@if($fecha_contrato != '')
+    <h2 class="subtitulo">DEL {{ $fecha_contrato }}</h2>
+@endif
+<p>
+    Entre los suscritos, <strong>{{ $nombre_cliente }}</strong>, mayor de edad, domiciliado en {{ $ciudad_dpt }}, identificado con {{ $tipo_doc_cliente }} N° {{ $documento_cliente }}, actuando en nombre y representacion propia, quien para efectos del presente contrato se denominara EL <strong>CONTRATANTE</strong>; y <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, mayor de edad, domiciliado en {{ env('IDENTI_REPRESENTANTE_EXPED') }} identificado con {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }} expedida en {{ env('IDENTI_REPRESENTANTE_EXPED') }}, actuando en representacion legal de la empresa <strong>{{ env('RAZON') }}</strong>. persona juridica inscrita en camara de comercio de {{ env('CIU_DPT_EMPRE') }}, con NIT N° {{ env('NIT') }} quien para efectos del presente contrato se llamara <strong>CONTRATISTA</strong>, acuerdan celebrar el presente CONTRATO DE OBRA CIVIL, el cual se regira por las siguientes clausulas: 
+</p>
 
 <p>
 <strong>PRIMERA. OBJETO: </strong> En desarrollo del presente contrato, EL CONTRATISTA se obliga con EL CONTRATANTE a ejecutar las obras de remodelacion y/o elaboracion de OBRA BLANCA del bien inmueble ubicado en la direccion {{ $direccion_proye }}, con un area privada de {{ $area_privada_proye }} m² conforme las caracteristicas que se detallan a continuacion
