@@ -147,7 +147,7 @@ class Proyecto extends Model
 
         $carbon = Carbon::parse($this->fecha_firma);
         $carbon->locale('es');
-        $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
+        $fechaTexto = $this->fecha_firma? $carbon->translatedFormat('d \d\e F \d\e Y') : '--';
 
         // Preparar entregables para la vista
         $entregables = $this->entreProyecto->map(function($e){
