@@ -169,7 +169,7 @@
                                     || Auth::user()->isUser 
                                     || Auth::user()->isColab
                                 )
-                                || $item->entreProyecto->isEmpty()
+                                || ($item->entreProyecto->count() === 0)
                             )
                                 hidden
                             @endif">
