@@ -79,7 +79,7 @@
                             </li>
                         @endif
 
-                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista)
+                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista || Auth::user()->isComer)
                             <li>
                                 <a href="{{ route('proyecto.index') }}"
                                     class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
