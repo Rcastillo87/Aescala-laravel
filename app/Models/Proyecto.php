@@ -180,7 +180,7 @@ class Proyecto extends Model
         // Preparar datos para la vista
         return [
             "id_proyecto"         => $this->id,
-            "fecha_contrato"      => mb_strtoupper($fechaTexto, 'UTF-8'),
+            "fecha_contrato"      => mb_strtoupper($fechaTexto?? '', 'UTF-8'),
             "nombre_cliente"      => Str::title($this->nombre_cliente),
             "ciudad_dpt"          => $ciudad_dpt,
             "tipo_doc_cliente"    => self::$tipoDocumento[$this->tipo_doc_cliente][1] ?? '',
