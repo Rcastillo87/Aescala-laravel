@@ -163,7 +163,7 @@
 
                         <!-- Botón Contrato -->
                         <div class="relative @if((Auth::user()->isComer || Auth::user()->iscartera || Auth::user()->isAnalista || Auth::user()->isContratista || Auth::user()->isTecnico || Auth::user()->isAlmacenista) 
-                            && $item->entreProyecto->isEmpty()) hidden @endif">
+                            || $item->entreProyecto->isEmpty()) hidden @endif">
                             <a tabindex="0" 
                             data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
                             data-tooltip-trigger="hover" 
