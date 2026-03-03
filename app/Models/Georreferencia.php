@@ -35,6 +35,8 @@ class Georreferencia extends Model
         2 => 'Reporte Fin Jornada',
         3 => 'Desconexión de Red',
         4 => 'Cierre forzado',
+        5 => 'inicio de almuerzo',
+        6 => 'fin de almuerzo',
     ];
 
     public static $signalLevels = [
