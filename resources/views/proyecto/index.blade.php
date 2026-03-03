@@ -163,14 +163,7 @@
 
                         <!-- Botón Contrato -->
                             <div class="relative 
-                            @if(
-                                !(
-                                    Auth::user()->isAdmin 
-                                    || Auth::user()->isUser 
-                                    || Auth::user()->isColab
-                                )
-                                || ($item->entreProyecto->count() === 0)
-                            )
+                            @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isColab) || ($item->entreProyecto->count() === 0))
                                 hidden
                             @endif">
                             <a tabindex="0" 
