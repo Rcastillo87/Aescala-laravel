@@ -3,17 +3,32 @@
 @section('content')
 <style>
     /* ─── ESCAPE DEL PADDING DEL MAIN ───────────────────────── */
-    .trk-escape {
-        margin: -1rem -1rem -1rem -1rem;
-        /* El footer es fixed de ~45px + el main tiene mb-16 (64px) + mt-6 (24px) + header (~64px)
-           Usamos 100dvh para que en mobile también funcione correctamente */
-        height: calc(100dvh - 160px);
-        min-height: 420px;
-        display: flex;
-        flex-direction: column;
-        border-radius: inherit;
-        overflow: hidden;
+.trk-escape {
+    margin: -1rem -1rem -1rem -1rem;
+    /* Ajustamos el descuento de píxeles: 
+       - Sidebar/Header (~64px) 
+       - Margen superior (~24px)
+       - Footer (~50px)
+    */
+    height: calc(100dvh - 170px); 
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    border-radius: inherit;
+    overflow: hidden;
+    position: relative;
+    z-index: 1; /* Valor bajo para que el footer le gane */
+}
+
+/* Ajuste específico para el reproductor de rutas en móvil */
+@media (max-width: 768px) {
+    .trk-route-player {
+        bottom: 80px; /* Sube un poco para que el footer no lo tape */
     }
+    .trk-toast {
+        bottom: 100px; /* Sube el toast para que sea visible sobre el footer */
+    }
+}
 
     /* ─── TOKENS AESCALA ─────────────────────────────────────── */
     :root {
