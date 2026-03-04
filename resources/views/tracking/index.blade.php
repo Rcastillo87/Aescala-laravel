@@ -631,12 +631,12 @@ function makeIcon(type = 'live') {
 }
 const startIcon = L.divIcon({
     className: '',
-    html: `<div style="background:#28a745;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:3px 7px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">INICIO</div>`,
+    html: `<div style="margin-left:35px;width:40px;text-align:center;background:#28a745;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 2px 2px 2px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">INICIO</div>`,
     iconAnchor: [22,10]
 });
 const endIcon = L.divIcon({
     className: '',
-    html: `<div style="background:#e8490f;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:3px 7px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">FIN</div>`,
+    html: `<div style="margin-left:23px;width:30px;text-align:center;background:#e8490f;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 2px 2px 2px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">FIN</div>`,
     iconAnchor: [10,10]
 });
 
@@ -856,7 +856,7 @@ async function loadHistory() {
     clearHistory();
     setLoading(true);
     try {
-        const params = new URLSearchParams({ from: day, to: day });
+        const params = new URLSearchParams({ date: day });
         if (deviceId) params.set('device_id', deviceId);
         const res  = await fetch(`{{ route('tracking.history') }}?${params}`);
         const json = await res.json();

@@ -96,20 +96,10 @@ class TrackingController extends Controller
     {
         $request->validate([
             'device_id' => 'required|integer|exists:dispositivo,id',
-            'from'      => 'required|date',
-            'to'        => 'required|date|after_or_equal:from',
+            'date'      => 'required|date',
         ]);
 
-        $from = Carbon::parse($request->from)->startOfDay();
-        $to   = Carbon::parse($request->to)->endOfDay();
-
-        // Máximo 7 días para no sobrecargar
-        if ($from->diffInDays($to) > 7) {
-            return response()->json(['status' => false, 'message' => 'Rango máximo 7 días'], 422);
-        }
-
         $puntos = Georreferencia::where('device_id', $request->device_id)
-            ->whereBetween('request_at', [$from, $to])
             ->orderBy('request_at')
             ->get(['id', 'lat', 'lng', 'battery', 'tipo', 'signal_level', 'network_type', 'request_at', 'accuracy']);
 
@@ -119,8 +109,7 @@ class TrackingController extends Controller
             'status' => true,
             'data'   => [
                 'device' => "{$device->brand} {$device->model}",
-                'from'   => $from->toDateTimeString(),
-                'to'     => $to->toDateTimeString(),
+                'date'   => $request->date,
                 'total'  => $puntos->count(),
                 'points' => $puntos->map(fn($p) => [
                     'lat'          => (float) $p->lat,
