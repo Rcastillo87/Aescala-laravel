@@ -2,6 +2,45 @@
 
 @section('content')
 <style>
+
+/* ─── HISTORY POINT LABELS ───────────────────────────────────── */
+.trk-pt-label {
+    display: inline-block;
+    text-align:center;
+    background: rgba(111,66,193,.85);
+    color: #fff;
+    font-family: var(--trk-font-m);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 2px 2px 2px;
+    border-radius: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,.35);
+    border: 1px solid rgba(255,255,255,.2);
+    letter-spacing: .3px;
+}
+.trk-pt-label.tipo-1 { background: rgba(40,167,69,.9);  }   /* Inicio jornada  */
+.trk-pt-label.tipo-2 { background: rgba(220,53,69,.9);  }   /* Fin jornada     */
+.trk-pt-label.tipo-3 { background: rgba(255,193,7,.9);  color: #1f2937; }  /* Desconexión */
+.trk-pt-label.tipo-4 { background: rgba(220,53,69,.85); }   /* Cierre forzado  */
+.trk-pt-label.tipo-5 { background: rgba(13,202,240,.85);}   /* Inicio almuerzo */
+.trk-pt-label.tipo-6 { background: rgba(13,202,240,.7); }   /* Fin almuerzo    */
+
+/* Player marker tooltip */
+.trk-player-tooltip {
+    background: var(--trk-sidebar-bg);
+    color: var(--trk-text);
+    font-family: var(--trk-font-m);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 4px;
+    border: 1px solid var(--trk-orange);
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    pointer-events: none;
+}
+
     /* ─── ESCAPE DEL PADDING DEL MAIN ───────────────────────── */
 .trk-escape {
     margin: -1rem -1rem -1rem -1rem;
@@ -863,6 +902,9 @@ function calcKm(points) {
     return total.toFixed(1);
 }
 
+// Guarda el label/device del historial actual para el info panel
+let historyDeviceLabel = '';
+
 async function loadHistory() {
     const deviceId = document.getElementById('trk-hist-device').value;
     const day      = document.getElementById('trk-hist-day').value;
@@ -878,16 +920,68 @@ async function loadHistory() {
         if (!res.ok || !json.status) { toast(json.message || 'Error al cargar', 'error'); return; }
 
         const { data } = json;
-        historyPoints = data.points;
+        historyPoints      = data.points;
+        historyDeviceLabel = data.device || 'Dispositivo';
         if (!historyPoints.length) { toast('Sin datos para ese día', 'error'); return; }
 
         const latlngs = historyPoints.map(p => [p.lat, p.lng]);
         historyLayer  = L.layerGroup();
-        const poly    = L.polyline(latlngs, { color: '#6f42c1', weight: 3, opacity: .85, smoothFactor: 1 });
+
+        // Polyline
+        const poly = L.polyline(latlngs, { color: '#6f42c1', weight: 3, opacity: .85, smoothFactor: 1 });
         historyLayer.addLayer(poly);
+
+        // Marcadores para TODOS los puntos (pequeños, sutiles)
+        historyPoints.forEach((p, idx) => {
+            const isSpecial = p.tipo !== 0;
+            if (isSpecial) {
+                const tipoClass = `tipo-${p.tipo}`;
+                const labelIcon = L.divIcon({
+                    className: '',
+                    html: `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;transform:translate(-50%, -4px);">
+                            <div style="width:9px;height:9px;border-radius:50%;background:#6f42c1;border:2px solid #fff;box-shadow:0 0 0 2px rgba(111,66,193,.4);flex-shrink:0;"></div>
+                            <div class="trk-pt-label ${tipoClass}">${p.tipo_label}</div>
+                        </div>`,
+                    iconSize: [0, 0],
+                    iconAnchor: [0, 0]
+                });
+                const m = L.marker([p.lat, p.lng], { icon: labelIcon });
+                m.on('click', () => {
+                    const slider = document.getElementById('trk-rp-slider');
+                    slider.value = idx;
+                    updatePlayer(idx);
+                });
+                historyLayer.addLayer(m);
+            } else {
+                const dotIcon = L.divIcon({
+                    className: '',
+                    html: `<div style="width:7px;height:7px;border-radius:50%;background:#64748b;border:1.5px solid rgba(255,255,255,.7);box-shadow:0 1px 3px rgba(0,0,0,.5);transform:translate(-50%,-50%);"></div>`,
+                    iconSize: [0, 0],
+                    iconAnchor: [0, 0]
+                });
+                const m = L.marker([p.lat, p.lng], { icon: dotIcon });
+                m.on('click', () => {
+                    const slider = document.getElementById('trk-rp-slider');
+                    slider.value = idx;
+                    updatePlayer(idx);
+                });
+                historyLayer.addLayer(m);
+            }
+        });
+
+        // Marcadores de inicio y fin
         historyLayer.addLayer(L.marker(latlngs[0],                  { icon: startIcon }));
         historyLayer.addLayer(L.marker(latlngs[latlngs.length - 1], { icon: endIcon }));
+
+        // Marcador player (se mueve con el slider)
         const playerMarker = L.marker(latlngs[0], { icon: makeIcon('history') });
+        // Tooltip persistente de hora sobre el player
+        playerMarker.bindTooltip('', {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -14],
+            className: 'trk-player-tooltip'
+        });
         historyLayer.addLayer(playerMarker);
         historyLayer._playerMarker = playerMarker;
         historyLayer.addTo(map);
@@ -917,17 +1011,56 @@ async function loadHistory() {
 function updatePlayer(idx) {
     const p = historyPoints[idx];
     if (!p || !historyLayer) return;
+
+    // Mueve el marcador player
     historyLayer._playerMarker?.setLatLng([p.lat, p.lng]);
-    document.getElementById('trk-rp-current').textContent = fmtDate(p.at);
+
+    // Actualiza tooltip de hora sobre el player (mi sugerencia)
+    const timeStr = fmtDate(p.at);
+    historyLayer._playerMarker?.setTooltipContent(timeStr);
+
+    // Actualiza hora en el reproductor
+    document.getElementById('trk-rp-current').textContent = timeStr;
+
+    // ── ACTUALIZA INFO PANEL con datos del punto actual ──────
+    const bat      = p.battery;
+    const batColor = bat == null ? '' : bat > 50 ? '#4ade80' : bat > 20 ? '#fbbf24' : '#f87171';
+
+    document.getElementById('trk-ip-title').textContent = historyDeviceLabel;
+
+    // Oculta el campo de usuario en modo historial (no cambia por punto)
+    // (se mantiene si ya estaba visible desde tiempo real)
+
+    const rows = [
+        ['Tipo',      p.tipo_label  || '–'],
+        ['Batería',   bat != null ? `<span style="color:${batColor};font-weight:700">${bat}%</span>` : '–'],
+        ['Señal',     p.signal_level !== undefined
+                        ? (['Sin señal','Mala','Regular','Buena','Excelente'][p.signal_level] ?? '–')
+                        : '–'],
+        ['Hora',      timeStr],
+        ['Punto',     `${idx + 1} / ${historyPoints.length}`],
+    ];
+    document.getElementById('trk-ip-rows').innerHTML = rows.map(([k,v]) =>
+        `<div class="trk-info-row"><span class="trk-ik">${k}</span><span class="trk-iv">${v}</span></div>`
+    ).join('');
+
+    // Asegura que el panel esté visible
+    document.getElementById('trk-info-panel').classList.add('visible');
 }
-document.getElementById('trk-rp-slider').addEventListener('input', function() { updatePlayer(parseInt(this.value)); });
+
+document.getElementById('trk-rp-slider').addEventListener('input', function() {
+    updatePlayer(parseInt(this.value));
+});
 
 function clearHistory() {
     if (historyLayer) { map.removeLayer(historyLayer); historyLayer = null; }
-    historyPoints = [];
+    historyPoints      = [];
+    historyDeviceLabel = '';
     document.getElementById('trk-route-player').classList.remove('visible');
     document.getElementById('trk-hist-info').style.display  = 'none';
     document.getElementById('trk-hist-stats').style.display = 'none';
+    // Al limpiar, cierra el info panel si estaba en modo historial
+    document.getElementById('trk-info-panel').classList.remove('visible');
 }
 document.getElementById('trk-btn-clear').addEventListener('click', clearHistory);
 document.getElementById('trk-rp-close').addEventListener('click',  clearHistory);

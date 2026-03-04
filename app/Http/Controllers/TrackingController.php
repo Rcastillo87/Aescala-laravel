@@ -6,7 +6,6 @@ use App\Models\Dispositivo;
 use App\Models\Georreferencia;
 use App\Models\user;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class TrackingController extends Controller
 {
