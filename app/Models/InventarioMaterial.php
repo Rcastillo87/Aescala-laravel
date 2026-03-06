@@ -99,7 +99,8 @@ class InventarioMaterial extends Model
         3 => 'MTx2',
         4 => 'MTx3',
         5 => 'Gal',
-        6 => 'Lit'
+        6 => 'Lit',
+        7 => 'Par'
     ];
 
     public static $classEstado = [
