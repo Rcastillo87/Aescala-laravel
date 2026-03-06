@@ -40,6 +40,10 @@ Route::get('/sw.js', function () {
         ->header('Cache-Control', 'no-cache, must-revalidate');
 });
 
+Route::get('/csrf-refresh', function () {
+    return response()->json(['token' => csrf_token()]);
+})->middleware('throttle:30,1')->name('csrf.refresh');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
