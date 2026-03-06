@@ -50,4 +50,29 @@
             <img src="{{ asset('img/banner.jpg') }}" class="w-full h-full bg-center bg-no-repeat bg-cover rounded-r-md object-cover" alt="logo">
         </div>
     </div>
+    <script>
+        async function refreshCsrfToken() {
+            try {
+                const response = await fetch("{{ route('csrf.refresh') }}", {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.token) {
+                    const tokenInput = document.querySelector('form input[name="_token"]');
+                    if (tokenInput) tokenInput.value = data.token;
+                    const meta = document.querySelector('meta[name="csrf-token"]');
+                    if (meta) meta.setAttribute('content', data.token);
+                }
+            } catch (e) {
+                console.warn('No se pudo renovar el CSRF token:', e);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('visibilitychange', async function () {
+                if (document.visibilityState === 'visible') {
+                    await refreshCsrfToken();
+                }
+            });
+        });
+    </script>
 </x-guest-layout>
