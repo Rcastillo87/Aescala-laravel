@@ -36,7 +36,7 @@ class Dispositivo extends Model
             Georreferencia::class,
             'device_id', // FK real
             'id'
-        )->latestOfMany('request_at');
+        )->whereDate('created_at', today())->latestOfMany('created_at');
     }
 
 }

@@ -13,12 +13,10 @@ class TrackingController extends Controller
     {
         $title = 'Dispositivos En Mapa';
 
+        $idsAsignados = Dispositivo::pluck('id_user');
         $users = User::query()
             ->whereIn('id_rol', [3,7,8])
-            ->whereNotIn('id', function ($q) {
-                $q->select('id_user')
-                ->from('dispositivo');
-            })
+            ->whereNotIn('id', $idsAsignados)
             ->pluck('nombre_completo', 'id')
             ->toArray();
 
@@ -58,7 +56,7 @@ class TrackingController extends Controller
     {
         $ids = $request->input('ids'); // null = todos
 
-        $query = Dispositivo::with(['ultimaUbicacion']);
+        $query = Dispositivo::with(['ultimaUbicacion', 'userAsignado']);
 
         if ($ids) {
             $query->whereIn('id', (array) $ids);
@@ -71,17 +69,16 @@ class TrackingController extends Controller
             return [
                 'device_id'   => $d->id,
                 'label'       => "{$d->brand} {$d->model} ({$d->device_serial})",
+                'user_name'   => $d->userAsignado?->nombre_completo,   // ← agregar
                 'lat'         => (float) $loc->lat,
                 'lng'         => (float) $loc->lng,
                 'accuracy'    => $loc->accuracy,
                 'battery'     => $loc->battery,
                 'tipo'        => $loc->tipo,
                 'tipo_label'  => Georreferencia::$tipos[$loc->tipo] ?? 'Ubicación',
-                'signal_level'=> $loc->signal_level,
-                'signal_label'=> Georreferencia::$signalLevels[$loc->signal_level] ?? '–',
-                'network_type'=> $loc->network_type,
-                'net_label'   => Georreferencia::$networkTypes[$loc->network_type] ?? '–',
-                'updated_at'  => $loc->request_at,
+                'signal_text'  => $this->buildSignalText($loc),
+                'at'  => $loc->request_at,
+                'created_at'  => $loc->created_at,
             ];
         })->filter()->values();
 
@@ -99,8 +96,9 @@ class TrackingController extends Controller
         ]);
 
         $puntos = Georreferencia::where('device_id', $request->device_id)
-            ->orderBy('request_at')
-            ->get(['id', 'lat', 'lng', 'battery', 'tipo', 'signal_level', 'network_type', 'request_at', 'accuracy']);
+            ->whereDate('created_at', $request->date)
+            ->orderBy('created_at')
+            ->get(['id', 'lat', 'lng', 'battery', 'tipo', 'signal_level', 'network_type', 'request_at', 'created_at', 'accuracy']);
 
         $device = Dispositivo::find($request->device_id);
 
@@ -116,10 +114,30 @@ class TrackingController extends Controller
                     'battery'      => $p->battery,
                     'tipo'         => $p->tipo,
                     'tipo_label'   => Georreferencia::$tipos[$p->tipo] ?? 'Ubicación',
-                    'signal_level' => $p->signal_level,
                     'at'           => $p->request_at,
+                    'created_at'   => $p->created_at,
+                    'signal_text' => $this->buildSignalText($p),
                 ]),
             ]
         ]);
     }
+
+    private function buildSignalText($loc): string
+    {
+        if (is_null($loc->network_type) || $loc->network_type === 2 || $loc->signal_level === 0) {
+            return 'Sin conexión';
+        }
+
+        $type = match((int) $loc->network_type) {
+            0 => 'WiFi',
+            1 => Georreferencia::$networkGenerations[$loc->network_generation] ?? 'Datos',
+            default => '–'
+        };
+
+        $level = Georreferencia::$signalLevels[$loc->signal_level] ?? '–';
+        $dbm   = $loc->signal_dbm !== null ? " ({$loc->signal_dbm} dBm)" : '';
+
+        return "{$type} · {$level}{$dbm}";
+    }
+
 }

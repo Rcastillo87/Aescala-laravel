@@ -439,7 +439,6 @@
     }
     @media (max-width: 480px) {
         .trk-escape { height: calc(100dvh - 115px); margin: -.5rem -.5rem -.5rem -.5rem; }
-        .trk-sidebar { width: 100%; }
     }
 </style>
 
@@ -674,24 +673,28 @@ let historyPoints   = [];
 let selectedDevice  = null;
 
 // ── ICONS ─────────────────────────────────────────────────────
-function makeIcon(type = 'live') {
+function makeIcon(type = 'live', label = '') {
+    const labelHtml = (type === 'live' && label)
+        ? `<div style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(45,55,72,.92);color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 6px;border-radius:4px;white-space:nowrap;border:1px solid rgba(232,73,15,.5);box-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none;">${label}</div>`
+        : '';
     return L.divIcon({
         className: '',
-        html: `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
-                 <div class="trk-dm-inner${type==='history'?' history':''}"></div>
+        html: `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;position:relative;">
+                 ${labelHtml}
+                 <div class="trk-dm-inner${type === 'history' ? ' history' : ''}"></div>
                </div>`,
-        iconSize: [32,32], iconAnchor: [16,16]
+        iconSize: [32, 32], iconAnchor: [16, 16]
     });
 }
 const startIcon = L.divIcon({
     className: '',
-    html: `<div style="margin-left:35px;width:40px;text-align:center;background:#28a745;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 2px 2px 2px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">INICIO</div>`,
-    iconAnchor: [22,10]
+    html: `<div style="width:40px;text-align:center;background:#28a745;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 2px 2px 2px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">INICIO</div>`,
+    iconAnchor: [-12,10]
 });
 const endIcon = L.divIcon({
     className: '',
-    html: `<div style="margin-left:23px;width:30px;text-align:center;background:#e8490f;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 2px 2px 2px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">FIN</div>`,
-    iconAnchor: [10,10]
+    html: `<div style="width:30px;text-align:center;background:#e8490f;color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 2px 2px 2px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">FIN</div>`,
+    iconAnchor: [-12,10]
 });
 
 // ── HELPERS ───────────────────────────────────────────────────
@@ -708,6 +711,18 @@ function setLoading(v) {
 function fmtDate(str) {
     if (!str) return '–';
     return str.substring(0,16).replace('T',' ');
+}
+function fmtUtc(str) {
+    if (!str) return '–';
+    // Convierte UTC a local restando offset, luego recorta igual que fmtDate
+    const normalized = (str.endsWith('Z') || str.includes('+'))
+        ? str.replace(' ', 'T')
+        : str.replace(' ', 'T') + 'Z';
+    const d = new Date(normalized);
+    if (isNaN(d)) return '–';
+    // Formato manual idéntico a fmtDate: "YYYY-MM-DD HH:MM"
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 // ── ASSIGN USER ───────────────────────────────────────────────
@@ -783,6 +798,7 @@ document.querySelectorAll('[data-trk-tab]').forEach(tab => {
         document.querySelectorAll('.trk-panel').forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
         document.getElementById('trk-panel-' + tab.dataset.trkTab).classList.add('active');
+        if (tab.dataset.trkTab === 'devices') fetchRealtime();
     });
 });
 
@@ -792,19 +808,49 @@ const overlay = document.getElementById('trk-sb-overlay');
 document.getElementById('trk-toggle-sb').addEventListener('click', () => sidebar.classList.toggle('open'));
 overlay.addEventListener('click', () => sidebar.classList.remove('open'));
 
+// ── FLAG MODO HISTORIAL ───────────────────────────────────────
+let isHistoryMode = false;
+
 // ── REAL-TIME POLLING ─────────────────────────────────────────
 async function fetchRealtime() {
+    const tabActivo = document.querySelector('[data-trk-tab].active');
+    if (!tabActivo || tabActivo.dataset.trkTab !== 'devices') return;
+
+    // Si quedó historial en el mapa, limpiarlo antes de pintar realtime
+    if (historyLayer) {
+        map.removeLayer(historyLayer);
+        historyLayer = null;
+        historyPoints = [];
+        historyDeviceLabel = '';
+        document.getElementById('trk-route-player').classList.remove('visible');
+        document.getElementById('trk-hist-info').style.display  = 'none';
+        document.getElementById('trk-hist-stats').style.display = 'none';
+        document.getElementById('trk-info-panel').classList.remove('visible');
+    }
+
     try {
         const res  = await fetch('{{ route("tracking.realtime") }}');
         const json = await res.json();
         if (!json.status) return;
 
+        const activeIds = new Set(json.data.map(d => String(d.device_id)));
+
+        // Elimina markers que ya no están en la respuesta
+        Object.keys(realtimeMarkers).forEach(id => {
+            if (!activeIds.has(String(id))) {
+                map.removeLayer(realtimeMarkers[id]);
+                delete realtimeMarkers[id];
+            }
+        });
+
         json.data.forEach(d => {
+            const shortLabel = d.label?.split('(')[0].trim() ?? '';
             if (realtimeMarkers[d.device_id]) {
                 realtimeMarkers[d.device_id].setLatLng([d.lat, d.lng]);
+                realtimeMarkers[d.device_id].setIcon(makeIcon('live', shortLabel));
                 realtimeMarkers[d.device_id]._trkData = d;
             } else {
-                const m = L.marker([d.lat, d.lng], { icon: makeIcon('live') })
+                const m = L.marker([d.lat, d.lng], { icon: makeIcon('live', shortLabel) })
                     .addTo(map)
                     .on('click', () => showInfo(d));
                 m._trkData = d;
@@ -820,6 +866,19 @@ async function fetchRealtime() {
             if (selectedDevice === d.device_id) showInfo(d);
         });
 
+        // ── BADGES ON/OFF ─────────────────────────────────────
+        document.querySelectorAll('.trk-card').forEach(card => {
+            const isOn = activeIds.has(card.dataset.id);
+            let badge  = card.querySelector('.trk-online-badge');
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'trk-online-badge trk-badge';
+                card.querySelector('.trk-card-meta').prepend(badge);
+            }
+            badge.className   = `trk-online-badge trk-badge ${isOn ? 'trk-badge-green' : 'trk-badge-red'}`;
+            badge.textContent = isOn ? '● ON' : '● OFF';
+        });
+
         const upEl = document.getElementById('trk-last-update');
         upEl.textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CO', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
         upEl.style.display = '';
@@ -829,23 +888,42 @@ async function fetchRealtime() {
 // ── INFO PANEL ────────────────────────────────────────────────
 function showInfo(d) {
     selectedDevice = d.device_id;
-    document.getElementById('trk-ip-title').textContent = d.label || 'Dispositivo';
+
+    // Título
+    document.getElementById('trk-ip-title').textContent = d.label?.split('(')[0].trim() || 'Dispositivo';
+
+    // Usuario
     const userEl = document.getElementById('trk-ip-user');
-    if (d.user_name) { userEl.textContent = '👤 ' + d.user_name; userEl.style.display = ''; }
-    else { userEl.style.display = 'none'; }
+    if (d.user_name) {
+        userEl.textContent  = '👤 ' + d.user_name;
+        userEl.style.display = '';
+    } else {
+        userEl.style.display = 'none';
+    }
 
     const bat      = d.battery;
     const batColor = bat == null ? '' : bat > 50 ? '#4ade80' : bat > 20 ? '#fbbf24' : '#f87171';
+
+    const signalLabels = ['Sin señal', 'Mala', 'Regular', 'Buena', 'Excelente'];
+
     const rows = [
-        ['Batería',   bat != null ? `<span style="color:${batColor};font-weight:700">${bat}%</span>` : '–'],
-        ['Tipo',      d.tipo_label   || '–'],
-        ['Red',       d.net_label    || '–'],
-        ['Señal',     d.signal_label || '–'],
-        ['Actualiz.', fmtDate(d.updated_at)],
+        ['Tipo',      d.tipo_label  || '–'],
+        ['Batería',   bat != null
+                        ? `<span style="color:${batColor};font-weight:700">${bat}%</span>`
+                        : '–'],
+        ['Señal',     d.signal_text || '–'],
+        ['Precisión', d.accuracy != null ? `${parseFloat(d.accuracy).toFixed(0)} m` : '–'],
+        ['Enviado',   fmtDate(d.at)],
+        ['Creado',    fmtUtc(d.created_at)],   // ← agregar
     ];
-    document.getElementById('trk-ip-rows').innerHTML = rows.map(([k,v]) =>
-        `<div class="trk-info-row"><span class="trk-ik">${k}</span><span class="trk-iv">${v}</span></div>`
+
+    document.getElementById('trk-ip-rows').innerHTML = rows.map(([k, v]) =>
+        `<div class="trk-info-row">
+            <span class="trk-ik">${k}</span>
+            <span class="trk-iv">${v}</span>
+         </div>`
     ).join('');
+
     document.getElementById('trk-info-panel').classList.add('visible');
 }
 
@@ -911,6 +989,11 @@ async function loadHistory() {
     if (!day) { toast('Selecciona un día', 'error'); return; }
 
     clearHistory();
+    Object.keys(realtimeMarkers).forEach(id => {
+        map.removeLayer(realtimeMarkers[id]);
+    });
+    realtimeMarkers = {};
+
     setLoading(true);
     try {
         const params = new URLSearchParams({ date: day });
@@ -934,6 +1017,13 @@ async function loadHistory() {
         // Marcadores para TODOS los puntos (pequeños, sutiles)
         historyPoints.forEach((p, idx) => {
             const isSpecial = p.tipo !== 0;
+
+            const onMarkerClick = (e) => {
+                L.DomEvent.stopPropagation(e);   // ← detiene propagación al mapa
+                document.getElementById('trk-rp-slider').value = idx;
+                updatePlayer(idx);
+            };
+
             if (isSpecial) {
                 const tipoClass = `tipo-${p.tipo}`;
                 const labelIcon = L.divIcon({
@@ -946,11 +1036,7 @@ async function loadHistory() {
                     iconAnchor: [0, 0]
                 });
                 const m = L.marker([p.lat, p.lng], { icon: labelIcon });
-                m.on('click', () => {
-                    const slider = document.getElementById('trk-rp-slider');
-                    slider.value = idx;
-                    updatePlayer(idx);
-                });
+                m.on('click', onMarkerClick);   // ← usa onMarkerClick, no inline
                 historyLayer.addLayer(m);
             } else {
                 const dotIcon = L.divIcon({
@@ -960,11 +1046,7 @@ async function loadHistory() {
                     iconAnchor: [0, 0]
                 });
                 const m = L.marker([p.lat, p.lng], { icon: dotIcon });
-                m.on('click', () => {
-                    const slider = document.getElementById('trk-rp-slider');
-                    slider.value = idx;
-                    updatePlayer(idx);
-                });
+                m.on('click', onMarkerClick);   // ← consistente con especiales
                 historyLayer.addLayer(m);
             }
         });
@@ -976,12 +1058,12 @@ async function loadHistory() {
         // Marcador player (se mueve con el slider)
         const playerMarker = L.marker(latlngs[0], { icon: makeIcon('history') });
         // Tooltip persistente de hora sobre el player
-        playerMarker.bindTooltip('', {
+        /*playerMarker.bindTooltip('', {
             permanent: true,
             direction: 'top',
             offset: [0, -14],
             className: 'trk-player-tooltip'
-        });
+        });*/
         historyLayer.addLayer(playerMarker);
         historyLayer._playerMarker = playerMarker;
         historyLayer.addTo(map);
@@ -1008,6 +1090,16 @@ async function loadHistory() {
     }
 }
 
+function clearHistory() {
+    if (historyLayer) { map.removeLayer(historyLayer); historyLayer = null; }
+    historyPoints      = [];
+    historyDeviceLabel = '';
+    document.getElementById('trk-route-player').classList.remove('visible');
+    document.getElementById('trk-hist-info').style.display  = 'none';
+    document.getElementById('trk-hist-stats').style.display = 'none';
+    document.getElementById('trk-info-panel').classList.remove('visible');
+}
+
 function updatePlayer(idx) {
     const p = historyPoints[idx];
     if (!p || !historyLayer) return;
@@ -1017,6 +1109,7 @@ function updatePlayer(idx) {
 
     // Actualiza tooltip de hora sobre el player (mi sugerencia)
     const timeStr = fmtDate(p.at);
+    const createdStr = fmtUtc(p.created_at);
     historyLayer._playerMarker?.setTooltipContent(timeStr);
 
     // Actualiza hora en el reproductor
@@ -1032,12 +1125,11 @@ function updatePlayer(idx) {
     // (se mantiene si ya estaba visible desde tiempo real)
 
     const rows = [
-        ['Tipo',      p.tipo_label  || '–'],
+        ['Tipo',      p.tipo_label   || '–'],
         ['Batería',   bat != null ? `<span style="color:${batColor};font-weight:700">${bat}%</span>` : '–'],
-        ['Señal',     p.signal_level !== undefined
-                        ? (['Sin señal','Mala','Regular','Buena','Excelente'][p.signal_level] ?? '–')
-                        : '–'],
-        ['Hora',      timeStr],
+        ['Señal',     p.signal_text  || '–'],
+        ['Enviado',   timeStr],
+        ['Creado',    createdStr],
         ['Punto',     `${idx + 1} / ${historyPoints.length}`],
     ];
     document.getElementById('trk-ip-rows').innerHTML = rows.map(([k,v]) =>
@@ -1052,16 +1144,6 @@ document.getElementById('trk-rp-slider').addEventListener('input', function() {
     updatePlayer(parseInt(this.value));
 });
 
-function clearHistory() {
-    if (historyLayer) { map.removeLayer(historyLayer); historyLayer = null; }
-    historyPoints      = [];
-    historyDeviceLabel = '';
-    document.getElementById('trk-route-player').classList.remove('visible');
-    document.getElementById('trk-hist-info').style.display  = 'none';
-    document.getElementById('trk-hist-stats').style.display = 'none';
-    // Al limpiar, cierra el info panel si estaba en modo historial
-    document.getElementById('trk-info-panel').classList.remove('visible');
-}
 document.getElementById('trk-btn-clear').addEventListener('click', clearHistory);
 document.getElementById('trk-rp-close').addEventListener('click',  clearHistory);
 
