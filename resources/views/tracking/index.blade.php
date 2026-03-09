@@ -670,6 +670,7 @@ tileLayers.color.addTo(map);
 let realtimeMarkers = {};
 let historyLayer    = null;
 let historyPoints   = [];
+let historyDeviceLabel = '';
 let selectedDevice  = null;
 
 // ── ICONS ─────────────────────────────────────────────────────
@@ -808,9 +809,6 @@ const overlay = document.getElementById('trk-sb-overlay');
 document.getElementById('trk-toggle-sb').addEventListener('click', () => sidebar.classList.toggle('open'));
 overlay.addEventListener('click', () => sidebar.classList.remove('open'));
 
-// ── FLAG MODO HISTORIAL ───────────────────────────────────────
-let isHistoryMode = false;
-
 // ── REAL-TIME POLLING ─────────────────────────────────────────
 async function fetchRealtime() {
     const tabActivo = document.querySelector('[data-trk-tab].active');
@@ -861,7 +859,8 @@ async function fetchRealtime() {
                 card.dataset.lat     = d.lat;
                 card.dataset.lng     = d.lng;
                 card.dataset.battery = d.battery ?? '–';
-                card.dataset.updated = d.updated_at ?? '–';
+                card.dataset.at         = d.at ?? '–';
+                card.dataset.created_at = d.created_at ?? '–';
             }
             if (selectedDevice === d.device_id) showInfo(d);
         });
@@ -939,12 +938,14 @@ document.querySelectorAll('.trk-card').forEach(card => {
         if (!isNaN(lat) && !isNaN(lng)) {
             map.flyTo([lat, lng], 16, { duration: 1 });
             showInfo({
-                device_id:  card.dataset.id,
-                label:      card.dataset.label,
-                user_name:  card.dataset.user || null,
-                battery:    card.dataset.battery === '–' ? null : parseInt(card.dataset.battery),
-                updated_at: card.dataset.updated,
-                tipo_label: '–', net_label: '–', signal_label: '–'
+                device_id:   card.dataset.id,
+                label:       card.dataset.label,
+                user_name:   card.dataset.user   || null,
+                battery:     card.dataset.battery === '–' ? null : parseInt(card.dataset.battery),
+                at:          card.dataset.at          || '–',
+                created_at:  card.dataset.created_at  || '–',
+                tipo_label:  '–',
+                signal_text: '–'
             });
         }
         if (window.innerWidth < 768) sidebar.classList.remove('open');
@@ -979,9 +980,6 @@ function calcKm(points) {
     }
     return total.toFixed(1);
 }
-
-// Guarda el label/device del historial actual para el info panel
-let historyDeviceLabel = '';
 
 async function loadHistory() {
     const deviceId = document.getElementById('trk-hist-device').value;
