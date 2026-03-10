@@ -76,7 +76,17 @@
         .tabla-items th { 
             background-color: #f8f8f8; 
         }
+        /* ✅ SOLUCIÓN: thead se repite en cada página si la tabla se corta */
+        .tabla-items thead {
+            display: table-header-group;
+        }
+        /* ✅ Las filas individuales pueden cortarse entre páginas */
+        .tabla-items tbody tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
         .resumen { 
+            /* ✅ El resumen final nunca se parte */
             page-break-inside: avoid;
             break-inside: avoid;
             border-top: 2px solid #333; 
@@ -84,8 +94,22 @@
             padding-top: 0px; 
         }
         .despacho-section {
+            /* ✅ REMOVIDO: ya no forzamos que todo el bloque evite el salto */
+            /* Ahora solo el header + mini-info se mantienen unidos */
+        }
+        /* ✅ El encabezado del despacho + tabla de info se mantienen juntos */
+        .despacho-header-block {
             page-break-inside: avoid;
             break-inside: avoid;
+            page-break-after: avoid; /* Evita que el salto ocurra justo después del header */
+            break-after: avoid;
+        }
+        /* ✅ El subtotal se mantiene con la última fila de la tabla */
+        .despacho-subtotal {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            page-break-before: avoid;
+            break-before: avoid;
         }
         .totales { 
             text-align: right; 
@@ -174,31 +198,36 @@
 
     @foreach($despacho as $index => $desp)
         <div class="despacho-section">
-            <div class="despacho-header">
-                {!! $desp['spanEstado'] !!} #{{ $loop->iteration }}: {{ $desp['codigo'] }} 
+
+            {{-- ✅ Header + info del despacho: se mantienen unidos y NO se separan de lo que sigue --}}
+            <div class="despacho-header-block">
+                <div class="despacho-header">
+                    {!! $desp['spanEstado'] !!} #{{ $loop->iteration }}: {{ $desp['codigo'] }} 
+                </div>
+                
+                <table width="100%" style="margin-bottom:8px;">
+                    <tr>
+                        <td width="33%" valign="top">
+                            <strong>Quien Solicita:</strong><br>
+                            {{ $desp['nombre_completo'] }}
+                        </td>
+                        <td width="34%" valign="top">
+                            @if(!empty($desp['user_despacha']))
+                                <strong>Quien Despacha:</strong><br>
+                                {{ $desp['user_despacha'] }}
+                            @else
+                                &nbsp;
+                            @endif
+                        </td>
+                        <td width="33%" valign="top">
+                            <strong>Fecha:</strong><br>
+                            {{ $desp['createdAt'] }}
+                        </td>
+                    </tr>
+                </table>
             </div>
-            
-            <table width="100%" style="margin-bottom:8px;">
-                <tr>
-                    <td width="33%" valign="top">
-                        <strong>Quien Solicita:</strong><br>
-                        {{ $desp['nombre_completo'] }}
-                    </td>
-                    <td width="34%" valign="top">
-                        @if(!empty($desp['user_despacha']))
-                            <strong>Quien Despacha:</strong><br>
-                            {{ $desp['user_despacha'] }}
-                        @else
-                            &nbsp;
-                        @endif
-                    </td>
-                    <td width="33%" valign="top">
-                        <strong>Fecha:</strong><br>
-                        {{ $desp['createdAt'] }}
-                    </td>
-                </tr>
-            </table>
-            
+
+            {{-- ✅ La tabla de items SÍ puede cortarse entre páginas, pero repite el thead --}}
             <table class="tabla-items">
                 <thead>
                     <tr>
@@ -234,9 +263,11 @@
                 }, 0);
             @endphp
             
-            <div style="text-align: right; margin-top: 3px;">
+            {{-- ✅ El subtotal no se separa de la tabla --}}
+            <div class="despacho-subtotal" style="text-align: right; margin-top: 3px;">
                 <div><strong>Subtotal Despacho:</strong> ${{ number_format($subtotalDespacho, 2, ',', '.') }}</div>
             </div>
+
         </div>
     @endforeach
 
@@ -244,7 +275,7 @@
         @php
             $totalDespachos = 0;
             $totalDevoluciones = 0;
-            $ivaPercentage = env('IVA_PERCENTAGE', 0); // Porcentaje de IVA desde .env (0 por defecto)
+            $ivaPercentage = env('IVA_PERCENTAGE', 0);
             
             foreach($despacho as $desp) {
                 $subtotal = array_reduce($desp['items'], function($carry, $item) {
@@ -299,7 +330,6 @@
             Quien Recibe:
         </h2>
 
-        <!-- Nombre - Fecha - Cédula (líneas finas) -->
         <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
             <tr>
                 <td style="padding: 6px; border-bottom: 1px solid #666; width: 55%;">
@@ -327,15 +357,11 @@
             </tr>
         </table>
 
-        <!-- Firma y Observaciones en un mismo bloque -->
         <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
             <tr>
-                <!-- Firma izquierda -->
                 <td style="width: 60%; padding-left: 10px; border: 1px solid #666; height: 70px; vertical-align: top;">
                     <strong>Observaciones:</strong>
                 </td>
-   
-                <!-- Observación derecha -->
                 <td style="width: 40%; padding-left: 10px; border: 1px solid #666; height: 70px; vertical-align: top;">
                     <strong>Firma:</strong>
                 </td>
