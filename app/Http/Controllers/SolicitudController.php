@@ -92,7 +92,7 @@ class SolicitudController extends Controller
             ->toArray();
         
         $materiales = InventarioMaterial::when(
-            Auth::user()->isAlmacenista, fn ($q) => $q->where('tipo', 1)
+            Auth::user()->isAlmacenista, fn ($q) => $q->where('tipo', 2)
         )->where('activo', 1)->get()->toArray();
 
         if(Auth::user()->isContratista){
