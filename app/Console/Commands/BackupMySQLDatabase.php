@@ -7,12 +7,11 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class BackupMySQLDatabase extends Command
 {
     protected $signature = 'backup:mysql';
-    protected $description = 'Genera una copia de seguridad de la base de datos MySQL';
+    protected $description = 'Genera una copia de seguridad de la base de datos MySQL y conserva los últimos 7 días';
 
     public function handle()
     {
@@ -21,7 +20,7 @@ class BackupMySQLDatabase extends Command
         $database = Config::get('database.connections.mysql.database');
         $username = Config::get('database.connections.mysql.username');
         $password = Config::get('database.connections.mysql.password');
-        $host = Config::get('database.connections.mysql.host');
+        $host     = Config::get('database.connections.mysql.host');
 
         // Verifica que mysqldump esté disponible
         $mysqldumpPath = trim(shell_exec('which mysqldump'));
@@ -37,18 +36,29 @@ class BackupMySQLDatabase extends Command
             File::makeDirectory($backupDir, 0755, true);
         }
 
-        // Eliminar backups anteriores
+        // ✅ CORRECCIÓN: eliminar solo archivos con más de 7 días, no todos
         $archivos = File::files($backupDir);
         foreach ($archivos as $archivo) {
-            if (str_contains($archivo->getFilename(), 'db_backup_')) {
-                File::delete($archivo);
+            $esBackup    = str_contains($archivo->getFilename(), 'db_backup_');
+            $tieneExtension = str_ends_with($archivo->getFilename(), '.sql') ||
+                              str_ends_with($archivo->getFilename(), '.sql.gz');
+
+            if ($esBackup && $tieneExtension) {
+                $diasDeVida = now()->diffInDays(
+                    \Carbon\Carbon::createFromTimestamp($archivo->getMTime())
+                );
+
+                if ($diasDeVida >= 7) {
+                    File::delete($archivo);
+                    Log::info("Backup antiguo eliminado: {$archivo->getFilename()}");
+                }
             }
         }
 
-        $timestamp = now()->format('Y-m-d_H-i-s');
+        // Crear el nuevo backup
+        $timestamp  = now()->format('Y-m-d_H-i-s');
         $backupPath = "{$backupDir}/db_backup_{$timestamp}.sql";
 
-        // Comando mysqldump
         $command = [
             $mysqldumpPath,
             "--user={$username}",
@@ -58,6 +68,7 @@ class BackupMySQLDatabase extends Command
         ];
 
         $process = new Process($command);
+        $process->setTimeout(300); // 5 minutos por si la BD es grande
         $process->run();
 
         if ($process->isSuccessful()) {

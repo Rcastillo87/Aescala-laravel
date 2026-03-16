@@ -1,7 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -58,30 +57,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'error' => 'La carpeta de backups no existe'
             ], 404);
         }
-        
+
+        // ✅ CORRECCIÓN: ordenar por nombre descendente (el timestamp en el nombre
+        //    es más confiable que getMTime() que puede variar según el filesystem)
         $files = collect(File::files($backupDir))
-            ->filter(fn($file) => 
-                str_ends_with($file->getFilename(), '.sql') || 
-                str_ends_with($file->getFilename(), '.sql.gz')
+            ->filter(fn($file) =>
+                str_contains($file->getFilename(), 'db_backup_') &&
+                (
+                    str_ends_with($file->getFilename(), '.sql') ||
+                    str_ends_with($file->getFilename(), '.sql.gz')
+                )
             )
-            ->sortByDesc(fn($file) => $file->getMTime());
-        
+            ->sortByDesc(fn($file) => $file->getFilename()); // Y-m-d_H-i-s ordena lexicográficamente bien
+
         if ($files->isEmpty()) {
             return response()->json([
                 'error' => 'No hay backups disponibles todavía'
             ], 404);
         }
-        
+
         $latest = $files->first();
-        
-        Log::info('Backup descargado', [
-            'user_id' => auth()->id(),
-            'file' => $latest->getFilename(),
-            'ip' => request()->ip()
-        ]);
-        
+
         return response()->download(
-            $latest->getRealPath(), 
+            $latest->getRealPath(),
             $latest->getFilename()
         );
     })->name('descargar.db');
@@ -123,7 +121,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listPrestamos', [HerramientaController::class, 'listPrestamos'])->name('listPrestamos');
         Route::post('/savePrestamo', [HerramientaController::class, 'savePrestamo'])->name('savePrestamo');
     });
-    
+
     Route::prefix('proyecto')->name('proyecto.')->group(function () {
         Route::get('/index', [ProyectoController::class, 'index'])->name('index');
         Route::get('/create', [ProyectoController::class, 'create'])->name('create');
