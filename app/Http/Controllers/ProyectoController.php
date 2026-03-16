@@ -69,6 +69,9 @@ class ProyectoController extends Controller
             ->when($cola, function ($query, $id_user) {
                 return $query->where('id_user', $id_user);
             })
+            ->when(Request('id_contratista'), function ($query, $id_contratista) {
+                return $query->where('id_user_obra_blanca', $id_contratista)->orwhere('id_user_carpinteria', $id_contratista);
+            })
             ->whereNotNull('id_estado')
             ->orderBy('id', 'desc')
             ->paginate($perPage)
@@ -1177,7 +1180,7 @@ class ProyectoController extends Controller
                 $tventa += $valorVenta;
                 $row++;
             }
-            
+
             $sheet->getStyle("F5:F{$row}")
                 ->getNumberFormat()
                 ->setFormatCode('"$"#,##0');

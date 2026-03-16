@@ -19,7 +19,7 @@
         </h2>
         <div id="accordion-open-body-1" class="hidden" aria-labelledby="accordion-open-heading-1">
             <div class="p-1 border border-b-1 border-gray-200">
-             <form method="GET" action="{{route("proyecto.index")}}">
+             <form method="GET" action="{{route('proyecto.index')}}">
                 <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
@@ -39,18 +39,30 @@
                             class="block mt-1 w-full" 
                         />
                     </div>
-                        @if (Auth::user()->isNotcolab)
-                            <div class="p-2 shrink-0 w-[40]">
-                                <x-input-label for="id_userSerch" :value="__('Encargado')" />
-                                <x-select-input 
-                                    name="id_userSerch" 
-                                    :data="['id', 'nombre_completo']"
-                                    :options="$userColab" 
-                                    :selected="Request('id_userSerch')" 
-                                    class="block mt-1 w-full" 
-                                />
-                            </div>
-                        @endif
+                    @if (Auth::user()->isNotcolab)
+                        <div class="p-2 shrink-0 w-[40]">
+                            <x-input-label for="id_userSerch" :value="__('Arquitecto Encargado')" />
+                            <x-select-input 
+                                name="id_userSerch" 
+                                :data="['id', 'nombre_completo']"
+                                :options="$userColab" 
+                                :selected="Request('id_userSerch')" 
+                                class="block mt-1 w-full" 
+                            />
+                        </div>
+                    @endif
+                    @if (Auth::user()->isNotcolab)
+                        <div class="p-2 shrink-0 w-[40]">
+                            <x-input-label for="id_contratista" :value="__('Contratistas')" />
+                            <x-select-input 
+                                name="id_contratista" 
+                                :data="['id', 'nombre_completo']"
+                                :options="$contraUsers" 
+                                :selected="Request('id_contratista')" 
+                                class="block mt-1 w-full" 
+                            />
+                        </div>
+                    @endif
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_cliente" :value="__('Nombre Cliente')" />
                         <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="Request('nombre_cliente')" 

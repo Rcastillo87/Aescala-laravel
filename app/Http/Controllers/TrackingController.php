@@ -13,11 +13,14 @@ class TrackingController extends Controller
     {
         $title = 'Dispositivos En Mapa';
 
-        $idsAsignados = Dispositivo::pluck('id_user');
+        $idsAsignados = Dispositivo::whereNotNull('id_user')
+            ->pluck('id_user')
+            ->toArray();
+
         $users = User::query()
             ->whereIn('id_rol', [3,7,8])
             ->whereNotIn('id', $idsAsignados)
-            ->pluck('nombre_completo', 'id')
+            ->get(['nombre_completo', 'id'])
             ->toArray();
 
         $dispositivos = Dispositivo::with(['ultimaUbicacion', 'userAsignado'])->get()

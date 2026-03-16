@@ -20,7 +20,7 @@ use App\Models\Area;
 
 class OtrosiController extends Controller
 {
-    public function index( ) 
+    public function index( )
     {
         $title = 'Lista de Otro Si';
         $usuario = Auth::user();
@@ -47,7 +47,7 @@ class OtrosiController extends Controller
         return view('otrosi.index', compact( 'title', 'items', 'headers', 'user'));
     }
 
-    public function create() 
+    public function create()
     {
         $anterior = url()->previous();
         session(['otro_si_url' => $anterior]);
@@ -318,6 +318,7 @@ class OtrosiController extends Controller
             ", ['%' . mb_strtolower($nombreProyecto) . '%'])
             ->first();
         }
+
         if (!$proyecto) {
             return response()->json([
                 'error' => "El proyecto '$nombreProyecto' no existe en la base de datos."
@@ -326,8 +327,8 @@ class OtrosiController extends Controller
 
         $resp = [
             'nombre_proyecto' => $nombreProyecto,
-            'id_proyecto' => $proyecto->id,
-            'espacios' => [],
+            'id_proyecto'     => $proyecto->id,
+            'espacios'        => [],
         ];
 
         $headers = [
@@ -340,8 +341,10 @@ class OtrosiController extends Controller
         ];
 
         unset($rows[1]);
+
         $espacioActual = null;
-        $errores = [];
+        $errores       = [];
+        $advertencias  = [];
 
         foreach ($rows as $index => $row) {
             $valores = array_intersect_key($row, array_flip(['A', 'B', 'C', 'D', 'E', 'F']));
@@ -363,7 +366,7 @@ class OtrosiController extends Controller
 
             // Detectar nuevo ESPACIO
             if (!empty(trim($valores['A'] ?? ''))) {
-                // Si ya había un espacio actual, guardarlo antes de iniciar el siguiente
+                // Guardar espacio anterior antes de iniciar el nuevo
                 if ($espacioActual) {
                     $resp['espacios'][] = $espacioActual;
                 }
@@ -374,48 +377,60 @@ class OtrosiController extends Controller
                 if (!$area) {
                     $errores[] = "Fila $index: el ESPACIO '$nombreArea' no existe en la tabla áreas.";
                     $espacioActual = [
-                        'id_area' => 0,
+                        'id_area'     => 0,
                         'area_nombre' => $nombreArea,
-                        'items' => []
+                        'items'       => []
                     ];
                 } else {
                     $espacioActual = [
-                        'id_area' => $area->id,
+                        'id_area'     => $area->id,
                         'area_nombre' => $area->nombre_area,
-                        'items' => []
+                        'items'       => []
                     ];
                 }
             }
 
-            if (!$espacioActual) continue; // sin área actual, se ignora la fila
+            if (!$espacioActual) continue;
 
-            // Validar datos del ítem
-            $material = $valores['C'] ?? null;
-            $cant = (int) $valores['D'] ?? null;
-            $valorUnitario = $valores['E'] ?? null;
+            // Leer valores del ítem
+            $material      = trim($valores['C'] ?? '');
+            $cant          = $valores['D'] ?? '';
+            $valorUnitario = $valores['E'] ?? '';
             $valorUnitario = (int) str_replace(['$', ',', ' '], '', $valorUnitario);
+            $cantInt       = (int) $cant;
 
+            $materialVacio = empty($material);
+            $cantInvalida  = !filter_var($cant, FILTER_VALIDATE_INT) || $cantInt <= 0;
+            $valorCero     = $valorUnitario === 0;
+
+            // ⚠️ Las TRES condiciones juntas → advertencia, fila omitida, continúa el proceso
+            if ($materialVacio && $cantInvalida && $valorCero) {
+                $advertencias[] = "Fila $index (" . ($espacioActual['area_nombre'] ?? 'sin área') . "): fila vacía o sin datos, fue omitida.";
+                continue;
+            }
+
+            // ❌ Errores individuales → bloqueantes
             $erroresFila = [];
 
-            if (empty($material)) {
+            if ($materialVacio) {
                 $erroresFila[] = 'MATERIAL/ACTIVIDAD vacío.';
             }
-            if (!filter_var($cant, FILTER_VALIDATE_INT) || (int)$cant <= 0) {
+            if ($cantInvalida) {
                 $erroresFila[] = 'CANT debe ser un número entero mayor que 0.';
             }
-            if (filter_var($valorUnitario, FILTER_VALIDATE_INT) === false || (int)$valorUnitario < 0) {
-                $erroresFila[] = 'VALOR UNITARIO debe ser un número entero mayor o igual que 0.';
+            if (filter_var($valorUnitario, FILTER_VALIDATE_INT) === false || $valorUnitario < 0) {
+                $erroresFila[] = 'VALOR UNITARIO debe ser un número mayor o igual que 0.';
             }
-
-            $espacioActual['items'][] = [
-                'material' => $material,
-                'cantidad' => (int)$cant,
-                'valor_unitario' => (int)$valorUnitario,
-            ];
 
             if (!empty($erroresFila)) {
                 $errores[] = "Fila $index: " . implode(' | ', $erroresFila);
             }
+
+            $espacioActual['items'][] = [
+                'material'       => $material,
+                'cantidad'       => $cantInt,
+                'valor_unitario' => $valorUnitario,
+            ];
         }
 
         // Agregar el último espacio pendiente
@@ -423,13 +438,20 @@ class OtrosiController extends Controller
             $resp['espacios'][] = $espacioActual;
         }
 
-        // ✅ Retornar errores o data validada
+        // Filtrar espacios que quedaron sin ítems válidos
+        $resp['espacios'] = array_values(
+            array_filter($resp['espacios'], fn($e) => !empty($e['items']))
+        );
+
+        // ❌ Errores reales bloquean (proyecto no existe, área no existe, campo individual inválido)
         if (!empty($errores)) {
             return response()->json([
                 'errores' => $errores
             ], 422);
         }
 
+        // ✅ Retornar espacios válidos + advertencias de filas omitidas
+        $resp['advertencias'] = $advertencias;
         return response()->json($resp, 200);
     }
 
@@ -463,7 +485,7 @@ class OtrosiController extends Controller
             } else {
                 $otroSi->sugerencia_cliente = $request->sugerencia_cliente;
                 $smg = 'Sugerencia guardada correctamente.';
-            } 
+            }
 
             $otroSi->estado = $request->estado;
             $otroSi->save();
@@ -484,7 +506,7 @@ class OtrosiController extends Controller
 
     public function otroSiPdfPublic($id)
     {
-        $this->otroSiPdf($id);
+        return $this->otroSiPdf($id);
     }
 
     public function sendLinkByEmail(Request $request)

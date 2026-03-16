@@ -44,12 +44,12 @@
     /* ─── ESCAPE DEL PADDING DEL MAIN ───────────────────────── */
 .trk-escape {
     margin: -1rem -1rem -1rem -1rem;
-    /* Ajustamos el descuento de píxeles: 
-       - Sidebar/Header (~64px) 
+    /* Ajustamos el descuento de píxeles:
+       - Sidebar/Header (~64px)
        - Margen superior (~24px)
        - Footer (~50px)
     */
-    height: calc(100dvh - 170px); 
+    height: calc(100dvh - 170px);
     min-height: 420px;
     display: flex;
     flex-direction: column;
@@ -525,8 +525,8 @@
                                             </option>
                                         @endif
                                         {{-- Usuarios disponibles (sin dispositivo) --}}
-                                        @foreach($users as $uid => $uname)
-                                            <option value="{{ $uid }}">{{ $uname }}</option>
+                                        @foreach($users as $key => $user)
+                                            <option value="{{ $user['id'] }}">{{ strtoupper($user['nombre_completo']) }}</option>
                                         @endforeach
                                     </select>
                                     <button class="trk-assign-btn"

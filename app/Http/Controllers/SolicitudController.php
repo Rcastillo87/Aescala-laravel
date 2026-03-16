@@ -18,7 +18,7 @@ use App\Http\Requests\SaveSolicitudRequest;
 
 class SolicitudController extends Controller
 {
-    public function index( ) 
+    public function index( )
     {
         if(Auth::user()->isAdmin || Auth::user()->isAnalista){
             $cola = Request('id_userSerch');
@@ -66,7 +66,7 @@ class SolicitudController extends Controller
             ->when($cola, function ($query, $id_user) {
                 $query->where('id_user', $id_user);
             })
-            ->where('id_estado', [1, 5])
+            ->where('id_estado', [1, 5, 3])
             ->get();
 
         $estados = SolicitudMaterial::$estados;
@@ -82,15 +82,29 @@ class SolicitudController extends Controller
     public function create( )
     {
         $title = 'Crear Solicitud de Material';
-        $proyectos = Proyecto::wherein('id_estado', [1, 5])
+        $proyectos = Proyecto::whereIn('id_estado', [1, 5, 3])
             ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico), function ($query) {
                 $query->where('id_user', Auth::user()->id)
-                    ->orwhere('id_user_obra_blanca', Auth::user()->id)
-                    ->orwhere('id_user_carpinteria', Auth::user()->id);
+                    ->orWhere('id_user_obra_blanca', Auth::user()->id)
+                    ->orWhere('id_user_carpinteria', Auth::user()->id);
             })
-            ->get(['id', 'id_user', 'nombre_proyecto'])
+            ->select([
+                'id',
+                DB::raw("
+                    CONCAT(
+                        nombre_proyecto,
+                        ' -- Estado: ',
+                        CASE id_estado
+                            WHEN 1 THEN 'En Desarrollo'
+                            WHEN 3 THEN 'Entregado'
+                            WHEN 5 THEN 'Posventas'
+                        END
+                    ) as nombre_proyecto
+                ")
+            ])
+            ->get()
             ->toArray();
-        
+
 	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
 
         if(Auth::user()->isContratista){
@@ -102,7 +116,7 @@ class SolicitudController extends Controller
         }
         $fases = Fase::whereIn('id', $arr)->get()->map(function ($item) {
             $ids = explode(',', $item['id_materiales']);
-            return [ 
+            return [
                 'id' => $item['id'],
                 'name_fase' => $item['fase'],
                 'materiales' => $ids
@@ -194,13 +208,13 @@ class SolicitudController extends Controller
             ->where('solicitud_items.id_solicitud', $id)
             ->select(
                 'solicitud_material.id_proyecto',
-                'inventario_materiales.nombre_material', 
-                'solicitud_items.cantidad_solicitada as cantidad_sol', 
-                'inventario_solicituds.cantidad as cantidad_des', 
+                'inventario_materiales.nombre_material',
+                'solicitud_items.cantidad_solicitada as cantidad_sol',
+                'inventario_solicituds.cantidad as cantidad_des',
                 'inventario_solicituds.cobro',
                 'solicitud_items.estado',
                 'solicitud_items.id_user_aprueba',
-                'solicitud_items.aprobado', 
+                'solicitud_items.aprobado',
                 'inventario_solicituds.createdAt',
                 'inventario_solicituds.codigo',
                 'solicitud_material.fecha_solicitud',
@@ -217,7 +231,7 @@ class SolicitudController extends Controller
                 return $item;
             });
 
-            return response()->json([  
+            return response()->json([
                 'status' => true,
                 'data' => $solicitud,
                 'ban' => Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isColab
@@ -350,15 +364,15 @@ class SolicitudController extends Controller
                     } else {
                         $estado = 2; // Parcial
                     }
-                } 
+                }
 
                 $upd = ['estado' => $estado];// Actualización del item
 
                 if ($estado != 4) {
                     $material->decrement('cantidad', $item['cantidad']);// Descontar del inventario SOLO la cantidad despachada
-                    
+
                     $upd['cantidad'] = $solItem->cantidad - $item['cantidad'];// Actualizar cantidad pendiente
-                    
+
                     $dato['id_material'] = $item['id_material'];
                     $dato['cantidad'] = $item['cantidad'];
                     $dato['valor_unidad'] = $material['valor_unidad'];

@@ -14,7 +14,7 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
     });
 
     try {
-        const response = await fetch( valUrl , {
+        const response = await fetch(valUrl, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -28,7 +28,7 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
         const entregablesDiv = document.getElementById('entregables-div');
         entregablesDiv.innerHTML = '';
 
-        // ❌ Validaciones
+        // ❌ Errores bloqueantes (campo individual inválido, área no existe, etc.)
         if (response.status === 422 && result.errores && result.errores.length > 0) {
             const msg = result.errores.map(err => `• ${err}`).join('<br>');
             Swal.fire({
@@ -51,13 +51,36 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
             return;
         }
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Archivo válido',
-            text: `Proyecto: ${result.nombre_proyecto}`,
-            timer: 1500,
-            showConfirmButton: false
-        });
+        // ✅ Éxito: con advertencias o sin ellas
+        const tieneAdvertencias = result.advertencias && result.advertencias.length > 0;
+
+        if (tieneAdvertencias) {
+            const msgAdv = result.advertencias.map(a => `• ${a}`).join('<br>');
+            await Swal.fire({
+                icon: 'warning',
+                title: 'Archivo cargado con advertencias',
+                html: `
+                    <p class="text-sm text-gray-600 mb-2">
+                        Proyecto: <strong>${result.nombre_proyecto}</strong>
+                    </p>
+                    <div class="text-left text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-3">
+                        <p class="font-semibold mb-1">⚠️ Las siguientes filas fueron omitidas por estar vacías o sin datos:</p>
+                        ${msgAdv}
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3">Los espacios con datos válidos sí se cargaron. Puedes continuar.</p>
+                `,
+                confirmButtonText: 'Entendido, continuar',
+                confirmButtonColor: '#d97706',
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Archivo válido',
+                text: `Proyecto: ${result.nombre_proyecto}`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
 
         // ✅ Construcción del encabezado del proyecto
         let header = `
@@ -91,13 +114,12 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
 
         let totalGeneral = 0;
 
-        console.log(result);
-
         result.espacios.forEach(espacio => {
-            const subtotalEspacio = espacio.items.reduce((sum, item) => sum + (item.cantidad * item.valor_unitario), 0);
+            const subtotalEspacio = espacio.items.reduce(
+                (sum, item) => sum + (item.cantidad * item.valor_unitario), 0
+            );
             totalGeneral += subtotalEspacio;
 
-            // filas de cada item
             espacio.items.forEach((item, index) => {
                 html += `
                     <tr>
@@ -108,14 +130,13 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
                             : ''
                         }
                         <td class="px-4 py-2">${item.material}</td>
-                        <td class="px-4 py-2 text-right">${item.cantidad}</td>
+                        <td class="px-4 py-2 text-right">${item.cantidad.toLocaleString()}</td>
                         <td class="px-4 py-2 text-right">$ ${item.valor_unitario.toLocaleString()}</td>
                         <td class="px-4 py-2 text-right">$ ${(item.cantidad * item.valor_unitario).toLocaleString()}</td>
                     </tr>
                 `;
             });
 
-            // subtotal por área
             html += `
                 <tr class="bg-gray-50 font-semibold">
                     <td colspan="4" class="px-4 py-2 text-right text-[#242e68]">Subtotal ${espacio.area_nombre}</td>
@@ -124,7 +145,6 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
             `;
         });
 
-        // total general
         html += `
                     </tbody>
                     <tfoot class="bg-[#f7f9ff] font-bold text-[#242e68] border-t-2 border-[#242e68]">
@@ -137,7 +157,6 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
             </div>
         `;
 
-        // ✅ Unir encabezado y tabla
         entregablesDiv.innerHTML = `
             <div class="w-full max-w-6xl mx-auto">
                 ${header}
@@ -145,19 +164,21 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
             </div>
         `;
 
-        // Campos ocultos para el backend
-        let hiddenInputs = `<input type="hidden" name="id_proyecto_excel" value="${result.id_proyecto}">;`
-    result.espacios.forEach(espacio => {
-        espacio.items.forEach((item, index) => {
-            hiddenInputs += `
-                <input type="hidden" name="entregables[${espacio.id_area}][id_area]" value="${espacio.id_area}">
-                <input type="hidden" name="entregables[${espacio.id_area}][area_nombre]" value="${espacio.area_nombre}">
-                <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][material]" value="${item.material}">
-                <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][cantidad]" value="${item.cantidad}">
-                <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][valor_unitario]" value="${item.valor_unitario}">
-            `;
+        // ✅ Campos ocultos para el backend
+        let hiddenInputs = `<input type="hidden" name="id_proyecto_excel" value="${result.id_proyecto}">`;
+
+        result.espacios.forEach(espacio => {
+            espacio.items.forEach((item, index) => {
+                hiddenInputs += `
+                    <input type="hidden" name="entregables[${espacio.id_area}][id_area]" value="${espacio.id_area}">
+                    <input type="hidden" name="entregables[${espacio.id_area}][area_nombre]" value="${espacio.area_nombre}">
+                    <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][material]" value="${item.material}">
+                    <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][cantidad]" value="${item.cantidad}">
+                    <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][valor_unitario]" value="${item.valor_unitario}">
+                `;
+            });
         });
-    });
+
         entregablesDiv.insertAdjacentHTML('beforeend', hiddenInputs);
 
     } catch (error) {
@@ -172,13 +193,13 @@ document.getElementById('plantilla_otro_si').addEventListener('change', async fu
     }
 });
 
-document.getElementById("btnDescargar").addEventListener("click", function(e) {
+document.getElementById("btnDescargar").addEventListener("click", function (e) {
     e.preventDefault();
 
     let base64Data = this.getAttribute("data-excel");
     const filename = this.getAttribute("data-filename") || "archivo.xlsx";
 
-    // ✅ Quitar prefijo si existe
+    // Quitar prefijo si existe
     if (base64Data.includes(",")) {
         base64Data = base64Data.split(",")[1];
     }

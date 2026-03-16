@@ -25,16 +25,16 @@
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_completo" :value="__('Nombre Completo')" />
-                        <x-text-input id="nombre_completo" class="block mt-1 w-full" type="text" name="nombre_completo" :value="Request('nombre_completo')" 
+                        <x-text-input id="nombre_completo" class="block mt-1 w-full" type="text" name="nombre_completo" :value="Request('nombre_completo')"
                          autofocus />
                     </div>
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="email" :value="__('Correo')" />
-                        <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="Request('email')" />
+                        <x-text-input id="email" class="block mt-1 w-full" type="text" name="email" :value="Request('email')" />
                     </div>
                     <div class="p-2 shrink-0 w-[200px]">
                         <x-input-label for="activo" :value="__('Estado')" />
-                        <select name="activo" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
+                        <select name="activo" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500
                             dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
                             <option value="">-- Seleccione --</option>
                             @foreach ($estado as $key => $value)
@@ -53,7 +53,7 @@
                     </div>
                     <div class="p-2 shrink-0 w-[200px]">
                         <x-input-label for="id_rol" :value="__('Perfil')" />
-                        <select name="id_rol" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
+                        <select name="id_rol" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500
                             dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
                             <option value="">-- Seleccione --</option>
                             @foreach ($roles as $key => $rol)
@@ -70,7 +70,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                             </svg>
                         </button>
-                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 
+                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900
                             bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip ">
                             Buscar
                             <div class="tooltip-arrow" data-popper-arrow></div>

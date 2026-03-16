@@ -74,7 +74,7 @@ public function index()
     ));
 }
 
-    public function create( ) 
+    public function create( )
     {
         $user = null;
         $title = 'Crear Usuarios';
@@ -84,7 +84,7 @@ public function index()
         return view('user.create', compact('roles', 'title', 'action', 'tipoDocs', 'user'));
     }
 
-    public function edit($id) 
+    public function edit($id)
     {
         $user = User::find($id);
         $title = 'Editar Usuarios';
@@ -106,7 +106,11 @@ public function index()
                 Rule::unique('users', 'email')->ignore($req->id)
             ],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],//'nullable|string|min:6|max:200',
-            'cedula' => 'required|digits_between:6,15',
+            'cedula' => [
+                'required',
+                'digits_between:6,15',
+                Rule::unique('users', 'cedula')->ignore($req->id)
+            ],
             'telefono' => 'required|digits_between:7,16',
             'tipo_documento' => ['required', 'integer', Rule::in(array_keys(User::$tipoDocumento))],
             'id_rol' => ['required', 'integer', Rule::in(array_keys(User::$roles))],
@@ -154,16 +158,16 @@ public function index()
         }
     }
 
-    public function editStatus($id) 
+    public function editStatus($id)
     {
-        
+
         try {
             DB::beginTransaction();
             $user = User::findOrFail($id);
             $user->update(['activo' => ($user->activo == 1) ? 2 : 1]);
             DB::commit();
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'Usuario actualizado correctamente.'
             ],200);
         } catch (\Exception $e) {
