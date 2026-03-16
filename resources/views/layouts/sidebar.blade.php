@@ -236,7 +236,7 @@
                                 </li>
                             @endif
                         @endif
-                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isTecnico) 
+                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isTecnico || Auth::user()->isAlmacenista) 
                             <li>
                                 <a href="{{ route('solicitud.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                     <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

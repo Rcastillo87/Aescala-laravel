@@ -82,8 +82,8 @@ class SolicitudController extends Controller
     public function create( )
     {
         $title = 'Crear Solicitud de Material';
-        $proyectos = Proyecto::whereIn('id_estado', [1, 5, 3])
-            ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico), function ($query) {
+        $proyectos = Proyecto::wherein('id_estado', [1, 5, 3])
+            ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico || Auth::user()->isAlmacenista), function ($query) {
                 $query->where('id_user', Auth::user()->id)
                     ->orWhere('id_user_obra_blanca', Auth::user()->id)
                     ->orWhere('id_user_carpinteria', Auth::user()->id);
@@ -105,7 +105,9 @@ class SolicitudController extends Controller
             ->get()
             ->toArray();
 
-	    $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+        $materiales = InventarioMaterial::when(
+            Auth::user()->isAlmacenista, fn ($q) => $q->where('tipo', 2)
+        )->where('activo', 1)->get()->toArray();
 
         if(Auth::user()->isContratista){
             $arr = [1,2];
