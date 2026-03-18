@@ -193,7 +193,7 @@
                                 </a>
                             </li>
                             @if (Auth::user()->isAdmin || Auth::user()->isUser)
-                                <li>
+                                <li class="hidden">
                                     <a href="{{ route('despachos.index') }}"
                                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
                                         <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
@@ -236,7 +236,7 @@
                                 </li>
                             @endif
                         @endif
-                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isTecnico || Auth::user()->isAlmacenista) 
+                        @if (Auth::user()->isAnalista || Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isTecnico || Auth::user()->isAlmacenista)
                             <li>
                                 <a href="{{ route('solicitud.index')}}" class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                     <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -322,7 +322,6 @@
                 </li>
             @endif
 
-            
             @if (Auth::user()->isAdmin || Auth::user()->isUser)
 
                 <!-- Elementos individuales -->
@@ -342,7 +341,7 @@
                 <li>
                     <a href="{{ route('tracking.index') }}"
                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" 
+                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.8 13.938h-.011a7 7 0 1 0-11.464.144h-.016l.14.171c.1.127.2.251.3.371L12 21l5.13-6.248c.194-.209.374-.429.54-.659l.13-.155Z"/>
@@ -350,6 +349,17 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Dispositivos En Mapa</span>
                     </a>
                 </li>
+
+                <li>
+                    <a href="{{ route('calendario.index') }}"
+                        class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hidden">
+                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Calendario</span>
+                    </a>
+                </li>
+
             @endif
 
         </ul>

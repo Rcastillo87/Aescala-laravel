@@ -80,7 +80,7 @@
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Ubicacion</p>
-                        <span class="text-md text-black">{{$departamentos[intval($item['departamento'])]['departamento']}} - 
+                        <span class="text-md text-black">{{$departamentos[intval($item['departamento'])]['departamento']}} -
                             {{$departamentos[intval($item['departamento'])]['ciudades'][$item['ciudad']]}}</span>
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
@@ -147,9 +147,9 @@
 
                         <!-- Botón Inicio de proyecto -->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
-                            <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover" 
-                               data-beginProyec='@json($item)' x-on:click="$dispatch('open-modal', 'beginProyec-modal')" x-data="" 
-                               class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-700 hover:bg-white hover:text-cyan-800 border-2 border-cyan-800 focus:ring-4 
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover"
+                               data-beginProyec='@json($item)' x-on:click="$dispatch('open-modal', 'beginProyec-modal')" x-data=""
+                               class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-700 hover:bg-white hover:text-cyan-800 border-2 border-cyan-800 focus:ring-4
                                       focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
@@ -162,19 +162,19 @@
                         </div>
 
                         <!-- Botón Contrato -->
-                            <div class="relative 
+                            <div class="relative
                             @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isColab) || ($item->entreProyecto->count() === 0))
                                 hidden
                             @endif">
-                            <a tabindex="0" 
-                            data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}" 
-                            data-tooltip-trigger="hover" 
-                            href="{{ route('proyecto.contratoPdf', $item->id) }}" 
+                            <a tabindex="0"
+                            data-tooltip-target="tooltip-hover-contratoPdf-{{$item->id}}"
+                            data-tooltip-trigger="hover"
+                            href="{{ route('proyecto.contratoPdf', $item->id) }}"
                             target="_blank"
-                            class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4 
+                            class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
                                 focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"/>
                                 </svg>
                             </a>
@@ -186,12 +186,12 @@
 
                         <!-- Botón tratamiento  de datos -->
                         <div class="relative @if($item->acepta_trata_datos == 0 && (!Auth::user()->isAdmin || !Auth::user()->isUser)) hidden @endif">
-                            <a tabindex="0" 
-                            data-tooltip-target="tooltip-hover-trataDatosPDF-{{$item->id}}" 
-                            data-tooltip-trigger="hover" 
-                            href="{{ route('proyecto.trataDatosPDF', $item->id) }}" 
+                            <a tabindex="0"
+                            data-tooltip-target="tooltip-hover-trataDatosPDF-{{$item->id}}"
+                            data-tooltip-trigger="hover"
+                            href="{{ route('proyecto.trataDatosPDF', $item->id) }}"
                             target="_blank"
-                            class="flex items-center justify-center w-10 h-10 text-white bg-orange-700 hover:bg-white hover:text-orange-800 border-2 border-orange-800 focus:ring-4 
+                            class="flex items-center justify-center w-10 h-10 text-white bg-orange-700 hover:bg-white hover:text-orange-800 border-2 border-orange-800 focus:ring-4
                                 focus:outline-none focus:ring-orange-300 font-medium rounded-full text-sm dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="square" stroke-linejoin="round" stroke-width="2" d="M7 19H5a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h1m4-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm7.441 1.559a1.907 1.907 0 0 1 0 2.698l-6.069 6.069L10 19l.674-3.372 6.07-6.07a1.907 1.907 0 0 1 2.697 0Z"/>
@@ -203,46 +203,62 @@
                             </div>
                         </div>
 
-                    
+
                         <!-- Botón Cambio de Estado -->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer)) hidden @endif">
-                            <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover" 
-                               onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})" 
-                               class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover"
+                               onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4
                                       focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4"/>
-                                </svg>                    
+                                </svg>
                             </a>
                             <div id="tooltip-hover-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                 Cambio de Estado
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
-                    
-                        <!-- Botón Ingresos & Egresos -->
+
+                        <!-- Botón Otro si-->
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || !$item->otro_si()->where('estado', 1)->exists() ) hidden @endif">
+                            <a tabindex="0" data-tooltip-target="tooltip-hover-cartera-{{$item->id}}" data-tooltip-trigger="hover"
+                               href="{{Route('cartera.index', ['nombre_proyecto' => $item->nombre_proyecto])}}"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4
+                                      focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                </svg>
+                            </a>
+                            <div id="tooltip-hover-cartera-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Cartera Otro Si
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Ingresos & Egresos
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
-                               onclick="listFinanzas(0,{{$item->id}})" x-data="" 
+                               onclick="listFinanzas(0,{{$item->id}})" x-data=""
                                x-on:click="$dispatch('open-modal', 'finanza-modal')"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4 
+                               class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4
                                       focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.5 21h13M12 21V7m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm2-1.8c3.073.661 2.467 2.8 5 2.8M5 8c3.359 0 2.192-2.115 5.012-2.793M7 9.556V7.75m0 1.806-1.95 4.393a.773.773 0 0 0 .37.962.785.785 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.776.776 0 0 0 .09-.716L7 9.556Zm10 0V7.313m0 2.243-1.95 4.393a.773.773 0 0 0 .37.962.786.786 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.775.775 0 0 0 .09-.716L17 9.556Z"/>
-                                </svg>       
+                                </svg>
                             </a>
                             <div id="tooltip-hover-finanza-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                 Ingresos & Egresos
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Botón Cotizacion -->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
-                               onclick="listaCotizacion(0,{{$item->id}})" x-data="" 
+                               onclick="listaCotizacion(0,{{$item->id}})" x-data=""
                                x-on:click="$dispatch('open-modal', 'cotizacion-modal')"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-slate-400 hover:bg-white hover:text-slate-500 border-2 border-slate-500 focus:ring-4 
+                               class="flex items-center justify-center w-10 h-10 text-white bg-slate-400 hover:bg-white hover:text-slate-500 border-2 border-slate-500 focus:ring-4
                                       focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-400 dark:hover:bg-slate-500 dark:focus:ring-slate-500 cursor-pointer">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"/>
@@ -257,9 +273,9 @@
                         <!-- Botón despachos -->
                         <div class="relative">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despachos-{{$item->id}}" data-tooltip-trigger="hover"
-                               onclick="listaDespachos({{$item->id}})" x-data="" 
+                               onclick="listaDespachos({{$item->id}})" x-data=""
                                x-on:click="$dispatch('open-modal', 'despachos-modal')"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-fuchsia-600 hover:bg-white hover:text-fuchsia-500 border-2 border-fuchsia-500 focus:ring-4 
+                               class="flex items-center justify-center w-10 h-10 text-white bg-fuchsia-600 hover:bg-white hover:text-fuchsia-500 border-2 border-fuchsia-500 focus:ring-4
                                       focus:outline-none focus:ring-fuchsia-300 font-medium rounded-full text-sm dark:bg-fuchsia-400 dark:hover:bg-fuchsia-500 dark:focus:ring-fuchsia-500 cursor-pointer">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4"/>
@@ -274,14 +290,14 @@
                         <!-- Botón comparativo -->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-comparativo-{{$item->id}}" data-tooltip-trigger="hover"
-                                onclick="listComparativo({{$item->id}})" x-data="" 
+                                onclick="listComparativo({{$item->id}})" x-data=""
                                 x-on:click="$dispatch('open-modal', 'compartivo-modal')"
-                                class="flex items-center justify-center w-10 h-10 text-white bg-pink-600 hover:bg-white hover:text-pink-500 border-2 border-pink-500 focus:ring-4 
+                                class="flex items-center justify-center w-10 h-10 text-white bg-pink-600 hover:bg-white hover:text-pink-500 border-2 border-pink-500 focus:ring-4
                                         focus:outline-none focus:ring-pink-300 font-medium rounded-full text-sm dark:bg-pink-400 dark:hover:bg-pink-500 dark:focus:ring-pink-500 cursor-pointer">
                                 Vs
                             </a>
                             <div id="tooltip-hover-comparativo-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                                Despachos Vs Cotizacion 
+                                Despachos Vs Cotizacion
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
@@ -290,7 +306,7 @@
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despacho-excel-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="descargarExcelDespachos({{ $item->id }})"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-green-600 hover:bg-white hover:text-green-500 border-2 border-green-500 focus:ring-4 
+                               class="flex items-center justify-center w-10 h-10 text-white bg-green-600 hover:bg-white hover:text-green-500 border-2 border-green-500 focus:ring-4
                                       focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-400 dark:hover:bg-green-500 dark:focus:ring-green-500 cursor-pointer">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1ZM8 12v6h8v-6H8Z"/>
@@ -306,9 +322,9 @@
                 </div>
             </div>
             <div class="@if(!Auth::user()->isNotColab) hidden @endif">
-                <button type="button" 
+                <button type="button"
                         class="cursor-pointer flex focus:text-blue-600 font-bold hover:text-blue-600 italic items-center justify-between py-2 px-4 text-gray-800 text-left text-sm w-full"
-                        data-accordion-target="#tareas_{{ $item->id }}" 
+                        data-accordion-target="#tareas_{{ $item->id }}"
                         aria-expanded="false"
                         aria-controls="tareas_{{ $item->id }}">
                     <div class="flex items-center justify-between text-left w-full">

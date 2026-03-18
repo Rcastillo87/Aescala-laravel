@@ -325,7 +325,7 @@ async function openAvance(page = 1, id) {
 
 function tableAvances(data) {
     const contenedor = document.getElementById('avanceList');
-    
+
     if (!data || data.length === 0) {
         contenedor.innerHTML = `
             <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50">
@@ -337,7 +337,7 @@ function tableAvances(data) {
 
     // Mapear colores para cada tarea
     const colores = [
-        'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
+        'bg-blue-500', 'bg-green-500', 'bg-purple-500',
         'bg-yellow-500', 'bg-red-500', 'bg-indigo-500',
         'bg-pink-500', 'bg-teal-500', 'bg-orange-500',
         'bg-cyan-500', 'bg-lime-500', 'bg-amber-500',
@@ -353,9 +353,9 @@ function tableAvances(data) {
         const colorClaro = color.replace('500', '200');
         const colorMedio = color.replace('500', '400');
         const colorOscuro = color;
-        
+
         // Usar el estado proporcionado por la API
-        const estadoHTML = tarea.estado 
+        const estadoHTML = tarea.estado
             ? tarea.estado.replace('span-yellow', 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800')
             : '<span class="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Estado no definido</span>';
 
@@ -380,11 +380,11 @@ function tableAvances(data) {
             html += `
                 <ol class="relative border-l border-gray-200 ml-2">
             `;
-            
+
             tarea.avances.forEach((avance, avanceIndex) => {
-                const avanceColor = avanceIndex % 3 === 0 ? colorClaro : 
+                const avanceColor = avanceIndex % 3 === 0 ? colorClaro :
                                   avanceIndex % 3 === 1 ? colorMedio : colorOscuro;
-                
+
                 html += `
                     <li class="mb-4 ml-6 group">
                         <div class="absolute w-3 h-3 ${avanceColor} rounded-full mt-1.5 -left-1.5 border border-white"></div>
@@ -394,13 +394,13 @@ function tableAvances(data) {
                                 Eliminar
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Actualizado: 
+                        <p class="text-xs text-gray-500 mt-1">Actualizado:
                             ${new Date(avance.updatedAt).getFullYear()}-${String(new Date(avance.updatedAt).getMonth() + 1).padStart(2, '0')}-${String(new Date(avance.updatedAt).getDate()).padStart(2, '0')} ${String(new Date(avance.updatedAt).getHours()).padStart(2, '0')}:${String(new Date(avance.updatedAt).getMinutes()).padStart(2, '0')}
                         </p>
                     </li>
                 `;
             });
-            
+
             html += `
                 </ol>
             `;
@@ -456,7 +456,7 @@ function confirmDelete(id) {
                     });
                 } else {
                     Swal.fire("Error", "No se pudo eliminar la data.", "error");
-                } 
+                }
             } catch (error) {
                 Swal.fire("Error", "No se pudo eliminar la data.", "error");
             }
@@ -632,7 +632,7 @@ async function listaDespachos(id) {
         });
         const data = await response.json();
         await renderDespachos(data.data, id);
-        
+
     } catch (error) {
         Swal.fire("Error", "No se pudo consultar la data.", "error");
     }
@@ -647,7 +647,7 @@ document.getElementById('botonDescarga').addEventListener('click', function() {
 async function renderDespachos(despachos, id) {
 
     const container = document.getElementById('listaDespachos');
-    container.innerHTML= '';   
+    container.innerHTML= '';
 
     const boton = document.getElementById('botonDescarga');
 
@@ -668,18 +668,18 @@ async function renderDespachos(despachos, id) {
     }
     boton.setAttribute('data-id', id);
     boton.classList.remove('hidden');
-    
+
     let total_fact = 0;
     despachos.forEach(despacho => {
         const card = document.createElement('div');
         card.className = 'w-full max-w-full';
-        
+
         card.innerHTML = `
             <div class="bg-white border border-gray-200 rounded-lg shadow p-2">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h2 class="text-lg font-semibold">Código: ${despacho.codigo}</h2>
-                        <p class="text-gray-500 text-sm">${formatDate(despacho.createdAt)}</p>
+                        <p class="text-gray-500 text-sm">${despacho.createdAt}</p>
                     </div>
                     <div class="flex gap-2">
                         <a href="pdfDespacho?codigo=${despacho.codigo}&id=${id}" class="mt-2 tooltip">
@@ -694,7 +694,7 @@ async function renderDespachos(despachos, id) {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mb-1">
                     <h3 class="font-medium mb-2">Materiales:</h3>
                     <div class="overflow-x-auto">
@@ -716,9 +716,9 @@ async function renderDespachos(despachos, id) {
                 </div>
             </div>
             `;
-        
+
         container.appendChild(card);
-        
+
         // Renderizar items
         const tbody = document.getElementById(`items-${despacho.codigo}`);
         let suma = 0;
@@ -758,15 +758,15 @@ document.querySelectorAll('[data-accordion-target]').forEach(button => {
     const targetId = button.getAttribute('data-accordion-target');
     const target = document.querySelector(targetId);
     const icon = button.querySelector('[data-accordion-icon]');
-    
+
     button.addEventListener('click', () => {
         // Alternar visibilidad del contenido
         target.classList.toggle('hidden');
-        
+
         // Alternar atributo aria-expanded
         const isExpanded = button.getAttribute('aria-expanded') === 'true';
         button.setAttribute('aria-expanded', !isExpanded);
-        
+
         // Rotar el ícono
         icon.classList.toggle('rotate-180');
     });
@@ -785,14 +785,14 @@ async function listComparativo(id) {
 
         if (data.data.length === 0) {
             window.dataGrafica = '';
-            document.getElementById('listaComparativoEmpy').classList.remove('hidden'); 
-            document.getElementById('listaComparativo').classList.add('hidden'); 
+            document.getElementById('listaComparativoEmpy').classList.remove('hidden');
+            document.getElementById('listaComparativo').classList.add('hidden');
         } else {
             window.dataGrafica = data.data;
             tableComparativo(data.data);
             renderGraficaComparativa(data.data, 1);
-            document.getElementById('listaComparativoEmpy').classList.add('hidden'); 
-            document.getElementById('listaComparativo').classList.remove('hidden'); 
+            document.getElementById('listaComparativoEmpy').classList.add('hidden');
+            document.getElementById('listaComparativo').classList.remove('hidden');
         }
 
     } catch (error) {
@@ -834,13 +834,13 @@ function renderGraficaComparativa(data, tipo) {
     const cantidadCotizada = data.map(item => parseFloat(item.cot_cantidad) || 0);
     const valorDespachado = data.map(item => parseFloat(item.desp_valor) || 0);
     const valorCotizado = data.map(item => parseFloat(item.cot_valor) || 0);
-  
+
     const datosEntrega = tipo == 1 ? cantidadDespachada : valorDespachado;
     const datosCotizados = tipo == 1 ? cantidadCotizada : valorCotizado;
     const titulo = tipo == 1 ? 'Materiales x Cantidades' : 'Materiales x Valor';
-  
+
     if (chart) chart.destroy();
-  
+
     const ctx = document.getElementById('graficaComparativa').getContext('2d');
     chart = new Chart(ctx, {
       type: 'line',
@@ -880,7 +880,7 @@ function renderGraficaComparativa(data, tipo) {
         }
       }
     });
-  
+
 }
 
 let chart;
@@ -908,9 +908,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("txUbicacion").textContent = txCui;
             document.getElementById("txDireccion").textContent = proyecto.direccion ?? '';
             document.getElementById("txContacto").textContent = proyecto.nombre_cliente ?? '';
-            document.getElementById("txDocumento").textContent = 
-                (window.tipoDoc?.[proyecto.tipo_doc_cliente] ?? "N/A") + 
-                ": " + 
+            document.getElementById("txDocumento").textContent =
+                (window.tipoDoc?.[proyecto.tipo_doc_cliente] ?? "N/A") +
+                ": " +
                 (proyecto.cedula_cliente ?? "N/A");
             document.getElementById("txTelefono").textContent = proyecto.telefono_cliente ?? '';
             document.getElementById("txAreaPrivada").textContent = proyecto.area_privada ?? '';
@@ -971,7 +971,7 @@ async function descargarExcelDespachos(id = '') {
     });
 
     try {
-        
+
         const route = id ? `excelDespachoProyecto/${id}` : 'excelDespachosGeneral';
         const response = await fetch(route, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }

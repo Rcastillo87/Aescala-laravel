@@ -16,7 +16,7 @@ class Proyecto extends Model
 
     protected $table = 'proyectos';
     public $timestamps = true;
-    
+
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
@@ -108,7 +108,7 @@ class Proyecto extends Model
     {
         if(!$this->img_firma){
             return '<span class="'.(self::$ClassEstado0[1]).'">'
-                 . (self::$estado0[1] ?? 'Desconocido') . '</span>'; 
+                 . (self::$estado0[1] ?? 'Desconocido') . '</span>';
         }
         return '<span class="'.(self::$ClassEstado0[2] ?? 'default-class').'">'
              . (self::$estado0[2]) . '</span>';
@@ -116,14 +116,14 @@ class Proyecto extends Model
 
     public function getSpanTratadatosAttribute()
     {
-        return ($this->acepta_trata_datos==1) ? '<span class="span-green">SI</span>': 
+        return ($this->acepta_trata_datos==1) ? '<span class="span-green">SI</span>':
             '<span class="span-red">NO</span>';
     }
 
     public function getContratoAttribute()
     {
         $dptArray = json_decode(
-            file_get_contents(storage_path('json/jsonCityColombia.json')), 
+            file_get_contents(storage_path('json/jsonCityColombia.json')),
             true
         );
 
@@ -252,7 +252,7 @@ class Proyecto extends Model
 
     public function getApazAttribute()
     {
-        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>': 
+        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>':
             '<span class="span-red">NO</span>';
     }
 
@@ -264,15 +264,15 @@ class Proyecto extends Model
                 SUM(CASE WHEN tipo = 2 THEN valor ELSE 0 END) as gastos
             ")
             ->first();
-        
+
         return ($totals->ingresos ?? 0) - ($totals->gastos ?? 0);
     }
-    
+
     public function getTokenEncripAttribute()
     {
         $token = Crypt::encryptString($this->id . '||' . $this->cedula_cliente);
-        return rtrim(config('app.url'), '/') 
-            . '/firmarContrato/' 
+        return rtrim(config('app.url'), '/')
+            . '/firmarContrato/'
             . urlencode($token);
     }
 
@@ -316,7 +316,7 @@ class Proyecto extends Model
     {
         return $this->hasMany(EntregableProye::class, 'id_proyecto', 'id');
     }
-    
+
     public function pagos()
     {
         return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
@@ -324,7 +324,7 @@ class Proyecto extends Model
 
     public function otro_si()
     {
-        return $this->belongsTo(Otrosi::class, 'id_proyecto', 'id');
+        return $this->hasMany(Otrosi::class, 'id_proyecto', 'id');
     }
 
     public function getTotalAttribute()

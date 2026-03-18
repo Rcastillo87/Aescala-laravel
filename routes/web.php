@@ -18,6 +18,7 @@ use App\Http\Controllers\CarteraController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\CalendarioController;
 
 
 Route::get('/', function () {
@@ -246,6 +247,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/savePorcentajes', [ConfiguracionController::class, 'savePorcentajes'])->name('savePorcentajes');
         Route::get('/indexAdicionales/{año}', [ConfiguracionController::class, 'indexAdicionales'])->name('indexAdicionales');
         Route::post('/saveAdicionales', [ConfiguracionController::class, 'saveAdicionales'])->name('saveAdicionales');
+    });
+
+    Route::prefix('calendario')->name('calendario.')->group(function () {
+        Route::get('/index',             [CalendarioController::class, 'index'])->name('index');
+        // AJAX
+        Route::get('/resumen-anio',      [CalendarioController::class, 'resumenAnio'])->name('resumenAnio');
+        Route::get('/mes-datos',         [CalendarioController::class, 'mesDatos'])->name('mesDatos');
+        Route::post('/marcar-vacacion',  [CalendarioController::class, 'marcarVacacion'])->name('marcarVacacion');
+        Route::post('/quitar-vacacion',  [CalendarioController::class, 'quitarVacacion'])->name('quitarVacacion');
     });
 
 });
