@@ -253,7 +253,7 @@
                             </div>
                         </div> -->
 
-                        <!-- Botón Cotizacion -->
+                        <!-- Botón Cotizacion
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cotizacion-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaCotizacion(0,{{$item->id}})" x-data=""
@@ -268,7 +268,7 @@
                                 Cotizacion
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
-                        </div>
+                        </div>-->
 
                         <!-- Botón despachos -->
                         <div class="relative">
@@ -287,7 +287,7 @@
                             </div>
                         </div>
 
-                        <!-- Botón comparativo -->
+                        <!-- Botón comparativo
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-comparativo-{{$item->id}}" data-tooltip-trigger="hover"
                                 onclick="listComparativo({{$item->id}})" x-data=""
@@ -300,7 +300,7 @@
                                 Despachos Vs Cotizacion
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
-                        </div>
+                        </div>-->
 
                         <!-- Botón despachos -->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">

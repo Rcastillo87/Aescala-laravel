@@ -55,6 +55,11 @@ class SolicitudMaterial extends Model
         return $this->hasMany(SolicitudItems::class, 'id_solicitud', 'id');
     }
 
+    public function cotizacion()
+    {
+        return $this->hasMany(Cotizacion::class, 'id_solicitud', 'id');
+    }
+
     public function despachado()
     {
         return $this->hasMany(Despachos::class, 'id_solicitud', 'id');
@@ -73,7 +78,7 @@ class SolicitudMaterial extends Model
     public function getTotalItemsEntregadoAttribute()
     {
         return $this->despachado()->sum('cantidad');
-    }   
+    }
 
     public function getEstadoItemsAttribute()
     {
@@ -85,5 +90,5 @@ class SolicitudMaterial extends Model
 
         return implode('', $arr);
     }
-    
+
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\SolicitudMaterial;
 use App\Models\InventarioMaterial;
+use App\Models\Cotizacion;
 use App\Models\Proyecto;
 use App\Models\SolicitudItems;
 use App\Models\User;
@@ -29,7 +30,7 @@ class SolicitudController extends Controller
         $estadosItems = SolicitudItems::$estados;
 
         $title = 'Lista de Solicitud de Material';
-        $items = SolicitudMaterial::with(['proyecto', 'usuario'])
+        $items = SolicitudMaterial::with(['proyecto', 'usuario', 'cotizacion'])
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
                     $q->whereRaw('LOWER(nombre_proyecto) LIKE ?', ['%' . strtolower($nombre_proyecto) . '%']);
@@ -172,20 +173,28 @@ class SolicitudController extends Controller
                     'observacion'     => $validated['observacion'] ?? null,
                 ]);
                 foreach ($validated['materiales'] as $material) {
-                    $itemMaterial = InventarioMaterial::find($material['id_material']);
-                    SolicitudItems::create([
-                        'id_solicitud' => $solicitud->id,
-                        'id_material'  => $material['id_material'],
-                        'cantidad'     => $material['cantidad'],
-                        'cantidad_solicitada' => $material['cantidad'],
-                        'estado'       => 1,
-                        'aprobado'     => $itemMaterial->aprobar == 1 ? 0 : 1,
-                    ]);
+                    if($validated['cotizar'] == 1){
+                        Cotizacion::create([
+                            'id_solicitud' => $solicitud->id,
+                            'id_material'  => $material['id_material'],
+                            'cantidad'     => $material['cantidad']
+                        ]);
+                    } else {
+                        $itemMaterial = InventarioMaterial::find($material['id_material']);
+                        SolicitudItems::create([
+                            'id_solicitud' => $solicitud->id,
+                            'id_material'  => $material['id_material'],
+                            'cantidad'     => $material['cantidad'],
+                            'cantidad_solicitada' => $material['cantidad'],
+                            'estado'       => 1,
+                            'aprobado'     => $itemMaterial->aprobar == 1 ? 0 : 1,
+                        ]);
+                    }
                 }
             });
             return response()->json([
                 'status' => true,
-                'message' => 'Solicitud registrada correctamente',
+                'message' => ($validated['cotizar'] == 1)? 'Cotizacion registrada correctamente' : 'Solicitud registrada correctamente',
             ], 200);
         } catch (\Throwable $e) {
             return response()->json([
@@ -410,8 +419,8 @@ class SolicitudController extends Controller
 
     public function delete($id){
         $item =  SolicitudMaterial::find($id);
-        if($item && ($item->estado != 1)){
-            return back()->with('error', 'Solo se pueden eliminar Solicitudes de Material en estado "Nuevo".');
+        if($item && !($item->estado == 1 || $item->estado == 4)){
+            return back()->with('error', 'Solo se pueden eliminar Solicitudes de Material en estado "Nuevo" o "Cotizacion".');
         }
         $item->items()->delete();
         $item->delete();

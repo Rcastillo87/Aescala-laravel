@@ -17,20 +17,19 @@ class Cotizacion extends Model
 
     protected $fillable = [
         'cantidad',
-        'valor_unidad',
-        'id_proyecto',
-        'id_inventario'
+        'id_material',
+        'id_solicitud'
     ];
-
-    // Relación con el modelo Proyecto
-    public function proyecto()
-    {
-        return $this->belongsTo(Proyecto::class, 'id_proyecto');
-    }
 
     // Relación con el modelo InventarioMaterial
     public function material()
     {
         return $this->belongsTo(InventarioMaterial::class, 'id_inventario');
     }
+
+    public function solicitud()
+    {
+        return $this->belongsTo(SolicitudMaterial::class, 'id_inventario');
+    }
+
 }
