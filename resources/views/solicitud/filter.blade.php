@@ -24,28 +24,28 @@
 
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_proyecto" :value="__('Nombre Proyecto')" />
-                        <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')" 
+                        <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')"
                          autofocus />
                     </div>
-                    @if (Auth::user()->isAdmin || Auth::user()->isAnalista) 
+                    @if (Auth::user()->isAdmin || Auth::user()->isAnalista)
                         <div class="p-2 shrink-0 w-[40]">
                             <x-input-label for="id_userSerch" :value="__('Quien Solicita')" />
-                            <x-select-input 
-                                name="id_userSerch" 
+                            <x-select-input
+                                name="id_userSerch"
                                 :data="['id', 'nombre_completo']"
-                                :options="$userColab" 
-                                :selected="Request('id_userSerch')" 
-                                class="block mt-1 w-full" 
+                                :options="$userColab"
+                                :selected="Request('id_userSerch')"
+                                class="block mt-1 w-full"
                             />
                         </div>
                     @endif
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado" :value="__('Estado Solicitud')" />
-                        <x-select-input 
+                        <x-select-input
                             name="id_estado"
-                            :options="$estados" 
-                            :selected="Request('id_estado')" 
-                            class="block mt-1 w-full" 
+                            :options="$estados"
+                            :selected="Request('id_estado')"
+                            class="block mt-1 w-full"
                         />
                     </div>
 
@@ -58,27 +58,58 @@
                     @endphp
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado_item" :value="__('Estado Item')" />
-                        <x-select-input 
+                        <x-select-input
                             name="id_estado_item"
-                            :options="$arr" 
-                            :selected="Request('id_estado_item')" 
-                            class="block mt-1 w-full" 
+                            :options="$arr"
+                            :selected="Request('id_estado_item')"
+                            class="block mt-1 w-full"
                         />
                     </div>
+
+                @php
+                    $depts = json_decode($departamentos, true)
+                @endphp
+                <div class="p-2 shrink-0 w-[40]">
+                    <x-input-label for="departamento" :value="__('Departamento')" />
+                    <x-select-input
+                        name="departamento"
+                        id="departamento"
+                        :options="$depts"
+                        :data="['id', 'departamento']"
+                        :selected="Request('departamento')"
+                        class="block mt-1 w-full"
+                        required
+                    />
+                    <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
+                </div>
+                <div class="p-2 shrink-0 w-[40]">
+                    <x-input-label for="ciudad" :value="__('Ciudad')" />
+                    <x-select-input
+                        name="ciudad"
+                        id="ciudad"
+                        :selected="Request('ciudad')"
+                        class="block mt-1 w-full"
+                        required
+                    />
+                    <x-input-error :messages="$errors->get('ciudad')" class="mt-2" />
+                </div>
+
+
+
 
                     <!--<div class="w-full max-w-full px-2 pt-10 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <input type="hidden" name="aprobar" value="0">
                         <label class="inline-flex items-center cursor-pointer">
-                            <input 
-                                type="checkbox" 
-                                name="aprobar" 
-                                value="1" 
+                            <input
+                                type="checkbox"
+                                name="aprobar"
+                                value="1"
                                 class="sr-only peer"
                                 {{ old('aprobar', $material->aprobar ?? false) ? 'checked' : '' }}
                             >
-                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer 
-                                dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute 
-                                after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer
+                                dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute
+                                after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600
                                 peer-checked:bg-blue-600"></div>
                             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
                                 Requiere aprobacion
@@ -95,7 +126,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                             </svg>
                         </button>
-                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 
+                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900
                             bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip ">
                             Buscar
                             <div class="tooltip-arrow" data-popper-arrow></div>

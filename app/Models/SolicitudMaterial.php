@@ -52,7 +52,7 @@ class SolicitudMaterial extends Model
 
     public function items()
     {
-        return $this->hasMany(SolicitudItems::class, 'id_solicitud', 'id');
+        return $this->hasMany(SolicitudItems::class, 'id_solicitud');
     }
 
     public function cotizacion()

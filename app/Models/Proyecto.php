@@ -25,6 +25,7 @@ class Proyecto extends Model
         'departamento',
         'ciudad',
         'direccion',
+        'ubicacion',
         'cedula_cliente',
         'tipo_doc_cliente',
         'nombre_cliente',
@@ -70,6 +71,17 @@ class Proyecto extends Model
         5 => 'Posventas',
         6 => 'Borrar Firma',
         7 => 'Diseño'
+    ];
+
+    public static $ubicacion = [
+        0 => 'Norte',
+        1 => 'Sur',
+        2 => 'Este (Oriente)',
+        3 => 'Oeste (Occidente)',
+        4 => 'Noreste (Entre el Norte y el Este)',
+        5 => 'Noroeste (Entre el Norte y el Oeste)',
+        6 => 'Sureste (Entre el Sur y el Este)',
+        7 => 'Suroeste (Entre el Sur y el Oeste)'
     ];
 
     public static $estado0 = [

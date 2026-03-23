@@ -43,7 +43,7 @@ class Despachos extends Model
         do {
             $codigo = strtoupper(Str::random(10)); // GUID de 10 caracteres
         } while (self::where('codigo', $codigo)->exists());
-        
+
         return $codigo;
     }
 
@@ -98,8 +98,8 @@ class Despachos extends Model
     public function despachos(int $id, $codigo = null, $cobro = null)
     {
 
-        $rawDate = config('database.default') === 'sqlite' 
-        ? "strftime('%Y-%m-%d', createdAt)" 
+        $rawDate = config('database.default') === 'sqlite'
+        ? "strftime('%Y-%m-%d', createdAt)"
         : "DATE_FORMAT(createdAt, '%Y-%m-%d')";
 
         $lista =  self::with(['user', 'user_despacho'])

@@ -20,7 +20,7 @@ use App\Models\Festivos;
 
 class ComercialController extends Controller
 {
-    public function index( ) 
+    public function index( )
     {
         $year = date('Y');
         $festivos = new Festivos;
@@ -31,20 +31,17 @@ class ComercialController extends Controller
         $hoy = Carbon::today();
         $title = 'Proyectos con Cupo Reservado';
 
-        $items = Proyecto::when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) { 
+        $items = Proyecto::when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
             return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
         })
-        ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) { 
+        ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
             return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
         })
-        ->when(Request('telefono_cliente'), function ($query, $telefono_cliente) { 
+        ->when(Request('telefono_cliente'), function ($query, $telefono_cliente) {
             return $query->whereRaw('LOWER(telefono_cliente) LIKE LOWER(?)', ["%$telefono_cliente%"]);
         })
-        ->when(Request('direccion'), function ($query, $direccion) { 
+        ->when(Request('direccion'), function ($query, $direccion) {
             return  $query->whereRaw('LOWER(direccion) LIKE LOWER(?)', ["%$direccion%"]);
-        })
-        ->when(Auth::user()->isComer, function($query) {
-            return $query->where('id_user_comercial', Auth::id());
         })
         ->whereNull('id_estado')
         ->orderBy('id', 'desc')
@@ -55,7 +52,7 @@ class ComercialController extends Controller
         return view('comercial.index', compact('title', 'items', 'festivos', 'departamentos'));
     }
 
-    public function create() 
+    public function create()
     {
         $anterior = url()->previous();
         session(['comercial_url' => $anterior]);
@@ -94,7 +91,7 @@ class ComercialController extends Controller
                 }
                 $arrTx = implode('</li><li>', $arr);
                 $valor = 0;
-                $entregableProye .= 
+                $entregableProye .=
                     '<div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm" data-entregable-id="'.$value->id_entregable.'">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-bold text-lg text-[#242e68]">'.$value->entregable->nombre_estregable.'</h3>
@@ -125,7 +122,7 @@ class ComercialController extends Controller
             }
             $title = 'Editar Proyecto';
         }
-    
+
         $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
         $ciudades = [];
         if ($id && $proyecto) {
@@ -137,7 +134,9 @@ class ComercialController extends Controller
         }
         $entregables = Entregables::with('defaults')->orderBy('nombre_estregable', 'asc')->get()->toArray();
         $tipoDocs = Proyecto::$tipoDocumento;
-        return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs', 'entregables', 'entregableProye', 'valor', 'suma'));
+        $ubicacion = Proyecto::$ubicacion;
+        return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs',
+            'entregables', 'entregableProye', 'valor', 'suma', 'ubicacion'));
     }
 
     public function save(Request $req)
@@ -185,6 +184,7 @@ class ComercialController extends Controller
                 'entregables.*.valor' => ['required', 'integer', 'min:0'],
                 'entregables.*.items' => ['required', 'array'],
                 'entregables.*.items.*' => ['string', 'max:255'],
+                'ubicacion' => ['required', 'integer', Rule::in(array_keys(Proyecto::$ubicacion))],
             ]);
 
             $suma = $req->termino_1_por + $req->termino_2_por + $req->termino_3_por + $req->termino_4_por + $req->termino_5_por + $req->termino_6_por;
@@ -192,7 +192,7 @@ class ComercialController extends Controller
                 return response()->json([
                     'errors' => ['total_p_back' => ['La suma de los porcentajes debe ser exactamente 100.']]
                 ], 422);
-            }    
+            }
 
             if (($data['opcion']==1) && $req->img_firma) {
                 $data['id_estado'] = 2;
@@ -200,7 +200,7 @@ class ComercialController extends Controller
 
             $data['id_user_comercial'] = Auth::user()->id;
             $data['dias_contrato'] = $req->dias_trabajo;
-        
+
             DB::beginTransaction();
             $datosProyecto = collect($data)
                 ->except(['entregables'])

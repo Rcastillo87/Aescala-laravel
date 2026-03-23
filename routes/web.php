@@ -236,6 +236,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/saveSolicitud', [SolicitudController::class, 'saveSolicitud'])->name('saveSolicitud');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
         Route::delete('/delete/{id}', [SolicitudController::class, 'delete'])->name('delete');
+        Route::get('/PDFCotizacion/{id}', [CotizacionController::class, 'PDFCotizacion'])->name('PDFCotizacion');
+        Route::post('/solicitarCotizacion/{id}', [SolicitudController::class, 'solicitarCotizacion'])->name('solicitarCotizacion');
     });
 
 

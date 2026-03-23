@@ -39,10 +39,10 @@ function cargarItemsSolicitud(id) {
             let html = "";
             items.forEach(item => {
 
-                let bnt = item.codigo ? 
+                let bnt = item.codigo ?
                 `<div class="flex text-center justify-center">
                     <a tabindex="0" href="pdfDespacho?codigo=${item.codigo ?? ''}&id=${item.id_proyecto ?? ''}"
-                            class="tooltip flex items-center justify-center w-10 h-10 text-white bg-fuchsia-600 hover:bg-white hover:text-fuchsia-500 border-2 border-fuchsia-500 focus:ring-4 
+                            class="tooltip flex items-center justify-center w-10 h-10 text-white bg-fuchsia-600 hover:bg-white hover:text-fuchsia-500 border-2 border-fuchsia-500 focus:ring-4
                             focus:outline-none focus:ring-fuchsia-300 font-medium rounded-full text-sm dark:bg-fuchsia-400 dark:hover:bg-fuchsia-500 dark:focus:ring-fuchsia-500 cursor-pointer">
                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4"></path>
@@ -97,6 +97,88 @@ function confirmDelete(el) {
     }).then((result) => {
         if (result.isConfirmed) {
             el.closest('form').submit();
+        }
+    });
+}
+document.addEventListener("DOMContentLoaded", function() {
+    const departamentos = window.departamentos;
+
+    document.getElementById('departamento').addEventListener('change', function() {
+        let deptoId = this.value;
+        console.log(deptoId)
+        let ciudadSelect = document.getElementById('ciudad');
+        ciudadSelect.innerHTML = '<option value="">-- Seleccione --</option>';
+
+        if (deptoId !== "") {
+            let ciudades = departamentos.find(depto => depto.id == deptoId)?.ciudades || [];
+            ciudades.forEach((ciudad, index) => {
+                let option = document.createElement('option');
+                option.value = index;
+                option.textContent = ciudad;
+                ciudadSelect.appendChild(option);
+            });
+        }
+    });
+});
+
+
+function descargaLink(url) {
+    Swal.fire({
+        title: 'Generando PDF...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    setTimeout(() => {
+        window.open(url, '_blank');
+        Swal.close();
+    }, 800);
+}
+
+function solicitoCotizacion(route) {
+    Swal.fire({
+        title: '¿Desea despachar esta cotización?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, despachar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            Swal.fire({
+                title: 'Despachando...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch(route, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok) throw data;
+                return data;
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'OK',
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            })
+            .catch(err => {
+                Swal.fire('Error', err.message || 'Error inesperado', 'error');
+            });
         }
     });
 }

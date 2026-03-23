@@ -95,14 +95,14 @@
                         <p class="text-lg text-gray-500 font-bold">Telefono Cliente</p>
                         <span class="text-md text-black">{{$item->telefono_cliente}}</span>
                     </div>
-                    <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                    <!--<div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Total Estim. Proyecto</p>
                         <span class="text-md text-black">{{number_format($item->totalProyecto)}}$</span>
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Total Ingreso & Egreso</p>
                         <span class="text-md text-black">{{number_format( $item->totalFinanzas )}}$</span>
-                    </div>
+                    </div>-->
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Estado</p>
                         <span class="text-md text-black">{!! $item->span_estado !!}</span>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-full px-2">
-    <form method="POST" action="{{ route('comercial.save') }}" id="formComercial"> 
+    <form method="POST" action="{{ route('comercial.save') }}" id="formComercial">
         @csrf
         <div class="flex flex-wrap -mx-3">
 
@@ -10,13 +10,13 @@
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="nombre_cliente" :value="__('Nombre Cliente *')" />
-                <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="old('nombre_cliente', $proyecto?$proyecto->nombre_cliente:'')" 
+                <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="old('nombre_cliente', $proyecto?$proyecto->nombre_cliente:'')"
                 required autofocus />
                 <x-input-error :messages="$errors->get('nombre_cliente')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="tipo_doc_cliente" :value="__('Tipo Doc Cliente *')" />
-                <select name="tipo_doc_cliente" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
+                <select name="tipo_doc_cliente" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500
                     dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full" required>
                     <option value="">-- Seleccione --</option>
                     @foreach ($tipoDocs as $key => $value)
@@ -36,7 +36,7 @@
                 <x-text-input id="telefono_cliente" class="block mt-1 w-full" type="text" name="telefono_cliente" :value="old('telefono_cliente', $proyecto?$proyecto->telefono_cliente:'')" required/>
                 <x-input-error :messages="$errors->get('telefono_cliente')" class="mt-2" />
             </div>
-            
+
             <!-- Campo de firma -->
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label :value="__('Firma')" />
@@ -45,19 +45,19 @@
                 <div id="firma-preview"
                     class="border border-gray-300 rounded-lg w-full h-40 flex items-center justify-center bg-gray-50 overflow-hidden">
                     @if($proyecto && $proyecto->img_firma)
-                        <img src="{{ $proyecto->img_firma }}" 
-                            alt="Firma previa" 
+                        <img src="{{ $proyecto->img_firma }}"
+                            alt="Firma previa"
                             class="w-full h-full object-contain">
                     @else
                         <span class="text-gray-400">No se ha añadido firma</span>
                     @endif
                 </div>
 
-                <x-secondary-button class="my-2 py-1 px-1" 
-                    href="#" 
-                    data-tooltip-target="tooltip-hover-Entregable" 
-                    data-tooltip-trigger="hover" 
-                    x-data="" 
+                <x-secondary-button class="my-2 py-1 px-1"
+                    href="#"
+                    data-tooltip-target="tooltip-hover-Entregable"
+                    data-tooltip-trigger="hover"
+                    x-data=""
                     x-on:click="$dispatch('open-modal', 'firma-modal')"
                     >
                     Añadir / Editar Firma
@@ -77,66 +77,78 @@
             <input type="hidden" id="id" name="id" value="{{$proyecto?$proyecto->id:''}}">
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="nombre_proyecto" :value="__('Nombre Proyecto *')" />
-                <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" 
-                :value="old('nombre_proyecto', $proyecto?$proyecto->nombre_proyecto:'')" 
+                <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto"
+                :value="old('nombre_proyecto', $proyecto?$proyecto->nombre_proyecto:'')"
                 required autofocus />
                 <x-input-error :messages="$errors->get('nombre_proyecto')" class="mt-2" />
             </div>
-            @php
-                $depts = json_decode($departamentos, true)
-            @endphp
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="departamento" :value="__('Departamento *')" />
-                <x-select-input 
-                    name="departamento" 
+                <x-select-input
+                    name="departamento"
                     id="departamento"
-                    :options="$depts" 
+                    :options="$departamentos"
                     :data="['id', 'departamento']"
-                    :selected="old('departamento',$proyecto?$proyecto->departamento:'')" 
-                    class="block mt-1 w-full" 
+                    :selected="old('departamento',$proyecto?$proyecto->departamento:'')"
+                    class="block mt-1 w-full"
                     required
                 />
                 <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="ciudad" :value="__('Ciudad *')" />
-                <x-select-input 
-                    name="ciudad" 
+                <x-select-input
+                    name="ciudad"
                     id="ciudad"
                     :options="$ciudades"
-                    :selected="old('ciudad', $proyecto?$proyecto->ciudad:'')" 
-                    class="block mt-1 w-full" 
+                    :selected="old('ciudad', $proyecto?$proyecto->ciudad:'')"
+                    class="block mt-1 w-full"
                     required
                 />
                 <x-input-error :messages="$errors->get('ciudad')" class="mt-2" />
             </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="ubicacion" :value="__('Ubicación *')" />
+                <x-select-input
+                    name="ubicacion"
+                    id="ubicacion"
+                    :options="$ubicacion"
+                    :selected="old('ubicacion', $proyecto?$proyecto->ubicacion:'')"
+                    class="block mt-1 w-full"
+                    required
+                />
+                <x-input-error :messages="$errors->get('ubicacion')" class="mt-2" />
+            </div>
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="direccion" :value="__('Dirección *')" />
-                <x-text-input id="direccion" class="block mt-1 w-full" type="text" name="direccion" :value="old('direccion', $proyecto?$proyecto->direccion:'')" 
+                <x-text-input id="direccion" class="block mt-1 w-full" type="text" name="direccion" :value="old('direccion', $proyecto?$proyecto->direccion:'')"
                 required autofocus />
                 <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="dias_trabajo" :value="__('Días Duración del Proyecto *')" />
-                <x-text-input id="dias_trabajo" class="block w-full" type="number" 
+                <x-text-input id="dias_trabajo" class="block w-full" type="number"
                                 name="dias_trabajo" value="{{ old('dias_trabajo', $proyecto?->dias_trabajo ?? 1) }}"/>
                 <x-input-error :messages="$errors->get('dias_trabajo')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="area_privada" :value="__('Area Privada(mts cuadrados) *')" />
-                <x-text-input id="area_privada" class="block w-full" type="number" 
+                <x-text-input id="area_privada" class="block w-full" type="number"
                     min="0" step="any" name="area_privada" value="{{ old('area_privada', $proyecto?->area_privada ?? 0) }}"/>
                 <x-input-error :messages="$errors->get('area_privada')" class="mt-2" />
             </div>
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="descuento" :value="__('Descuento Aceptado por Gerencia')" />
-                <x-text-input id="descuento" class="block w-full" type="number" 
+                <x-text-input id="descuento" class="block w-full" type="number"
                     min="0" step="any" name="descuento" value="{{ old('descuento', $proyecto?->descuento ?? 0) }}"/>
                 <x-input-error :messages="$errors->get('descuento')" class="mt-2" />
             </div>
 
-            <div 
+            <div
                 x-data="{ acepta: {{ old('acepta_trata_datos', $proyecto?->acepta_trata_datos ?? 0) ? 'true' : 'false' }} }"
                 x-on:aceptar-tratamiento.window="acepta = true"
                 x-on:revocar-tratamiento.window="acepta = false"
@@ -146,15 +158,15 @@
                 <input type="hidden" name="acepta_trata_datos" :value="acepta ? 1 : 0">
 
                 <label class="inline-flex items-center space-x-2">
-                    <input 
+                    <input
                         type="checkbox"
                         x-model="acepta"
-                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
-                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
+                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500
                         dark:focus:ring-indigo-600 rounded-md shadow-sm"
                     >
 
-                    <button 
+                    <button
                         type="button"
                         class="text-blue-600 underline hover:text-blue-800"
                         x-on:click="$dispatch('open-modal', 'tratamiento-datos-modal')"
@@ -171,46 +183,46 @@
 
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                 <x-input-label for="termino_1_por" :value="__('Inicio de Diseño(%) *')" />
-                <x-text-input id="termino_1_por" class="block w-full" type="number" 
+                <x-text-input id="termino_1_por" class="block w-full" type="number"
                     min="0" step="any" name="termino_1_por" value="{{ old('termino_1_por', $proyecto?->termino_1_por ?? 30) }}"/>
                 <x-input-error :messages="$errors->get('termino_1_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                 <x-input-label for="termino_2_por" :value="__('Inicio de Obra-Blanca(%) *')" />
-                <x-text-input id="termino_2_por" class="block w-full" type="number" 
+                <x-text-input id="termino_2_por" class="block w-full" type="number"
                     min="0" step="any" name="termino_2_por" value="{{ old('termino_2_por', $proyecto?->termino_2_por ?? 20) }}"/>
                 <x-input-error :messages="$errors->get('termino_2_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                 <x-input-label for="termino_3_por" :value="__('Inicio Corte Carpinteria(%) *')" />
-                <x-text-input id="termino_3_por" class="block w-full" type="number" 
+                <x-text-input id="termino_3_por" class="block w-full" type="number"
                     min="0" step="any" name="termino_3_por" value="{{ old('termino_3_por', $proyecto?->termino_3_por ?? 30) }}"/>
                 <x-input-error :messages="$errors->get('termino_3_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                 <x-input-label for="termino_4_por" :value="__('Instalación Carpinteria(%) *')" />
-                <x-text-input id="termino_4_por" class="block w-full" type="number" 
+                <x-text-input id="termino_4_por" class="block w-full" type="number"
                     min="0" step="any" name="termino_4_por" value="{{ old('termino_4_por', $proyecto?->termino_4_por ?? 15) }}"/>
                 <x-input-error :messages="$errors->get('termino_4_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                 <x-input-label for="termino_5_por" :value="__('Instalación Accesorios(%) *')" />
-                <x-text-input id="termino_5_por" class="block w-full" type="number" 
+                <x-text-input id="termino_5_por" class="block w-full" type="number"
                     min="0" step="any" name="termino_5_por" value="{{ old('termino_5_por', $proyecto?->termino_5_por ?? 3) }}"/>
                 <x-input-error :messages="$errors->get('termino_5_por')" class="mt-2" />
             </div>
             <div class="w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                 <x-input-label for="termino_6_por" :value="__('Entrega de Obra(%) *')" />
-                <x-text-input id="termino_6_por" class="block w-full" type="number" 
+                <x-text-input id="termino_6_por" class="block w-full" type="number"
                     min="0" step="any" name="termino_6_por" value="{{ old('termino_6_por', $proyecto?->termino_6_por ?? 2) }}"/>
                 <x-input-error :messages="$errors->get('termino_6_por')" class="mt-2" />
             </div>
-            
+
             <div class="flex items-center gap-x-4 w-full max-w-full p-3 shrink-0 md:w-12/12 lg:w-6/12 2xl:w-4/12">
                 <label class="inline-flex items-center w-[30%] space-x-2">
                     <input type="hidden" name="opcion" id="opcion"  value="{{ old('opcion', $proyecto?->opcion ?? 0) }}">
-                    <input 
-                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
+                    <input
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500
                         dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                         type="checkbox"
                         id="checkOpcion"
@@ -220,11 +232,11 @@
                 </label>
                 <div id="inputExtra" class="{{ old('opcion', $proyecto?->opcion) == 1 ? '' : 'hidden' }} w-[70%]">
                     <x-input-label for="por_inicia" :value="__('Porcentaje de Inicio(%) *')" />
-                    <x-text-input 
-                        type="number" 
-                        value="{{ old('por_inicia', $proyecto?->por_inicia ?? '') }}" 
-                        name="por_inicia" 
-                        id="por_inicia" 
+                    <x-text-input
+                        type="number"
+                        value="{{ old('por_inicia', $proyecto?->por_inicia ?? '') }}"
+                        name="por_inicia"
+                        id="por_inicia"
                     />
                 </div>
             </div>
@@ -235,7 +247,7 @@
                 <h2 class="text-xl font-bold text-[#242e68]">Entregables</h2>
                 <div class="flex w-full items-center space-x-2">
                     <div class="py-1 shrink-0">
-                        <x-secondary-button class="my-2 py-1 px-1" href="#" data-tooltip-target="tooltip-hover-Entregable" data-tooltip-trigger="hover" 
+                        <x-secondary-button class="my-2 py-1 px-1" href="#" data-tooltip-target="tooltip-hover-Entregable" data-tooltip-trigger="hover"
                             x-data="" x-on:click="$dispatch('open-modal', 'entregable-modal')">
                             <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>

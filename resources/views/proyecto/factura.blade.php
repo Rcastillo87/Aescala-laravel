@@ -8,8 +8,8 @@
         @page {
             margin: 70px 25px 40px 25px;
         }
-        body { 
-            font-family: Arial, sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             font-size: 11px;
             line-height: 1.3;
             padding: 0;
@@ -27,54 +27,54 @@
             margin-bottom: 10px;
             border-bottom: 1px solid #969292;
         }
-        .logo { 
+        .logo {
             max-width: 100%;
             height: auto;
             width: 180px;
             max-height: 60px;
-            object-fit: contain; 
+            object-fit: contain;
         }
-        .info-empresa { 
+        .info-empresa {
             text-align: right;
             font-size: 10px;
             line-height: 1.2;
         }
-        .titulo { 
-            text-align: center; 
-            margin: 20px 0 15px 0; 
-            font-size: 16px; 
+        .titulo {
+            text-align: center;
+            margin: 20px 0 15px 0;
+            font-size: 16px;
             font-weight: bold;
         }
         .info-box {
             padding: 3px 0;
         }
-        .tabla-despachos { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 10px; 
+        .tabla-despachos {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
             font-size: 10px;
         }
-        .tabla-despachos th, .tabla-despachos td { 
-            border: 1px solid #ddd; 
-            padding: 5px; 
-            text-align: left; 
+        .tabla-despachos th, .tabla-despachos td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: left;
         }
-        .tabla-despachos th { 
-            background-color: #f2f2f2; 
-            font-weight: bold; 
+        .tabla-despachos th {
+            background-color: #f2f2f2;
+            font-weight: bold;
         }
-        .tabla-items { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 10px; 
+        .tabla-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
             font-size: 9.5px;
         }
-        .tabla-items th, .tabla-items td { 
-            border: 1px solid #ddd; 
-            padding: 4px; 
+        .tabla-items th, .tabla-items td {
+            border: 1px solid #ddd;
+            padding: 4px;
         }
-        .tabla-items th { 
-            background-color: #f8f8f8; 
+        .tabla-items th {
+            background-color: #f8f8f8;
         }
         /* ✅ SOLUCIÓN: thead se repite en cada página si la tabla se corta */
         .tabla-items thead {
@@ -85,13 +85,13 @@
             page-break-inside: avoid;
             break-inside: avoid;
         }
-        .resumen { 
+        .resumen {
             /* ✅ El resumen final nunca se parte */
             page-break-inside: avoid;
             break-inside: avoid;
-            border-top: 2px solid #333; 
-            margin-top: 15px; 
-            padding-top: 0px; 
+            border-top: 2px solid #333;
+            margin-top: 15px;
+            padding-top: 0px;
         }
         .despacho-section {
             /* ✅ REMOVIDO: ya no forzamos que todo el bloque evite el salto */
@@ -111,9 +111,9 @@
             page-break-before: avoid;
             break-before: avoid;
         }
-        .totales { 
-            text-align: right; 
-            margin-top: 10px; 
+        .totales {
+            text-align: right;
+            margin-top: 10px;
         }
         .footer {
             position: fixed;
@@ -127,16 +127,16 @@
             border-top: 1px solid #eee;
             padding-top: 5px;
         }
-        .span-green { 
-            color: #28a745; 
-            font-weight: bold; 
+        .span-green {
+            color: #28a745;
+            font-weight: bold;
         }
-        .span-red { 
-            color: #dc3545; 
-            font-weight: bold; 
+        .span-red {
+            color: #dc3545;
+            font-weight: bold;
         }
-        .page-break { 
-            page-break-after: always; 
+        .page-break {
+            page-break-after: always;
         }
         .despacho-header {
             background-color: #f2f2f2;
@@ -147,6 +147,16 @@
     </style>
 </head>
 <body>
+    @if($cotizacion)
+        <img src="{{ public_path('img/watermark.png') }}"
+            style="
+                position: fixed;
+                top: 30%;
+                left: 10%;
+                width: 80%;
+                opacity: 0.3;
+            ">
+    @endif
     <!-- Encabezado que se repetirá en cada página -->
     <div class="header" style="display: table; width: 100%;">
         <div style="display: table-cell; vertical-align: middle; width: 50%;">
@@ -168,7 +178,7 @@
 
     <!-- Contenido principal -->
     <div class="titulo">
-        REPORTE DE DESPACHOS - PROYECTO {{ $proyecto['nombre_proyecto'] }}
+        REPORTE DE {{$cotizacion? 'COTIZACION' : 'DESPACHOS'}} - PROYECTO {{ $proyecto['nombre_proyecto'] }}
     </div>
 
     <!-- Información del cliente en dos columnas -->
@@ -202,9 +212,9 @@
             {{-- ✅ Header + info del despacho: se mantienen unidos y NO se separan de lo que sigue --}}
             <div class="despacho-header-block">
                 <div class="despacho-header">
-                    {!! $desp['spanEstado'] !!} #{{ $loop->iteration }}: {{ $desp['codigo'] }} 
+                    {!! $desp['spanEstado'] !!} #{{ $loop->iteration }}: {{ $desp['codigo'] }}
                 </div>
-                
+
                 <table width="100%" style="margin-bottom:8px;">
                     <tr>
                         <td width="33%" valign="top">
@@ -256,13 +266,13 @@
                     @endforeach
                 </tbody>
             </table>
-            
+
             @php
                 $subtotalDespacho = array_reduce($desp['items'], function($carry, $item) {
                     return $carry + ($item['cantidad'] * $item['valor_unidad']);
                 }, 0);
             @endphp
-            
+
             {{-- ✅ El subtotal no se separa de la tabla --}}
             <div class="despacho-subtotal" style="text-align: right; margin-top: 3px;">
                 <div><strong>Subtotal Despacho:</strong> ${{ number_format($subtotalDespacho, 2, ',', '.') }}</div>
@@ -276,26 +286,26 @@
             $totalDespachos = 0;
             $totalDevoluciones = 0;
             $ivaPercentage = env('IVA_PERCENTAGE', 0);
-            
+
             foreach($despacho as $desp) {
                 $subtotal = array_reduce($desp['items'], function($carry, $item) {
                     return $carry + ($item['cantidad'] * $item['valor_unidad']);
                 }, 0);
-                
+
                 if (strpos($desp['spanEstado'], 'Devolucion') !== false) {
                     $totalDevoluciones += $subtotal;
                 } else {
                     $totalDespachos += $subtotal;
                 }
             }
-            
+
             $subtotalGeneral = $totalDespachos - $totalDevoluciones;
             $iva = $subtotalGeneral * ($ivaPercentage / 100);
             $totalGeneral = $subtotalGeneral + $iva;
         @endphp
-        
+
         <h3 style="margin-bottom: 8px; font-size: 12px;">Resumen General</h3>
-        
+
         <table class="tabla-despachos">
             <tbody>
                 <tr>
@@ -369,6 +379,6 @@
         </table>
 
     </div>
-
 </body>
+
 </html>

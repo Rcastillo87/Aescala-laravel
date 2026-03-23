@@ -20,6 +20,16 @@
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {{ $item->proyecto->nombre_proyecto }}
                         </td>
+
+                        @php
+                            $depts = json_decode($departamentos, true)
+                        @endphp
+                        <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
+                            {{$depts[intval($item->proyecto->departamento)]['departamento']}} -
+                            {{$depts[intval($item->proyecto->departamento)]['ciudades'][intval($item->proyecto->ciudad)]}} -
+                            {{ $item->proyecto->ubicacion !== null ? ($ubicacion[$item->proyecto->ubicacion] ?? 'N/A') : 'N/A' }}
+                        </td>
+
                         @if (Auth::User()->isAdmin || Auth::user()->isAnalista)
                             <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                                 {{ $item->usuario->nombre_completo }}
@@ -42,10 +52,6 @@
 
                         <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             {!! $item->estadoItems !!}
-                        </td>
-
-                        <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ $item->observacion }}
                         </td>
 
                         <td class="py-2 bg-transparent border-b dark:border-white/40 shadow-transparent flex items-center justify-center">
@@ -75,6 +81,7 @@
                                 <a tabindex="0"
                                     data-tooltip-target="tooltip-cotizacion-{{$item->id}}"
                                     data-tooltip-trigger="hover"
+                                    onclick="descargaLink('{{Route('solicitud.PDFCotizacion', $item->id)}}?view=1')"
                                     class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4
                                             focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer me-2">
                                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -91,6 +98,7 @@
                                 <a tabindex="0"
                                     data-tooltip-target="tooltip-cotsol-{{$item->id}}"
                                     data-tooltip-trigger="hover"
+                                    onclick="solicitoCotizacion('{{Route('solicitud.solicitarCotizacion', $item->id)}}')"
                                     class="flex items-center justify-center w-10 h-10 text-white bg-gray-700 hover:bg-white hover:text-gray-800 border-2 border-gray-800 focus:ring-4
                                             focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 cursor-pointer me-2">
                                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -140,7 +148,7 @@
                                 </div>
                             @endif
 
-                            @if (($item->estado == 2 || $item->estado == 4) && !Auth::user()->isAnalista)
+                            @if (($item->estado == 1 || $item->estado == 4) && !Auth::user()->isAnalista)
                                 <div class="relative">
                                     <form action="{{ route('solicitud.delete', $item->id) }}" method="POST">
                                         @csrf
@@ -185,5 +193,8 @@
 @endsection
 
 @section('scripts')
+    <script>
+        window.departamentos = @json(json_decode($departamentos));
+    </script>
     <script src="{{ asset('js/solicitud/index.js') }}?v={{ filemtime(public_path('js/solicitud/index.js')) }}"></script>
 @endsection

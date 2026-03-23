@@ -56,6 +56,14 @@ class SolicitudController extends Controller
                     }
                 });
             })
+            ->when(request('departamento') !== null, function ($query) {
+                $query->whereHas('proyecto', function ($q) {
+                    $q->where('departamento', request('departamento'))
+                    ->when(request('ciudad') !== null, function ($q2) {
+                        $q2->where('ciudad', request('ciudad'));
+                    });
+                });
+            })
             ->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista), function ($query) {
                 $query->where('id_user', Auth::User()->id);
             })
@@ -73,11 +81,15 @@ class SolicitudController extends Controller
         $estados = SolicitudMaterial::$estados;
         $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
-        $headers = ['Nombre del Proyecto', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Observacion', 'Opciones'];
+        $ubicacion = Proyecto::$ubicacion;
+        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
+        //$departamentos = json_decode($departamentos, true);
+
+        $headers = ['Nombre del Proyecto', 'Ubicación', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Opciones'];
         if(!(Auth::User()->isAdmin || Auth::user()->isAnalista)) {
             $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
-        return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'estadosItems', 'userColab'));
+        return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'estadosItems', 'userColab', 'ubicacion', 'departamentos'));
     }
 
     public function create( )
@@ -423,7 +435,38 @@ class SolicitudController extends Controller
             return back()->with('error', 'Solo se pueden eliminar Solicitudes de Material en estado "Nuevo" o "Cotizacion".');
         }
         $item->items()->delete();
+        $item->cotizacion()->delete();
         $item->delete();
         return redirect()->route('solicitud.index')->with('success', " Solicitudes de Material eliminada con exito");
+    }
+
+    public function solicitarCotizacion($id)
+    {
+        try {
+            DB::transaction(function () use ($id) {
+                $solicitud = SolicitudMaterial::with('cotizacion')->findOrFail($id);
+                $solicitud->update(['estado' => 1]);
+                foreach ($solicitud->cotizacion as $material) {
+                    $itemMaterial = InventarioMaterial::find($material->id_material);
+                    SolicitudItems::create([
+                        'id_solicitud' => $solicitud->id,
+                        'id_material'  => $material->id_material,
+                        'cantidad'     => $material->cantidad,
+                        'cantidad_solicitada' => $material->cantidad,
+                        'estado'       => 1,
+                        'aprobado'     => $itemMaterial && $itemMaterial->aprobar == 1 ? 0 : 1,
+                    ]);
+                }
+            });
+            return response()->json([
+                'success' => true,
+                'message' => 'Cotización despachada'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al despachar'
+            ], 500);
+        }
     }
 }
