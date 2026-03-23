@@ -18,6 +18,7 @@ class Festivos extends Model
     protected $fillable = [
         'date',
         'name',
+        'comentario'
     ];
 
     /**
@@ -95,7 +96,7 @@ class Festivos extends Model
         $inicio = Carbon::parse($fechaInicio);
         $fin = Carbon::parse($fechaFin);
         $diasHabiles = 0;
-        
+
         if (is_null($festivos)) {
             $festivos = self::pluck('date')->map(function ($date) {
                 return Carbon::parse($date)->toDateString();

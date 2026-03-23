@@ -79,11 +79,10 @@ class SolicitudController extends Controller
             ->get();
 
         $estados = SolicitudMaterial::$estados;
-        $userColab = User::where('id_rol', 3)->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
+        $userColab = User::whereIn('id_rol', [3, 9])->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
         $ubicacion = Proyecto::$ubicacion;
         $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
-        //$departamentos = json_decode($departamentos, true);
 
         $headers = ['Nombre del Proyecto', 'Ubicación', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Opciones'];
         if(!(Auth::User()->isAdmin || Auth::user()->isAnalista)) {

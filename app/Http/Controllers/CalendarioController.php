@@ -38,7 +38,6 @@ class CalendarioController extends Controller
     {
         $year = (int) $request->query('year', now()->year);
 
-        // Intentar descargar festivos si no existen aún
         $modelFestivos = new Festivos();
         try {
             $modelFestivos->festivos($year);
@@ -85,14 +84,13 @@ class CalendarioController extends Controller
                 'dayName'     => $this->nombreDia($dow),
                 'dayOfWeek'   => $dow,
                 'tipo'        => $tipo,
-                'festivoName' => $reg ? $reg->name : null,
+                // Para festivos oficiales mostramos su nombre; para no_labora mostramos el comentario
+                'festivoName' => $reg ? ($this->esNoLabora($reg) ? $reg->comentario : $reg->name) : null,
                 'festivoId'   => $reg ? $reg->id   : null,
-                // isPast: días ANTERIORES a hoy (hoy no se incluye como pasado)
                 'isPast'      => $fecha->lt(Carbon::today()),
                 'isToday'     => $fecha->isToday(),
-                // editable: hoy en adelante, no domingos, no festivos oficiales
                 'editable'    => $this->esEditable($dow, $reg, $fecha),
-                'vacacion'    => $reg && strtolower($reg->name) === 'vacaciones',
+                'noLabora'    => $reg && $this->esNoLabora($reg),
             ];
         }
 
@@ -107,10 +105,13 @@ class CalendarioController extends Controller
         ]);
     }
 
-    // ─── AJAX: marcar día como vacación ───────────────────────────────
-    public function marcarVacacion(Request $request)
+    // ─── AJAX: marcar día como no laboral ─────────────────────────────
+    public function marcarNoLaboral(Request $request)
     {
-        $request->validate(['date' => 'required|date']);
+        $request->validate([
+            'date'       => 'required|date',
+            'comentario' => 'required|string|max:255',
+        ]);
 
         $fecha = Carbon::parse($request->date);
 
@@ -120,27 +121,28 @@ class CalendarioController extends Controller
 
         $dow = $fecha->dayOfWeek;
         if ($dow === Carbon::SUNDAY) {
-            return response()->json(['error' => 'Los domingos no se pueden marcar como vacación.'], 422);
+            return response()->json(['error' => 'Los domingos no se pueden marcar como día no laboral.'], 422);
         }
 
         $reg = Festivos::where('date', $fecha->toDateString())->first();
-        if ($reg && strtolower($reg->name) !== 'vacaciones') {
+        if ($reg && !$this->esNoLabora($reg)) {
             return response()->json(['error' => 'Este día ya es un festivo oficial.'], 422);
         }
-        if ($reg) {
-            return response()->json(['message' => 'Ya es vacación.']);
+        if ($reg && $this->esNoLabora($reg)) {
+            return response()->json(['message' => 'Ya es día no laboral.']);
         }
 
         Festivos::create([
-            'date' => $fecha->toDateString(),
-            'name' => 'Vacaciones',
+            'date'       => $fecha->toDateString(),
+            'name'       => 'Día no labora',
+            'comentario' => $request->comentario,
         ]);
 
-        return response()->json(['message' => 'Día marcado como vacación.']);
+        return response()->json(['message' => 'Día marcado como no laboral.']);
     }
 
-    // ─── AJAX: quitar vacación ─────────────────────────────────────────
-    public function quitarVacacion(Request $request)
+    // ─── AJAX: quitar día no laboral ──────────────────────────────────
+    public function quitarNoLaboral(Request $request)
     {
         $request->validate(['date' => 'required|date']);
 
@@ -151,14 +153,14 @@ class CalendarioController extends Controller
         }
 
         $eliminados = Festivos::where('date', $fecha->toDateString())
-            ->where('name', 'Vacaciones')
+            ->where('name', 'Día no labora')
             ->delete();
 
         if ($eliminados === 0) {
-            return response()->json(['error' => 'No se encontró una vacación en esa fecha.'], 422);
+            return response()->json(['error' => 'No se encontró un día no laboral en esa fecha.'], 422);
         }
 
-        return response()->json(['message' => 'Vacación eliminada correctamente.']);
+        return response()->json(['message' => 'Día no laboral eliminado correctamente.']);
     }
 
     // ─── Helpers privados ─────────────────────────────────────────────
@@ -167,10 +169,10 @@ class CalendarioController extends Controller
     {
         $total      = Carbon::create($year, $month)->daysInMonth;
         $trabajados = 0;
-        $sabados    = 0;
+        $sabados    = 0;   // sábados normales (no marcados como no laboral)
         $domingos   = 0;
-        $festivos   = 0;   // solo festivos oficiales (NO vacaciones)
-        $vacaciones = 0;
+        $festivos   = 0;   // festivos oficiales
+        $noLabora   = 0;   // días no laborales marcados manualmente
 
         $regMes = $registrosAnio->filter(
             fn($r) => Carbon::parse($r->date)->month === $month
@@ -189,19 +191,21 @@ class CalendarioController extends Controller
                 'sabado'    => $sabados++,
                 'domingo'   => $domingos++,
                 'festivo'   => $festivos++,
-                'vacacion'  => $vacaciones++,
+                'no_labora' => $noLabora++,
                 default     => null,
             };
         }
 
-        return compact('trabajados', 'sabados', 'domingos', 'festivos', 'vacaciones');
+        // sabados/2 redondeado a 1 decimal (sin incluir sábados no laborales)
+        $sabadosMedia = round($sabados / 2, 1);
+
+        return compact('trabajados', 'sabados', 'sabadosMedia', 'domingos', 'festivos', 'noLabora');
     }
 
     private function tipoDia(int $dow, $reg): string
     {
         if ($reg) {
-            // Vacaciones tienen su propio tipo, distinto de festivo
-            if (strtolower($reg->name) === 'vacaciones') return 'vacacion';
+            if ($this->esNoLabora($reg)) return 'no_labora';
             return 'festivo';
         }
         if ($dow === Carbon::SUNDAY)   return 'domingo';
@@ -209,14 +213,17 @@ class CalendarioController extends Controller
         return 'trabajado';
     }
 
+    private function esNoLabora($reg): bool
+    {
+        return $reg && strtolower($reg->name) === 'día no labora';
+    }
+
     private function esEditable(int $dow, $reg, Carbon $fecha): bool
     {
-        // Días estrictamente pasados (antes de hoy) → no editables
         if ($fecha->lt(Carbon::today())) return false;
-        // Domingos → no editables
         if ($dow === Carbon::SUNDAY) return false;
-        // Festivos oficiales (no vacaciones) → no editables
-        if ($reg && strtolower($reg->name) !== 'vacaciones') return false;
+        // Festivos oficiales (no "no labora") → no editables
+        if ($reg && !$this->esNoLabora($reg)) return false;
         return true;
     }
 

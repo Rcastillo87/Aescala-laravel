@@ -34,5 +34,7 @@ CREATE TABLE georreferencias (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-
 ALTER TABLE aescala.proyectos ADD ubicacion INT NULL;
+ALTER TABLE aescala.dias_festivos ADD comentario TEXT NULL;
+
+
