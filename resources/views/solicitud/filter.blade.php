@@ -78,7 +78,6 @@
                         :data="['id', 'departamento']"
                         :selected="Request('departamento')"
                         class="block mt-1 w-full"
-                        required
                     />
                     <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
                 </div>
@@ -89,7 +88,6 @@
                         id="ciudad"
                         :selected="Request('ciudad')"
                         class="block mt-1 w-full"
-                        required
                     />
                     <x-input-error :messages="$errors->get('ciudad')" class="mt-2" />
                 </div>
