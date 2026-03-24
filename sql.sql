@@ -37,4 +37,11 @@ CREATE TABLE georreferencias (
 ALTER TABLE aescala.proyectos ADD ubicacion INT NULL;
 ALTER TABLE aescala.dias_festivos ADD comentario TEXT NULL;
 
-
+CREATE TABLE aescala.dias_no_laboradosxproy (
+	id_proyecto BIGINT NOT NULL,
+	dia DATE NOT NULL,
+	detalle TEXT NOT NULL
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;

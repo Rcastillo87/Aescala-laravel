@@ -248,7 +248,7 @@ class Proyecto extends Model
     public function diasHabilesTrascurridos($hoy, $diasFestivos)
     {
         $festivos = new Festivos();
-        return $festivos->contarDiasHabiles($this->fec_inicio, $hoy, $diasFestivos);
+        return $festivos->contarDiasHabiles($this->fec_inicio, $hoy, $diasFestivos, $this->id);
     }
 
     public function getFecIniAttribute()

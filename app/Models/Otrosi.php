@@ -76,7 +76,7 @@ class Otrosi extends Model
     public function getOtroSiAttribute()
     {
         $dptArray = json_decode(
-            file_get_contents(storage_path('json/jsonCityColombia.json')), 
+            file_get_contents(storage_path('json/jsonCityColombia.json')),
             true
         );
 
@@ -112,7 +112,9 @@ class Otrosi extends Model
             $arr[$area]["subtotal"] += $item->valor * $item->cantidad;
         }
 
-        $carbon = Carbon::now()->locale('es');
+        //$carbon = Carbon::now()->locale('es');
+        $carbon = Carbon::parse($this->fecha_firma);
+        $carbon->locale('es');
         $fechaOtroSi = $carbon->translatedFormat('d \d\e F \d\e Y');
 
         $path = public_path('img/firmaRepre.png');
@@ -164,7 +166,7 @@ class Otrosi extends Model
 
     public function getApazAttribute()
     {
-        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>': 
+        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>':
             '<span class="span-red">NO</span>';
     }
 

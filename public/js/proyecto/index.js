@@ -254,58 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-async function listFinanzas(page = 1, id) {
-    try {
-        const response = await fetch(`listFinanzas/?page=${page}&id=${id}`, {
-            method: "GET",
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-                "Content-Type": "application/json"
-            }
-        });
-        const data = await response.json();
-        document.getElementById('id_proyecto_finanza').value = id;
-        tableFinanzas(data.data);
-    } catch (error) {
-        Swal.fire("Error", "No se pudo consultar la data.", "error");
-    }
-}
-
-function tableFinanzas(data) {
-    const serviceList = document.getElementById('serviceFinanzas');
-    const pagination = document.getElementById('pagination');
-    const noDataMessage = document.getElementById('noDataMessage');
-
-    serviceList.innerHTML = '';
-    pagination.innerHTML = '';
-
-    if (data.data && data.data.length > 0) {
-        data.data.forEach(service => {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.spanTipo}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.concepto.toLowerCase() || 'N/A'}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.valor) }</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatFecha(service.createdAt)}</td>
-            `;
-            serviceList.appendChild(fila);
-        });
-
-        const paginationLinks = data.links.map(link => {
-            if (link.url) {
-                const page = new URL(link.url).searchParams.get('page') || 1;
-                return `<a href="#" onclick="listFinanzas(${page}, ${id})" class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</a>`;
-            }
-            return `<span class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</span>`;
-        }).join('');
-        pagination.innerHTML = paginationLinks;
-
-        noDataMessage.classList.add('hidden');
-    } else {
-        noDataMessage.classList.remove('hidden');
-    }
-}
-
 async function openAvance(page = 1, id) {
     try {
         const response = await fetch(`listAvances/?page=${page}&id=${id}`, {
@@ -459,163 +407,6 @@ function confirmDelete(id) {
                 }
             } catch (error) {
                 Swal.fire("Error", "No se pudo eliminar la data.", "error");
-            }
-        }
-    });
-}
-
-async function listaCotizacion(page = 1, id) {
-    try {
-        const response = await fetch(`listaCotizacion/?page=${page}&id=${id}`, {
-            method: "GET",
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-                "Content-Type": "application/json"
-            }
-        });
-        const data = await response.json();
-        document.getElementById('id_proyecto_cotizacion').value = id;
-        tableCotizacion(data.data);
-    } catch (error) {
-        Swal.fire("Error", "No se pudo consultar la data.", "error");
-    }
-}
-
-function tableCotizacion(data) {
-    const serviceList = document.getElementById('listaCotizacion');
-    const pagination = document.getElementById('paginationCotizacion');
-    const noDataMessage = document.getElementById('noDataMessageCotizacion');
-    const totalCotizacion = document.getElementById('totalCotizacion');
-    totalCotizacion.classList.add('hidden');
-
-    serviceList.innerHTML = '';
-    pagination.innerHTML = '';
-    let total = 0;
-    if (data.data && data.data.length > 0) {
-        data.data.forEach(service => {
-            total += service.subtotal;
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.createdAt}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.nombre_material.toLowerCase()}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${service.cantidad}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.valor_unidad )}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">${formatCurrency(service.subtotal)}</td>
-                <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                <button onclick="deleteCotizacion(${service.id})" class="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 btn-eliminar-cotizacion">
-                        Eliminar
-                    </button>
-                </td>
-            `;
-            serviceList.appendChild(fila);
-        });
-        if(total>0){
-            totalCotizacion.classList.remove('hidden');
-            totalCotizacion.textContent = `Total : ${formatCurrency(total)  }`;
-        } else {
-            totalCotizacion.classList.add('hidden');
-        }
-
-        const paginationLinks = data.links.map(link => {
-            if (link.url) {
-                const page = new URL(link.url).searchParams.get('page') || 1;
-                return `<a href="#" onclick="listaCotizacion(${page}, ${id})" class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</a>`;
-            }
-            return `<span class="px-4 py-2 mx-1 text-blue-500 rounded-lg">${link.label}</span>`;
-        }).join('');
-        pagination.innerHTML = paginationLinks;
-
-        noDataMessage.classList.add('hidden');
-    } else {
-        noDataMessage.classList.remove('hidden');
-    }
-}
-
-document.getElementById('formCotizacion').addEventListener('submit', async function (e) {
-    e.preventDefault(); // Evita envío tradicional
-
-    const form = e.target;
-    const url = form.action;
-    const formData = new FormData(form);
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                'Accept': 'application/json'
-            },
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || data.success === false) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message || 'Ocurrió un error al guardar los datos.'
-            });
-        } else {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: data.message || 'Cotización guardada correctamente.',
-                confirmButtonText: 'Aceptar'
-            }).then(() => {
-                // redireccionar si todo salió bien
-                window.location.reload();
-            });
-        }
-
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo procesar la solicitud.'
-        });
-    }
-});
-
-async function deleteCotizacion(id) {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¿Deseas eliminar este elemento?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'No, cancelar',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const response = await fetch(`deleteCotizacion/?id=${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken,
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.status) {
-                    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'cotizacion-modal' }));
-                    Swal.fire({
-                        title: "Eliminado",
-                        text: "Item eliminado correctamente.",
-                        icon: "success",
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire("Error", data.message || "No se pudo eliminar la data.", "error");
-                }
-            } catch (error) {
-                Swal.fire("Error", "Ocurrió un problema al procesar la solicitud.", "error");
             }
         }
     });
@@ -1010,3 +801,305 @@ async function descargarExcelDespachos(id = '') {
         btn.disabled = false;
     }
 }
+
+/**
+ * calendario-proyecto.js
+ * Modal de calendario por proyecto — formato mensual.
+ */
+
+// ─── Fix TomSelect: proteger inicialización ────────────────────────────
+// Evita el error "Cannot read properties of null (reading 'tomselect')"
+// cuando el elemento no existe en la página actual.
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof TomSelect !== 'undefined') {
+        const origTomSelect = TomSelect;
+        window.TomSelect = function (selector, options) {
+            const el = typeof selector === 'string'
+                ? document.querySelector(selector)
+                : selector;
+            if (!el) return;
+            return new origTomSelect(el, options);
+        };
+        Object.assign(window.TomSelect, origTomSelect);
+        window.TomSelect.prototype = origTomSelect.prototype;
+    }
+});
+
+// ─── Estado ────────────────────────────────────────────────────────────
+let _cpIdProy    = null;
+let _cpModalOpen = false;
+
+// ─── Abrir modal ───────────────────────────────────────────────────────
+function abrirCalendarioProy(idProyecto) {
+    _cpIdProy    = idProyecto;
+    _cpModalOpen = true;
+
+    window.dispatchEvent(new CustomEvent('open-modal', { detail: 'calendario-modal' }));
+    _cpMostrarLoader(true);
+    _cpLimpiarContenido();
+
+    fetch(`calendarioProyecto?id_proyecto=${idProyecto}`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => _cpRenderizar(data))
+    .catch(() => {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los datos del proyecto.' });
+        _cpCerrarModal();
+    })
+    .finally(() => _cpMostrarLoader(false));
+}
+
+// ─── Cerrar modal ──────────────────────────────────────────────────────
+function _cpCerrarModal() {
+    window.dispatchEvent(new CustomEvent('close-modal', { detail: 'calendario-modal' }));
+    _cpModalOpen = false;
+    _cpIdProy    = null;
+}
+
+// ─── Bloquear cierre al hacer clic fuera ──────────────────────────────
+// Excluimos SweetAlert: sus elementos están fuera del panel pero
+// NO deben ser bloqueados por este listener.
+document.addEventListener('click', function (e) {
+    if (!_cpModalOpen) return;
+
+    // Clic dentro de SweetAlert → dejar pasar siempre
+    if (e.target.closest && e.target.closest('.swal2-container')) return;
+
+    const panel = document.getElementById('cal-proy-panel');
+    if (!panel) return;
+    if (panel.contains(e.target)) return;
+
+    e.stopImmediatePropagation();
+}, true);
+
+// ─── Renderizar completo ───────────────────────────────────────────────
+function _cpRenderizar(data) {
+    document.getElementById('cp-nombre-proy').textContent  = data.nombre;
+    document.getElementById('cp-cliente-proy').textContent = data.cliente ? `Cliente: ${data.cliente}` : '';
+    document.getElementById('cp-fec-inicio').textContent   = _cpFechaLegible(data.fec_inicio);
+    document.getElementById('cp-fec-fin-est').textContent  = _cpFechaLegible(data.fec_fin_est);
+    document.getElementById('cp-dias-trabajo').textContent = data.dias_trabajo;
+
+    document.getElementById('cp-leyenda').classList.remove('hidden');
+
+    const contenedor = document.getElementById('cp-meses-contenedor');
+    contenedor.innerHTML = '';
+
+    // Conteo global para resumen
+    const conteoGlobal = { laborable: 0, sabado: 0, domingo: 0, festivo: 0, no_laboral_global: 0, no_laborado: 0 };
+
+    data.meses.forEach(mes => {
+        conteoGlobal.laborable       += mes.dias.filter(d => d.tipo === 'laborable').length;
+        conteoGlobal.sabado          += mes.dias.filter(d => d.tipo === 'sabado').length;
+        conteoGlobal.domingo         += mes.dias.filter(d => d.tipo === 'domingo').length;
+        conteoGlobal.festivo         += mes.dias.filter(d => d.tipo === 'festivo').length;
+        conteoGlobal.no_laboral_global += mes.dias.filter(d => d.tipo === 'no_laboral_global').length;
+        conteoGlobal.no_laborado     += mes.dias.filter(d => d.tipo === 'no_laborado').length;
+
+        contenedor.appendChild(_cpRenderMes(mes));
+    });
+
+    _cpActualizarResumen(conteoGlobal);
+    document.getElementById('cp-resumen').classList.remove('hidden');
+}
+
+// ─── Renderizar un mes ─────────────────────────────────────────────────
+function _cpRenderMes(mes) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cp-mes-wrapper';
+
+    // Cabecera del mes
+    const header = document.createElement('div');
+    header.className   = 'cp-mes-header';
+    header.textContent = mes.nombre;
+    wrapper.appendChild(header);
+
+    // Cabecera días semana
+    const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const headerGrid = document.createElement('div');
+    headerGrid.className = 'cp-semana-header';
+    diasSemana.forEach(d => {
+        const span = document.createElement('div');
+        span.className   = 'cp-header-day';
+        span.textContent = d;
+        headerGrid.appendChild(span);
+    });
+    wrapper.appendChild(headerGrid);
+
+    // Grilla
+    const grid = document.createElement('div');
+    grid.className = 'cp-grid';
+
+    // Celdas vacías de offset
+    for (let i = 0; i < mes.offset; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cp-day cp-empty';
+        grid.appendChild(empty);
+    }
+
+    mes.dias.forEach(d => {
+        grid.appendChild(_cpCrearCelda(d));
+    });
+
+    wrapper.appendChild(grid);
+    return wrapper;
+}
+
+// ─── Crear celda de día ────────────────────────────────────────────────
+function _cpCrearCelda(d) {
+    const cell = document.createElement('div');
+
+    // Clases base: tipo + estado
+    cell.className = `cp-day cp-tipo-${d.tipo} cp-estado-${d.estado}`;
+
+    // Número
+    const num = document.createElement('span');
+    num.className   = 'cp-day-num';
+    num.textContent = d.day;
+    cell.appendChild(num);
+
+    // Nombre del día
+    const nombre = document.createElement('span');
+    nombre.className   = 'cp-day-name';
+    nombre.textContent = d.dayName;
+    cell.appendChild(nombre);
+
+    // Etiqueta descriptiva
+    const etiqueta = d.noLaboradoDetalle || d.festivoName || null;
+    if (etiqueta) {
+        const lbl = document.createElement('span');
+        lbl.className   = 'cp-day-label';
+        lbl.textContent = etiqueta;
+        cell.appendChild(lbl);
+    }
+
+    // Botón marcar no laborado (pasado o hoy, editable, no ya marcado)
+    if (d.editable && !d.noLaborado) {
+        const btn = document.createElement('button');
+        btn.type        = 'button';
+        btn.className   = 'cp-btn-marcar';
+        btn.textContent = '＋ No laborado';
+        btn.onclick     = (e) => {
+            e.stopPropagation();
+            _cpConfirmarNoLaborado(d.date, d.dayName);
+        };
+        cell.appendChild(btn);
+    }
+
+    return cell;
+}
+
+// ─── Resumen pie ───────────────────────────────────────────────────────
+function _cpActualizarResumen(c) {
+    const sabMedia = c.sabado > 0 ? (c.sabado / 2) : 0;
+    document.getElementById('cp-res-laborable').textContent     = c.laborable + (sabMedia > 0 ? ` + ${sabMedia}` : '');
+    document.getElementById('cp-res-sabado').textContent        = c.sabado;
+    document.getElementById('cp-res-domingo').textContent       = c.domingo;
+    document.getElementById('cp-res-festivo').textContent       = c.festivo;
+    document.getElementById('cp-res-no-lab-global').textContent = c.no_laboral_global;
+    document.getElementById('cp-res-no-laborado').textContent   = c.no_laborado;
+
+    document.getElementById('cp-row-no-lab-global').classList.toggle('hidden', c.no_laboral_global === 0);
+    document.getElementById('cp-row-no-laborado').classList.toggle('hidden', c.no_laborado === 0);
+}
+
+// ─── Confirmar y guardar día no laborado ──────────────────────────────
+function _cpConfirmarNoLaborado(fecha, nombreDia) {
+    Swal.fire({
+        title: 'Día no laborado',
+        html: `
+            <p style="margin-bottom:10px;font-size:.9rem;color:#4b5563;">
+                <b>${_cpFechaLegible(fecha)}</b> (${nombreDia})<br>
+                <span style="font-size:.8rem;color:#6b7280;">¿Por qué no se trabajó este día?</span>
+            </p>
+            <textarea
+                id="cp-swal-detalle"
+                maxlength="500"
+                autocomplete="off"
+                placeholder="Describe el motivo (obligatorio)"
+                style="width:100%;min-height:110px;padding:10px 12px;border:1px solid #d1d5db;
+                       border-radius:8px;font-size:.9rem;resize:vertical;outline:none;
+                       box-sizing:border-box;font-family:inherit;transition:border-color .15s;"
+                onfocus="this.style.borderColor='#d97706'"
+                onblur="this.style.borderColor='#d1d5db'"
+            ></textarea>
+            <p style="text-align:right;font-size:.72rem;color:#9ca3af;margin-top:4px;">
+                <span id="cp-char-count">0</span>/500
+            </p>
+            <script>
+                document.getElementById('cp-swal-detalle')
+                    .addEventListener('input', function() {
+                        document.getElementById('cp-char-count').textContent = this.value.length;
+                    });
+            <\/script>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d97706',
+        cancelButtonColor: '#9ca3af',
+        focusConfirm: false,
+        preConfirm: () => {
+            const detalle = document.getElementById('cp-swal-detalle').value.trim();
+            if (!detalle) {
+                Swal.showValidationMessage('El motivo es obligatorio.');
+                return false;
+            }
+            return detalle;
+        },
+    }).then(result => {
+        if (!result.isConfirmed) return;
+
+        Swal.fire({ title: 'Guardando...', allowOutsideClick: false, allowEscapeKey: false, didOpen: () => Swal.showLoading() });
+
+        fetch('saveDiaNoLaborado', {
+            method: 'POST',
+            headers: {
+                'Content-Type':     'application/json',
+                'X-CSRF-TOKEN':     document.querySelector('meta[name="csrf-token"]').content,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ id_proyecto: _cpIdProy, dia: fecha, detalle: result.value }),
+        })
+        .then(async r => {
+            const json = await r.json();
+            if (!r.ok) throw new Error(json.error || 'Error al guardar.');
+            return json;
+        })
+        .then(json => {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Guardado!',
+                html: `Día registrado.<br><small>Nueva fecha fin estimada: <b>${_cpFechaLegible(json.nueva_fecha_fin)}</b></small>`,
+                timer: 2500,
+                showConfirmButton: false,
+            }).then(() => window.location.reload());
+        })
+        .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+    });
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────
+function _cpMostrarLoader(show) {
+    const el = document.getElementById('cp-loading');
+    if (el) el.style.display = show ? 'flex' : 'none';
+}
+
+function _cpLimpiarContenido() {
+    const c = document.getElementById('cp-meses-contenedor');
+    if (c) c.innerHTML = '';
+    document.getElementById('cp-leyenda')?.classList.add('hidden');
+    document.getElementById('cp-resumen')?.classList.add('hidden');
+}
+
+const _MESES_CP = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function _cpFechaLegible(dateStr) {
+    if (!dateStr) return '—';
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return `${d} de ${_MESES_CP[m]} de ${y}`;
+}
+

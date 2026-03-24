@@ -91,11 +91,17 @@ class Festivos extends Model
         return $fecha->toDateString();
     }
 
-    public function contarDiasHabiles($fechaInicio, $fechaFin, $festivos)
+    public function contarDiasHabiles($fechaInicio, $fechaFin, $festivos, $id = null)
     {
         $inicio = Carbon::parse($fechaInicio);
         $fin = Carbon::parse($fechaFin);
         $diasHabiles = 0;
+        $arrNolab = [];
+        if ($id) {
+            $arrNolab = DiasNoLaboralos::where('id_proyecto', $id)->pluck('dia')->map(function ($date) {
+                return Carbon::parse($date)->toDateString();
+            })->toArray();
+        }
 
         if (is_null($festivos)) {
             $festivos = self::pluck('date')->map(function ($date) {
@@ -106,8 +112,9 @@ class Festivos extends Model
         while ($inicio->lte($fin)) {
             $diaSemana = $inicio->dayOfWeek;
             $esFestivo = in_array($inicio->toDateString(), (array) $festivos);
+            $esDiaNolab = in_array($inicio->toDateString(), (array) $arrNolab);
 
-            if ($diaSemana == Carbon::SUNDAY || $esFestivo) {
+            if ($diaSemana == Carbon::SUNDAY || $esFestivo || $esDiaNolab) {
                 // No cuenta
             } elseif ($diaSemana == Carbon::SATURDAY) {
                 $diasHabiles = $diasHabiles + 0.5;

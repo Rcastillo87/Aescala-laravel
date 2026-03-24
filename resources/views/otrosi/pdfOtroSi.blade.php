@@ -9,13 +9,13 @@
         }
         body {
             font-family: "Calibri", Arial, sans-serif;
-            font-size: 11pt;
-            line-height: 1.6;
+            font-size: 9.5pt;
+            line-height: 1.4;
             color: #222;
         }
         header {
             position: fixed;
-            top: -70px;
+            top: -50px;
             left: 0;
             right: 0;
             height: 60px;
@@ -37,42 +37,42 @@
         h2.subtitulo {
             text-align: center;
             font-size: 12pt;
-            margin: 0 0 25px;
+            margin: 0 0 10px;
             font-weight: normal;
             color: #444;
         }
         p {
             text-align: justify;
-            margin: 0 0 14px;
+            margin: 0 0 10px;
         }
         strong {
             font-weight: bold;
             color: #000;
         }
-        
         /* === TABLA DE ADICIONALES === */
         table.adicionales {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 10.5pt;
+            margin: 15px 0;
+            font-size: 9pt;
         }
         table.adicionales caption {
             background: #243c7a;
             color: #fff;
             font-weight: bold;
             font-size: 13px;
-            padding: 10px;
+            padding: 5px;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        table.adicionales th, 
+        table.adicionales th,
         table.adicionales td {
-            padding: 7px 9px;
+            padding: 5px 5px;
             border: 1px solid #ddd;
         }
         table.adicionales th {
+            line-height: 1.1;
             background: #f1f3f9;
             color: #243c7a;
             text-align: left;
@@ -81,7 +81,7 @@
         .right {
             text-align: right;
         }
-        
+
         /* Secciones de área */
         .section-title td {
             background: #f9f9f9;
@@ -89,7 +89,7 @@
             text-transform: uppercase;
             color: #333;
         }
-        
+
         /* Subtotales */
         .subtotal td {
             background: #f4f4f4;
@@ -97,7 +97,7 @@
             text-align: right;
             color: #243c7a;
         }
-        
+
         /* Total a pagar */
         .total td {
             background: #243c7a;
@@ -106,10 +106,10 @@
             font-size: 12px;
             text-align: right;
         }
-        
+
         /* === FIRMAS (versión original) === */
         .firmas {
-            margin-top: 40px;
+            margin-top: 10px;
             width: 100%;
             border: 1px solid #000;
             border-collapse: collapse;
@@ -130,7 +130,7 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .firmas img, 
+        .firmas img,
         .firmas .espacio-firma {
             max-width: 100%;
             max-height: 100px;
@@ -140,7 +140,7 @@
         }
         .firmas .datos-firma {
             font-size: 9pt;
-            height: 80px;
+            height: 70px;
         }
 
         footer {
@@ -160,26 +160,31 @@
     <header>
         <img src="{{ public_path('img/logo.png') }}" alt="Logo Empresa">
     </header>
-    
+
     <h1 class="titulo">OTROSÍ N.º {{ $num_otro_si }}</h1>
     <h2 class="subtitulo">Al Contrato de Remodelación de Vivienda</h2>
-    
+
     <p>
-        Comparecen el día <strong>{{ $fecha_otro_si }}</strong> a la firma del presente "OTROSÍ" 
-        <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, identificado con 
-        {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }}, 
-        en representación de la empresa <strong>{{ env('RAZON') }}</strong>, NIT {{ env('NIT') }}, 
-        en adelante <strong>"LA CONSTRUCTORA"</strong>; y <strong>{{ $nombre_cliente }}</strong>, 
-        identificado con {{ $tipo_doc_cliente }} Nº {{ $documento_cliente }}, 
-        en adelante <strong>"EL CLIENTE"</strong>. Conjuntamente denominados las <strong>"Partes"</strong>, 
+        Comparecen el día <strong>{{ $fecha_otro_si }}</strong> a la firma del presente "OTROSÍ"
+        <strong>{{ env('NOMBRE_REPRESENTANTE') }}</strong>, identificado con
+        {{ env('TIPO_IDENT_REPRESENTANTE') }} Nº {{ env('IDENTI_REPRESENTANTE') }},
+        en representación de la empresa <strong>{{ env('RAZON') }}</strong>, NIT {{ env('NIT') }},
+        en adelante <strong>"LA CONSTRUCTORA"</strong> y <strong>{{ $nombre_cliente }}</strong>,
+        identificado con {{ $tipo_doc_cliente }} Nº {{ $documento_cliente }},
+        en adelante <strong>"EL CLIENTE"</strong>. Conjuntamente denominados las <strong>"Partes"</strong>,
         hemos acordado celebrar el presente OTROSÍ No. {{ $num_otro_si }}.
     </p>
-    
-    <h3 style="margin-top: 25px; color:#243c7a;">ADICIONALES</h3>
-    
+
+    <div style="margin-top: 15px; margin-bottom: 5px; text-align: center;">
+        <span style="color:#243c7a; font-weight: bold; font-size: 12px;">
+            ADICIONALES DEL PROYECTO:
+        </span>
+        <span style="font-size: 12px; color:#000;">
+            {{ $nombre_proyecto }}
+        </span>
+    </div>
+
     <table class="adicionales">
-        <caption>
-            PROYECTO: {{ $nombre_proyecto }}
         <thead>
             <tr>
                 <th style="width: 40px;">ITEM</th>
@@ -215,13 +220,19 @@
             </tr>
         </tbody>
     </table>
-    
+
     <p>
         Para constancia y en fe de aceptación, las partes firman este documento contractual en dos (2) ejemplares de igual contenido y valor.
     </p>
-    
-    <p style="margin-top: 25px;">{{ $ciudad_dpt }}, {{ $fecha_otro_si }}</p>
-    
+
+    <p>
+        Para constancia y en fe de aceptación y conformidad con todo lo anteriormente estipulado las partes firman este documento contractual en 2 ejemplares de igual contenido y valor.
+        El valor total de los adicionales si supera los $10.000.000COP se debe cancelar en dos partes iguales, 50% antes de iniciar la obra y el otro 50 % antes de mandar a corte la carpintería.
+        Si el valor es menos de $10.000.000COP, su totalidad debe ser cancelada antes de iniciar la obra en su 100%.
+    </p>
+
+    <p style="margin-top: 10px;">{{ $ciudad_dpt }}, {{ $fecha_otro_si }}</p>
+
     <table class="firmas">
         <tr>
             <td>
@@ -252,7 +263,7 @@
             </td>
         </tr>
     </table>
-    
+
     <footer>
         {{ env('RAZON') }} – NIT: {{ env('NIT') }} – {{ env('CIU_DPT_EMPRE') }} <br>
         Dirección: {{ env('DIREC', '---') }} | Tel: {{ env('TEL', '---') }}

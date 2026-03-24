@@ -26,6 +26,7 @@ use App\Models\Cotizacion;
 use App\Models\Finanza;
 use App\Models\Despachos;
 use App\Models\Festivos;
+use App\Models\DiasNoLaboralos;
 
 class ProyectoController extends Controller
 {
@@ -453,49 +454,6 @@ class ProyectoController extends Controller
         }
     }
 
-    public function listFinanzas()
-    {
-        try {
-            $listFinanzas = Finanza::where('id_proyecto', Request('id'))->orderBy('fec_inicio', 'desc')->paginate(10);
-            return response()->json([
-                'status' => true,
-                'message' => 'Lista de préstamos.',
-                'data' => $listFinanzas
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function savefinanza(Request $request)
-    {
-        $data = $request->validate([
-            'id_proyecto_finanza' => ['required', 'integer', Rule::exists('proyectos', 'id')],
-            'tipo' => ['required', 'integer', Rule::in(array_keys(Finanza::$tipo))],
-            'valor' => ['required', 'integer'],
-            'concepto' => 'required|string|max:255'
-        ]);
-
-        $data['id_proyecto'] = $data['id_proyecto_finanza'];
-        $msg = "Ingreso o Egreso creado";
-        try {
-            DB::beginTransaction();
-            Finanza::Create($data);
-            DB::commit();
-            return redirect()->route('proyecto.index')->with('success', $msg);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
-        }
-    }
-
     public function listAvances()
     {
         try {
@@ -562,138 +520,6 @@ class ProyectoController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Avance eliminada.',
-                'data' => []
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function listaCotizacion()
-    {
-        try {
-            $list = Cotizacion::with(['material'])
-                ->where('id_proyecto', Request('id'))
-                ->selectRaw(
-                    'id,
-                id_inventario,
-                createdAt,
-                cantidad,
-                valor_unidad'
-                )
-                ->paginate(10)
-                ->through(function ($data) {
-                    return [
-                        'id' => $data->id,
-                        'id_inventario' => $data->id_inventario,
-                        'cantidad' => $data->cantidad,
-                        'valor_unidad' => $data->valor_unidad,
-                        'subtotal' => $data->cantidad * $data->valor_unidad,
-                        'createdAt' => explode(' ', $data->createdAt)[0],
-                        'nombre_material' => $data->material->nombre_material
-                    ];
-                });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Lista de avance.',
-                'data' => $list
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error al obtener la lista.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function saveCotizacion(Request $request)
-    {
-        $validated = $request->validate([
-            'id_proyecto_cotizacion' => [
-                'nullable',
-                'integer',
-                Rule::exists('proyectos', 'id'),
-            ],
-            'materiales' => ['required', 'array', 'min:1'],
-            'materiales.*.id_material' => [
-                'required',
-                'integer',
-                Rule::exists('inventario_materiales', 'id'),
-                function ($attribute, $value, $fail) {
-                    $request = request();
-                    $idProyecto = $request->input("id_proyecto_cotizacion");
-                    $material = InventarioMaterial::find($value);
-                    if (!$material || $material->activo != 1) {
-                        $fail('El material seleccionado no está disponible.');
-                    }
-
-                    $cot = Cotizacion::where('id_proyecto', $idProyecto)->where('id_inventario', $value)->first();
-                    if ($cot) {
-                        $name = $cot->material->nombre_material;
-                        $fail("El material: $name, ya se encuentra cotizado.");
-                    }
-                }
-            ],
-            'materiales.*.cantidad' => [
-                'required',
-                'integer',
-                'min:1',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $materialId = $request->input("materiales.{$index}.id_material");
-                    $material = InventarioMaterial::find($materialId);
-
-                    if ($material && $request->tipo != 2 && $value > $material->cantidad) {
-                        $fail("La cantidad para {$material->nombre_material} excede el stock ({$material->cantidad}).");
-                    }
-                }
-            ],
-            'materiales.*.valor_unidad' => ['required', 'integer']
-        ]);
-
-        try {
-            DB::transaction(function () use ($validated) {
-                foreach ($validated['materiales'] as $material) {
-                    $dato['id_proyecto'] = $validated['id_proyecto_cotizacion'];
-                    $dato['id_inventario'] = $material['id_material'];
-                    $dato['cantidad'] = $material['cantidad'];
-                    $dato['valor_unidad'] = $material['valor_unidad'];
-                    Cotizacion::create($dato);
-                }
-            });
-
-            if ($request->wantsJson()) {
-                return response()->json(['success' => true, 'message' => 'Cotización guardada exitosamente']);
-            }
-
-            return redirect()->route('proyecto.index')->with('success', 'Cotización guardada exitosamente');
-        } catch (\Throwable $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error al guardar la cotización',
-                    'error' => $e->getMessage()
-                ], 500);
-            }
-
-            return back()->withErrors(['message' => 'Error al guardar la cotización']);
-        }
-    }
-
-    public function deleteCotizacion()
-    {
-        try {
-            $cot = Cotizacion::findOrFail(Request('id'));
-            $cot->delete();
-            return response()->json([
-                'status' => true,
-                'message' => 'Item en cotizacion eliminado.',
                 'data' => []
             ], 200);
         } catch (\Exception $e) {
@@ -1261,4 +1087,188 @@ class ProyectoController extends Controller
             return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
     }
+
+    public function calendarioProyecto(Request $request)
+    {
+        $request->validate(['id_proyecto' => 'required|integer']);
+
+        $proyecto    = Proyecto::findOrFail($request->id_proyecto);
+        $inicio      = Carbon::parse($proyecto->fec_inicio)->startOfDay();
+        $finEstimado = Carbon::parse($proyecto->fec_fin_estimado)->startOfDay();
+
+        $festivosGlobales = Festivos::whereBetween('date', [
+            $inicio->toDateString(),
+            $finEstimado->toDateString(),
+        ])->get()->keyBy(fn($f) => Carbon::parse($f->date)->toDateString());
+
+        $noLaborados = DiasNoLaboralos::where('id_proyecto', $proyecto->id)
+            ->get()->keyBy('dia');
+
+        $hoy   = Carbon::today();
+        $meses = [];
+        $cursor = $inicio->copy();
+
+        while ($cursor->lte($finEstimado)) {
+            $mesKey = $cursor->format('Y-m');
+
+            if (!isset($meses[$mesKey])) {
+                // Offset = día de semana del primer día VISIBLE en este mes.
+                // Primer mes del proyecto → desde fec_inicio.
+                // Meses siguientes → desde el día 1 del mes (se muestran completos).
+                $esPrimerMes = ($cursor->month === $inicio->month && $cursor->year === $inicio->year);
+                $primerDiaVisible = $esPrimerMes
+                    ? $cursor->copy()
+                    : Carbon::create($cursor->year, $cursor->month, 1);
+
+                $meses[$mesKey] = [
+                    'key'    => $mesKey,
+                    'nombre' => $this->nombreMes($cursor->month) . ' ' . $cursor->year,
+                    'offset' => $primerDiaVisible->dayOfWeek,
+                    'dias'   => [],
+                ];
+            }
+
+            $dateStr = $cursor->toDateString();
+            $dow     = $cursor->dayOfWeek;
+            $regFest = $festivosGlobales->get($dateStr);
+            $regNL   = $noLaborados->get($dateStr);
+
+            $meses[$mesKey]['dias'][] = [
+                'date'              => $dateStr,
+                'day'               => $cursor->day,
+                'dayName'           => $this->nombreDia($dow),
+                'dayOfWeek'         => $dow,
+                'tipo'              => $this->tipoDia($dow, $regFest, $regNL),
+                'estado'            => $this->estadoDia($cursor, $hoy),
+                'festivoName'       => $regFest
+                    ? ($this->esNoLaboralGlobal($regFest) ? ($regFest->comentario ?? $regFest->name) : $regFest->name)
+                    : null,
+                'noLaboradoDetalle' => $regNL ? $regNL->detalle : null,
+                'editable'          => $this->esEditable($dow, $regFest, $cursor, $hoy),
+                'noLaborado'        => $regNL !== null,
+            ];
+
+            $cursor->addDay();
+        }
+
+        return response()->json([
+            'id_proyecto'  => $proyecto->id,
+            'nombre'       => $proyecto->nombre_proyecto,
+            'cliente'      => $proyecto->nombre_cliente,
+            'fec_inicio'   => $inicio->toDateString(),
+            'fec_fin_est'  => $finEstimado->toDateString(),
+            'dias_trabajo' => $proyecto->dias_trabajo,
+            'meses'        => array_values($meses),
+        ]);
+    }
+
+    // ─── AJAX: marcar día no laborado ─────────────────────────────────
+    public function saveDiaNoLaborado(Request $request)
+    {
+        $request->validate([
+            'id_proyecto' => 'required|integer',
+            'dia'         => 'required|date',
+            'detalle'     => 'required|string|max:500',
+        ]);
+
+        $proyecto = Proyecto::findOrFail($request->id_proyecto);
+        $fecha    = Carbon::parse($request->dia);
+        $hoy      = Carbon::today();
+
+        if ($fecha->gt($hoy))
+            return response()->json(['error' => 'Solo se pueden registrar días pasados o hoy.'], 422);
+
+        if ($fecha->dayOfWeek === Carbon::SUNDAY)
+            return response()->json(['error' => 'Los domingos no aplican.'], 422);
+
+        if (Festivos::where('date', $fecha->toDateString())->exists())
+            return response()->json(['error' => 'Este día ya es festivo o no laboral global.'], 422);
+
+        if (DiasNoLaboralos::where('id_proyecto', $proyecto->id)->where('dia', $fecha->toDateString())->exists())
+            return response()->json(['error' => 'Este día ya está registrado como no laborado.'], 422);
+
+        DiasNoLaboralos::create([
+            'id_proyecto' => $proyecto->id,
+            'dia'         => $fecha->toDateString(),
+            'detalle'     => $request->detalle,
+        ]);
+
+        $nuevaFin = $this->recalcularFechaFin($proyecto);
+        $proyecto->fec_fin_estimado = $nuevaFin;
+        $proyecto->save();
+
+        return response()->json([
+            'message'         => 'Día registrado correctamente.',
+            'nueva_fecha_fin' => $nuevaFin->toDateString(),
+        ]);
+    }
+
+    // ─── Recalcular fecha fin ──────────────────────────────────────────
+    private function recalcularFechaFin(Proyecto $proyecto): Carbon
+    {
+        $inicio       = Carbon::parse($proyecto->fec_inicio)->startOfDay();
+        $diasObjetivo = (float) $proyecto->dias_trabajo;
+
+        $festivos = Festivos::where('date', '>=', $inicio->toDateString())
+            ->pluck('date')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
+
+        $noLabs = DiasNoLaboralos::where('id_proyecto', $proyecto->id)
+            ->pluck('dia')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
+
+        $cursor = $inicio->copy();
+        $contados = 0.0;
+
+        while (true) {
+            $dow  = $cursor->dayOfWeek;
+            $date = $cursor->toDateString();
+
+            if ($dow !== Carbon::SUNDAY && !in_array($date, $festivos) && !in_array($date, $noLabs)) {
+                $contados += $dow === Carbon::SATURDAY ? 0.5 : 1.0;
+            }
+
+            if ($contados >= $diasObjetivo) break;
+            $cursor->addDay();
+        }
+
+        return $cursor;
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────
+    private function tipoDia(int $dow, $regFest, $regNL): string
+    {
+        if ($regNL)   return 'no_laborado';
+        if ($regFest) return $this->esNoLaboralGlobal($regFest) ? 'no_laboral_global' : 'festivo';
+        if ($dow === Carbon::SUNDAY)   return 'domingo';
+        if ($dow === Carbon::SATURDAY) return 'sabado';
+        return 'laborable';
+    }
+
+    private function estadoDia(Carbon $fecha, Carbon $hoy): string
+    {
+        if ($fecha->isToday()) return 'hoy';
+        if ($fecha->lt($hoy))  return 'pasado';
+        return 'futuro';
+    }
+
+    private function esNoLaboralGlobal($reg): bool
+    {
+        return $reg && strtolower($reg->name) === 'día no labora';
+    }
+
+    private function esEditable(int $dow, $regFest, Carbon $fecha, Carbon $hoy): bool
+    {
+        return !$fecha->gt($hoy) && $dow !== Carbon::SUNDAY && !$regFest;
+    }
+
+    private function nombreDia(int $dow): string
+    {
+        return ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][$dow];
+    }
+
+    private function nombreMes(int $m): string
+    {
+        return ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][$m];
+    }
+
 }

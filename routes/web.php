@@ -133,14 +133,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/saveTarea', [ProyectoController::class, 'saveTarea'])->name('saveTarea');
         Route::get('/editTarea/{id}', [ProyectoController::class, 'editTarea'])->name('editTarea');
         Route::delete('/deleteTarea', [ProyectoController::class, 'deleteTarea'])->name('deleteTarea');
-        Route::get('/listFinanzas', [ProyectoController::class, 'listFinanzas'])->name('listFinanzas');
-        Route::post('/savefinanza', [ProyectoController::class, 'savefinanza'])->name('savefinanza');
         Route::get('/listAvances', [ProyectoController::class, 'listAvances'])->name('listAvances');
         Route::post('/saveAvance', [ProyectoController::class, 'saveAvance'])->name('saveAvance');
         Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
-        Route::post('/saveCotizacion', [ProyectoController::class, 'saveCotizacion'])->name('saveCotizacion');
-        Route::get('/listaCotizacion', [ProyectoController::class, 'listaCotizacion'])->name('listaCotizacion');
-        Route::delete('/deleteCotizacion', [ProyectoController::class, 'deleteCotizacion'])->name('deleteCotizacion');
         Route::get('/listaDespachos', [ProyectoController::class, 'listaDespachos'])->name('listaDespachos');
         Route::get('/pdfDespachos', [ProyectoController::class, 'pdfDespachos'])->name('pdfDespachos');
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
@@ -149,6 +144,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/excelDespachoProyecto/{id}', [ProyectoController::class, 'excelDespachoProyecto'])->name('excelDespachoProyecto');
         Route::get('/excelDespachosGeneral', [ProyectoController::class, 'excelDespachosGeneral'])->name('excelDespachosGeneral');
         Route::get('/trataDatosPDF/{id}', [ProyectoController::class, 'trataDatosPDF'])->name('trataDatosPDF');
+
+        Route::get('/calendarioProyecto', [ProyectoController::class, 'calendarioProyecto'])->name('calendarioProyecto');
+        Route::post('/saveDiaNoLaborado', [ProyectoController::class, 'saveDiaNoLaborado'])->name('saveDiaNoLaborado');
+
     });
 
     Route::prefix('tareas')->name('tareas.')->group(function () {

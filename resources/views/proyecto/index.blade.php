@@ -236,22 +236,23 @@
                             </div>
                         </div>
 
-                        <!-- Botón Ingresos & Egresos
+                        <!-- Botón Calendario -->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
-                            <a tabindex="0" data-tooltip-target="tooltip-hover-finanza-{{$item->id}}" data-tooltip-trigger="hover"
-                               onclick="listFinanzas(0,{{$item->id}})" x-data=""
-                               x-on:click="$dispatch('open-modal', 'finanza-modal')"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4
-                                      focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer">
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.5 21h13M12 21V7m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm2-1.8c3.073.661 2.467 2.8 5 2.8M5 8c3.359 0 2.192-2.115 5.012-2.793M7 9.556V7.75m0 1.806-1.95 4.393a.773.773 0 0 0 .37.962.785.785 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.776.776 0 0 0 .09-.716L7 9.556Zm10 0V7.313m0 2.243-1.95 4.393a.773.773 0 0 0 .37.962.786.786 0 0 0 .362.089h2.436a.785.785 0 0 0 .643-.335.775.775 0 0 0 .09-.716L17 9.556Z"/>
+                            <a tabindex="0"
+                            data-tooltip-target="tooltip-hover-calendario-{{$item->id}}"
+                            data-tooltip-trigger="hover"
+                            onclick="abrirCalendarioProy({{ $item->id }})"
+                            class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4
+                                    focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
                                 </svg>
                             </a>
-                            <div id="tooltip-hover-finanza-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                                Ingresos & Egresos
+                            <div id="tooltip-hover-calendario-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                Calendario
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
-                        </div> -->
+                        </div>
 
                         <!-- Botón Cotizacion
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
@@ -433,7 +434,7 @@
 
     @include('proyecto.modalAvances')
     @include('proyecto.modalTarea')
-    @include('proyecto.modalFinanzas')
+    @include('proyecto.modalCalendario')
     @include('proyecto.modalCotizacion')
     @include('proyecto.modalDespachos')
     @include('proyecto.modalBalance')
