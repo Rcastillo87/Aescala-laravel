@@ -82,6 +82,7 @@ class Proyecto extends Model
         5 => 'Noroeste (Entre el Norte y el Oeste)',
         6 => 'Sureste (Entre el Sur y el Este)',
         7 => 'Suroeste (Entre el Sur y el Oeste)'
+        8 => 'Centro'
     ];
 
     public static $estado0 = [
