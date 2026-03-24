@@ -81,7 +81,7 @@ class Proyecto extends Model
         4 => 'Noreste (Entre el Norte y el Este)',
         5 => 'Noroeste (Entre el Norte y el Oeste)',
         6 => 'Sureste (Entre el Sur y el Este)',
-        7 => 'Suroeste (Entre el Sur y el Oeste)'
+        7 => 'Suroeste (Entre el Sur y el Oeste)',
         8 => 'Centro'
     ];
 
