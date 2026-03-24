@@ -562,7 +562,8 @@ class ProyectoController extends Controller
                 'logo' => public_path('img/logo.png')
             ],
             'despacho' => $datos,
-            'proyecto' => $proyecto
+            'proyecto' => $proyecto,
+            'cotizacion' => false
         ];
 
         $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
@@ -590,7 +591,8 @@ class ProyectoController extends Controller
                 'logo' => public_path('img/logo.png')
             ],
             'despacho' => $datos,
-            'proyecto' => $proyecto
+            'proyecto' => $proyecto,
+            'cotizacion' => false
         ];
 
         $pdf = Pdf::loadView('proyecto.factura', $datosFactura);
