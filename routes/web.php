@@ -19,6 +19,7 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\AlmacenController;
 
 
 Route::get('/', function () {
@@ -257,6 +258,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/mes-datos',     [CalendarioController::class, 'mesDatos'])    ->name('mesDatos');
         Route::post('/marcar-no-laboral', [CalendarioController::class, 'marcarNoLaboral']) ->name('marcarNoLaboral');
         Route::post('/quitar-no-laboral', [CalendarioController::class, 'quitarNoLaboral']) ->name('quitarNoLaboral');
+    });
+
+    Route::prefix('almacen')->name('almacen.')->group(function () {
+        Route::get('/index', [AlmacenController::class, 'index'])->name('index');
+        Route::get('/create', [AlmacenController::class, 'create'])->name('create');
+        Route::get('/edit/{id}', [AlmacenController::class, 'edit'])->name('edit');
+        Route::post('/save', [AlmacenController::class, 'save'])->name('save');
     });
 
 });

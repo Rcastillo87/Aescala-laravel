@@ -76,7 +76,7 @@
                             id="departamento"
                             :options="$depts"
                             :data="['id', 'departamento']"
-                            :selected="Request('departamento')"
+                            :selected="Request('departamento', '')"
                             class="block mt-1 w-full"
                         />
                     </div>

@@ -51,7 +51,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
     public function getSpanEstadoAttribute()
     {
         return '<span class="'.(self::$ClassEstado[$this->activo] ?? 'default-class').'">'
@@ -238,7 +238,7 @@ class User extends Authenticatable
         3 => ['PAS', 'Pasaporte'],
     ];
 
-    //RELACIONES 
+    //RELACIONES
     public function tareas()
     {
         return $this->hasMany(Tarea::class, 'id_user');

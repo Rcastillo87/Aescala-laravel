@@ -18,12 +18,12 @@
             top: -50px;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 50px;
             border-bottom: 1px solid #ccc;
             padding-bottom: 5px;
         }
         header img {
-            max-height: 50px;
+            max-height: 55px;
             float: left;
         }
         h1.titulo {
@@ -123,6 +123,7 @@
             text-align: center;
             vertical-align: bottom;
             position: relative;
+            justify-content: flex-end;
         }
         .firmas strong {
             position: absolute;
@@ -134,8 +135,9 @@
         .firmas .espacio-firma {
             max-width: 100%;
             max-height: 100px;
-            height: 100px;
-            margin: 0 auto 5px auto;
+            height: 60px;
+            margin-top: auto;
+            margin-bottom: 5px;
             display: block;
         }
         .firmas .datos-firma {

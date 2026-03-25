@@ -42,7 +42,7 @@ class SolicitudMaterial extends Model
 
     public function proyecto()
     {
-        return $this->belongsTo(Proyecto::class, 'id_proyecto', 'id');
+        return $this->belongsTo(Proyecto::class, 'id_proyecto');
     }
 
     public function usuario()

@@ -45,3 +45,14 @@ CREATE TABLE aescala.dias_no_laboradosxproy (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `almacenes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre_almacen` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `id_user` bigint NOT NULL,
+  `tipo` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
