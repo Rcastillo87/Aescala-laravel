@@ -193,7 +193,7 @@
                                 </a>
                             </li>
                             @if (Auth::user()->isAdmin || Auth::user()->isUser)
-                                <li class="hidden">
+                                <li>
                                     <a href="{{ route('despachos.index') }}"
                                         class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
                                         <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
