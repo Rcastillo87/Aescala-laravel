@@ -83,12 +83,16 @@
                 <x-input-error :messages="$errors->get('nombre_proyecto')" class="mt-2" />
             </div>
 
+            @php
+                $depts = json_decode($departamentos, true)
+            @endphp
+                    
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="departamento" :value="__('Departamento *')" />
                 <x-select-input
                     name="departamento"
                     id="departamento"
-                    :options="$departamentos"
+                    :options="$depts"
                     :data="['id', 'departamento']"
                     :selected="old('departamento',$proyecto?$proyecto->departamento:'')"
                     class="block mt-1 w-full"
