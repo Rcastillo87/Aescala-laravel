@@ -137,7 +137,7 @@
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="area_privada" :value="__('Area Privada(mts cuadrados) *')" />
                 <x-text-input id="area_privada" class="block w-full" type="number"
-                    min="0" step="any" name="area_privada" value="{{ old('area_privada', $proyecto?->area_privada ?? 0) }}"/>
+                    min="0" step="any" name="area_privada" value="{{ old('area_privada', $proyecto?->area_privada) }}"/>
                 <x-input-error :messages="$errors->get('area_privada')" class="mt-2" />
             </div>
 
@@ -241,27 +241,88 @@
                 </div>
             </div>
 
-
             <hr class="w-full my-2">
-            <div class="mx-auto px-2 py-2 justify-start w-full">
-                <h2 class="text-xl font-bold text-[#242e68]">Entregables</h2>
-                <div class="flex w-full items-center space-x-2">
-                    <div class="py-1 shrink-0">
-                        <x-secondary-button class="my-2 py-1 px-1" href="#" data-tooltip-target="tooltip-hover-Entregable" data-tooltip-trigger="hover"
-                            x-data="" x-on:click="$dispatch('open-modal', 'entregable-modal')">
-                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
-                            </svg>
-                        </x-secondary-button>
-                        <div id="tooltip-hover-Entregable" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                            Añadir Entregable
-                            <div class="tooltip-arrow" data-popper-arrow></div>
+            <div class="mx-auto px-2 py-2 w-full">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                    {{-- Entregables --}}
+                    <div>
+                        <h2 class="text-xl font-bold text-[#242e68] mb-2">Entregables *</h2>
+                        <div class="flex w-full items-start space-x-2">
+                            <div class="py-1 shrink-0">
+                                <x-secondary-button class="my-2 py-1 px-1" href="#"
+                                    data-tooltip-target="tooltip-hover-Entregable" data-tooltip-trigger="hover"
+                                    x-data="" x-on:click="$dispatch('open-modal', 'entregable-modal')">
+                                    <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
+                                    </svg>
+                                </x-secondary-button>
+                                <div id="tooltip-hover-Entregable" role="tooltip"
+                                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                    Añadir Entregable
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+                            </div>
+                            <div id="entregables-div" class="mt-2 space-y-2 w-full">
+                                {!! $entregableProye !!}
+                            </div>
                         </div>
                     </div>
 
-                    <div id="entregables-div" class="mt-2 space-y-2 w-full">
-                        {!! $entregableProye !!}
+                    {{-- Notas Personalizadas --}}
+                    <div>
+                        <h2 class="text-xl font-bold text-[#242e68] mb-2">Notas Personalizadas</h2>
+                        <div class="flex w-full items-start space-x-2">
+                            <div class="py-1 shrink-0">
+                                <x-secondary-button class="my-2 py-1 px-1" href="#"
+                                    data-tooltip-target="tooltip-hover-notas" data-tooltip-trigger="hover"
+                                    x-data="" x-on:click="$dispatch('open-modal', 'notas-modal')"
+                                    id="btn-abrir-notas">
+                                    <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
+                                    </svg>
+                                </x-secondary-button>
+                                <div id="tooltip-hover-notas" role="tooltip"
+                                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                    Añadir Nota Personalizada
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+                            </div>
+
+                            {{-- Tarjeta de notas guardadas --}}
+                            <div id="notas-div" class="mt-2 w-full hidden">
+                                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="font-semibold text-gray-700 text-sm flex items-center gap-1">
+                                            <svg class="w-4 h-4 text-[#242e68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
+                                            </svg>
+                                            Notas (<span id="notas-count">0</span>)
+                                        </span>
+                                        <div class="relative">
+                                            <button type="button" id="btn-editar-notas"
+                                                x-data="" x-on:click="$dispatch('open-modal', 'notas-modal')"
+                                                data-tooltip-target="tooltip-editar-notas"
+                                                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition">
+                                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                                                </svg>
+                                                Editar notas
+                                            </button>
+                                            <div id="tooltip-editar-notas" role="tooltip"
+                                                class="absolute z-10 invisible px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
+                                                Modificar las notas del contrato
+                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul id="notas-preview" class="list-disc pl-5 space-y-2 text-sm text-gray-600"></ul>
+                                    <div id="notas-hidden-inputs"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -359,10 +420,12 @@
 @include('comercial.modalEntregable')
 @include('comercial.modalFirma')
 @include('comercial.modalTrataDatos')
+@include('comercial.modalNotas')
 @endsection
 
 @section('scripts')
     <script>
+        window.notasIniciales = @json($notas ?? []);
         window.departamentos = JSON.parse(@json($departamentos));
     </script>
     <script>

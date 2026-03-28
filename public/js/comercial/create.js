@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () { 
+document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("signature-pad");
     const clearButton = document.getElementById("clear-signature");
     const saveButton = document.getElementById("save-signature");
@@ -96,12 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 Item ${number} *
             </label>
             <textarea name="items[]" required
-                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
-                    focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 
+                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
+                    focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500
                     dark:focus:ring-indigo-600 rounded-md shadow-sm item-input block w-full"></textarea>
             <a href="#" class="remove-item bg-red-500 text-white px-4 py-2 rounded">
                 <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                         stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
                 </svg>
             </a>`;
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     parsed.defaults.forEach((def, index) => {
                         const itemCount = itemsContainer.querySelectorAll('.item-group').length;
                         const newItem = createItem(itemCount + 1);
-                        newItem.querySelector('textarea').value = def.descripccion; 
+                        newItem.querySelector('textarea').value = def.descripccion;
                         itemsContainer.appendChild(newItem);
                     });
                 }
@@ -339,29 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
-    /*document.getElementById('id_entregable').addEventListener('change', function() {
-        const option = this.options[this.selectedIndex];
-        const data = option.getAttribute('data-datax');
-        if (data) {
-            try {
-                const parsed = JSON.parse(data);
-                itemsContainer.innerHTML = "";
-                parsed.defaults.forEach((def, index) => {
-                    const itemCount = itemsContainer.querySelectorAll('.item-group').length;
-                    const newItem = createItem(itemCount + 1);
-                    newItem.querySelector('textarea').value = def.descripccion;
-                    itemsContainer.appendChild(newItem);
-                });
-                const itemCount = itemsContainer.querySelectorAll('.item-group').length;
-                const newItem = createItem(itemCount + 1);
-                itemsContainer.appendChild(newItem);
-            } catch (e) {
-                console.error("Error al parsear data-datax:", e);
-            }
-        }
-    });*/
-
 });
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -488,5 +465,174 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(error);
             }
         }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Al cargar, si hay notas previas (modo edición), activar modo edición
+    if (window.notasIniciales && window.notasIniciales.length > 0) {
+        notasGuardadas = window.notasIniciales;
+        modoEdicion = true;
+        actualizarTarjeta(notasGuardadas);
+    }
+
+    const NOTAS_DEFAULT = [
+        'La separacion de cupo valor $3.000.000 se restara del valor del porcentaje de la etapa de diseño, el valor de la propuesta se congelara durante seis meses a partir de la fecha de la firma.',
+        'Pasado los seis meses se realizara un ajuste en el presupuesto de la propuesta de acuerdo al valor establecido en el momento.'
+    ];
+
+    const itemsContainer  = document.getElementById('notas-items');
+    const addItemBtn      = document.getElementById('addItem-nota');
+    const guardarBtn      = document.getElementById('guardar-notas');
+    const cerrarBtn       = document.getElementById('cerrar-notas-modal');
+    const notasDiv        = document.getElementById('notas-div');
+    const notasPreview    = document.getElementById('notas-preview');
+    const notasCount      = document.getElementById('notas-count');
+    const notasHiddenInputs = document.getElementById('notas-hidden-inputs');
+
+    // Estado: notas guardadas
+    let notasGuardadas = [];
+    // Flag: si ya hay notas guardadas (modo edición) o es la primera vez
+    let modoEdicion = false;
+
+    // ─── Crear item de nota ───────────────────────────────────────────
+    function createItem(number, value = '') {
+        const div = document.createElement('div');
+        div.classList.add('item-group-nota', 'flex', 'items-center', 'gap-4', 'w-full', 'px-3', 'mb-2');
+        div.dataset.itemNumber = number;
+        div.innerHTML = `
+            <label class="whitespace-nowrap text-sm font-medium text-gray-700">Nota ${number} *</label>
+            <textarea rows="3"
+                class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full text-sm"
+                name="items[]" required>${value}</textarea>
+            <a href="#" class="remove-item-nota bg-red-500 text-white px-3 py-2 rounded shrink-0">
+                <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                </svg>
+            </a>`;
+        return div;
+    }
+
+    // ─── Cargar notas en el modal ─────────────────────────────────────
+    function cargarNotasEnModal(notas) {
+        itemsContainer.innerHTML = '';
+        notas.forEach((texto, i) => {
+            itemsContainer.appendChild(createItem(i + 1, texto));
+        });
+    }
+
+    // ─── Renumerar notas tras eliminar ───────────────────────────────
+    function renumerarNotas() {
+        itemsContainer.querySelectorAll('.item-group-nota').forEach((item, i) => {
+            item.dataset.itemNumber = i + 1;
+            item.querySelector('label').textContent = `Nota ${i + 1} *`;
+        });
+    }
+
+    // ─── Actualizar tarjeta de previsualización ───────────────────────
+    function actualizarTarjeta(notas) {
+        notasPreview.innerHTML = '';
+        notas.forEach(texto => {
+            const li = document.createElement('li');
+            li.textContent = texto;
+            notasPreview.appendChild(li);
+        });
+        notasCount.textContent = notas.length;
+
+        // Inputs hidden para el submit del formulario padre
+        notasHiddenInputs.innerHTML = '';
+        notas.forEach(texto => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'notas[]';
+            input.value = texto;
+            notasHiddenInputs.appendChild(input);
+        });
+
+        // Mostrar u ocultar la tarjeta
+        notasDiv.classList.toggle('hidden', notas.length === 0);
+    }
+
+    // ─── Abrir modal ──────────────────────────────────────────────────
+    // Escuchamos cuando Alpine abre el modal para cargar las notas correctas
+    window.addEventListener('open-modal', (e) => {
+        if (e.detail !== 'notas-modal') return;
+
+        if (modoEdicion && notasGuardadas.length > 0) {
+            // Modo edición: cargar las notas guardadas
+            cargarNotasEnModal(notasGuardadas);
+        } else {
+            // Primera vez: cargar notas por defecto
+            cargarNotasEnModal(NOTAS_DEFAULT);
+        }
+    });
+
+    // ─── Añadir nota ─────────────────────────────────────────────────
+    addItemBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const count = itemsContainer.querySelectorAll('.item-group-nota').length;
+        itemsContainer.appendChild(createItem(count + 1));
+    });
+
+    // ─── Eliminar nota ────────────────────────────────────────────────
+    itemsContainer.addEventListener('click', (e) => {
+        if (e.target.closest('.remove-item-nota')) {
+            e.preventDefault();
+            const grupos = itemsContainer.querySelectorAll('.item-group-nota');
+            if (grupos.length > 1) {
+                e.target.closest('.item-group-nota').remove();
+                renumerarNotas();
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Debe haber al menos 1 nota.',
+                    confirmButtonColor: '#d33',
+                });
+            }
+        }
+    });
+
+    // ─── Guardar notas ────────────────────────────────────────────────
+    guardarBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const textareas = itemsContainer.querySelectorAll('textarea');
+        const notas = Array.from(textareas).map(t => t.value.trim()).filter(v => v !== '');
+
+        if (notas.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin notas',
+                text: 'Agrega al menos una nota antes de guardar.',
+                confirmButtonColor: '#d33',
+            });
+            return;
+        }
+
+        // Guardar estado
+        notasGuardadas = notas;
+        modoEdicion = true;
+
+        // Actualizar tarjeta
+        actualizarTarjeta(notas);
+
+        // Cerrar modal via Alpine
+        window.dispatchEvent(new CustomEvent('close-modal', { detail: 'notas-modal' }));
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Guardado',
+            text: `${notas.length} nota(s) guardada(s) correctamente.`,
+            confirmButtonColor: '#3085d6',
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    });
+
+    // ─── Cerrar sin guardar ───────────────────────────────────────────
+    cerrarBtn.addEventListener('click', () => {
+        // No hacemos nada con el estado, Alpine cierra el modal
     });
 });

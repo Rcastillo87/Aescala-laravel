@@ -1,5 +1,5 @@
 import './bootstrap';
-import 'flowbite/dist/flowbite';
+import 'flowbite';
 import Swal from 'sweetalert2';
 
 import 'tom-select/dist/css/tom-select.default.css';

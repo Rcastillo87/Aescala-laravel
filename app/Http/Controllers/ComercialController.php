@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\EntregableProye;
 use App\Models\Entregables;
 use App\Models\Festivos;
+use App\Models\NotasProyecto;
 
 class ComercialController extends Controller
 {
@@ -79,6 +80,7 @@ class ComercialController extends Controller
             $valor = 0;
             $title = 'Crear Proyecto';
             $suma = 0;
+            $notas = [];
         } else {
             $entre = EntregableProye::with('entregable')->where('id_proyecto', $id)->get();
             $suma = $proyecto->aprov_diseno_por + $proyecto->ini_carpinteria_por + $proyecto->ini_enchape_por + $proyecto->ini_griferia_por + $proyecto->entrega_obra_por;
@@ -119,6 +121,10 @@ class ComercialController extends Controller
                     </div>
                     ';
                 $valor += $value->valor_total;
+
+                $notas = NotasProyecto::where('id_proyecto', $id)
+                    ->pluck('nota')
+                    ->toArray();
             }
             $title = 'Editar Proyecto';
         }
@@ -135,8 +141,9 @@ class ComercialController extends Controller
         $entregables = Entregables::with('defaults')->orderBy('nombre_estregable', 'asc')->get()->toArray();
         $tipoDocs = Proyecto::$tipoDocumento;
         $ubicacion = Proyecto::$ubicacion;
+
         return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs',
-            'entregables', 'entregableProye', 'valor', 'suma', 'ubicacion'));
+            'entregables', 'entregableProye', 'valor', 'suma', 'ubicacion', 'notas'));
     }
 
     public function save(Request $req)
@@ -185,6 +192,8 @@ class ComercialController extends Controller
                 'entregables.*.items' => ['required', 'array'],
                 'entregables.*.items.*' => ['string', 'max:255'],
                 'ubicacion' => ['required', 'integer', Rule::in(array_keys(Proyecto::$ubicacion))],
+                'notas'   => ['nullable', 'array'],
+                'notas.*' => ['string', 'max:1000'],
             ]);
 
             $suma = $req->termino_1_por + $req->termino_2_por + $req->termino_3_por + $req->termino_4_por + $req->termino_5_por + $req->termino_6_por;
@@ -203,7 +212,7 @@ class ComercialController extends Controller
 
             DB::beginTransaction();
             $datosProyecto = collect($data)
-                ->except(['entregables'])
+                ->except(['entregables', 'notas'])
                 ->toArray();
 
             $pro = Proyecto::updateOrCreate(
@@ -224,6 +233,16 @@ class ComercialController extends Controller
                 $entrega->valor_total   = $value['valor'];
                 $entrega->tx_entregable = implode("||", $value['items']);
                 $entrega->save();
+            }
+
+            NotasProyecto::where('id_proyecto', $pro->id)->delete();
+            if (!empty($data['notas'])) {
+                foreach ($data['notas'] as $nota) {
+                    NotasProyecto::create([
+                        'id_proyecto' => $pro->id,
+                        'nota'       => $nota,
+                    ]);
+                }
             }
 
             DB::commit();

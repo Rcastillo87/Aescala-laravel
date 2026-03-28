@@ -11,7 +11,7 @@ export default {
         './resources/**/*.vue',
         './node_modules/flowbite/**/*.js', // Asegura que Flowbite sea procesado
     ],
-    
+
     theme: {
         extend: {
             fontFamily: {
@@ -25,6 +25,11 @@ export default {
     ],
 
     safelist: [
+        'text-fg-brand-strong',
+        'bg-brand-softer',
+        'rounded-base',
+        'sm:items-center',
+
         // Clases de colores y fondos
         'bg-white',
         'bg-red-100',
@@ -120,7 +125,7 @@ export default {
         'justify-center',
         'justify-between',
         'items-baseline',
-        'flex-col', 
+        'flex-col',
         'justify-end',
         'self-start',
 

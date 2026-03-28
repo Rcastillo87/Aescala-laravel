@@ -340,6 +340,11 @@ class Proyecto extends Model
         return $this->hasMany(Otrosi::class, 'id_proyecto', 'id');
     }
 
+    public function nota_proyecto()
+    {
+        return $this->hasMany(NotasProyecto::class, 'id_proyecto', 'id');
+    }
+
     public function getTotalAttribute()
     {
         return $this->entreProyecto()

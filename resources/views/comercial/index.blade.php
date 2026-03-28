@@ -30,10 +30,18 @@
         ];
         $customCells = [
             'ubicacion' => function ($item) use ($departamentos) {
-                return '<span class="text-md">' .
-                    e($departamentos[(int) $item->departamento]['departamento']) . ' - ' .
-                    e($departamentos[(int) $item->departamento]['ciudades'][$item->ciudad]) .
-                '</span>';
+                $depIndex = (int) $item->departamento;
+                $ciudadIndex = (int) $item->ciudad;
+
+                $dep = isset($departamentos[$depIndex])
+                    ? e($departamentos[$depIndex]['departamento'])
+                    : 'N/A';
+
+                $ciudad = isset($departamentos[$depIndex]['ciudades'][$ciudadIndex])
+                    ? e($departamentos[$depIndex]['ciudades'][$ciudadIndex])
+                    : 'N/A';
+
+                return '<span class="text-md">' . $dep . ' - ' . $ciudad . '</span>';
             },
             'estado' => function ($item) {
                 return $item->spanEStado0;
