@@ -470,15 +470,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Al cargar, si hay notas previas (modo edición), activar modo edición
-    if (window.notasIniciales && window.notasIniciales.length > 0) {
-        notasGuardadas = window.notasIniciales;
-        modoEdicion = true;
-        actualizarTarjeta(notasGuardadas);
-    }
-
     const NOTAS_DEFAULT = [
-        'La separacion de cupo valor $3.000.000 se restara del valor del porcentaje de la etapa de diseño, el valor de la propuesta se congelara durante seis meses a partir de la fecha de la firma.',
+        'La separacion de cupo valor $3.000.000 se restara del valor del porcentaje de la etapa de diseño; el valor de la propuesta se congelara durante seis meses a partir de la fecha de la firma.',
         'Pasado los seis meses se realizara un ajuste en el presupuesto de la propuesta de acuerdo al valor establecido en el momento.'
     ];
 
@@ -635,4 +628,11 @@ document.addEventListener('DOMContentLoaded', () => {
     cerrarBtn.addEventListener('click', () => {
         // No hacemos nada con el estado, Alpine cierra el modal
     });
+
+    // Al cargar, si hay notas previas (modo edición), activar modo edición
+    if (window.notasIniciales && window.notasIniciales.length > 0) {
+        notasGuardadas = window.notasIniciales;
+        modoEdicion = true;
+        actualizarTarjeta(notasGuardadas);
+    }
 });

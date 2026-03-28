@@ -224,6 +224,7 @@ class Proyecto extends Model
             'imgRepre'            => $base64,
             "descuento"           => $this->descuento ?? 0,
             "acepta_tratamiento_datos" => ($this->acepta_trata_datos == 1) ? true : false,
+            "notas"               => $this->nota_proyecto
         ];
     }
 

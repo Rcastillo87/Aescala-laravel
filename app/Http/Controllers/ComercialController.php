@@ -121,11 +121,10 @@ class ComercialController extends Controller
                     </div>
                     ';
                 $valor += $value->valor_total;
-
-                $notas = NotasProyecto::where('id_proyecto', $id)
-                    ->pluck('nota')
-                    ->toArray();
             }
+            $notas = NotasProyecto::where('id_proyecto', $id)
+                ->pluck('nota')
+                ->toArray();
             $title = 'Editar Proyecto';
         }
 
