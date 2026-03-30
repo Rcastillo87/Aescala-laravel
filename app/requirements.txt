@@ -1,5 +1,0 @@
-docxtpl
-pywin32
-tqdm
-colorama
-setuptools

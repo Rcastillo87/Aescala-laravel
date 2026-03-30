@@ -193,6 +193,19 @@
 @endsection
 
 @section('scripts')
+
+    @if(session('despacho_codigo'))
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const url = "{{ route('solicitud.pdfDespacho') }}"
+                    + "?id={{ session('despacho_id_proyecto') }}"
+                    + "&codigo={{ session('despacho_codigo') }}"
+                    + "&view=1";
+                window.open(url, '_blank');
+            });
+        </script>
+    @endif
+
     <script>
         window.departamentos = @json(json_decode($departamentos));
     </script>

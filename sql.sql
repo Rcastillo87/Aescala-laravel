@@ -65,3 +65,29 @@ CREATE TABLE aescala.notas_proyecto (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+CREATE TABLE `bitacoras` (
+    `id`           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id_user`      BIGINT NULL,
+    `servicio`     VARCHAR(255) NOT NULL,
+    `metodo`       VARCHAR(10)  NOT NULL,
+    `url`          VARCHAR(255) NOT NULL,
+    `ip_address`   VARCHAR(45)  NOT NULL,
+    `user_agent`   TEXT         NULL,
+    `payload`      JSON         NOT NULL,
+    `error`        JSON         NULL,
+    `tipo`         VARCHAR(20)  NOT NULL COMMENT 'exito | error_validacion | error_inesperado',
+    `status_code`  SMALLINT     NOT NULL,
+    `duracion_ms`  INT UNSIGNED NULL,
+    `created_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_id_user`    (`id_user`),
+    INDEX `idx_servicio`   (`servicio`),
+    INDEX `idx_tipo`       (`tipo`),
+    INDEX `idx_created_at` (`created_at`),
+    CONSTRAINT `fk_bitacoras_user`
+        FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

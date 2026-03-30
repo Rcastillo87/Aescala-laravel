@@ -86,7 +86,7 @@
             @php
                 $depts = json_decode($departamentos, true)
             @endphp
-                    
+
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="departamento" :value="__('Departamento *')" />
                 <x-select-input
@@ -119,7 +119,6 @@
                     name="ubicacion"
                     id="ubicacion"
                     :options="$ubicacion"
-                    :selected="old('ubicacion', $proyecto?$proyecto->ubicacion:'')"
                     class="block mt-1 w-full"
                     required
                 />

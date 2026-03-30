@@ -713,6 +713,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
             document.getElementById("observacion").textContent = proyecto.observacion ?? '';
+            document.getElementById("ubicacion").value = proyecto.ubicacion ?? '';
 
             document.getElementById("fec_inicio_begin").value = proyecto.fec_inicio?.split('T')[0] ?? '';
             document.getElementById("fec_fin_estimado_b").value = proyecto.fec_fin_estimado?.split('T')[0] ?? '';
@@ -857,21 +858,12 @@ function _cpCerrarModal() {
     _cpIdProy    = null;
 }
 
-// ─── Bloquear cierre al hacer clic fuera ──────────────────────────────
-// Excluimos SweetAlert: sus elementos están fuera del panel pero
-// NO deben ser bloqueados por este listener.
-document.addEventListener('click', function (e) {
-    if (!_cpModalOpen) return;
-
-    // Clic dentro de SweetAlert → dejar pasar siempre
-    if (e.target.closest && e.target.closest('.swal2-container')) return;
-
-    const panel = document.getElementById('cal-proy-panel');
-    if (!panel) return;
-    if (panel.contains(e.target)) return;
-
-    e.stopImmediatePropagation();
-}, true);
+// ─── Sincronizar estado cuando Alpine cierra con Esc ──────────────────
+window.addEventListener('close-modal', (e) => {
+    if (e.detail !== 'calendario-modal') return;
+    _cpModalOpen = false;
+    _cpIdProy    = null;
+});
 
 // ─── Renderizar completo ───────────────────────────────────────────────
 function _cpRenderizar(data) {
@@ -1102,4 +1094,3 @@ function _cpFechaLegible(dateStr) {
     const [y, m, d] = dateStr.split('-').map(Number);
     return `${d} de ${_MESES_CP[m]} de ${y}`;
 }
-

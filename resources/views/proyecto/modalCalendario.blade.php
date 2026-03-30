@@ -241,7 +241,9 @@
                     <span class="cp-info-chip">⏱ Días: <b id="cp-dias-trabajo">—</b></span>
                 </div>
             </div>
-            <button type="button" onclick="_cpCerrarModal()"
+            <button type="button"
+                x-data=""
+                x-on:click="$dispatch('close-modal', 'calendario-modal')"
                 class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition flex-shrink-0 mt-1">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

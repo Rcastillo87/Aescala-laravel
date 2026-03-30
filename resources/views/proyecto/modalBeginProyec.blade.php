@@ -44,7 +44,7 @@
             @csrf
             <div class="flex flex-wrap border border-gray-200 rounded-lg">
                 <input type="hidden" name="id_proyecto_begin" id="id_proyecto_begin">
-                
+
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="fec_inicio_begin" :value="__('Fecha Ini Proyecto *')" />
                     <div class="relative max-w-sm">
@@ -53,17 +53,17 @@
                                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                             </svg>
                         </div>
-                        <input 
+                        <input
                             datepicker=""
                             datepicker-format="yyyy-mm-dd"
                             autocomplete="off"
-                            type="text" 
-                            id="fec_inicio_begin" 
-                            name="fec_inicio_begin" 
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                            type="text"
+                            id="fec_inicio_begin"
+                            name="fec_inicio_begin"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Seleccione fecha"
-                            value="{{ now() }}" 
-                            required 
+                            value="{{ now() }}"
+                            required
                         />
                     </div>
                     <x-input-error :messages="$errors->get('fec_inicio')" class="mt-2" />
@@ -86,7 +86,7 @@
                                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                             </svg>
                         </div>
-                        <input datepicker datepicker-format="yyyy-mm-dd" type="text" 
+                        <input datepicker datepicker-format="yyyy-mm-dd" type="text"
                                 id="fec_fin_estimado_b" name="fec_fin_estimado_b"
                                 datepicker
                                 datepicker-format="yyyy-mm-dd"
@@ -98,20 +98,20 @@
                 </div>
                 <div id="diasTrabajoBegin" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="dias_trabajo_begin" :value="__('Días Duración del Proyecto *')" />
-                    <x-text-input id="dias_trabajo_begin" class="block w-full" type="number" 
+                    <x-text-input id="dias_trabajo_begin" class="block w-full" type="number"
                                     name="dias_trabajo_begin" value="{{ old('dias_trabajo_begin') }}"/>
                     <x-input-error :messages="$errors->get('dias_trabajo_begin', 1)" class="mt-2" />
                 </div>
 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="id_user" :value="__('Arquitecto Encargado *')" />
-                    <x-select-input 
-                        name="id_user_proy" 
+                    <x-select-input
+                        name="id_user_proy"
                         id="id_user_proy"
-                        :options="$colaUsers" 
+                        :options="$colaUsers"
                         :data="['id', 'nombre_completo']"
-                        :selected="old('id_user')" 
-                        class="block mt-1 w-full" 
+                        :selected="old('id_user')"
+                        class="block mt-1 w-full"
                         required
                     />
                     <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
@@ -119,12 +119,12 @@
 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="id_user_obra_blanca" :value="__('Cont. Obra Blanca')" />
-                    <x-select-input 
-                        name="id_user_obra_blanca" 
+                    <x-select-input
+                        name="id_user_obra_blanca"
                         id="id_user_obra_blanca"
-                        :options="$contraUsers" 
+                        :options="$contraUsers"
                         :data="['id', 'nombre_completo']"
-                        :selected="old('id_user_obra_blanca')" 
+                        :selected="old('id_user_obra_blanca')"
                         class="block mt-1 w-full"
                     />
                     <x-input-error :messages="$errors->get('id_user_obra_blanca')" class="mt-2" />
@@ -132,12 +132,12 @@
 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="id_user_carpinteria" :value="__('Cont. Carpinteria')" />
-                    <x-select-input 
-                        name="id_user_carpinteria" 
+                    <x-select-input
+                        name="id_user_carpinteria"
                         id="id_user_carpinteria"
-                        :options="$contraUsers" 
+                        :options="$contraUsers"
                         :data="['id', 'nombre_completo']"
-                        :selected="old('id_user_carpinteria')" 
+                        :selected="old('id_user_carpinteria')"
                         class="block mt-1 w-full"
                     />
                     <x-input-error :messages="$errors->get('id_user_carpinteria')" class="mt-2" />
@@ -160,7 +160,7 @@
                                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                             </svg>
                         </div>
-                        <input datepicker datepicker-format="yyyy-mm-dd" type="text" 
+                        <input datepicker datepicker-format="yyyy-mm-dd" type="text"
                                 id="fec_ini_dise" name="fec_ini_dise"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
                                 value="{{ old('fec_ini_dise', now()) }}"
@@ -172,12 +172,24 @@
                     <x-input-error :messages="$errors->get('fec_ini_dise')" class="mt-2" />
                 </div>
 
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <x-input-label for="ubicacion" :value="__('Ubicación *')" />
+                    <x-select-input
+                        name="ubicacion"
+                        id="ubicacion"
+                        :options="$ubicacion"
+                        class="block mt-1 w-full"
+                        required
+                    />
+                    <x-input-error :messages="$errors->get('ubicacion')" class="mt-2" />
+                </div>
+
                 <div class="w-full max-w-full p-3 shrink-0 lg:w-8/12 2xl:w-6/12 md:flex-0">
                     <x-input-label for="observacion" :value="__('Comentario')" />
                     <textarea id="observacion" class="block mt-1 w-full h-20" type="text" name="observacion" autofocus></textarea>
                     <x-input-error :messages="$errors->get('observacion')" class="mt-2" />
                 </div>
-                
+
                 <div class="flex w-full justify-between m-2">
                     <a  href="#" tabindex="0"
                         x-on:click="$dispatch('close-modal', 'beginProyec-modal')"

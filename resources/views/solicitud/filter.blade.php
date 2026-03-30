@@ -61,7 +61,7 @@
                         <x-select-input
                             name="id_estado_item"
                             :options="$arr"
-                            :selected="Request('id_estado_item')"
+                            :selected="Request('id_estado_item', '')"
                             class="block mt-1 w-full"
                         />
                     </div>

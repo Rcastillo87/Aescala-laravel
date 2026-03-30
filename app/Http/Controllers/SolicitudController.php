@@ -16,9 +16,13 @@ use App\Models\User;
 use App\Models\Despachos;
 use App\Models\Fase;
 use App\Http\Requests\SaveSolicitudRequest;
+use App\Traits\RegistraBitacora;
+
 
 class SolicitudController extends Controller
 {
+    use RegistraBitacora;
+
     public function index( )
     {
         if(Auth::user()->isAdmin || Auth::user()->isAnalista){
@@ -79,7 +83,7 @@ class SolicitudController extends Controller
             ->get();
 
         $estados = SolicitudMaterial::$estados;
-        $userColab = User::whereIn('id_rol', [3, 9])->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
+        $userColab = User::whereIn('id_rol', [3, 9, 7])->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
         $ubicacion = Proyecto::$ubicacion;
         $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
@@ -142,6 +146,8 @@ class SolicitudController extends Controller
 
     public function save(Request $request)
     {
+        $inicio = microtime(true);
+
         $validated = $request->validate([
             'id_proyecto' => [
                 'required',
@@ -203,11 +209,34 @@ class SolicitudController extends Controller
                     }
                 }
             });
+
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@save',
+                tipo: 'exito',
+                statusCode: 200,
+                inicio: $inicio
+            );
+
             return response()->json([
                 'status' => true,
                 'message' => ($validated['cotizar'] == 1)? 'Cotizacion registrada correctamente' : 'Solicitud registrada correctamente',
             ], 200);
         } catch (\Throwable $e) {
+
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@save',
+                tipo: 'error_inesperado',
+                statusCode: 500,
+                inicio: $inicio,
+                error: [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                ]
+            );
+
             return response()->json([
                 'status' => false,
                 'message' => 'Error al guardar la solicitud',
@@ -261,6 +290,7 @@ class SolicitudController extends Controller
     }
 
     public function createDespachoSolicitud($id){
+        session(['solicitud_anterior_url' => url()->previous()]);
         return $this->createSolicitud($id, false);
     }
 
@@ -322,6 +352,15 @@ class SolicitudController extends Controller
     public function saveSolicitud(SaveSolicitudRequest $request)
     {
         $validated = $request->validated();
+        $inicio    = microtime(true);
+
+        $this->registrar(
+            request: $request,
+            servicio: 'SolicitudController@saveSolicitud[aprobacion]',
+            tipo: 'exito',
+            statusCode: 200,
+            inicio: $inicio
+        );
 
         DB::beginTransaction();
         try {
@@ -417,18 +456,60 @@ class SolicitudController extends Controller
             $estado = $solItemCount == 0 ? 3 : 2;
             $solMaterial->update(['estado' => $estado]);
 
+            //DB::commit();
+            //return redirect()->route('solicitud.index')->with('success', "Despacho realizado con exito");
             DB::commit();
-            return redirect()->route('solicitud.index')->with('success', "Despacho realizado con exito");
+
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@saveSolicitud[despacho]',
+                tipo: 'exito',
+                statusCode: 200,
+                inicio: $inicio
+            );
+
+            return redirect(session('solicitud_anterior_url', route('solicitud.index')))
+                ->with('success', 'Despacho realizado con éxito')
+                ->with('despacho_codigo', $codigo)
+                ->with('despacho_id_proyecto', $solMaterial->id_proyecto);
         } catch (\Illuminate\Database\QueryException $e) {
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@saveSolicitud',
+                tipo: 'error_inesperado',
+                statusCode: 500,
+                inicio: $inicio,
+                error: [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                ]
+            );
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
         } catch (\Exception $e) {
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@saveSolicitud',
+                tipo: 'error_inesperado',
+                statusCode: 500,
+                inicio: $inicio,
+                error: [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                ]
+            );
             DB::rollBack();
             return back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
     }
 
     public function delete($id){
+
+        $inicio  = microtime(true);
+        $request = request();
+
         $item =  SolicitudMaterial::find($id);
         if($item && !($item->estado == 1 || $item->estado == 4)){
             return back()->with('error', 'Solo se pueden eliminar Solicitudes de Material en estado "Nuevo" o "Cotizacion".');
@@ -436,11 +517,22 @@ class SolicitudController extends Controller
         $item->items()->delete();
         $item->cotizacion()->delete();
         $item->delete();
+
+        $this->registrar(
+            request: $request,
+            servicio: 'SolicitudController@delete',
+            tipo: 'exito',
+            statusCode: 200,
+            inicio: $inicio
+        );
         return redirect()->route('solicitud.index')->with('success', " Solicitudes de Material eliminada con exito");
     }
 
     public function solicitarCotizacion($id)
     {
+        $inicio  = microtime(true);
+        $request = request();
+
         try {
             DB::transaction(function () use ($id) {
                 $solicitud = SolicitudMaterial::with('cotizacion')->findOrFail($id);
@@ -457,11 +549,33 @@ class SolicitudController extends Controller
                     ]);
                 }
             });
+
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@solicitarCotizacion',
+                tipo: 'exito',
+                statusCode: 200,
+                inicio: $inicio
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Cotización despachada'
             ]);
         } catch (\Throwable $e) {
+            $this->registrar(
+                request: $request,
+                servicio: 'SolicitudController@solicitarCotizacion',
+                tipo: 'error_inesperado',
+                statusCode: 500,
+                inicio: $inicio,
+                error: [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                ]
+            );
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al despachar'

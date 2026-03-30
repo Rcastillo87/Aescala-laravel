@@ -81,7 +81,9 @@
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Ubicacion</p>
                         <span class="text-md text-black">{{$departamentos[intval($item['departamento'])]['departamento']}} -
-                            {{$departamentos[intval($item['departamento'])]['ciudades'][$item['ciudad']]}}</span>
+                            {{$departamentos[intval($item['departamento'])]['ciudades'][$item['ciudad']]}} -
+                            {{ $item->ubicacion !== null ? ($ubicacion[$item->ubicacion] ?? 'N/A') : 'N/A' }}
+                        </span>
                     </div>
                     <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                         <p class="text-lg text-gray-500 font-bold">Dirrecion</p>

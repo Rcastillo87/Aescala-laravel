@@ -96,6 +96,9 @@ class ProyectoController extends Controller
         $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
         $proyecto = [];
         $tipoDoc = Proyecto::$tipoDocumento;
+        $ubicacion = Proyecto::$ubicacion;
+
+
         $colaUsers = User::where('id_rol', 3)
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
@@ -123,7 +126,8 @@ class ProyectoController extends Controller
             'hoy',
             'headerComparativo',
             'proyecto',
-            'contraUsers'
+            'contraUsers',
+            'ubicacion'
         ));
     }
 
@@ -266,6 +270,7 @@ class ProyectoController extends Controller
             ],
             'fec_ini_dise' => ['nullable', 'date', 'date_format:Y-m-d'],
             'conFechaDise' => 'required|integer|in:0,1',
+            'ubicacion' => ['required', 'integer', Rule::in(array_keys(Proyecto::$ubicacion))],
         ];
 
         $arrayAttributes = [
@@ -280,6 +285,7 @@ class ProyectoController extends Controller
             'fec_ini_dise'           => 'fecha de inicio de diseño',
             'conFechaDise'           => 'con fecha de diseño',
             'observacion'            => 'observación',
+            'ubicacion'            => 'ubicación',
         ];
 
         $data = $req->validate($valbase, [], $arrayAttributes);
