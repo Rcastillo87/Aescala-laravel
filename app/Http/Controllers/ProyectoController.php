@@ -48,7 +48,7 @@ class ProyectoController extends Controller
             $est = [1, 5];
         }
 
-        $cola = Auth::user()->isnotColab? Auth::user()->id : Request('id_userSerch');
+        $cola = Auth::user()->isnotColab? Request('id_userSerch') : Auth::user()->id;
 
         $contra = Auth::user()->isContratista? Auth::user()->id : Request('id_contratista');
 
