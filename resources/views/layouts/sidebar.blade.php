@@ -8,7 +8,7 @@
         </a>
         <ul class="space-y-1 font-medium">
             <!-- Grupo: Proyectos -->
-            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isCartera || Auth::user()->isAnalista)
+            @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isCartera || Auth::user()->isAnalista || Auth::user()->isContratista)
                 <li>
                     <button type="button"
                         class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group hover:text-orange-500hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -79,7 +79,7 @@
                             </li>
                         @endif
 
-                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista || Auth::user()->isComer)
+                        @if (Auth::user()->isColab || Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAnalista || Auth::user()->isComer || Auth::user()->isContratista)
                             <li>
                                 <a href="{{ route('proyecto.index') }}"
                                     class="flex items-center p-2 font-normal text-white hover:text-orange-500 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">

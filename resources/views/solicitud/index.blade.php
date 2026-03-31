@@ -208,6 +208,8 @@
 
     <script>
         window.departamentos = @json(json_decode($departamentos));
+        window.selectedDepartamento = "{{ request('departamento') }}";
+        window.selectedCiudad = "{{ request('ciudad') }}";
     </script>
     <script src="{{ asset('js/solicitud/index.js') }}?v={{ filemtime(public_path('js/solicitud/index.js')) }}"></script>
 @endsection

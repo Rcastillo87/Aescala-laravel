@@ -90,7 +90,7 @@ class SolicitudController extends Controller
 
         $headers = ['Nombre del Proyecto', 'Ubicación', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Opciones'];
         if(!(Auth::User()->isAdmin || Auth::user()->isAnalista)) {
-            $headers = ['Nombre del Proyecto', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
+            $headers = ['Nombre del Proyecto', 'Ubicación', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
         return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'estadosItems', 'userColab', 'ubicacion', 'departamentos'));
     }

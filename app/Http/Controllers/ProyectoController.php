@@ -48,11 +48,9 @@ class ProyectoController extends Controller
             $est = [1, 5];
         }
 
-        if (Auth::user()->isnotColab) {
-            $cola = Request('id_userSerch');
-        } else {
-            $cola = Auth::user()->id;
-        }
+        $cola = Auth::user()->isnotColab? Auth::user()->id : Request('id_userSerch');
+
+        $contra = Auth::user()->isContratista? Auth::user()->id : Request('id_contratista');
 
         $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
         $hoy = Carbon::today();
@@ -70,8 +68,8 @@ class ProyectoController extends Controller
             ->when($cola, function ($query, $id_user) {
                 return $query->where('id_user', $id_user);
             })
-            ->when(Request('id_contratista'), function ($query, $id_contratista) {
-                return $query->where('id_user_obra_blanca', $id_contratista)->orwhere('id_user_carpinteria', $id_contratista);
+            ->when($contra, function ($query, $contra) {
+                return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_carpinteria', $contra);
             })
             ->whereNotNull('id_estado')
             ->orderBy('id', 'desc')

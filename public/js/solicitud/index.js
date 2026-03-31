@@ -100,27 +100,44 @@ function confirmDelete(el) {
         }
     });
 }
+
 document.addEventListener("DOMContentLoaded", function() {
     const departamentos = window.departamentos;
+    const deptoSelect = document.getElementById('departamento');
+    const ciudadSelect = document.getElementById('ciudad');
 
-    document.getElementById('departamento').addEventListener('change', function() {
-        let deptoId = this.value;
-        console.log(deptoId)
-        let ciudadSelect = document.getElementById('ciudad');
+    function cargarCiudades(deptoId, selectedCiudad = null) {
         ciudadSelect.innerHTML = '<option value="">-- Seleccione --</option>';
 
         if (deptoId !== "") {
             let ciudades = departamentos.find(depto => depto.id == deptoId)?.ciudades || [];
+
             ciudades.forEach((ciudad, index) => {
                 let option = document.createElement('option');
                 option.value = index;
                 option.textContent = ciudad;
+
+                // 👉 mantener seleccion
+                if (selectedCiudad !== null && selectedCiudad == index) {
+                    option.selected = true;
+                }
+
                 ciudadSelect.appendChild(option);
             });
         }
-    });
-});
+    }
 
+    // 👉 evento change normal
+    deptoSelect.addEventListener('change', function() {
+        cargarCiudades(this.value);
+    });
+
+    // 👉 🔥 CLAVE: cargar al iniciar si hay datos
+    if (window.selectedDepartamento) {
+        deptoSelect.value = window.selectedDepartamento;
+        cargarCiudades(window.selectedDepartamento, window.selectedCiudad);
+    }
+});
 
 function descargaLink(url) {
     Swal.fire({

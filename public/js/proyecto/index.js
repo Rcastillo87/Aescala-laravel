@@ -455,6 +455,7 @@ async function renderDespachos(despachos, id) {
         `;
         boton.removeAttribute('data-id');
         boton.classList.add('hidden');
+        document.getElementById('totalFacturado').innerHTML = '';
         return;
     }
     boton.setAttribute('data-id', id);

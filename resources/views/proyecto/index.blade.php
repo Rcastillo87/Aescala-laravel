@@ -187,7 +187,7 @@
                         </div>
 
                         <!-- Botón tratamiento  de datos -->
-                        <div class="relative @if($item->acepta_trata_datos == 0 && (!Auth::user()->isAdmin || !Auth::user()->isUser)) hidden @endif">
+                        <div class="relative @if($item->acepta_trata_datos == 0 || !(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                             <a tabindex="0"
                             data-tooltip-target="tooltip-hover-trataDatosPDF-{{$item->id}}"
                             data-tooltip-trigger="hover"
