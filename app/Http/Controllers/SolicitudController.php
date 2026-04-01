@@ -25,7 +25,7 @@ class SolicitudController extends Controller
 
     public function index( )
     {
-        if(Auth::user()->isAdmin || Auth::user()->isAnalista){
+        if(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista){
             $cola = Request('id_userSerch');
         } else {
             $cola = Auth::user()->id;
@@ -68,9 +68,9 @@ class SolicitudController extends Controller
                     });
                 });
             })
-            ->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista), function ($query) {
+            /*->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista), function ($query) {
                 $query->where('id_user', Auth::User()->id);
-            })
+            })*/
             ->orderBy('id', 'desc')
             ->paginate(10)
             ->appends(request()->query());
@@ -295,6 +295,7 @@ class SolicitudController extends Controller
     }
 
     public function createAprobarSolicitud($id){
+        session(['solicitud_anterior_url' => url()->previous()]);
         return $this->createSolicitud($id, true);
     }
 
@@ -384,7 +385,8 @@ class SolicitudController extends Controller
                     ])->update($update);
                 }
                 DB::commit();
-                return redirect()->route('solicitud.index')->with('success', "Aprobacion de items realizada con exito");
+                return redirect(session('solicitud_anterior_url', route('solicitud.index')))
+                    ->with('success', "Aprobacion de items realizada con exito");
             }
 
             //Proceso de despacho

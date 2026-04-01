@@ -27,7 +27,7 @@
                         <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')"
                          autofocus />
                     </div>
-                    @if (Auth::user()->isAdmin || Auth::user()->isAnalista)
+                    @if (Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista)
                         <div class="p-2 shrink-0 w-[40]">
                             <x-input-label for="id_userSerch" :value="__('Quien Solicita')" />
                             <x-select-input

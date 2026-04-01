@@ -7,7 +7,7 @@
             <input type="hidden" id="id" name="id" value="{{$material?$material->id:''}}">
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="nombre_material" :value="__('Nombre Material *')" />
-                <x-text-input id="nombre_material" class="block mt-1 w-full" type="text" name="nombre_material" :value="old('nombre_material', $material?$material->nombre_material:'')" 
+                <x-text-input id="nombre_material" class="block mt-1 w-full" type="text" name="nombre_material" :value="old('nombre_material', $material?$material->nombre_material:'')"
                 required autofocus />
                 <x-input-error :messages="$errors->get('nombre_material')" class="mt-2" />
             </div>
@@ -32,11 +32,11 @@
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="id_unidad" :value="__('Unidad de medida *')" />
-                <x-select-input 
-                    name="id_unidad" 
-                    :options="$unidades" 
-                    :selected="old('id_unidad',$material?$material->id_unidad:'')" 
-                    class="block mt-1 w-full" 
+                <x-select-input
+                    name="id_unidad"
+                    :options="$unidades"
+                    :selected="old('id_unidad',$material?$material->id_unidad:'')"
+                    class="block mt-1 w-full"
                     required
                 />
                 <x-input-error :messages="$errors->get('id_unidad')" class="mt-2" />
@@ -56,38 +56,38 @@
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="id_proveedor" :value="__('Proveedor Principal')" />
-                <x-select-input 
-                    id="id_proveedor" 
-                    name="id_proveedor" 
-                    :options="$proveedores" 
+                <x-select-input
+                    id="id_proveedor"
+                    name="id_proveedor"
+                    :options="$proveedores"
                     :data="['id', 'razon_social']"
-                    :selected="old('id_proveedor',$material?$material->id_proveedor:'')" 
-                    class="block mt-1 w-full" 
+                    :selected="old('id_proveedor',$material?$material->id_proveedor:'')"
+                    class="block mt-1 w-full"
                 />
                 <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
             </div>
 
-            @if (!Auth::user()->isAlmacenista)
+            @if (!$tipo)
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="tipo" :value="__('Tipo Material')" />
-                    <x-select-input 
-                        name="tipo" 
-                        :options="$tipos" 
-                        :selected="old('tipo', $material?$material->tipo:'')" 
-                        class="block mt-1 w-full" 
+                    <x-select-input
+                        name="tipo"
+                        :options="$tipos"
+                        :selected="old('tipo', $material?$material->tipo:'')"
+                        class="block mt-1 w-full"
                     />
                     <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
                 </div>
             @else
-                <input type="hidden" name="tipo" value="2">
+                <input type="hidden" name="tipo" value="{{$tipo}}">
             @endif
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="zona" :value="__('Zona')" />
-                <x-select-input 
+                <x-select-input
                     name="zona"
-                    :options="$zonas" 
-                    :selected="old('zona', $material?$material->zona:'')" 
+                    :options="$zonas"
+                    :selected="old('zona', $material?$material->zona:'')"
                     class="block mt-1 w-full"
                 />
             </div>
@@ -97,20 +97,20 @@
                 <x-text-input id="descripccion" class="block mt-1 w-full" type="text" name="descripccion" :value="old('descripccion', $material?$material->descripccion:'')"/>
                 <x-input-error :messages="$errors->get('descripccion')" class="mt-2" />
             </div>
-            
+
             <div class="w-full max-w-full px-3 pt-8 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <input type="hidden" name="aprobar" value="0">
                 <label class="inline-flex items-center cursor-pointer">
-                    <input 
-                        type="checkbox" 
-                        name="aprobar" 
-                        value="1" 
+                    <input
+                        type="checkbox"
+                        name="aprobar"
+                        value="1"
                         class="sr-only peer"
                         {{ old('aprobar', $material->aprobar ?? false) ? 'checked' : '' }}
                     >
-                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer 
-                        dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute 
-                        after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 
+                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer
+                        dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute
+                        after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600
                         peer-checked:bg-blue-600"></div>
                     <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
                         Requiere Aprobacion para el Despacho

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\InventarioMaterial;
 use App\Models\Proveedor;
+use App\Models\Almacenes;
 
 
 class MaterialController extends Controller
@@ -21,14 +22,15 @@ class MaterialController extends Controller
         $tipos  = InventarioMaterial::$tipo;
         $perPage = request('per_page', 10);
 
-        if (!Auth::user()->isAlmacenista) {
+        if(Auth::user()->isAlmacenista){
+            $tipo = Almacenes::where('id_user', Auth::user()->id)->first()->tipo;
+        } else if(Auth::user()->isAdmin || Auth::user()->isUser){
             $tipo  = request('tipo');
         } else {
-            $tipo = 2;
+            return back()->with('error', 'No posees el perfil para entrar en este  modulo.');
         }
 
         $query = InventarioMaterial::query()
-
             ->when(request('nombre_material'), function ($q, $nombre) {
                 foreach (preg_split('/\s+/', trim($nombre)) as $palabra) {
                     $q->whereRaw('LOWER(nombre_material) LIKE ?', ['%' . strtolower($palabra) . '%']);
@@ -166,13 +168,15 @@ class MaterialController extends Controller
         }, 200, $headers);
     }
 
-    public function create( ) 
+    public function create( )
     {
+        session(['solicitud_anterior_url' => url()->previous()]);
         return $this->form();
     }
 
-    public function edit($id) 
+    public function edit($id)
     {
+        session(['solicitud_anterior_url' => url()->previous()]);
         return $this->form($id);
     }
 
@@ -184,7 +188,15 @@ class MaterialController extends Controller
         $tipos = InventarioMaterial::$tipo;
         $proveedores = Proveedor::where('activo', 1)->get()->toArray();
         $zonas = InventarioMaterial::$zonas;
-        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material', 'proveedores', 'zonas'));
+
+        if(Auth::user()->isAlmacenista){
+            $tipo = Almacenes::where('id_user', Auth::user()->id)->first()->tipo;
+        } else if(Auth::user()->isAdmin || Auth::user()->isUser){
+            $tipo  = '';
+        } else {
+            return back()->with('error', 'No posees el perfil para entrar en este  modulo.');
+        }
+        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material', 'proveedores', 'zonas', 'tipo'));
     }
 
     public function save(Request $req)
@@ -204,7 +216,7 @@ class MaterialController extends Controller
             'id_unidad' => Rule::in(array_keys(InventarioMaterial::$unidades)),
             'valor_unidad' => 'required|numeric|min:0',
             'valor_inventario' => 'required|numeric|min:0',
-            'tipo' => Rule::in(array_keys(InventarioMaterial::$tipo)),
+            'tipo' => ['nullable', Rule::in(array_keys(InventarioMaterial::$tipo))],
             'descripccion' => 'nullable|string',
             'nombre_material' => 'required|string',
             'aprobar' => ['required', 'integer', 'in:0,1'],
@@ -215,7 +227,7 @@ class MaterialController extends Controller
             ],
             'zona' => [ 'nullable',  Rule::in(array_keys(InventarioMaterial::$zonas))],
         ]);
-        
+
         if(!(Auth::user()->isAlmacenista || Auth::user()->isAdmin) && $req->id) {
             $data = array_diff_key($data, ['cantidad' => '']);
         }
@@ -233,7 +245,7 @@ class MaterialController extends Controller
                 $data
             );
             DB::commit();
-            return redirect()->route('material.index')->with('success', $msg);
+            return redirect(session('solicitud_anterior_url', route('material.index')))->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());
@@ -243,7 +255,7 @@ class MaterialController extends Controller
         }
     }
 
-    public function editStatus($id) 
+    public function editStatus($id)
     {
         try {
             DB::beginTransaction();
@@ -251,7 +263,7 @@ class MaterialController extends Controller
             $user->update(['activo' => ($user->activo == 1) ? 2 : 1]);
             DB::commit();
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'Material actualizado correctamente.'
             ],200);
         } catch (\Exception $e) {

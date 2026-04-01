@@ -114,7 +114,7 @@
 
                             @endif
 
-                            @if((Auth::user()->isAdmin || Auth::user()->isUser) && ($item->estado == 1 || ($item->estado == 2)) )
+                            @if((Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isAlmacenista) && ($item->estado == 1 || ($item->estado == 2)) )
                                 <a tabindex="0"
                                     data-tooltip-target="tooltip-despachar-{{$item->id}}"
                                     data-tooltip-trigger="hover"

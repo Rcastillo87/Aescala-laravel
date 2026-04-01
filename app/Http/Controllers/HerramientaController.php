@@ -14,19 +14,19 @@ use App\Models\User;
 class HerramientaController extends Controller
 {
 
-    public function index( ) 
+    public function index( )
     {
         $title = 'Lista de Herramientas';
-        $items = Herramienta::when(Request('nombre_herramienta'), function ($query, $nombre_herramienta) { 
+        $items = Herramienta::when(Request('nombre_herramienta'), function ($query, $nombre_herramienta) {
             return $query->whereRaw('LOWER(nombre_herramienta) LIKE LOWER(?)', ["%$nombre_herramienta%"]);
         })
-        ->when(Request('referencia'), function ($query, $referencia) { 
+        ->when(Request('referencia'), function ($query, $referencia) {
             return $query->whereRaw('LOWER(referencia) LIKE LOWER(?)', ["%$referencia%"]);
         })
-        ->when(Request('marca'), function ($query, $marca) { 
+        ->when(Request('marca'), function ($query, $marca) {
             return $query->whereRaw('LOWER(marca) LIKE LOWER(?)', ["%$marca%"]);
         })
-        ->when(Request('estado'), function ($query, $estado) { 
+        ->when(Request('estado'), function ($query, $estado) {
             return $query->where('estado', $estado);
         })
         ->paginate(10)
@@ -34,7 +34,7 @@ class HerramientaController extends Controller
         $userPrestamo = User::where('id_rol', 3)->where('activo', 1)
         ->get(['id', 'nombre_completo'])
         ->toArray();
-    
+
         $estado = Herramienta::$estado;
         $prestamo = HerramientaPrestamo::$prestamo;
         $headers = ['Nombre Herramienta', 'Referencia', 'Marca', 'Fecha de Creación', 'Estado','Estado Prestamo','Prestado a', 'Opciones'];
@@ -42,12 +42,12 @@ class HerramientaController extends Controller
         return view('herramienta.index', compact('title', 'items', 'headers', 'estado', 'headersPrestamos', 'userPrestamo', 'prestamo'));
     }
 
-    public function create( ) 
+    public function create( )
     {
         return $this->form();
     }
 
-    public function edit($id) 
+    public function edit($id)
     {
         return $this->form($id);
     }
@@ -70,14 +70,14 @@ class HerramientaController extends Controller
             'observacion' => 'nullable|string',
             'estado' => ['required', 'integer', Rule::in(array_keys(Herramienta::$estado))],
         ]);
-    
+
         $msg = ucfirst($req->id ? 'herramienta editado con éxito' : 'herramienta creado con éxito');
-    
+
         try {
             DB::beginTransaction();
             Herramienta::updateOrCreate(['id' => $data['id']], $data);
             DB::commit();
-    
+
             return redirect()->route('herramienta.index')->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
@@ -98,7 +98,7 @@ class HerramientaController extends Controller
 
             $lastPrestamo = HerramientaPrestamo::where('id_herramienta', request('id'))
                 ->orderBy('id', 'desc')->first();
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'Lista de préstamos.',
@@ -139,9 +139,9 @@ class HerramientaController extends Controller
                 return back()->with('error', "El dispositivo se encuentra " . HerramientaPrestamo::$prestamo[$lastPrestamo->tipo_prestamo]);
             }
         }
-        
+
         $msg = ucfirst($req->id ? "Editado con éxito" : 'Creado con éxito');
-    
+
         try {
             DB::beginTransaction();
             HerramientaPrestamo::updateOrCreate(['id' => $data['id']], $data);
@@ -155,5 +155,5 @@ class HerramientaController extends Controller
             return back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
     }
-    
+
 }

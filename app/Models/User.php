@@ -174,7 +174,7 @@ class User extends Authenticatable
                     $q->where('aprobado', 0);
                 });
             })
-            ->when(Auth::user()->isAdmin, function ($query) {
+            ->when((Auth::user()->isAdmin || Auth::user()->isAlmacenista), function ($query) {
                 $query->where('estado', 1);
             })
             ->count();
@@ -212,7 +212,7 @@ class User extends Authenticatable
         6 => 'Analista',
         7 => 'Contratista',
         8 => 'Tecnico',
-        9 => 'Almacenista Carpinteria',
+        9 => 'Almacenista',
     ];
 
     public static $ClassRol = [
