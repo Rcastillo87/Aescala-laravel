@@ -41,25 +41,13 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', 'on');
         }
 
-        /*Gate::define('userIsValid', function (User $user) {
-            return $user->userIsValid;
-        });
+        $acciones = config('roles.acciones', []);
+        foreach ($acciones as $accion => $helpers) {
+            Gate::define($accion, function ($user) use ($helpers) {
+                return collect($helpers)
+                    ->contains(fn($helper) => $user->{$helper} === true);
+            });
+        }
 
-
-        Gate::define('isSuperAdmin', function (User $user) {
-            return $user->isSuperAdmin;
-        });
-
-        Gate::define('isAdminCli', function (User $user) {
-            return $user->isAdminCli;
-        });
-
-        Gate::define('isAdminOrSuperAdmin', function ($user) {
-            return $user->can('isSuperAdmin') || $user->can('isAdminCli');
-        });
-
-        Gate::define('isNotAdminCli', function (User $user) {
-            return !$user->isAdminCli;
-        });*/
     }
 }

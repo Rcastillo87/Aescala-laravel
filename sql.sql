@@ -91,3 +91,38 @@ CREATE TABLE `bitacoras` (
         FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `insumos` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nombre_insumo` varchar(100) NOT NULL,
+  `codigo` varchar(20) NOT NULL,
+  `estado` smallint NOT NULL DEFAULT '1',
+  `cantidad` bigint NOT NULL,
+  `cantidad_min` bigint NOT NULL,
+  `descripccion` text,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE aescala.areas_empresa (
+	id BIGINT auto_increment NOT NULL,
+	nombre_area varchar(100) NOT NULL,
+	CONSTRAINT areas_empresa_pk PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `insumos_entregados` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id_area_empresa` bigint NOT NULL,
+  `id_user` bigint DEFAULT NULL,
+  `id_insumo` bigint NOT NULL,
+  `cantidad` bigint DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

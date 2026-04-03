@@ -20,7 +20,7 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\AlmacenController;
-
+use App\Http\Controllers\InsumosController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -265,6 +265,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [AlmacenController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [AlmacenController::class, 'edit'])->name('edit');
         Route::post('/save', [AlmacenController::class, 'save'])->name('save');
+    });
+
+    Route::prefix('insumos')->name('insumos.')->group(function () {
+        Route::get('/index', [InsumosController::class, 'index'])->name('index');
+        Route::get('/create', [InsumosController::class, 'create'])->name('create');
+        Route::get('/edit/{id}', [InsumosController::class, 'edit'])->name('edit');
+        Route::post('/save', [InsumosController::class, 'save'])->name('save');
+        Route::get('/editStatus/{id}', [InsumosController::class, 'editStatus'])->name('editStatus');
     });
 
 });
