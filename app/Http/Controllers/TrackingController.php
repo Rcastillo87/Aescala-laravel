@@ -6,11 +6,14 @@ use App\Models\Dispositivo;
 use App\Models\Georreferencia;
 use App\Models\user;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TrackingController extends Controller
 {
     public function index()
     {
+        Gate::authorize('tracking.index');
+
         $title = 'Dispositivos En Mapa';
 
         $idsAsignados = Dispositivo::whereNotNull('id_user')
@@ -40,6 +43,9 @@ class TrackingController extends Controller
 
     public function asination(Request $request)
     {
+
+        Gate::authorize('tracking.asination');
+
         $request->validate([
             'device_id' => 'required|integer|exists:dispositivo,id',
             'user_id'   => 'nullable|integer|exists:users,id',
@@ -57,6 +63,8 @@ class TrackingController extends Controller
      */
     public function realtime(Request $request)
     {
+        Gate::authorize('tracking.realtime');
+
         $ids = $request->input('ids'); // null = todos
 
         $query = Dispositivo::with(['ultimaUbicacion', 'userAsignado']);
@@ -93,6 +101,9 @@ class TrackingController extends Controller
      */
     public function history(Request $request)
     {
+
+        Gate::authorize('tracking.history');
+
         $request->validate([
             'device_id' => 'required|integer|exists:dispositivo,id',
             'date'      => 'required|date',

@@ -66,12 +66,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
                     </svg>
                 </button>
-                <input type="number" 
+                <input type="number"
                        value="1"
                        min="1"
-                       name="materiales[${materialIndex}][cantidad]" 
+                       name="materiales[${materialIndex}][cantidad]"
                        placeholder="Cantidad"
-                       class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
+                       class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
                        onchange="calculateTotal(this)">
             </div>
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion??''}</small></p>
             </div>
             <div class="flex bg-gradient-to-r text-left justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                <p class="font-medium">Costo: ${formatCurrency(material.valor_unidad)} * 
+                <p class="font-medium">Costo: ${formatCurrency(material.valor_unidad)} *
                 <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
                 <p>Tipo: ${material.spanTipo}</p>
             </div>
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         document.getElementById("id_proyecto").tomselect.clear();
         document.getElementById("id_material").tomselect.clear();
-    
+
         // Limpiar el contenedor de materiales seleccionados
         document.getElementById('selectMateriales').innerHTML = '';
 
@@ -235,21 +235,5 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
-
-    function mostrarErrores(errors) {
-        document.querySelectorAll(".error-msg").forEach(e => e.remove());
-
-        Object.keys(errors).forEach(campo => {
-            const campoForm = campo.replace(/\./g, "][");
-            const input = document.querySelector(`[name="${campoForm}"]`)
-                || document.querySelector(`[name="${campoForm}]"]`);
-
-            if (!input) return;
-            const div = document.createElement("div");
-            div.className = "error-msg text-red-600 mt-1 text-sm";
-            div.innerText = errors[campo][0];
-            input.insertAdjacentElement("afterend", div);
-        });
-    }
 
 });

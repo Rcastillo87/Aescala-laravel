@@ -5,12 +5,22 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\InventarioMaterial;
+use Illuminate\Support\Facades\Gate;
 
 class SaveSolicitudRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
-        return true; // Permitir siempre (o pon tu lógica)
+        // Determina qué gate usar según el rol que hace la petición
+        $isAnalista = (int) $this->input('isAnalista', 0);
+
+        if ($isAnalista === 1) {
+            // Analista aprobando items
+            return Gate::allows('solicitud.createAprobarSolicitud');
+        }
+
+        // Almacenista despachando
+        return Gate::allows('solicitud.createDespachoSolicitud');
     }
 
     public function rules()

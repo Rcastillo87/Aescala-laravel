@@ -24,6 +24,12 @@ class InsumoEntregado extends Model
         return $this->belongsTo(Insumos::class, 'id_insumo');
     }
 
+    // Relación con el modelo area empresa
+    public function area_empresa()
+    {
+        return $this->belongsTo(AreasEmpresa::class, 'id_area_empresa');
+    }
+
     // Relación con el modelo usuarios
     public function user()
     {

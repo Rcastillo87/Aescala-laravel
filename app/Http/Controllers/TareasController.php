@@ -12,11 +12,13 @@ use App\Models\Avance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class TareasController extends Controller
 {
     public function index()
     {
+        Gate::authorize('tareas.index');
         $year = date('Y');
         $festivos = new Festivos;
         $festivos->festivos($year);
@@ -80,8 +82,9 @@ class TareasController extends Controller
         return view('tareas.index', compact('title', 'items', 'tareaTipo', 'proyecto', 'userColab', 'festivos', 'hoy', 'headerAvance', 'estadoTarea'));
     }
 
-    public function editTarea ($id)
+    public function editTarea($id)
     {
+        Gate::authorize('tareas.editTarea');
         $tarea = Tarea::find($id);
         if($tarea){
             return response()->json([
@@ -99,6 +102,7 @@ class TareasController extends Controller
 
     public function deleteTarea ()
     {
+        Gate::authorize('tareas.deleteTarea');
         $tarea = Tarea::find(Request('id'));
         $idPro = $tarea->id_proyecto;
         if($tarea){
@@ -124,6 +128,7 @@ class TareasController extends Controller
     }
 
     public function moverTarea(Request $req){
+        Gate::authorize('tareas.moverTarea');
         $query = Tarea::where('id_proyecto', $req->proyecto_id);
         $tipo = TareaTipo::find($req->tarea_tipo_id);
         $pro = Proyecto::find($req->proyecto_id);
@@ -153,12 +158,12 @@ class TareasController extends Controller
                 $tarea['fec_inicio'] = now();
                 $tarea['fec_fin'] = (new Festivos)->calcularFechaFin(now(), 10);
             }
-            
+
         } else {
             $tarea['fec_inicio'] = $pro->fec_inicio;
             $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
         }
-        
+
         DB::beginTransaction();
         try {
 
@@ -244,13 +249,13 @@ class TareasController extends Controller
                 <div class='space-y-2 mx-auto text-center gap-1 ".$hidden."'>
                     <!-- Botón Editar -->
                     <div class='relative inline-flex'>
-                        <a      
-                                tabindex='0' 
-                                data-tooltip-target='tooltip-hover-edit-".$item->id."' 
-                                data-tooltip-trigger='hover' 
-                                onclick='editTarea(".$item->id.")' 
+                        <a
+                                tabindex='0'
+                                data-tooltip-target='tooltip-hover-edit-".$item->id."'
+                                data-tooltip-trigger='hover'
+                                onclick='editTarea(".$item->id.")'
                                 x-data=''
-                                class='flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4 
+                                class='flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
                                 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'>
                             <svg class='w-5 h-5' xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'>
                                 <path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z'></path>
@@ -261,16 +266,16 @@ class TareasController extends Controller
                             <div class='tooltip-arrow' data-popper-arrow=' style='position: absolute; left: 0px; transform: translate(26.25px, 0px);'></div>
                         </div>
                     </div>
-                
+
                     <!-- Botón Cambio de Estado -->
                     <div class='relative inline-flex'>
-                        <a tabindex='0' 
-                        data-tooltip-target='tooltip-hover-".$item->id."' 
-                        data-tooltip-trigger='hover' 
+                        <a tabindex='0'
+                        data-tooltip-target='tooltip-hover-".$item->id."'
+                        data-tooltip-trigger='hover'
                         x-data=''
                         x-on:click=\"\$dispatch('open-modal', 'avance-modal')\"
-                        onclick='openAvance(0, ".$item->id.")' 
-                        class='flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4 
+                        onclick='openAvance(0, ".$item->id.")'
+                        class='flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4
                                     focus:outline-none focus:ring-violet-300 font-medium rounded-full text-sm dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800 cursor-pointer'>
                             <svg class='w-5 h-5' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'>
                                 <path stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z'/>
@@ -287,6 +292,7 @@ class TareasController extends Controller
     }
 
     public function finTarea(Request $req){
+        Gate::authorize('tareas.finTarea');
         $tarea = Tarea::where('id_proyecto', $req->proyecto_id)
             ->where('id_tarea_estado', 2)
             ->first();

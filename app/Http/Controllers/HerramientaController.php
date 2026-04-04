@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\Herramienta;
 use App\Models\HerramientaPrestamo;
@@ -16,6 +17,8 @@ class HerramientaController extends Controller
 
     public function index( )
     {
+        Gate::authorize('herramienta.index');
+
         $title = 'Lista de Herramientas';
         $items = Herramienta::when(Request('nombre_herramienta'), function ($query, $nombre_herramienta) {
             return $query->whereRaw('LOWER(nombre_herramienta) LIKE LOWER(?)', ["%$nombre_herramienta%"]);
@@ -44,11 +47,13 @@ class HerramientaController extends Controller
 
     public function create( )
     {
+        Gate::authorize('herramienta.create');
         return $this->form();
     }
 
     public function edit($id)
     {
+        Gate::authorize('herramienta.edit');
         return $this->form($id);
     }
 
@@ -62,6 +67,7 @@ class HerramientaController extends Controller
 
     public function save(Request $req)
     {
+        Gate::authorize('herramienta.save');
         $data = $req->validate([
             'id' => 'nullable|integer',
             'nombre_herramienta' => 'required|string|max:200',
@@ -90,6 +96,7 @@ class HerramientaController extends Controller
 
     public function listPrestamos()
     {
+        Gate::authorize('herramienta.listPrestamos');
         try {
             $lisPrestamos = HerramientaPrestamo::with('user')
                 ->where('id_herramienta', request('id'))
@@ -116,6 +123,7 @@ class HerramientaController extends Controller
 
     public function savePrestamo(Request $req)
     {
+        Gate::authorize('herramienta.savePrestamo');
         $data = $req->validate([
             'id' => 'nullable|integer',
             'id_herramienta' => [

@@ -11,6 +11,7 @@ use App\Rules\Base64PngOrNull;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\FirmaContratoMail;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\Proyecto;
 use App\Models\User;
@@ -23,6 +24,8 @@ class ComercialController extends Controller
 {
     public function index( )
     {
+        Gate::authorize('comercial.index');
+
         $year = date('Y');
         $festivos = new Festivos;
         $festivos->festivos($year);
@@ -55,6 +58,7 @@ class ComercialController extends Controller
 
     public function create()
     {
+        Gate::authorize('comercial.create');
         $anterior = url()->previous();
         session(['comercial_url' => $anterior]);
         return $this->form();
@@ -62,6 +66,7 @@ class ComercialController extends Controller
 
     public function edit($id)
     {
+        Gate::authorize('comercial.edit');
         $anterior = url()->previous();
         session(['comercial_url' => $anterior]);
         return $this->form($id);
@@ -147,6 +152,7 @@ class ComercialController extends Controller
 
     public function save(Request $req)
     {
+        Gate::authorize('comercial.save');
         try {
             $data = $req->validate([
                 'id' => 'nullable|integer',
@@ -300,6 +306,7 @@ class ComercialController extends Controller
 
     public function sendLinkByEmail(Request $request)
     {
+        Gate::authorize('comercial.sendLinkByEmail');
         $request->validate([
             'link' => 'required|url',
             'email' => 'required|email',

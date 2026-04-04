@@ -8,11 +8,14 @@ use App\Models\User;
 use App\Models\InventarioMaterial;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class AlmacenController extends Controller
 {
     public function index( )
     {
+        Gate::authorize('almacen.index');
+
         $title = 'Lista de Almacenes';
         $items = Almacenes::with('user')->get();
         $users = User::where('id_rol', 9)->get()->toArray();
@@ -21,11 +24,13 @@ class AlmacenController extends Controller
 
     public function create( )
     {
+        Gate::authorize('almacen.create');
         return $this->form();
     }
 
     public function edit($id)
     {
+        Gate::authorize('almacen.edit');
         return $this->form($id);
     }
 
@@ -39,6 +44,7 @@ class AlmacenController extends Controller
     }
 
     public function save(Request $req){
+        Gate::authorize('almacen.save');
         $data = $req->validate([
             'id' => 'nullable|integer',
             'nombre_almacen' => 'required|string|max:100',

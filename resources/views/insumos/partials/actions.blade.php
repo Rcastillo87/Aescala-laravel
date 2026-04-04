@@ -28,4 +28,12 @@
         </svg>
     </a>
 
+    <a  onclick="listPrestamos(1, {{$item->id}})"
+        class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 text-white border-2 border-blue-800
+               hover:bg-white hover:text-blue-800">
+        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
+        </svg>
+    </a>
+
 </div>

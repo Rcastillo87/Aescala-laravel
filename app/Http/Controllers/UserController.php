@@ -7,75 +7,80 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\User;
 
 class UserController extends Controller
 {
 
-public function index()
-{
-    $title  = 'Lista de Usuarios';
-    $roles  = User::$roles;
-    $estado = User::$estado;
-    $perPage = request('per_page', 10);
+    public function index()
+    {
+        Gate::authorize('user.index');
 
-    $items = User::with(['proyectos', 'proyectos.tareas'])
-        ->when(request('nombre_completo'), fn ($q, $v) =>
-            $q->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%{$v}%"])
-        )
-        ->when(request('email'), fn ($q, $v) =>
-            $q->whereRaw('LOWER(email) LIKE LOWER(?)', ["%{$v}%"])
-        )
-        ->when(request('activo'), fn ($q, $v) =>
-            $q->where('activo', $v)
-        )
-        ->when(request('cedula'), fn ($q, $v) =>
-            $q->whereRaw('LOWER(cedula) LIKE LOWER(?)', ["%{$v}%"])
-        )
-        ->when(request('telefono'), fn ($q, $v) =>
-            $q->whereRaw('LOWER(telefono) LIKE LOWER(?)', ["%{$v}%"])
-        )
-        ->when(request('id_rol'), fn ($q, $v) =>
-            $q->where('id_rol', $v)
-        )
-        ->paginate($perPage)
-        ->withQueryString();
+        $title  = 'Lista de Usuarios';
+        $roles  = User::$roles;
+        $estado = User::$estado;
+        $perPage = request('per_page', 10);
 
-    /** columnas del componente */
-    $columns = [
-        'nombre',
-        'documento',
-        'email',
-        'telefono',
-        'perfil',
-        'estado',
-        'acciones',
-    ];
+        $items = User::with(['proyectos', 'proyectos.tareas'])
+            ->when(request('nombre_completo'), fn ($q, $v) =>
+                $q->whereRaw('LOWER(nombre_completo) LIKE LOWER(?)', ["%{$v}%"])
+            )
+            ->when(request('email'), fn ($q, $v) =>
+                $q->whereRaw('LOWER(email) LIKE LOWER(?)', ["%{$v}%"])
+            )
+            ->when(request('activo'), fn ($q, $v) =>
+                $q->where('activo', $v)
+            )
+            ->when(request('cedula'), fn ($q, $v) =>
+                $q->whereRaw('LOWER(cedula) LIKE LOWER(?)', ["%{$v}%"])
+            )
+            ->when(request('telefono'), fn ($q, $v) =>
+                $q->whereRaw('LOWER(telefono) LIKE LOWER(?)', ["%{$v}%"])
+            )
+            ->when(request('id_rol'), fn ($q, $v) =>
+                $q->where('id_rol', $v)
+            )
+            ->paginate($perPage)
+            ->withQueryString();
 
-    /** headers con diseño */
-    $headers = [
-        'nombre'     => 'Nombre Completo',
-        'documento'  => 'Documento',
-        'email'      => 'Correo',
-        'telefono'   => 'Teléfono',
-        'perfil'     => 'Perfil',
-        'estado'     => 'Estado',
-        'acciones'   => 'Opciones',
-    ];
+        /** columnas del componente */
+        $columns = [
+            'nombre',
+            'documento',
+            'email',
+            'telefono',
+            'perfil',
+            'estado',
+            'acciones',
+        ];
 
-    return view('user.index', compact(
-        'title',
-        'roles',
-        'estado',
-        'items',
-        'columns',
-        'headers'
-    ));
-}
+        /** headers con diseño */
+        $headers = [
+            'nombre'     => 'Nombre Completo',
+            'documento'  => 'Documento',
+            'email'      => 'Correo',
+            'telefono'   => 'Teléfono',
+            'perfil'     => 'Perfil',
+            'estado'     => 'Estado',
+            'acciones'   => 'Opciones',
+        ];
+
+        return view('user.index', compact(
+            'title',
+            'roles',
+            'estado',
+            'items',
+            'columns',
+            'headers'
+        ));
+    }
 
     public function create( )
     {
+        Gate::authorize('user.create');
+
         $user = null;
         $title = 'Crear Usuarios';
         $action = 'Crear';
@@ -86,6 +91,8 @@ public function index()
 
     public function edit($id)
     {
+        Gate::authorize('user.edit');
+
         $user = User::find($id);
         $title = 'Editar Usuarios';
         $action = 'Editar';
@@ -96,6 +103,8 @@ public function index()
 
     public function save(Request $req)
     {
+        Gate::authorize('user.save');
+
         $req->validate([
             'id' => 'nullable|integer',
             'nombre_completo' => 'required|string|max:200',
@@ -160,7 +169,7 @@ public function index()
 
     public function editStatus($id)
     {
-
+        Gate::authorize('user.editStatus');
         try {
             DB::beginTransaction();
             $user = User::findOrFail($id);

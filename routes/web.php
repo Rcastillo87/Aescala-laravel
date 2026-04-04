@@ -86,7 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         );
     })->name('descargar.db');
 
-    Route::prefix('tracking')->name('tracking.')->middleware(['auth'])->group(function () {
+    Route::prefix('tracking')->name('tracking.')->middleware('role:tracking')->middleware(['auth'])->group(function () {
         Route::get('/index',    [TrackingController::class, 'index'])->name('index');
         Route::get('/realtime', [TrackingController::class, 'realtime'])->name('realtime');
         Route::get('/history',  [TrackingController::class, 'history'])->name('history');
@@ -99,7 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('user')->name('user.')->group(function () {
+    Route::prefix('user')->name('user.')->middleware('role:user')->group(function () {
         Route::get('/index', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::get('/editStatus/{id}', [UserController::class, 'editStatus'])->name('editStatus');
@@ -107,7 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/save', [UserController::class, 'save'])->name('save');
     });
 
-    Route::prefix('comercial')->name('comercial.')->group(function () {
+    Route::prefix('comercial')->name('comercial.')->middleware('role:comercial')->group(function () {
         Route::get('/index', [ComercialController::class, 'index'])->name('index');
         Route::get('/create', [ComercialController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ComercialController::class, 'edit'])->name('edit');
@@ -115,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/sendLinkByEmail', [ComercialController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
     });
 
-    Route::prefix('herramienta')->name('herramienta.')->group(function () {
+    Route::prefix('herramienta')->name('herramienta.')->middleware('role:herramienta')->group(function () {
         Route::get('/index', [HerramientaController::class, 'index'])->name('index');
         Route::get('/create', [HerramientaController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [HerramientaController::class, 'edit'])->name('edit');
@@ -124,7 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/savePrestamo', [HerramientaController::class, 'savePrestamo'])->name('savePrestamo');
     });
 
-    Route::prefix('proyecto')->name('proyecto.')->group(function () {
+    Route::prefix('proyecto')->name('proyecto.')->middleware('role:proyecto')->group(function () {
         Route::get('/index', [ProyectoController::class, 'index'])->name('index');
         Route::get('/create', [ProyectoController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('edit');
@@ -151,7 +151,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     });
 
-    Route::prefix('tareas')->name('tareas.')->group(function () {
+    Route::prefix('tareas')->name('tareas.')->middleware('role:tareas')->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');
         Route::post('/save', [TareasController::class, 'save'])->name('save');
         Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
@@ -163,7 +163,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/deleteAvance', [ProyectoController::class, 'deleteAvance'])->name('deleteAvance');
     });
 
-    Route::prefix('material')->name('material.')->group(function () {
+    Route::prefix('material')->name('material.')->middleware('role:material')->group(function () {
         Route::get('/index', [MaterialController::class, 'index'])->name('index');
         Route::get('/editStatus/{id}', [MaterialController::class, 'editStatus'])->name('editStatus');
         Route::get('/create', [MaterialController::class, 'create'])->name('create');
@@ -173,7 +173,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/savePrestamo', [MaterialController::class, 'savePrestamo'])->name('savePrestamo');
     });
 
-    Route::prefix('despachos')->name('despachos.')->group(function () {
+    Route::prefix('despachos')->name('despachos.')->middleware('role:despachos')->group(function () {
         Route::get('/index', [DespachoController::class, 'index'])->name('index');
         Route::post('/save', [DespachoController::class, 'save'])->name('save');
         Route::get('/historialMateriales', [DespachoController::class, 'historialMateriales'])->name('historialMateriales');
@@ -181,7 +181,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pdfDespacho', [ProyectoController::class, 'pdfDespacho'])->name('pdfDespacho');
     });
 
-    Route::prefix('proveedor')->name('proveedor.')->group(function () {
+    Route::prefix('proveedor')->name('proveedor.')->middleware('role:proveedor')->group(function () {
         Route::get('/index', [ProveedorController::class, 'index'])->name('index');
         Route::get('/create', [ProveedorController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->name('edit');
@@ -189,7 +189,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/editStatus/{id}', [ProveedorController::class, 'editStatus'])->name('editStatus');
     });
 
-    Route::prefix('pedidos')->name('pedidos.')->group(function () {
+    Route::prefix('pedidos')->name('pedidos.')->middleware('role:pedidos')->group(function () {
         Route::get('/index', [PedidosController::class, 'index'])->name('index');
         Route::get('/create', [PedidosController::class, 'create'])->name('create');
         Route::post('/save', [PedidosController::class, 'save'])->name('save');
@@ -197,12 +197,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/hPedidoproveedor/{id}', [PedidosController::class, 'hPedidoproveedor'])->name('hPedidoproveedor');
     });
 
-    Route::prefix('cotizacion')->name('cotizacion.')->group(function () {
+    Route::prefix('cotizacion')->name('cotizacion.')->middleware('role:cotizacion')->group(function () {
         Route::get('/index', [CotizacionController::class, 'index'])->name('index');
         Route::get('/create', [CotizacionController::class, 'create'])->name('create');
     });
 
-    Route::prefix('otro_si')->name('otro_si.')->group(function () {
+    Route::prefix('otro_si')->name('otro_si.')->middleware('role:otro_si')->group(function () {
         Route::get('/index', [OtrosiController::class, 'index'])->name('index');
         Route::post('/save', [OtrosiController::class, 'save'])->name('save');
         Route::get('/edit/{id}', [OtrosiController::class, 'edit'])->name('edit');
@@ -217,7 +217,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/sendLinkByEmail', [OtrosiController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
     });
 
-    Route::prefix('cartera')->name('cartera.')->group(function () {
+    Route::prefix('cartera')->name('cartera.')->middleware('role:cartera')->group(function () {
         Route::get('/index', [CarteraController::class, 'index'])->name('index');
         Route::get('/pagos/{id}', [CarteraController::class, 'pagos'])->name('pagos');
         Route::get('/pagosOtroSi/{id}', [CarteraController::class, 'pagosOtroSi'])->name('pagosOtroSi');
@@ -226,7 +226,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/deleetePago/{id}', [CarteraController::class, 'deletePago'])->name('deletePago');
     });
 
-    Route::prefix('solicitud')->name('solicitud.')->group(function () {
+    Route::prefix('solicitud')->name('solicitud.')->middleware('role:solicitud')->group(function () {
         Route::get('/index', [SolicitudController::class, 'index'])->name('index');
         Route::get('/create', [SolicitudController::class, 'create'])->name('create');
         Route::post('/save', [SolicitudController::class, 'save'])->name('save');
@@ -241,7 +241,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
-    Route::prefix('configuracion')->name('configuracion.')->group(function () {
+    Route::prefix('configuracion')->name('configuracion.')->middleware('role:configuracion')->group(function () {
         Route::get('/indexValorArea/{año}', [ConfiguracionController::class, 'indexValorArea'])->name('indexValorArea');
         Route::post('/saveValorArea', [ConfiguracionController::class, 'saveValorArea'])->name('saveValorArea');
         Route::get('/listConfigYearModel/{type}/{año}', [ConfiguracionController::class, 'listConfigYearModel'])->name('listConfigYearModel');
@@ -251,7 +251,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/saveAdicionales', [ConfiguracionController::class, 'saveAdicionales'])->name('saveAdicionales');
     });
 
-    Route::prefix('calendario')->name('calendario.')->group(function () {
+    Route::prefix('calendario')->name('calendario.')->middleware('role:calendario')->group(function () {
         Route::get('/index',             [CalendarioController::class, 'index'])->name('index');
         // AJAX
         Route::get('/resumen-anio',  [CalendarioController::class, 'resumenAnio']) ->name('resumenAnio');
@@ -260,19 +260,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/quitar-no-laboral', [CalendarioController::class, 'quitarNoLaboral']) ->name('quitarNoLaboral');
     });
 
-    Route::prefix('almacen')->name('almacen.')->group(function () {
+    Route::prefix('almacen')->name('almacen.')->middleware('role:almacen')->group(function () {
         Route::get('/index', [AlmacenController::class, 'index'])->name('index');
         Route::get('/create', [AlmacenController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [AlmacenController::class, 'edit'])->name('edit');
         Route::post('/save', [AlmacenController::class, 'save'])->name('save');
     });
 
-    Route::prefix('insumos')->name('insumos.')->group(function () {
+    Route::prefix('insumos')->name('insumos.')->middleware('role:insumos')->group(function () {
         Route::get('/index', [InsumosController::class, 'index'])->name('index');
         Route::get('/create', [InsumosController::class, 'create'])->name('create');
         Route::get('/edit/{id}', [InsumosController::class, 'edit'])->name('edit');
         Route::post('/save', [InsumosController::class, 'save'])->name('save');
         Route::get('/editStatus/{id}', [InsumosController::class, 'editStatus'])->name('editStatus');
+        Route::post('/entregaInsumo', [InsumosController::class, 'entregaInsumo'])->name('entregaInsumo');
+        Route::get('/history', [InsumosController::class, 'history'])->name('history');
+        Route::get('/historyInsumo', [InsumosController::class, 'historyInsumo'])->name('historyInsumo');
     });
 
 });

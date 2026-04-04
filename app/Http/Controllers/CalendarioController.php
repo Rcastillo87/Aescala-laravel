@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Festivos;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CalendarioController extends Controller
 {
     public function index()
     {
+        Gate::authorize('calendario.index');
         $year  = now()->year;
         $title = 'Calendario ' . $year;
 
@@ -36,6 +38,8 @@ class CalendarioController extends Controller
     // ─── AJAX: resumen de todos los meses de un año (para navegación) ──
     public function resumenAnio(Request $request)
     {
+        Gate::authorize('calendario.resumenAnio');
+
         $year = (int) $request->query('year', now()->year);
 
         $modelFestivos = new Festivos();
@@ -60,6 +64,8 @@ class CalendarioController extends Controller
     // ─── AJAX: detalle de un mes ───────────────────────────────────────
     public function mesDatos(Request $request)
     {
+        Gate::authorize('calendario.mesDatos');
+
         $year  = (int) $request->query('year',  now()->year);
         $month = (int) $request->query('month', now()->month);
 
@@ -108,6 +114,8 @@ class CalendarioController extends Controller
     // ─── AJAX: marcar día como no laboral ─────────────────────────────
     public function marcarNoLaboral(Request $request)
     {
+        Gate::authorize('calendario.marcarNoLaboral');
+
         $request->validate([
             'date'       => 'required|date',
             'comentario' => 'required|string|max:255',
@@ -144,6 +152,8 @@ class CalendarioController extends Controller
     // ─── AJAX: quitar día no laboral ──────────────────────────────────
     public function quitarNoLaboral(Request $request)
     {
+        Gate::authorize('calendario.quitarNoLaboral');
+
         $request->validate(['date' => 'required|date']);
 
         $fecha = Carbon::parse($request->date);

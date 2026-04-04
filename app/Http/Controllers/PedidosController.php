@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\Pedidos;
 use App\Models\InventarioMaterial;
@@ -16,13 +17,14 @@ use Illuminate\Support\Facades\Auth;
 class PedidosController extends Controller
 {
 
-    public function index( ) 
+    public function index( )
     {
+        Gate::authorize('pedidos.index');
         $title = 'Lista de Pedidos';
         $items = Pedidos::with(['proveedor', 'material'])
-        ->selectRaw('id_factura, 
+        ->selectRaw('id_factura,
                     DATE(fecha) as fecha,
-                    id_proveedor, 
+                    id_proveedor,
                     SUM(cantidad * vr_unidad) as total,
                     COUNT(*) as items')
         ->when(request('factura'), function ($query, $factura) {
@@ -52,20 +54,22 @@ class PedidosController extends Controller
                 'fecha' => $factura->fecha
             ];
         });
-        
+
         $headers = ['ID Factura', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
         $headerFactura = ['ID', 'Num Orden o Factura', 'Nombre Item', 'Cantidad', 'Valor unidad','Fecha Pedido'];
 
         return view('pedidos.index', compact('title', 'items', 'headers', 'headerFactura'));
     }
 
-    public function create( ) 
+    public function create( )
     {
+        Gate::authorize('pedidos.create');
         return $this->form();
     }
 
-    public function edit($id) 
+    public function edit($id)
     {
+        Gate::authorize('pedidos.edit');
         return $this->form($id);
     }
 
@@ -73,7 +77,7 @@ class PedidosController extends Controller
     {
         $title = $id?'Editar Pedido':'Crear Pedido';
         $pedidos = $id?Pedidos::where('id_factura', $id)->get():null;
-        $materiales = InventarioMaterial::where('activo', 1) 
+        $materiales = InventarioMaterial::where('activo', 1)
         ->get()
         ->toArray();
         $proyectos = Proyecto::wherein('id_estado', [1, 5])
@@ -82,13 +86,13 @@ class PedidosController extends Controller
         $proveedor = Proveedor::wherein('activo', [1])
         ->get(['id', 'razon_social'])
         ->toArray();
-        
+
         return view('pedidos.create', compact('title', 'pedidos', 'materiales', 'proyectos', 'proveedor'));
     }
 
     public function save(Request $request)
     {
-
+        Gate::authorize('pedidos.save');
         $validated = $request->validate([
             'fecha' => 'required|date_format:Y-m-d',
             'codigo' => 'required|string',
@@ -125,7 +129,7 @@ class PedidosController extends Controller
 
         // Iniciar transacción
         return DB::transaction(function () use ($validated) {
-            
+
             $factura = Pedidos::max('id_factura') + 1;
             $dato = [
                 'id_factura' => $factura,
@@ -143,7 +147,7 @@ class PedidosController extends Controller
                 $dato['vr_unidad'] = $material['valor_unidad'];
                 $dato['vr_compra'] = $material['valor_compra'];
                 Pedidos::create($dato);
-                
+
                 $inventarioMaterial = InventarioMaterial::find($material['id_material']);
                 $inventarioMaterial['valor_unidad'] = $material['valor_unidad'];
                 $inventarioMaterial['valor_inventario'] = $material['valor_compra'];
@@ -152,7 +156,7 @@ class PedidosController extends Controller
                 }
                 $inventarioMaterial->save();
             }
-            
+
             // Proceso despacho si existe id proyecto
             if(isset($validated['id_proyecto'])){
                 $codigo1 = Despachos::generarCodigoUnico();
@@ -178,8 +182,9 @@ class PedidosController extends Controller
         });
     }
 
-    public function listPedido( ) 
+    public function listPedido( )
     {
+        Gate::authorize('pedidos.listPedido');
         try {
             $listPedido = Pedidos::with('material')->where('id_factura', intval( Request('id') ) )
             ->orderBy('createdAt', 'desc')
@@ -211,6 +216,7 @@ class PedidosController extends Controller
 
     public function hPedidoproveedor( $id )
     {
+        Gate::authorize('pedidos.hPedidoproveedor');
         try {
             $arrhistorial = Pedidos::where('id_proveedor', intval( $id ) )->whereHas('material', function ($query) {
                 $query->where('activo', 1);

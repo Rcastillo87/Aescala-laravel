@@ -15,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\Proyecto;
 use App\Models\Tarea;
@@ -32,6 +33,7 @@ class ProyectoController extends Controller
 {
     public function index()
     {
+        Gate::authorize('proyecto.index');
         $year = date('Y');
         $festivos = new Festivos;
         $festivos->festivos($year);
@@ -131,6 +133,7 @@ class ProyectoController extends Controller
 
     public function create()
     {
+        Gate::authorize('proyecto.create');
         $anterior = url()->previous();
         session(['proyecto_url' => $anterior]);
         return $this->form();
@@ -138,6 +141,7 @@ class ProyectoController extends Controller
 
     public function edit($id)
     {
+        Gate::authorize('proyecto.edit');
         $anterior = url()->previous();
         session(['proyecto_url' => $anterior]);
         return $this->form($id);
@@ -166,6 +170,7 @@ class ProyectoController extends Controller
 
     public function save(Request $req)
     {
+        Gate::authorize('proyecto.save');
         if ($req->conFechaFin == 0) {
             $val = ['dias_trabajo' => 'nullable|integer|min:1'];
         } else {
@@ -230,6 +235,8 @@ class ProyectoController extends Controller
 
     public function begin(Request $req)
     {
+        Gate::authorize('proyecto.begin');
+
         $valbase = [
             'id_proyecto_begin' => [
                 'required',
@@ -337,6 +344,7 @@ class ProyectoController extends Controller
 
     public function editStatus(Request $request, $id)
     {
+        Gate::authorize('proyecto.editStatus');
         $proyecto = Proyecto::findOrFail($id);
         $estado   = (int) $request->estado;
 
@@ -377,6 +385,7 @@ class ProyectoController extends Controller
 
     public function saveTarea(Request $request)
     {
+        Gate::authorize('proyecto.saveTarea');
         $data = $request->validate([
             'id' => 'nullable|integer',
             'id_proyecto' => ['required', 'integer', Rule::exists('proyectos', 'id')],
@@ -417,6 +426,7 @@ class ProyectoController extends Controller
 
     public function editTarea($id)
     {
+        Gate::authorize('proyecto.editTarea');
         $tarea = Tarea::find($id);
         if ($tarea) {
             return response()->json([
@@ -434,6 +444,7 @@ class ProyectoController extends Controller
 
     public function deleteTarea()
     {
+        Gate::authorize('proyecto.deleteTarea');
         $tarea = Tarea::find(Request('id'));
         $idPro = $tarea->id_proyecto;
         if ($tarea) {
@@ -460,6 +471,7 @@ class ProyectoController extends Controller
 
     public function listAvances()
     {
+        Gate::authorize('proyecto.listAvances');
         try {
             $id = Tarea::find(Request('id'));
             $listAvance = Tarea::with(['avance', 'tareaTipo'])
@@ -493,6 +505,7 @@ class ProyectoController extends Controller
 
     public function saveAvance(Request $request)
     {
+        Gate::authorize('proyecto.saveAvance');
         $data = $request->validate([
             'id_tarea_avance' => ['required', 'integer', Rule::exists('tareas', 'id')],
             'fec_avance' => ['required', 'date', 'date_format:Y-m-d'],
@@ -518,6 +531,7 @@ class ProyectoController extends Controller
 
     public function deleteAvance()
     {
+        Gate::authorize('proyecto.deleteAvance');
         try {
             $avance = Avance::findOrFail(Request('id'));
             $avance->delete();
@@ -537,6 +551,7 @@ class ProyectoController extends Controller
 
     public function listaDespachos()
     {
+        Gate::authorize('proyecto.listaDespachos');
         try {
             $data = (new Despachos)->despachos(Request('id'));
             return response()->json([
@@ -555,6 +570,7 @@ class ProyectoController extends Controller
 
     public function pdfDespachos()
     {
+        Gate::authorize('proyecto.pdfDespachos');
         $proyecto = Proyecto::find(Request('id'));
         $datos = (new Despachos)->despachos(Request('id'), null, 1);
         $datosFactura = [
@@ -584,6 +600,7 @@ class ProyectoController extends Controller
 
     public function pdfDespacho()
     {
+        Gate::authorize('proyecto.pdfDespacho');
         $proyecto = Proyecto::find(Request('id'));
         $datos = (new Despachos)->despachos(Request('id'), Request('codigo'), 1);
         $datosFactura = [
@@ -608,7 +625,7 @@ class ProyectoController extends Controller
 
     public function listComparativo()
     {
-
+        Gate::authorize('proyecto.listComparativo');
         $proyecto = Proyecto::with([
             'despachos.material',
             'cotizacion.material'
@@ -687,6 +704,7 @@ class ProyectoController extends Controller
 
     public function excelDespachoProyecto($id)
     {
+        Gate::authorize('proyecto.excelDespachoProyecto');
         try {
 
             $proyecto = Proyecto::find($id);
@@ -887,6 +905,7 @@ class ProyectoController extends Controller
 
     public function excelDespachosGeneral()
     {
+        Gate::authorize('proyecto.excelDespachosGeneral');
         try {
 
             $despachos = Despachos::with(['material', 'proyecto'])
@@ -1082,6 +1101,7 @@ class ProyectoController extends Controller
 
     public function trataDatosPDF()
     {
+        Gate::authorize('proyecto.trataDatosPDF');
         try {
             $proyecto = Proyecto::find(Request('id'));
             $data = $proyecto->trataDatos;
@@ -1096,6 +1116,7 @@ class ProyectoController extends Controller
 
     public function calendarioProyecto(Request $request)
     {
+        Gate::authorize('proyecto.calendarioProyecto');
         $request->validate(['id_proyecto' => 'required|integer']);
 
         $proyecto    = Proyecto::findOrFail($request->id_proyecto);
@@ -1171,6 +1192,7 @@ class ProyectoController extends Controller
     // ─── AJAX: marcar día no laborado ─────────────────────────────────
     public function saveDiaNoLaborado(Request $request)
     {
+        Gate::authorize('proyecto.saveDiaNoLaborado');
         $request->validate([
             'id_proyecto' => 'required|integer',
             'dia'         => 'required|date',

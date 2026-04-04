@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use App\Rules\Base64PngOrNull;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\Otrosi;
 use App\Models\User;
@@ -22,6 +23,8 @@ class OtrosiController extends Controller
 {
     public function index( )
     {
+        Gate::authorize('otro_si.index');
+
         $title = 'Lista de Otro Si';
         $usuario = Auth::user();
 
@@ -49,6 +52,7 @@ class OtrosiController extends Controller
 
     public function create()
     {
+        Gate::authorize('otro_si.create');
         $anterior = url()->previous();
         session(['otro_si_url' => $anterior]);
         return $this->form();
@@ -56,6 +60,7 @@ class OtrosiController extends Controller
 
     public function edit($id)
     {
+        Gate::authorize('otro_si.edit');
         $anterior = url()->previous();
         session(['otro_si_url' => $anterior]);
         return $this->form($id);
@@ -198,6 +203,7 @@ class OtrosiController extends Controller
 
     public function save(Request $request)
     {
+        Gate::authorize('otro_si.save');
         $request->validate([
             'id' => 'nullable|integer|exists:otro_si,id',
             'id_proyecto' => 'required|exists:proyectos,id|same:id_proyecto_excel',
@@ -293,6 +299,7 @@ class OtrosiController extends Controller
 
     public function valiPlantilla(Request $request)
     {
+        Gate::authorize('otro_si.valiPlantilla');
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls'
         ]);
@@ -511,6 +518,7 @@ class OtrosiController extends Controller
 
     public function sendLinkByEmail(Request $request)
     {
+        Gate::authorize('otro_si.index');
         $request->validate([
             'link' => 'required|url',
             'email' => 'required|email',

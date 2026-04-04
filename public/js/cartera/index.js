@@ -7,8 +7,8 @@ async function mostrarPagos(id, nombreProyecto, pazSalvo) {
             didOpen: () => Swal.showLoading()
         });
 
-        document.getElementById('tipo').value = 1; 
-        document.getElementById('proyecto_id').value = id; 
+        document.getElementById('tipo').value = 1;
+        document.getElementById('proyecto_id').value = id;
         const response = await fetch(`pagos/${id}`);
         const result = await response.json();
         Swal.close();
@@ -130,8 +130,8 @@ async function mostrarPagosOtroSi(id, nombreOtroSi, pazSalvo) {
             didOpen: () => Swal.showLoading()
         });
 
-        document.getElementById('tipo').value = 2; 
-        document.getElementById('proyecto_id').value = id; 
+        document.getElementById('tipo').value = 2;
+        document.getElementById('proyecto_id').value = id;
         const response = await fetch(`pagosOtroSi/${id}`);
         const result = await response.json();
         Swal.close();
@@ -270,34 +270,6 @@ document.getElementById('formPago').addEventListener('submit', async function (e
         console.error(error);
     }
 });
-
-function limpiarErrores() {
-    document.querySelectorAll('[data-error-for]').forEach(el => {
-        el.textContent = '';
-        el.classList.add('hidden');
-    });
-
-    document.querySelectorAll('.border-red-500').forEach(el => {
-        el.classList.remove('border-red-500');
-    });
-}
-
-function mostrarErrores(errors) {
-    Object.entries(errors).forEach(([field, messages]) => {
-
-        const input = document.querySelector(`[name="${field}"]`);
-        const errorDiv = document.querySelector(`[data-error-for="${field}"]`);
-
-        if (input) {
-            input.classList.add('border-red-500');
-        }
-
-        if (errorDiv) {
-            errorDiv.textContent = messages[0];
-            errorDiv.classList.remove('hidden');
-        }
-    });
-}
 
 deletePago = async (id) => {
     try {

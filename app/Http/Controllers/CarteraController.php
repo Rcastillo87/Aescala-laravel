@@ -12,12 +12,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 
 class CarteraController extends Controller
 {
-    public function index( ) 
+    public function index( )
     {
+        Gate::authorize('cartera.index');
         $title = 'Lista de Cartera';
         $usuario = Auth::user();
 
@@ -33,9 +35,9 @@ class CarteraController extends Controller
             })
             ->whereIn('id_estado', [1, 3, 5])
             ->WhereRaw('(termino_1_por + termino_2_por + termino_3_por + termino_4_por + termino_5_por + termino_6_por) > 0')
-            ->paginate(10, ['*'], 'page_proyectos') 
+            ->paginate(10, ['*'], 'page_proyectos')
             ->appends(request()->query());
-            
+
         $items_2 = Otrosi::with(['user_encargado', 'proyecto'])
             ->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 return $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
@@ -70,6 +72,7 @@ class CarteraController extends Controller
 
     public function save(Request $request)
     {
+        Gate::authorize('cartera.save');
         $val = [
             'proyecto_id'  => 'required|integer',
             'tipo'         => 'required|integer|in:1,2',
@@ -146,10 +149,11 @@ class CarteraController extends Controller
 
     public function pagos($id)
     {
+        Gate::authorize('cartera.pagos');
         $item = Proyecto::findOrFail($id);
         $pagos = $item->pagos;
         $lista = $item->pagos()->where('tipo_pago', 1)->get();
-        $totalApagar = $item->total ?? 0; 
+        $totalApagar = $item->total ?? 0;
         return response()->json([
             'status' => true,
             'message' => 'Consulta exitosa',
@@ -164,6 +168,7 @@ class CarteraController extends Controller
 
     public function pagosOtroSi($id)
     {
+        Gate::authorize('cartera.pagosOtroSi');
         $item = Otrosi::with('pagos')->findOrFail($id);
         $pagos = $item->pagos()->where('tipo_pago', 2)->get();
         $totalPago = Pagos::where([
@@ -184,6 +189,7 @@ class CarteraController extends Controller
 
     public function reciboPDF($id, $tipo)
     {
+        Gate::authorize('cartera.reciboPDF');
         $items = Pagos::where([
             'id_proyecto' => $id,
             'tipo_pago'   => $tipo,
@@ -205,7 +211,7 @@ class CarteraController extends Controller
         }
 
         $dptArray = json_decode(
-            file_get_contents(storage_path('json/jsonCityColombia.json')), 
+            file_get_contents(storage_path('json/jsonCityColombia.json')),
             true
         );
 
@@ -253,6 +259,7 @@ class CarteraController extends Controller
 
     public function deletePago($id)
     {
+        Gate::authorize('cartera.deletePago');
         $pago = Pagos::findOrFail($id);
         $tipo_pago = $pago->tipo_pago;
         $id_proyecto = $pago->id_proyecto;

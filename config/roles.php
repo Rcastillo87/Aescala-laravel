@@ -49,6 +49,7 @@ return [
         'tracking'      => ['isAdmin', 'isUser'],
         'calendario'    => ['isAdmin', 'isUser'],
         'almacen'       => ['isAdmin', 'isUser'],
+        'insumos'       => ['isAdmin', 'isUser', 'isAnalista'],  // ← NUEVO
 
         // ── Solo Admin ─────────────────────────────────────────
         'configuracion' => ['isAdmin'],
@@ -93,7 +94,7 @@ return [
         'proyecto.edit'                 => ['isAdmin', 'isUser', 'isColab', 'isContratista'],
         'proyecto.save'                 => ['isAdmin', 'isUser'],
         'proyecto.begin'                => ['isAdmin', 'isUser'],
-        'proyecto.editStatus'           => ['isAdmin'],
+        'proyecto.editStatus'           => ['isAdmin', 'isUser'],
         'proyecto.saveTarea'            => ['isAdmin', 'isUser'],
         'proyecto.editTarea'            => ['isAdmin', 'isUser', 'isColab', 'isContratista'],
         'proyecto.deleteTarea'          => ['isAdmin', 'isUser'],
@@ -109,7 +110,7 @@ return [
         'proyecto.excelDespachosGeneral'=> ['isAdmin', 'isUser'],
         'proyecto.trataDatosPDF'        => ['isAdmin', 'isUser'],
         'proyecto.calendarioProyecto'   => ['isAdmin', 'isUser'],
-        'proyecto.saveDiaNoLaborado'    => ['isAdmin'],
+        'proyecto.saveDiaNoLaborado'    => ['isAdmin', 'isUser'],
 
         // ── tareas.* ───────────────────────────────────────────
         'tareas.index'              => ['isAdmin', 'isUser'],
@@ -124,26 +125,26 @@ return [
 
         // ── material.* ─────────────────────────────────────────
         'material.index'            => ['isAdmin', 'isUser', 'isAlmacenista'],
-        'material.create'           => ['isAdmin', 'isUser'],
-        'material.edit'             => ['isAdmin', 'isUser'],
-        'material.save'             => ['isAdmin', 'isUser'],
-        'material.editStatus'       => ['isAdmin', 'isAlmacenista'],
+        'material.create'           => ['isAdmin', 'isUser', 'isAlmacenista'],
+        'material.edit'             => ['isAdmin', 'isUser', 'isAlmacenista'],
+        'material.save'             => ['isAdmin', 'isUser', 'isAlmacenista'],
+        'material.editStatus'       => ['isAdmin', 'isUser', 'isAlmacenista'],
         'material.listPrestamos'    => ['isAdmin', 'isUser', 'isAlmacenista'],
-        'material.savePrestamo'     => ['isAdmin', 'isAlmacenista'],
+        'material.savePrestamo'     => ['isAdmin', 'isUser', 'isAlmacenista'],
 
         // ── despachos.* ────────────────────────────────────────
         'despachos.index'               => ['isAdmin', 'isUser', 'isAlmacenista'],
-        'despachos.save'                => ['isAdmin', 'isAlmacenista'],
+        'despachos.save'                => ['isAdmin', 'isUser', 'isAlmacenista'],
         'despachos.historialMateriales' => ['isAdmin', 'isUser', 'isAlmacenista'],
         'despachos.indexDespachos'      => ['isAdmin', 'isUser', 'isAlmacenista'],
         'despachos.pdfDespacho'         => ['isAdmin', 'isUser', 'isAlmacenista'],
 
         // ── proveedor.* ────────────────────────────────────────
         'proveedor.index'           => ['isAdmin', 'isUser', 'isAlmacenista'],
-        'proveedor.create'          => ['isAdmin', 'isUser'],
-        'proveedor.edit'            => ['isAdmin', 'isUser'],
-        'proveedor.save'            => ['isAdmin', 'isUser'],
-        'proveedor.editStatus'      => ['isAdmin'],
+        'proveedor.create'          => ['isAdmin', 'isUser', 'isAlmacenista'],
+        'proveedor.edit'            => ['isAdmin', 'isUser', 'isAlmacenista'],
+        'proveedor.save'            => ['isAdmin', 'isUser', 'isAlmacenista'],
+        'proveedor.editStatus'      => ['isAdmin', 'isUser', 'isAlmacenista'],
 
         // ── pedidos.* ──────────────────────────────────────────
         'pedidos.index'             => ['isAdmin', 'isUser', 'isAlmacenista'],
@@ -168,7 +169,7 @@ return [
         'cartera.pagosOtroSi'       => ['isAdmin', 'iscartera'],
         'cartera.save'              => ['isAdmin', 'iscartera'],
         'cartera.reciboPDF'         => ['isAdmin', 'iscartera'],
-        'cartera.deletePago'        => ['isAdmin'],                     // Solo Admin puede borrar pagos
+        'cartera.deletePago'        => ['isAdmin', 'iscartera'],
 
         // ── solicitud.* ────────────────────────────────────────
         'solicitud.index'                   => ['isAdmin', 'isUser', 'isColab', 'isAnalista', 'isContratista', 'isTecnico', 'isAlmacenista'],
@@ -196,8 +197,8 @@ return [
         'calendario.index'              => ['isAdmin', 'isUser'],
         'calendario.resumenAnio'        => ['isAdmin', 'isUser'],
         'calendario.mesDatos'           => ['isAdmin', 'isUser'],
-        'calendario.marcarNoLaboral'    => ['isAdmin'],
-        'calendario.quitarNoLaboral'    => ['isAdmin'],
+        'calendario.marcarNoLaboral'    => ['isAdmin', 'isUser'],
+        'calendario.quitarNoLaboral'    => ['isAdmin', 'isUser'],
 
         // ── almacen.* ──────────────────────────────────────────
         'almacen.index'             => ['isAdmin', 'isUser'],
@@ -205,11 +206,21 @@ return [
         'almacen.edit'              => ['isAdmin', 'isUser'],
         'almacen.save'              => ['isAdmin', 'isUser'],
 
+        // ── insumos.* ──────────────────────────────────────────  ← NUEVO
+        'insumos.index'             => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.create'            => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.edit'              => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.save'              => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.editStatus'        => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.entregaInsumo'     => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.history'           => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.historyInsumo'     => ['isAdmin', 'isUser', 'isAnalista'],
+
         // ── tracking.* ─────────────────────────────────────────
         'tracking.index'            => ['isAdmin', 'isUser'],
         'tracking.realtime'         => ['isAdmin', 'isUser'],
         'tracking.history'          => ['isAdmin', 'isUser'],
-        'tracking.asination'        => ['isAdmin'],
+        'tracking.asination'        => ['isAdmin', 'isUser'],
 
         // ── cotizacion.* ───────────────────────────────────────
         'cotizacion.index'          => ['isAdmin', 'isUser', 'isAnalista'],

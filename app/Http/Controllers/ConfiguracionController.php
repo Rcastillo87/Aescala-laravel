@@ -11,6 +11,7 @@ use App\Http\Requests\AdicionalesRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 class ConfiguracionController extends Controller
 {
@@ -69,6 +70,7 @@ class ConfiguracionController extends Controller
     /*funcion de rutas*/
     public function indexValorArea($año)
     {
+        Gate::authorize('configuracion.indexValorArea');
         $title = 'Configuración: Valor por Área del año ' . $año;
         $items = ValorArea::where('año', $año)->get()->toArray();
         $añoActual = Carbon::now()->year;
@@ -81,6 +83,7 @@ class ConfiguracionController extends Controller
 
     public function indexPorcentajes($año)
     {
+        Gate::authorize('configuracion.indexPorcentajes');
         $title = 'Configuración: Porcentajes del año ' . $año;
         $items = ConfigPorcentajes::where('año', $año)->get()->toArray();
         $añoActual = Carbon::now()->year;
@@ -93,6 +96,7 @@ class ConfiguracionController extends Controller
 
     public function listConfigYearModel(string $type, int $año): JsonResponse
     {
+        Gate::authorize('configuracion.listConfigYearModel');
         $model = $this->resolveModel($type);
         return response()->json([
             'status' => true,
@@ -111,6 +115,7 @@ class ConfiguracionController extends Controller
     }
 
     public function indexAdicionales($año){
+        Gate::authorize('configuracion.indexValorArea');
         $title = 'Configuración: Porcentajes del año ' . $año;
         $items = ConfigAdicionales::where('año', $año)->get();
         $añoActual = Carbon::now()->year;

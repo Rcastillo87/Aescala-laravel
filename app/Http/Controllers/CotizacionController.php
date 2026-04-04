@@ -6,11 +6,14 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Cotizacion;
 use App\Models\SolicitudMaterial;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class CotizacionController extends Controller
 {
     public function index( )
     {
+
+        Gate::authorize('cotizacion.index');
         $title = 'Lista de Cotizacion';
         $items = Cotizacion::with(['proyecto'])
         ->selectRaw('id_proyecto,
@@ -47,6 +50,8 @@ class CotizacionController extends Controller
     }
 
     public function PDFCotizacion($id){
+        Gate::authorize('cotizacion.PDFCotizacion');
+
         $proyecto = SolicitudMaterial::find($id)->proyecto;
         $datos = (new Cotizacion)->dataCotizacion($id);
 

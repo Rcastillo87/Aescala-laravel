@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\User;
 use App\Models\Despachos;
@@ -15,8 +16,9 @@ use Illuminate\Support\Facades\Auth;
 class DespachoController extends Controller
 {
 
-    public function index( ) 
+    public function index( )
     {
+        Gate::authorize('despachos.index');
         $title = 'Despacho de Material';
         $tipo = Despachos::$tipo;
         $colaUsers = User::whereIn('id_rol', [3, 7, 8]) // Tecnico y Contratista y architecto
@@ -35,6 +37,7 @@ class DespachoController extends Controller
 
     public function save(Request $request)
     {
+        Gate::authorize('despachos.save');
         $validated = $request->validate([
             'id_proyecto' => ['required','integer', Rule::exists('proyectos', 'id')],
             'id_user' => ['required','integer', Rule::exists('users', 'id')],
@@ -129,6 +132,7 @@ class DespachoController extends Controller
 
     public function historialMateriales(Request $req)
     {
+        Gate::authorize('despachos.historialMateriales');
         $despachos = Despachos::with(['material'])
             ->where('id_proyecto', $req->input('id_proyecto'))
             ->where('tipo', 1)
@@ -170,6 +174,7 @@ class DespachoController extends Controller
 
     public function indexDespachos(Request $request)
     {
+        Gate::authorize('despachos.indexDespachos');
         $title = 'Historial Despachos de Materiales';
         $perPage = request('per_page', 10);
         $colaUsers = User::whereIn('id_rol', [3, 7, 8])
@@ -257,5 +262,4 @@ class DespachoController extends Controller
 
         return view('despachos.indexDespachos', compact('title', 'items', 'colaUsers', 'columns', 'headers', 'materiales'));
     }
-    
 }

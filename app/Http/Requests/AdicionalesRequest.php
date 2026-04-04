@@ -3,12 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class AdicionalesRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('configuracion.saveAdicionales');
     }
 
     public function rules(): array

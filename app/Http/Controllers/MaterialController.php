@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\InventarioMaterial;
 use App\Models\Proveedor;
@@ -17,13 +18,17 @@ class MaterialController extends Controller
 
     public function index()
     {
+        Gate::authorize('material.index');
         $title = 'Lista de Materiales';
         $estado = InventarioMaterial::$estado;
         $tipos  = InventarioMaterial::$tipo;
         $perPage = request('per_page', 10);
 
         if(Auth::user()->isAlmacenista){
-            $tipo = Almacenes::where('id_user', Auth::user()->id)->first()->tipo;
+            $tipo = Almacenes::where('id_user', Auth::user()->id)->first()?->tipo;
+            if(!$tipo){
+                return back()->with('error', 'No tienes un almacen acargo, para continuar el administrador debe asignarte un almacen.');
+            }
         } else if(Auth::user()->isAdmin || Auth::user()->isUser){
             $tipo  = request('tipo');
         } else {
@@ -117,6 +122,7 @@ class MaterialController extends Controller
 
     private function exportExcel($items)
     {
+        Gate::authorize('material.exportExcel');
         $headers = [
             "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=inventario_materiales.xls"
@@ -170,12 +176,14 @@ class MaterialController extends Controller
 
     public function create( )
     {
+        Gate::authorize('material.create');
         session(['solicitud_anterior_url' => url()->previous()]);
         return $this->form();
     }
 
     public function edit($id)
     {
+        Gate::authorize('material.edit');
         session(['solicitud_anterior_url' => url()->previous()]);
         return $this->form($id);
     }
@@ -190,7 +198,10 @@ class MaterialController extends Controller
         $zonas = InventarioMaterial::$zonas;
 
         if(Auth::user()->isAlmacenista){
-            $tipo = Almacenes::where('id_user', Auth::user()->id)->first()->tipo;
+            $tipo = Almacenes::where('id_user', Auth::user()->id)->first()?->tipo;
+            if(!$tipo){
+                return back()->with('error', 'No tienes un almacen acargo, para continuar el administrador debe asignarte un almacen.');
+            }
         } else if(Auth::user()->isAdmin || Auth::user()->isUser){
             $tipo  = '';
         } else {
@@ -201,6 +212,7 @@ class MaterialController extends Controller
 
     public function save(Request $req)
     {
+        Gate::authorize('material.save');
         $data = $req->validate([
             'id' => 'nullable|integer',
             'codigo' => [
@@ -257,6 +269,7 @@ class MaterialController extends Controller
 
     public function editStatus($id)
     {
+        Gate::authorize('material.editStatus');
         try {
             DB::beginTransaction();
             $user = InventarioMaterial::findOrFail($id);

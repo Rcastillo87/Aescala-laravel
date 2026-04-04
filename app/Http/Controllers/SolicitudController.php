@@ -17,7 +17,7 @@ use App\Models\Despachos;
 use App\Models\Fase;
 use App\Http\Requests\SaveSolicitudRequest;
 use App\Traits\RegistraBitacora;
-
+use Illuminate\Support\Facades\Gate;
 
 class SolicitudController extends Controller
 {
@@ -25,6 +25,7 @@ class SolicitudController extends Controller
 
     public function index( )
     {
+        Gate::authorize('solicitud.index');
         if(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista){
             $cola = Request('id_userSerch');
         } else {
@@ -97,6 +98,7 @@ class SolicitudController extends Controller
 
     public function create( )
     {
+        Gate::authorize('solicitud.create');
         $title = 'Crear Solicitud de Material';
         $proyectos = Proyecto::wherein('id_estado', [1, 5, 3])
             ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico || Auth::user()->isAlmacenista), function ($query) {
@@ -146,6 +148,7 @@ class SolicitudController extends Controller
 
     public function save(Request $request)
     {
+        Gate::authorize('solicitud.save');
         $inicio = microtime(true);
 
         $validated = $request->validate([
@@ -246,6 +249,8 @@ class SolicitudController extends Controller
 
     public function listaSolicitud($id)
     {
+        Gate::authorize('solicitud.listaSolicitud');
+
         $solicitud = SolicitudItems::Join('inventario_materiales', 'solicitud_items.id_material', '=', 'inventario_materiales.id')
             ->Join('solicitud_material', 'solicitud_material.id', '=', 'solicitud_items.id_solicitud')
             ->leftJoin(
@@ -508,7 +513,7 @@ class SolicitudController extends Controller
     }
 
     public function delete($id){
-
+        Gate::authorize('otro_si.delete');
         $inicio  = microtime(true);
         $request = request();
 
@@ -532,6 +537,7 @@ class SolicitudController extends Controller
 
     public function solicitarCotizacion($id)
     {
+        Gate::authorize('otro_si.solicitarCotizacion');
         $inicio  = microtime(true);
         $request = request();
 

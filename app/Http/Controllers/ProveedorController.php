@@ -5,42 +5,43 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Proveedor;
+use Illuminate\Support\Facades\Gate;
 
 class ProveedorController extends Controller
 {
-    public function index( ) 
+    public function index( )
     {
         $title = 'Lista de Proveedores';
         $items = Proveedor::
-        when(Request('razon_social'), function ($query, $razon_social) { 
+        when(Request('razon_social'), function ($query, $razon_social) {
             return $query->whereRaw('LOWER(razon_social) LIKE LOWER(?)', ["%$razon_social%"]);
         })
-        ->when(Request('nit'), function ($query, $nit) { 
+        ->when(Request('nit'), function ($query, $nit) {
             return $query->whereRaw('LOWER(nit) LIKE LOWER(?)', ["%$nit%"]);
         })
-        ->when(Request('direccion'), function ($query, $direccion) { 
+        ->when(Request('direccion'), function ($query, $direccion) {
             return $query->whereRaw('LOWER(direccion) LIKE LOWER(?)', ["%$direccion%"]);
         })
-        ->when(Request('telefono'), function ($query, $telefono) { 
+        ->when(Request('telefono'), function ($query, $telefono) {
             return $query->whereRaw('LOWER(telefono) LIKE LOWER(?)', ["%$telefono%"]);
         })
-        ->when(Request('activo'), function ($query, $activo) { 
+        ->when(Request('activo'), function ($query, $activo) {
             return $query->where('activo', $activo);
         })
         ->paginate(10)
         ->appends(request()->query());
-    
+
         $activo = Proveedor::$estado;
         $headers = ['Nombre | Razón', 'Documento | NIT', 'Direccion', 'Telefono', 'Fecha de Creacion', 'Estado', 'Opciones'];
         return view('proveedor.index', compact('title', 'items', 'headers', 'activo'));
     }
 
-    public function create( ) 
+    public function create( )
     {
         return $this->form();
     }
 
-    public function edit($id) 
+    public function edit($id)
     {
         return $this->form($id);
     }
@@ -64,7 +65,7 @@ class ProveedorController extends Controller
         ]);
 
         $msg = ucfirst($req->id ? 'Proveedor editado con éxito' : 'Proveedor creado con éxito');
-    
+
         try {
             DB::beginTransaction();
             Proveedor::updateOrCreate(['id' => $data['id']], $data);
@@ -79,7 +80,7 @@ class ProveedorController extends Controller
         }
     }
 
-    public function editStatus($id) 
+    public function editStatus($id)
     {
         try {
             DB::beginTransaction();
@@ -87,7 +88,7 @@ class ProveedorController extends Controller
             $user->update(['activo' => ($user->activo == 1) ? 2 : 1]);
             DB::commit();
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'Proveedor actualizado correctamente.'
             ],200);
         } catch (\Exception $e) {
