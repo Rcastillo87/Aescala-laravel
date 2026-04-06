@@ -173,16 +173,16 @@ return [
 
         // ── solicitud.* ────────────────────────────────────────
         'solicitud.index'                   => ['isAdmin', 'isUser', 'isColab', 'isAnalista', 'isContratista', 'isTecnico', 'isAlmacenista'],
-        'solicitud.create'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista'],
-        'solicitud.save'                    => ['isAdmin', 'isUser', 'isColab', 'isContratista'],
+        'solicitud.create'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista'],
+        'solicitud.save'                    => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista'],
         'solicitud.listaSolicitud'          => ['isAdmin', 'isUser', 'isColab', 'isAnalista', 'isContratista', 'isTecnico', 'isAlmacenista'],
         'solicitud.createDespachoSolicitud' => ['isAdmin', 'isAlmacenista'],
-        'solicitud.createAprobarSolicitud'  => ['isAdmin', 'isAnalista'],
+        'solicitud.createAprobarSolicitud'  => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'solicitud.saveSolicitud'           => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'solicitud.pdfDespacho'             => ['isAdmin', 'isUser', 'isAlmacenista'],
-        'solicitud.delete'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista'],
-        'solicitud.PDFCotizacion'           => ['isAdmin', 'isAnalista'],
-        'solicitud.solicitarCotizacion'     => ['isAdmin', 'isAnalista'],
+        'solicitud.delete'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista'],
+        'solicitud.PDFCotizacion'           => ['isAdmin', 'isAnalista', 'isAlmacenista'],
+        'solicitud.solicitarCotizacion'     => ['isAdmin', 'isAnalista', 'isAlmacenista'],
 
         // ── configuracion.* ────────────────────────────────────
         'configuracion.indexValorArea'      => ['isAdmin'],
