@@ -1,11 +1,29 @@
 <nav class="bg-gradient-to-br {{ (config('app.stage') !== 'prod') ? 'from-blue-400 to-blue-200' : 'from-orange-400 to-orange-200' }} rounded-lg shadow-md shadow-gray-300 dark:bg-gray-800 dark:border-gray-700">
-    <div class="flex flex-wrap items-center p-2 justify-between sm:justify-end">
+    <!--<div class="flex flex-wrap items-center p-2 justify-between sm:justify-end">-->
+    <div class="flex flex-wrap items-center p-2 justify-between gap-3">
         <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-dark rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
             <span class="sr-only">Open sidebar</span>
             <svg class="w-9 h-9" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
             </svg>
         </button>
+
+        <a href="{{ asset('aetrack.apk') }}"
+        data-tooltip-target="tooltip-download"
+        class="flex ml-0 sm:ml-[240px] items-center gap-2 bg-white/90 backdrop-blur text-gray-800 font-semibold px-4 py-2 rounded-lg shadow hover:bg-white transition duration-200 border border-white/40"
+        download>
+            <!-- Icono -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/>
+            </svg>
+        </a>
+        <!-- Tooltip -->
+        <div id="tooltip-download" role="tooltip"
+            class="absolute z-50 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
+            Descargar la app AETrack
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
 
         <!-- Settings Dropdown -->
         <div class="flex my-3 mr-2">
@@ -59,4 +77,4 @@
     </div>
     @endsession
   </nav>
-  
+

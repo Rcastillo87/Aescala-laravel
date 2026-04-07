@@ -138,3 +138,16 @@ ALTER TABLE dispositivo
 ADD COLUMN nombre_equipo VARCHAR(120),
 ADD COLUMN imei_1 VARCHAR(20),
 ADD COLUMN imei_2 VARCHAR(20);
+
+
+
+realice algunos cambios como puedes ver esta se manejara como la version 1.4
+los cambios consistesn en lo siguiente:
+al registra el dispositivo se debe enviar ademas imei 1 y 2.
+al registra el dispositivo se debe enviar ademas en nombre del equipo en red wifi(este es cambiado por el usuario si este ultimo lo requiere)
+si el dispositivo no posee un usuario asignado, este podra asignar uno de la lista alluser(agragar un select con la lista de usuarios y enviar nuevamente el registro),
+una vez asignado el usuario ese no puede ser cambiado.
+en todos los envios de informacion se debe enviar el la version de la apk apraser validada(ver codigo)
+agragar estos nuevos campos a la interfase de la apk.
+
+antes de hacer cambios en el aplicativo esta argitectura de nuevos te parese bien.
