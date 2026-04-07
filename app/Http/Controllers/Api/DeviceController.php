@@ -8,6 +8,7 @@ use App\Models\Dispositivo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class DeviceController extends Controller
 {
@@ -30,9 +31,29 @@ class DeviceController extends Controller
             'nombre_equipo' => 'nullable|string|min:3|max:120',
             'imei_1'        => 'nullable|string|min:10|max:20',
             'imei_2'        => 'nullable|string|min:10|max:20',
-            'id_user'       => 'nullable|exists:users,id',
             'app_version' => 'nullable|string|max:10',
+            'id_user' => [
+                'nullable',
+                'exists:users,id',
+                Rule::unique('dispositivo', 'id_user')
+                    ->ignore(
+                        Dispositivo::where('device_serial', $request->device_serial)->value('id')
+                    )
+            ],
         ]);
+
+        if (!empty($data['id_user'])) {
+
+            $existe = Dispositivo::where('id_user', $data['id_user'])
+                ->where('device_serial', '!=', $data['device_serial'])
+                ->exists();
+
+            if ($existe) {
+                return response()->json([
+                    'error' => 'Este usuario ya tiene un dispositivo registrado'
+                ], 409);
+            }
+        }
 
         $minVersion = env('APP_MIN_VERSION');
         $needsUpdate = false;
