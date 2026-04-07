@@ -17,7 +17,10 @@ class Dispositivo extends Model
         'model',
         'brand',
         'device',
-        'id_user'
+        'id_user',
+        'nombre_equipo',
+        'imei_1',
+        'imei_2'
     ];
 
     public function georreferenciaciones()

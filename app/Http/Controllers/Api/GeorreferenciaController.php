@@ -43,7 +43,15 @@ class GeorreferenciaController extends Controller
                 'integer',
                 Rule::in(array_keys(Georreferencia::$tipos))
             ],
+            'app_version' => 'nullable|string|max:10',
         ]);
+
+        $minVersion = env('APP_MIN_VERSION');
+        $needsUpdate = false;
+
+        if (!empty($data['app_version'])) {
+            $needsUpdate = version_compare($data['app_version'], $minVersion, '<');
+        }
 
         DB::beginTransaction();
         try {
@@ -51,7 +59,7 @@ class GeorreferenciaController extends Controller
             DB::commit();
             return $this->success([
                 'id' => $geo->id
-            ], 'Ubicación registrada');
+            ], $needsUpdate ? 'Actualización recomendada' : 'Ubicación registrada');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;

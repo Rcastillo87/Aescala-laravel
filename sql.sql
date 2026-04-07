@@ -126,3 +126,15 @@ CREATE TABLE `insumos_entregados` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+INSERT INTO areas_empresa
+(id, nombre_area)
+VALUES(1, 'Administracion'),
+(2, 'Comercial'),
+(3, 'Arquitectos');
+
+ALTER TABLE dispositivo
+ADD COLUMN nombre_equipo VARCHAR(120),
+ADD COLUMN imei_1 VARCHAR(20),
+ADD COLUMN imei_2 VARCHAR(20);
