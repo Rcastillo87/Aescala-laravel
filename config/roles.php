@@ -173,16 +173,16 @@ return [
 
         // ── solicitud.* ────────────────────────────────────────
         'solicitud.index'                   => ['isAdmin', 'isUser', 'isColab', 'isAnalista', 'isContratista', 'isTecnico', 'isAlmacenista'],
-        'solicitud.create'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista'],
-        'solicitud.save'                    => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista'],
+        'solicitud.create'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista', 'isTecnico'],
+        'solicitud.save'                    => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista', 'isTecnico'],
         'solicitud.listaSolicitud'          => ['isAdmin', 'isUser', 'isColab', 'isAnalista', 'isContratista', 'isTecnico', 'isAlmacenista'],
         'solicitud.createDespachoSolicitud' => ['isAdmin', 'isAlmacenista'],
         'solicitud.createAprobarSolicitud'  => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'solicitud.saveSolicitud'           => ['isAdmin', 'isAnalista', 'isAlmacenista'],
-        'solicitud.pdfDespacho'             => ['isAdmin', 'isUser', 'isAlmacenista'],
-        'solicitud.delete'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista'],
-        'solicitud.PDFCotizacion'           => ['isAdmin', 'isAnalista', 'isAlmacenista'],
-        'solicitud.solicitarCotizacion'     => ['isAdmin', 'isAnalista', 'isAlmacenista'],
+        'solicitud.pdfDespacho'             => ['isAdmin', 'isUser', 'isAlmacenista', 'isTecnico'],
+        'solicitud.delete'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista', 'isTecnico'],
+        'solicitud.PDFCotizacion'           => ['isAdmin', 'isAnalista', 'isAlmacenista', 'isTecnico'],
+        'solicitud.solicitarCotizacion'     => ['isAdmin', 'isAnalista', 'isAlmacenista', 'isTecnico'],
 
         // ── configuracion.* ────────────────────────────────────
         'configuracion.indexValorArea'      => ['isAdmin'],
