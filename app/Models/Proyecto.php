@@ -242,7 +242,7 @@ class Proyecto extends Model
             "documento_cliente"   => number_format($this->cedula_cliente, 0, ',', '.'),
             "img_firma"           => $this->img_firma,
             "fechaTexto"         => $fechaTexto,
-            "fecha_contrato"     => Carbon::now()->locale('es')->translatedFormat('d \d\e F \d\e Y'),
+            "fecha_firma"     => $this->fecha_firma
         ];
     }
 
