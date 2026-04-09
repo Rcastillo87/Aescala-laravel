@@ -129,7 +129,7 @@
 <h2>
     AUTORIZACIÓN PARA EL TRATAMIENTO DE DATOS PERSONALES DE COLABORADORES, PROVEEDORES Y CONTRATISTAS DE {{ env('RAZON') }}
 </h2>
-<h3>DEL {{ $fecha_contrato }}</h3>
+<h3>DEL {{ $fechaTexto }}</h3>
 
 <p>
     Yo, <strong>{{ $nombre_cliente }}</strong>, identificado(a) con {{ $tipo_doc_cliente }}

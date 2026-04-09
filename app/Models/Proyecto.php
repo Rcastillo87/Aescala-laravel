@@ -230,13 +230,18 @@ class Proyecto extends Model
 
     public function getTrataDatosAttribute()
     {
+        $carbon = Carbon::parse($this->fecha_firma);
+        $carbon->locale('es');
+        $fechaTexto = $this->fecha_firma? $carbon->translatedFormat('d \d\e F \d\e Y') : null;
+
         // Preparar datos para la vista
         return [
             "nombre_cliente"      => Str::title($this->nombre_cliente),
             "tipo_doc_cliente"    => self::$tipoDocumento[$this->tipo_doc_cliente][1] ?? '',
             "tipo_doc_cliente_acro" => self::$tipoDocumento[$this->tipo_doc_cliente][0] ?? '',
             "documento_cliente"   => number_format($this->cedula_cliente, 0, ',', '.'),
-            "img_firma"           => $this->fecha_firma,
+            "img_firma"           => $this->img_firma,
+            "fechaTexto"         => $fechaTexto,
             "fecha_contrato"     => Carbon::now()->locale('es')->translatedFormat('d \d\e F \d\e Y'),
         ];
     }
