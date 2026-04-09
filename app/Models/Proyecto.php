@@ -236,7 +236,7 @@ class Proyecto extends Model
             "tipo_doc_cliente"    => self::$tipoDocumento[$this->tipo_doc_cliente][1] ?? '',
             "tipo_doc_cliente_acro" => self::$tipoDocumento[$this->tipo_doc_cliente][0] ?? '',
             "documento_cliente"   => number_format($this->cedula_cliente, 0, ',', '.'),
-            "img_firma"           => $this->img_firma,
+            "img_firma"           => $this->fecha_firma,
             "fecha_contrato"     => Carbon::now()->locale('es')->translatedFormat('d \d\e F \d\e Y'),
         ];
     }
