@@ -10,8 +10,8 @@ class AreaEntregable extends Model
     use HasFactory;
 
     protected $table = 'area_entregables';
-    protected $primaryKey = null; 
-    public $incrementing = false; 
+    protected $primaryKey = null;
+    public $incrementing = false;
     public $timestamps = false;
 
     protected $fillable = [

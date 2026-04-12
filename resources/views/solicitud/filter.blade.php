@@ -90,6 +90,17 @@
                         />
                     </div>
 
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="ubicacion" :value="__('Ubicacion')" />
+                        <x-select-input
+                            name="ubicacion"
+                            :options="$ubicacion"
+                            id="ubicacion"
+                            :selected="Request('ubicacion', '')"
+                            class="block mt-1 w-full"
+                        />
+                    </div>
+
                     <!--<div class="w-full max-w-full px-2 pt-10 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                         <input type="hidden" name="aprobar" value="0">
                         <label class="inline-flex items-center cursor-pointer">

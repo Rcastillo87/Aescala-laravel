@@ -129,7 +129,7 @@
 <h2>
     AUTORIZACIÓN PARA EL TRATAMIENTO DE DATOS PERSONALES DE COLABORADORES, PROVEEDORES Y CONTRATISTAS DE {{ env('RAZON') }}
 </h2>
-@if($fecha_firma)
+@if($fecha_firma != '')
     <h3>DEL {{ $fechaTexto }}</h3>
 @endif
 

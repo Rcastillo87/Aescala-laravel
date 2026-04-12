@@ -22,7 +22,6 @@ class Otrosi extends Model
         'numero',
         'fecha_creacion',
         'fecha_firma',
-        'plantilla',
         'estado',
         'sugerencia_cliente',
         'img_firma',

@@ -151,3 +151,7 @@ en todos los envios de informacion se debe enviar el la version de la apk aprase
 agragar estos nuevos campos a la interfase de la apk.
 
 antes de hacer cambios en el aplicativo esta argitectura de nuevos te parese bien.
+
+
+
+ALTER TABLE aescala.otro_si DROP COLUMN plantilla;

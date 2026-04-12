@@ -18,6 +18,7 @@ use App\Models\Otrosi;
 use App\Models\User;
 use App\Models\Proyecto;
 use App\Models\Area;
+use App\Models\AreaEntregable;
 
 class OtrosiController extends Controller
 {
@@ -90,145 +91,47 @@ class OtrosiController extends Controller
             ->get(['id', 'nombre_proyecto'])
             ->toArray();
 
-        if(!$id) {
-            $itemsOtroSi = '';
-        } else {
-            $itemsOtroSi = $this->renderHtml($item);
+        $areas = Area::get(['id', 'nombre_area'])->toArray();
+
+        $entregables = [];
+        if ($item) {
+            $entregables = $item->area_entregable
+                ->groupBy('id_area')
+                ->map(function ($group) {
+                    return [
+                        'id_area' => $group->first()->id_area,
+                        'areaText' => $group->first()->area->nombre_area,
+                        'items' => $group->map(function ($item) {
+                            return [
+                                'material' => $item->descripccion,
+                                'cantidad' => $item->cantidad,
+                                'valor_unitario' => $item->valor,
+                            ];
+                        })->values()
+                    ];
+                })->values();
         }
 
-        return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'itemsOtroSi'));
-    }
-
-    public function renderHtml($otroSi)
-    {
-        // Encabezado
-        $html = '<div class="bg-[#242e68] text-white p-4 mt-6">
-                <h2 class="text-xl text-[#242e68] font-bold">📁 Proyecto: '. e($otroSi->proyecto->nombre_proyecto) .'</h2>
-            </div>';
-
-        // Inicio de la tabla
-        $html .= '
-            <div class="overflow-x-auto w-full border border-gray-200 rounded-b-lg shadow-md">
-                <table class="min-w-full w-full text-sm text-left text-gray-700 border-collapse table-auto">
-                    <colgroup>
-                        <col style="width: 20%;">
-                        <col style="width: 50%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                    </colgroup>
-                    <thead class="bg-gray-100 border-b border-gray-200">
-                        <tr>
-                            <th class="px-4 py-2 font-semibold text-[#242e68]">Área</th>
-                            <th class="px-4 py-2 font-semibold text-[#242e68]">Material / Actividad</th>
-                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Cantidad</th>
-                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Valor Unitario</th>
-                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-        ';
-
-        // Agrupar por id_area para crear filas por Área
-        $groups = $otroSi->area_entregable->groupBy('id_area');
-
-        $totalGeneral = 0;
-        $hiddenInputs = '';
-        // hidden input del proyecto (id_proyecto_excel)
-        $hiddenInputs .= '<input type="hidden" name="id_proyecto_excel" value="' . e($otroSi->id_proyecto) . '">';
-
-        foreach ($groups as $idArea => $rows) {
-            // nombre del área (si existe relación)
-            $first = $rows->first();
-            $areaNombre = $first->area->nombre_area ?? 'Área ' . $idArea;
-
-            $subtotalArea = 0;
-            $rowCount = $rows->count();
-            foreach ($rows as $index => $ent) {
-                $cantidad = (int) $ent->cantidad;
-                $valor = (int) $ent->valor;
-                $subtotal = $cantidad * $valor;
-                $subtotalArea += $subtotal;
-
-                $html .= '<tr>';
-                if ($index === 0) {
-                    $html .= '<td class="px-4 py-2 font-semibold align-top" rowspan="' . $rowCount . '">' . e($areaNombre) . '</td>';
-                }
-                $html .= '<td class="px-4 py-2">' . e($ent->descripccion) . '</td>';
-                $html .= '<td class="px-4 py-2 text-right">' . number_format($cantidad, 0, ',', '.') . '</td>';
-                $html .= '<td class="px-4 py-2 text-right">$ ' . number_format($valor, 0, ',', '.') . '</td>';
-                $html .= '<td class="px-4 py-2 text-right">$ ' . number_format($subtotal, 0, ',', '.') . '</td>';
-                $html .= '</tr>';
-
-                // hidden inputs (estructura: entregables[<id_area>][items][<index>][...])
-                // repetimos id_area y area_nombre por cada item — igual que en la versión JS anterior
-                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][id_area]" value="' . e($idArea) . '">';
-                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][area_nombre]" value="' . e($areaNombre) . '">';
-                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][items][' . $index . '][material]" value="' . e($ent->descripccion) . '">';
-                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][items][' . $index . '][cantidad]" value="' . e($cantidad) . '">';
-                $hiddenInputs .= '<input type="hidden" name="entregables[' . $idArea . '][items][' . $index . '][valor_unitario]" value="' . e($valor) . '">';
-            }
-
-            // fila subtotal por área
-            $html .= '
-                <tr class="bg-gray-50 font-semibold">
-                    <td colspan="4" class="px-4 py-2 text-right text-[#242e68]">Subtotal ' . e($areaNombre) . '</td>
-                    <td class="px-4 py-2 text-right text-[#242e68]">$ ' . number_format($subtotalArea, 0, ',', '.') . '</td>
-                </tr>
-            ';
-
-            $totalGeneral += $subtotalArea;
-        }
-
-        // pie (total general)
-        $html .= '
-                </tbody>
-                <tfoot class="bg-[#f7f9ff] font-bold text-[#242e68] border-t-2 border-[#242e68]">
-                    <tr>
-                        <td colspan="4" class="px-4 py-3 text-right text-lg">Total General</td>
-                        <td class="px-4 py-3 text-right text-lg">$ ' . number_format($totalGeneral, 0, ',', '.') . '</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        ';
-
-        // agregar hidden inputs al final del bloque
-        $html .= $hiddenInputs;
-
-        // cerrar contenedor
-        $html .= '</div>';
-        return  $html;
+        return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'areas', 'entregables'));
     }
 
     public function save(Request $request)
     {
         Gate::authorize('otro_si.save');
+
         $request->validate([
             'id' => 'nullable|integer|exists:otro_si,id',
-            'id_proyecto' => 'required|exists:proyectos,id|same:id_proyecto_excel',
-            'id_proyecto_excel' => 'required|exists:proyectos,id',
-            'plantilla_otro_si' => 'required|file|mimes:xlsx,xls',
-
+            'id_proyecto' => 'required|exists:proyectos,id',
             'entregables' => 'required|array|min:1',
             'entregables.*.id_area' => 'required|exists:areas,id',
             'entregables.*.items' => 'required|array|min:1',
             'entregables.*.items.*.material' => 'required|string',
             'entregables.*.items.*.cantidad' => 'required|integer|min:1',
             'entregables.*.items.*.valor_unitario' => 'required|integer|min:0'
-        ], [
-            'id_proyecto.same' => 'El proyecto seleccionado en el Excel debe coincidir con el proyecto principal.'
         ]);
 
         DB::beginTransaction();
         try {
-            // 📄 Convertir archivo Excel a base64
-            $file = $request->file('plantilla_otro_si');
-            $filePath = $file->getRealPath();
-            $fileContent = file_get_contents($filePath);
-
-            $mimeType = $file->getMimeType();
-            $base64Documento = 'data:' . $mimeType . ';base64,' . base64_encode($fileContent);
 
             if($request->id){
                 $otroSi = Otrosi::find($request->id);
@@ -249,7 +152,6 @@ class OtrosiController extends Controller
 
             // 🧾 Crear registro principal
             $otroSi->id_proyecto = $request->id_proyecto;
-            $otroSi->plantilla = $base64Documento;
             $otroSi->save();
 
             // 📦 Guardar ítems relacionados
@@ -295,171 +197,6 @@ class OtrosiController extends Controller
             Log::error('Error generando OTRO SÍ PDF: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
-    }
-
-    public function valiPlantilla(Request $request)
-    {
-        Gate::authorize('otro_si.valiPlantilla');
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls'
-        ]);
-
-        try {
-            $spreadsheet = IOFactory::load($request->file('file')->getRealPath());
-            $rows = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error' => 'No se pudo leer el archivo: ' . $e->getMessage()
-            ], 400);
-        }
-
-        $nombreProyecto = trim(preg_replace('/\s+/', ' ', $rows[1]['C'] ?? ''));
-        $proyecto = Proyecto::whereRaw("
-            LOWER(REPLACE(REPLACE(REPLACE(REPLACE(nombre_proyecto, '  ', ' '), '\t', ''), '\n', ''), '\r', '')) = ?
-        ", [mb_strtolower($nombreProyecto)])
-        ->first();
-
-        if (!$proyecto) {
-            $proyecto = Proyecto::whereRaw("
-                LOWER(REPLACE(REPLACE(REPLACE(REPLACE(nombre_proyecto, '  ', ' '), '\t', ''), '\n', ''), '\r', '')) LIKE ?
-            ", ['%' . mb_strtolower($nombreProyecto) . '%'])
-            ->first();
-        }
-
-        if (!$proyecto) {
-            return response()->json([
-                'error' => "El proyecto '$nombreProyecto' no existe en la base de datos."
-            ], 400);
-        }
-
-        $resp = [
-            'nombre_proyecto' => $nombreProyecto,
-            'id_proyecto'     => $proyecto->id,
-            'espacios'        => [],
-        ];
-
-        $headers = [
-            "A" => "ESPACIO",
-            "B" => "ITEM",
-            "C" => "MATERIAL/ ACTIVIDAD",
-            "D" => "CANT",
-            "E" => "VALOR UNITARIO",
-            "F" => "VALOR TOTAL"
-        ];
-
-        unset($rows[1]);
-
-        $espacioActual = null;
-        $errores       = [];
-        $advertencias  = [];
-
-        foreach ($rows as $index => $row) {
-            $valores = array_intersect_key($row, array_flip(['A', 'B', 'C', 'D', 'E', 'F']));
-            $valores = array_map(fn($v) => is_string($v) ? trim($v) : $v, $valores);
-
-            // Saltar filas vacías o encabezados
-            if ($headers === $valores || empty(array_filter($valores))) {
-                continue;
-            }
-
-            if (
-                (!isset($valores['B']) || trim($valores['B']) === '') &&
-                (!isset($valores['E']) || trim($valores['E']) === '') &&
-                (!isset($valores['C']) || trim($valores['C']) === '') &&
-                (!isset($valores['D']) || trim($valores['D']) === '')
-            ) {
-                continue;
-            }
-
-            // Detectar nuevo ESPACIO
-            if (!empty(trim($valores['A'] ?? ''))) {
-                // Guardar espacio anterior antes de iniciar el nuevo
-                if ($espacioActual) {
-                    $resp['espacios'][] = $espacioActual;
-                }
-
-                $nombreArea = trim($valores['A']);
-                $area = Area::whereRaw('LOWER(nombre_area) = LOWER(?)', [$nombreArea])->first();
-
-                if (!$area) {
-                    $errores[] = "Fila $index: el ESPACIO '$nombreArea' no existe en la tabla áreas.";
-                    $espacioActual = [
-                        'id_area'     => 0,
-                        'area_nombre' => $nombreArea,
-                        'items'       => []
-                    ];
-                } else {
-                    $espacioActual = [
-                        'id_area'     => $area->id,
-                        'area_nombre' => $area->nombre_area,
-                        'items'       => []
-                    ];
-                }
-            }
-
-            if (!$espacioActual) continue;
-
-            // Leer valores del ítem
-            $material      = trim($valores['C'] ?? '');
-            $cant          = $valores['D'] ?? '';
-            $valorUnitario = $valores['E'] ?? '';
-            $valorUnitario = (int) str_replace(['$', ',', ' '], '', $valorUnitario);
-            $cantInt       = (int) $cant;
-
-            $materialVacio = empty($material);
-            $cantInvalida  = !filter_var($cant, FILTER_VALIDATE_INT) || $cantInt <= 0;
-            $valorCero     = $valorUnitario === 0;
-
-            // ⚠️ Las TRES condiciones juntas → advertencia, fila omitida, continúa el proceso
-            if ($materialVacio && $cantInvalida && $valorCero) {
-                $advertencias[] = "Fila $index (" . ($espacioActual['area_nombre'] ?? 'sin área') . "): fila vacía o sin datos, fue omitida.";
-                continue;
-            }
-
-            // ❌ Errores individuales → bloqueantes
-            $erroresFila = [];
-
-            if ($materialVacio) {
-                $erroresFila[] = 'MATERIAL/ACTIVIDAD vacío.';
-            }
-            if ($cantInvalida) {
-                $erroresFila[] = 'CANT debe ser un número entero mayor que 0.';
-            }
-            if (filter_var($valorUnitario, FILTER_VALIDATE_INT) === false || $valorUnitario < 0) {
-                $erroresFila[] = 'VALOR UNITARIO debe ser un número mayor o igual que 0.';
-            }
-
-            if (!empty($erroresFila)) {
-                $errores[] = "Fila $index: " . implode(' | ', $erroresFila);
-            }
-
-            $espacioActual['items'][] = [
-                'material'       => $material,
-                'cantidad'       => $cantInt,
-                'valor_unitario' => $valorUnitario,
-            ];
-        }
-
-        // Agregar el último espacio pendiente
-        if ($espacioActual) {
-            $resp['espacios'][] = $espacioActual;
-        }
-
-        // Filtrar espacios que quedaron sin ítems válidos
-        $resp['espacios'] = array_values(
-            array_filter($resp['espacios'], fn($e) => !empty($e['items']))
-        );
-
-        // ❌ Errores reales bloquean (proyecto no existe, área no existe, campo individual inválido)
-        if (!empty($errores)) {
-            return response()->json([
-                'errores' => $errores
-            ], 422);
-        }
-
-        // ✅ Retornar espacios válidos + advertencias de filas omitidas
-        $resp['advertencias'] = $advertencias;
-        return response()->json($resp, 200);
     }
 
     public function firmarOtroSi($token)

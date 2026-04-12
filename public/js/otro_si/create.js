@@ -1,232 +1,363 @@
-document.getElementById('plantilla_otro_si').addEventListener('change', async function (e) {
-    const file = e.target.files[0];
-    const input = e.target;
-    if (!file) return;
+let itemTemplate = null;
 
-    const formData = new FormData();
-    formData.append('file', file);
+document.addEventListener("DOMContentLoaded", () => {
 
-    Swal.fire({
-        title: 'Validando plantilla...',
-        text: 'Por favor espera mientras se valida el archivo.',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
+    const firstItem = document.querySelector(".item-group");
+
+    if (firstItem) {
+        itemTemplate = firstItem.cloneNode(true);
+    }
+
+    let entregables = [];
+    let editIndex = null;
+
+    const modal = "modalItemsArea-modal";
+    const form = document.getElementById("formItemsArea");
+    const areaDiv = document.getElementById("area-div");
+    const selectArea = document.getElementById("id_area");
+    const itemsContainer = document.getElementById("area-items");
+    const addItemBtn = document.getElementById("addItem");
+
+    // =========================
+    // 💰 Formato dinero
+    // =========================
+    const money = (n) => {
+        return "$ " + Number(n).toLocaleString("es-CO");
+    };
+
+    // =========================
+    // 🔄 Reset modal
+    // =========================
+    function resetModal() {
+        form.reset();
+        editIndex = null;
+
+        itemsContainer.innerHTML = "";
+        itemsContainer.appendChild(itemTemplate.cloneNode(true));
+
+        reindexItems();
+    }
+
+    // =========================
+    // 🔢 Reindex items
+    // =========================
+    function reindexItems() {
+        document.querySelectorAll(".item-group").forEach((el, i) => {
+            el.dataset.itemNumber = i + 1;
+            el.querySelector("h3").innerText = `Item ${i + 1}`;
+        });
+    }
+
+    // =========================
+    // ➕ Agregar item
+    // =========================
+    addItemBtn.addEventListener("click", () => {
+        const clone = document.querySelector(".item-group").cloneNode(true);
+        clone.querySelectorAll("input, textarea").forEach(e => e.value = "");
+        itemsContainer.appendChild(clone);
+        reindexItems();
     });
 
-    try {
-        const response = await fetch(valUrl, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: formData
+    // =========================
+    // ❌ Eliminar item
+    // =========================
+    itemsContainer.addEventListener("click", e => {
+        if (e.target.closest(".remove-item")) {
+
+            const items = document.querySelectorAll(".item-group");
+            if (items.length === 1) {
+                Swal.fire("Error", "Debe existir al menos un item", "warning");
+                return;
+            }
+
+            Swal.fire({
+                title: "¿Eliminar item?",
+                icon: "warning",
+                showCancelButton: true
+            }).then(res => {
+                if (res.isConfirmed) {
+                    e.target.closest(".item-group").remove();
+                    reindexItems();
+                }
+            });
+        }
+    });
+
+    // =========================
+    // 📦 Obtener data modal
+    // =========================
+    function getModalData() {
+
+        const id_area = selectArea.value;
+        const areaText = selectArea.options[selectArea.selectedIndex].text;
+
+        if (!id_area) {
+            Swal.fire("Error", "Seleccione un área", "error");
+            return null;
+        }
+
+        const items = [];
+
+        document.querySelectorAll(".item-group").forEach(group => {
+
+            const cantidad = group.querySelector('[name="cantidad"]').value;
+            const valor = group.querySelector('[name="valor"]').value;
+            const material = group.querySelector("textarea").value;
+
+            if (!cantidad || !valor || !material) {
+                Swal.fire("Error", "Todos los campos son obligatorios", "error");
+                return null;
+            }
+
+            items.push({
+                cantidad: Number(cantidad),
+                valor_unitario: Number(valor),
+                material
+            });
         });
 
-        const result = await response.json();
-        Swal.close();
+        return { id_area, areaText, items };
+    }
 
-        const entregablesDiv = document.getElementById('entregables-div');
-        entregablesDiv.innerHTML = '';
+    // =========================
+    // 🚫 Área duplicada
+    // =========================
+    function existsArea(id_area) {
+        return entregables.some((e, i) => {
+            return String(e.id_area) === String(id_area) && i !== editIndex;
+        });
+    }
 
-        // ❌ Errores bloqueantes (campo individual inválido, área no existe, etc.)
-        if (response.status === 422 && result.errores && result.errores.length > 0) {
-            const msg = result.errores.map(err => `• ${err}`).join('<br>');
-            Swal.fire({
-                icon: 'error',
-                title: 'Errores en la plantilla',
-                html: `<div class="text-left text-sm">${msg}</div>`,
-                confirmButtonText: 'Entendido',
-            });
-            input.value = '';
+    // =========================
+    // 💾 Guardar área
+    // =========================
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const data = getModalData();
+        if (!data) return;
+
+        if (existsArea(data.id_area)) {
+            Swal.fire("Error", "Esta área ya fue agregada", "warning");
             return;
         }
 
-        if (!response.ok || result.error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: result.error || 'No se pudo procesar el archivo.'
-            });
-            input.value = '';
-            return;
-        }
-
-        // ✅ Éxito: con advertencias o sin ellas
-        const tieneAdvertencias = result.advertencias && result.advertencias.length > 0;
-
-        if (tieneAdvertencias) {
-            const msgAdv = result.advertencias.map(a => `• ${a}`).join('<br>');
-            await Swal.fire({
-                icon: 'warning',
-                title: 'Archivo cargado con advertencias',
-                html: `
-                    <p class="text-sm text-gray-600 mb-2">
-                        Proyecto: <strong>${result.nombre_proyecto}</strong>
-                    </p>
-                    <div class="text-left text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded p-3">
-                        <p class="font-semibold mb-1">⚠️ Las siguientes filas fueron omitidas por estar vacías o sin datos:</p>
-                        ${msgAdv}
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3">Los espacios con datos válidos sí se cargaron. Puedes continuar.</p>
-                `,
-                confirmButtonText: 'Entendido, continuar',
-                confirmButtonColor: '#d97706',
-            });
+        if (editIndex !== null) {
+            entregables[editIndex] = data;
         } else {
-            Swal.fire({
-                icon: 'success',
-                title: 'Archivo válido',
-                text: `Proyecto: ${result.nombre_proyecto}`,
-                timer: 1500,
-                showConfirmButton: false
-            });
+            entregables.push(data);
         }
 
-        // ✅ Construcción del encabezado del proyecto
-        let header = `
-            <div class="bg-[#242e68] text-white p-4 mt-6">
-                <h2 class="text-xl text-[#242e68] font-bold">📁 Proyecto: ${result.nombre_proyecto}</h2>
-            </div>
-        `;
+        renderTable();
+        resetModal();
 
-        // ✅ Construcción de la tabla
-        let html = `
-            <div class="overflow-x-auto w-full border border-gray-200 rounded-b-lg shadow-md">
-                <table class="min-w-full w-full text-sm text-left text-gray-700 border-collapse table-auto">
-                    <colgroup>
-                        <col style="width: 20%;">
-                        <col style="width: 50%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                    </colgroup>
-                    <thead class="bg-gray-100 border-b border-gray-200">
-                        <tr>
-                            <th class="px-4 py-2 font-semibold text-[#242e68]">Área</th>
-                            <th class="px-4 py-2 font-semibold text-[#242e68]">Material / Actividad</th>
-                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Cantidad</th>
-                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Valor Unitario</th>
-                            <th class="px-4 py-2 font-semibold text-right text-[#242e68]">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-        `;
+        window.dispatchEvent(new CustomEvent('close-modal', { detail: modal }));
+    });
 
+    // =========================
+    // 🧱 Render tabla
+    // =========================
+    function renderTable() {
+
+        let html = "";
         let totalGeneral = 0;
 
-        result.espacios.forEach(espacio => {
-            const subtotalEspacio = espacio.items.reduce(
-                (sum, item) => sum + (item.cantidad * item.valor_unitario), 0
-            );
-            totalGeneral += subtotalEspacio;
+        entregables.forEach((area, index) => {
 
-            espacio.items.forEach((item, index) => {
-                html += `
-                    <tr>
-                        ${index === 0
-                            ? `<td class="px-4 py-2 font-semibold align-top" rowspan="${espacio.items.length}">
-                                   ${espacio.area_nombre}
-                               </td>`
-                            : ''
-                        }
-                        <td class="px-4 py-2">${item.material}</td>
-                        <td class="px-4 py-2 text-right">${item.cantidad.toLocaleString()}</td>
-                        <td class="px-4 py-2 text-right">$ ${item.valor_unitario.toLocaleString()}</td>
-                        <td class="px-4 py-2 text-right">$ ${(item.cantidad * item.valor_unitario).toLocaleString()}</td>
-                    </tr>
+            let subtotal = 0;
+            let itemsHtml = "";
+
+            area.items.forEach(item => {
+
+                const sub = item.cantidad * item.valor_unitario;
+                subtotal += sub;
+
+                itemsHtml += `
+                    <div class="flex justify-between items-start gap-4 py-2 border-b">
+
+                        <!-- DESCRIPCIÓN -->
+                        <div class="text-gray-800 flex-1">
+                            ${item.material}
+                        </div>
+
+                        <!-- CANTIDAD + VALOR -->
+                        <div class="text-right text-sm whitespace-nowrap">
+
+                            <div>
+                                <span class="text-gray-500">Cant:</span>
+                                <span class="font-semibold">${item.cantidad}</span>
+                            </div>
+
+                            <div>
+                                <span class="text-gray-500">Valor:</span>
+                                <span class="font-semibold">${money(item.valor_unitario)}</span>
+                            </div>
+
+                        </div>
+
+                    </div>
                 `;
             });
 
+            totalGeneral += subtotal;
+
             html += `
-                <tr class="bg-gray-50 font-semibold">
-                    <td colspan="4" class="px-4 py-2 text-right text-[#242e68]">Subtotal ${espacio.area_nombre}</td>
-                    <td class="px-4 py-2 text-right text-[#242e68]">$ ${subtotalEspacio.toLocaleString()}</td>
-                </tr>
+            <div class="bg-white border rounded-2xl shadow-md p-5 space-y-3">
+
+                <!-- HEADER -->
+                <div class="flex justify-between items-center">
+
+                    <h2 class="text-lg font-bold text-[#242e68]">
+                        ${area.areaText}
+                    </h2>
+
+                    <div class="flex gap-2">
+
+                        <button type="button"
+                            class="edit-area group"
+                            data-index="${index}">
+
+                            <div class="p-2 rounded-lg bg-blue-100 hover:bg-blue-200">
+                                ✏️
+                            </div>
+
+                            <span class="absolute hidden group-hover:block text-xs bg-black text-white px-2 py-1 rounded">
+                                Editar
+                            </span>
+                        </button>
+
+                        <button type="button"
+                            class="delete-area group"
+                            data-index="${index}">
+
+                            <div class="p-2 rounded-lg bg-red-100 hover:bg-red-200">
+                                🗑️
+                            </div>
+
+                            <span class="absolute hidden group-hover:block text-xs bg-black text-white px-2 py-1 rounded">
+                                Eliminar
+                            </span>
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- ITEMS -->
+                <div class="space-y-1">
+                    ${itemsHtml}
+                </div>
+
+                <!-- SUBTOTAL -->
+                <div class="text-right font-semibold text-[#242e68] pt-2">
+                    Subtotal: ${money(subtotal)}
+                </div>
+
+            </div>
             `;
         });
 
         html += `
-                    </tbody>
-                    <tfoot class="bg-[#f7f9ff] font-bold text-[#242e68] border-t-2 border-[#242e68]">
-                        <tr>
-                            <td colspan="4" class="px-4 py-3 text-right text-lg">Total General</td>
-                            <td class="px-4 py-3 text-right text-lg">$ ${totalGeneral.toLocaleString()}</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="bg-[#f7f9ff] border-2 border-[#242e68] rounded-xl p-4 text-right text-lg font-bold text-[#242e68]">
+                Total General: ${money(totalGeneral)}
             </div>
         `;
 
-        entregablesDiv.innerHTML = `
-            <div class="w-full max-w-6xl mx-auto">
-                ${header}
-                ${html}
-            </div>
-        `;
+        areaDiv.innerHTML = html;
 
-        // ✅ Campos ocultos para el backend
-        let hiddenInputs = `<input type="hidden" name="id_proyecto_excel" value="${result.id_proyecto}">`;
+        generateHiddenInputs();
+    }
 
-        result.espacios.forEach(espacio => {
-            espacio.items.forEach((item, index) => {
-                hiddenInputs += `
-                    <input type="hidden" name="entregables[${espacio.id_area}][id_area]" value="${espacio.id_area}">
-                    <input type="hidden" name="entregables[${espacio.id_area}][area_nombre]" value="${espacio.area_nombre}">
-                    <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][material]" value="${item.material}">
-                    <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][cantidad]" value="${item.cantidad}">
-                    <input type="hidden" name="entregables[${espacio.id_area}][items][${index}][valor_unitario]" value="${item.valor_unitario}">
+    // =========================
+    // 🧾 Inputs hidden
+    // =========================
+    function generateHiddenInputs() {
+
+        let container = document.getElementById("hidden-entregables");
+
+        if (!container) {
+            container = document.createElement("div");
+            container.id = "hidden-entregables";
+            container.style.display = "none";
+            document.getElementById("formOtroSi").appendChild(container);
+        }
+
+        let html = "";
+
+        entregables.forEach((area, i) => {
+
+            html += `<input type="hidden" name="entregables[${i}][id_area]" value="${area.id_area}">`;
+
+            area.items.forEach((item, j) => {
+                html += `
+                <input type="hidden" name="entregables[${i}][items][${j}][material]" value="${item.material}">
+                <input type="hidden" name="entregables[${i}][items][${j}][cantidad]" value="${item.cantidad}">
+                <input type="hidden" name="entregables[${i}][items][${j}][valor_unitario]" value="${item.valor_unitario}">
                 `;
             });
         });
 
-        entregablesDiv.insertAdjacentHTML('beforeend', hiddenInputs);
-
-    } catch (error) {
-        Swal.close();
-        Swal.fire({
-            icon: 'error',
-            title: 'Error del servidor',
-            text: 'No se pudo conectar al servidor o el archivo es inválido.'
-        });
-        console.error('Error:', error);
-        input.value = '';
-    }
-});
-
-document.getElementById("btnDescargar").addEventListener("click", function (e) {
-    e.preventDefault();
-
-    let base64Data = this.getAttribute("data-excel");
-    const filename = this.getAttribute("data-filename") || "archivo.xlsx";
-
-    // Quitar prefijo si existe
-    if (base64Data.includes(",")) {
-        base64Data = base64Data.split(",")[1];
+        container.innerHTML = html;
     }
 
-    try {
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+    // =========================
+    // ✏️ Editar / eliminar
+    // =========================
+    areaDiv.addEventListener("click", e => {
+
+        const editBtn = e.target.closest(".edit-area");
+        const deleteBtn = e.target.closest(".delete-area");
+
+        // EDITAR
+        if (editBtn) {
+
+            const index = Number(editBtn.dataset.index);
+            const data = entregables[index];
+
+            editIndex = index;
+
+            selectArea.value = data.id_area;
+            itemsContainer.innerHTML = "";
+
+            data.items.forEach(item => {
+                const clone = itemTemplate.cloneNode(true);
+
+                clone.querySelector('[name="cantidad"]').value = item.cantidad;
+                clone.querySelector('[name="valor"]').value = item.valor_unitario;
+                clone.querySelector("textarea").value = item.material;
+
+                itemsContainer.appendChild(clone);
+            });
+
+            reindexItems();
+
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: modal }));
         }
-        const byteArray = new Uint8Array(byteNumbers);
 
-        const blob = new Blob([byteArray], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        });
-        const url = URL.createObjectURL(blob);
+        // ELIMINAR
+        if (deleteBtn) {
+            const index = deleteBtn.dataset.index;
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+            Swal.fire({
+                title: "¿Eliminar área?",
+                icon: "warning",
+                showCancelButton: true
+            }).then(res => {
+                if (res.isConfirmed) {
+                    entregables.splice(index, 1);
+                    renderTable();
+                }
+            });
+        }
+    });
 
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error("❌ Error al decodificar el archivo:", error);
-        alert("El archivo no se pudo descargar correctamente. Verifique que sea un Excel válido.");
+    document.getElementById("btn-open-modal").addEventListener("click", () => {
+        resetModal();
+    });
+
+    if (typeof entregablesFromDB !== "undefined" && entregablesFromDB.length > 0) {
+        entregables = entregablesFromDB;
+        renderTable();
+        generateHiddenInputs();
     }
+
 });
