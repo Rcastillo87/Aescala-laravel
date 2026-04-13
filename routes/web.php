@@ -127,7 +127,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('proyecto')->name('proyecto.')->middleware('role:proyecto')->group(function () {
         Route::get('/index', [ProyectoController::class, 'index'])->name('index');
         Route::get('/create', [ProyectoController::class, 'create'])->name('create');
-        Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('edit');
         Route::post('/save', [ProyectoController::class, 'save'])->name('save');
         Route::post('/begin', [ProyectoController::class, 'begin'])->name('begin');
         Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');

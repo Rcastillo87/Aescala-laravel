@@ -139,14 +139,6 @@ class ProyectoController extends Controller
         return $this->form();
     }
 
-    public function edit($id)
-    {
-        Gate::authorize('proyecto.edit');
-        $anterior = url()->previous();
-        session(['proyecto_url' => $anterior]);
-        return $this->form($id);
-    }
-
     public function form($id = null)
     {
         $proyecto = $id ? Proyecto::find($id) : null;

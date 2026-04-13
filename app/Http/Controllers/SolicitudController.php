@@ -69,6 +69,11 @@ class SolicitudController extends Controller
                     });
                 });
             })
+            ->when(request('ubicacion') !== null, function ($query) {
+                $query->whereHas('proyecto', function ($q) {
+                    $q->where('ubicacion', request('ubicacion'));
+                });
+            })
             /*->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista), function ($query) {
                 $query->where('id_user', Auth::User()->id);
             })*/

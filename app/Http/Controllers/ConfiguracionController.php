@@ -57,7 +57,6 @@ class ConfiguracionController extends Controller
                 'message' => $message
             ]);
         } catch (\Throwable $e) {
-            dd($e->getMessage());
             report($e);
 
             return response()->json([
