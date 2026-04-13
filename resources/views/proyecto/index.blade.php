@@ -239,7 +239,7 @@
                         </div>
 
                         <!-- Botón Calendario -->
-                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || !$item->fec_inicio) hidden @endif">
                             <a tabindex="0"
                             data-tooltip-target="tooltip-hover-calendario-{{$item->id}}"
                             data-tooltip-trigger="hover"
