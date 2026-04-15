@@ -12,6 +12,8 @@ use App\Models\InventarioMaterial;
 use App\Models\Proyecto;
 use App\Models\Proveedor;
 use App\Models\Despachos;
+use App\Models\Insumos;
+
 use Illuminate\Support\Facades\Auth;
 
 class PedidosController extends Controller
@@ -24,6 +26,7 @@ class PedidosController extends Controller
         $items = Pedidos::with(['proveedor', 'material'])
         ->selectRaw('id_factura,
                     DATE(fecha) as fecha,
+                    MAX(codigo) as codigo,
                     id_proveedor,
                     SUM(cantidad * vr_unidad) as total,
                     COUNT(*) as items')
@@ -51,11 +54,14 @@ class PedidosController extends Controller
                 'proveedor' => $factura->proveedor->razon_social ?? 'N/A',
                 'total' => $factura->total,
                 'items' => $factura->items,
-                'fecha' => $factura->fecha
+                'fecha' => $factura->fecha,
+                'tipo' => $factura->proveedor->tipo,
+                'spanTipo' => $factura->proveedor->spanTipo,
+                'codigo' => $factura->codigo??'--'
             ];
         });
 
-        $headers = ['ID Factura', 'Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
+        $headers = ['ID Factura', 'Codigo', 'Proveedor', 'Tipo Proveedor', 'Fecha Pedido', 'Cantidad de Items', 'Total', 'Opciones'];
         $headerFactura = ['ID', 'Num Orden o Factura', 'Nombre Item', 'Cantidad', 'Valor unidad','Fecha Pedido'];
 
         return view('pedidos.index', compact('title', 'items', 'headers', 'headerFactura'));
@@ -75,19 +81,14 @@ class PedidosController extends Controller
 
     public function form($id = null)
     {
-        $title = $id?'Editar Pedido':'Crear Pedido';
+        $title = $id?'Editar Pedido de Compra':'Crear Pedido de Compra';
         $pedidos = $id?Pedidos::where('id_factura', $id)->get():null;
-        $materiales = InventarioMaterial::where('activo', 1)
-        ->get()
-        ->toArray();
-        $proyectos = Proyecto::wherein('id_estado', [1, 5])
-        ->get(['id', 'nombre_proyecto'])
-        ->toArray();
-        $proveedor = Proveedor::wherein('activo', [1])
-        ->get(['id', 'razon_social'])
-        ->toArray();
-
-        return view('pedidos.create', compact('title', 'pedidos', 'materiales', 'proyectos', 'proveedor'));
+        $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+        $insumos = Insumos::where('estado', 1)->get()->toArray();
+        $proyectos = Proyecto::wherein('id_estado', [1, 5])->get(['id', 'nombre_proyecto'])->toArray();
+        $proveedor = Proveedor::wherein('activo', [1])->get(['id', 'razon_social', 'tipo'])->toArray();
+        $tipos = Proveedor::$tipo;
+        return view('pedidos.create', compact('title', 'pedidos', 'materiales', 'proyectos', 'proveedor', 'tipos', 'insumos'));
     }
 
     public function save(Request $request)
@@ -109,14 +110,7 @@ class PedidosController extends Controller
             'materiales' => ['required', 'array', 'min:1'],
             'materiales.*.id_material' => [
                 'required',
-                'integer',
-                Rule::exists('inventario_materiales', 'id'),
-                function ($attribute, $value, $fail) {
-                    $material = InventarioMaterial::find($value);
-                    if (!$material || $material->activo != 1) {
-                        $fail("El material seleccionado no está disponible.");
-                    }
-                }
+                'integer'
             ],
             'materiales.*.cantidad' => [
                 'required',
@@ -124,7 +118,8 @@ class PedidosController extends Controller
                 'min:1'
             ],
             'materiales.*.valor_unidad' => ['required', 'integer'],
-            'materiales.*.valor_compra' => ['required', 'integer']
+            'materiales.*.valor_compra' => ['required', 'integer'],
+            'tipo' => ['required', Rule::in(array_keys(Proveedor::$tipo))],
         ]);
 
         // Iniciar transacción
@@ -136,6 +131,7 @@ class PedidosController extends Controller
                 'codigo' => $validated['codigo'],
                 'fecha' => $validated['fecha'],
                 'id_proveedor' => $validated['id_proveedor'],
+                'tipo' => $validated['tipo']
             ];
 
             // Proceso pedido
@@ -148,17 +144,21 @@ class PedidosController extends Controller
                 $dato['vr_compra'] = $material['valor_compra'];
                 Pedidos::create($dato);
 
-                $inventarioMaterial = InventarioMaterial::find($material['id_material']);
-                $inventarioMaterial['valor_unidad'] = $material['valor_unidad'];
-                $inventarioMaterial['valor_inventario'] = $material['valor_compra'];
-                if(!isset($validated['id_proyecto'])){
-                    $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                if($validated['tipo'] == 1){
+                    $inventarioMaterial = InventarioMaterial::find($material['id_material']);
+                    $inventarioMaterial['valor_unidad'] = $material['valor_unidad'];
+                    $inventarioMaterial['valor_inventario'] = $material['valor_compra'];
+                    if(!isset($validated['id_proyecto'])){
+                        $inventarioMaterial->increment('cantidad', $material['cantidad']);
+                    }
+                    $inventarioMaterial->save();
+                } else {
+                    Insumos::find($material['id_material'])->increment('cantidad', $material['cantidad']);
                 }
-                $inventarioMaterial->save();
             }
 
             // Proceso despacho si existe id proyecto
-            if(isset($validated['id_proyecto'])){
+            if(isset($validated['id_proyecto']) && $validated['tipo'] == 1){
                 $codigo1 = Despachos::generarCodigoUnico();
                 $dato = [
                     'tipo' => 1,
@@ -177,8 +177,7 @@ class PedidosController extends Controller
                 }
             }
             $codigo = $validated['codigo'];
-            return redirect()->route('pedidos.index')
-                        ->with('success', "Pedido con orden: {$codigo} fue registrado correctamente");
+            return redirect()->route('pedidos.index')->with('success', "Pedido con orden: {$codigo} fue registrado correctamente");
         });
     }
 
@@ -195,7 +194,7 @@ class PedidosController extends Controller
                     'cantidad' => $data->cantidad,
                     'valor_unidad' => $data->vr_unidad,
                     'fecha' => explode(' ', $data->fecha)[0],
-                    'nombre_material' => $data->material->nombre_material,
+                    'nombre_material' => $data->tipo == 1? $data->material->nombre_material : $data->material->nombre_insumo,
                     'codigo' => $data->codigo
                 ];
             });

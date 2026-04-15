@@ -7,7 +7,7 @@
             <input type="hidden" id="id" name="id" value="{{$proveedor?$proveedor->id:''}}">
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="razon_social" :value="__('Nombre | Razón *')" />
-                <x-text-input id="razon_social" class="block mt-1 w-full" type="text" name="razon_social" :value="old('razon_social', $proveedor?$proveedor->razon_social:'')" 
+                <x-text-input id="razon_social" class="block mt-1 w-full" type="text" name="razon_social" :value="old('razon_social', $proveedor?$proveedor->razon_social:'')"
                 required autofocus />
                 <x-input-error :messages="$errors->get('razon_social')" class="mt-2" />
             </div>
@@ -26,6 +26,23 @@
                 <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono" :value="old('telefono', $proveedor?$proveedor->telefono:'')" required/>
                 <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
             </div>
+
+            <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                <x-input-label for="id_unidad" :value="__('Tipo de Proveedor *')" />
+                <x-select-input
+                    name="tipo"
+                    :options="$tipos"
+                    :selected="$proveedor ? $proveedor->tipo : old('tipo')"
+                    class="block mt-1 w-full {{ !empty($proveedor?->tipo) ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                    required
+                    :disabled="$proveedor ? true : false"
+                />
+                <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+                @if($proveedor)
+                    <input type="hidden" name="tipo" value="{{ $proveedor->tipo }}">
+                @endif
+            </div>
+
         </div>
         <div class="flex items-center justify-end mt-4">
             <x-secondary-button class="ms-4" href="{{ route('proveedor.index') }}">

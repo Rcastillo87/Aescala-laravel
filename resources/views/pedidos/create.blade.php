@@ -7,21 +7,59 @@
             <div class="flex flex-col xl:flex-row gap-4">
                 <!-- Primera columna -->
                 <div class="w-full xl:w-1/2 space-y-4 p-3 border-2 border-gray-400 rounded-2xl">
+
                     <div>
-                        <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
-                        <x-input-label for="id_material" :value="__('Seleccione Material *')" />
-                        <x-select-input 
-                            placeholder="Busqueda.."
-                            autocomplete="off"
-                            name="id_material" 
-                            id="id_material"
-                            :options="$materiales" 
-                            :data="['id', 'nombre_material']"
-                            :selected="old('id_material')" 
+                        <x-input-label for="tipo" :value="__('Tipo de Proveedor *')" />
+                        <x-select-input
+                            name="tipo"
+                            :options="$tipos"
+                            :selected="old('tipo')"
                             class="block mt-1 w-full"
                         />
-                        <x-input-error :messages="$errors->get('id_material')" class="mt-2" />
+                        <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
                     </div>
+
+                    <div>
+                        <x-input-label for="id_proveedor" :value="__('Proveedor *')" />
+                        <x-select-input
+                            name="id_proveedor"
+                            id="id_proveedor"
+                            :options="$proveedor"
+                            :data="['id', 'razon_social']"
+                            :selected="old('id_proveedor')"
+                            class="block mt-1 w-full bg-gray-100 cursor-not-allowed"
+                            required
+                            disabled
+                        />
+                        <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
+                        <input type="hidden" id="arrayProveedores" value='@json($proveedor)'>
+                    </div>
+
+                    <div>
+                        <x-input-label for="id_material" :value="__('Seleccione Material *')" />
+                        <x-select-input
+                            placeholder="Busqueda.."
+                            autocomplete="off"
+                            name="id_material"
+                            id="id_material"
+                            :options="[]"
+                            :data="['id', 'nombre_material']"
+                            :selected="old('id_material')"
+                            class="block mt-1 w-full bg-gray-100 cursor-not-allowed"
+                            disabled
+                        />
+                        <x-input-error :messages="$errors->get('id_material')" class="mt-2" />
+                        <input type="hidden" id="arrayMateriales" value="{{ json_encode($materiales) }}">
+                        <input type="hidden" id="arrayInsumos" value="{{ json_encode($insumos) }}">
+                    </div>
+
+                    <div>
+                        <x-input-label for="codigo" :value="__('Num Orden o Factura *')" />
+                        <x-text-input id="codigo" class="block mt-1 w-full" type="text" name="codigo" :value="old('codigo')"
+                        autofocus required/>
+                        <x-input-error :messages="$errors->get('codigo')" class="mt-2" />
+                    </div>
+
                     <div>
                         <x-input-label for="fec_inicio" :value="__('Fecha Pedido *')" />
                         <div class="relative">
@@ -30,49 +68,31 @@
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                 </svg>
                             </div>
-                            <input 
+                            <input
                                 datepicker=""
                                 datepicker-format="yyyy-mm-dd"
                                 autocomplete="off"
-                                type="text" 
-                                id="fecha" 
-                                datepicker-max-date="{{ date('Y-m-d') }}" 
-                                name="fecha" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                type="text"
+                                id="fecha"
+                                datepicker-max-date="{{ date('Y-m-d') }}"
+                                name="fecha"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="Seleccione fecha"
-                                value="{{ old('fecha') }}" 
-                                required 
+                                value="{{ old('fecha') }}"
+                                required
                             />
                         </div>
                         <x-input-error :messages="$errors->get('fecha')" class="mt-2" />
                     </div>
-                    <div>
-                        <x-input-label for="codigo" :value="__('Num Orden o Factura *')" />
-                        <x-text-input id="codigo" class="block mt-1 w-full" type="text" name="codigo" :value="old('codigo')" 
-                        autofocus required/>
-                        <x-input-error :messages="$errors->get('codigo')" class="mt-2" />
-                    </div>
-                    <div>
-                        <x-input-label for="id_proyecto" :value="__('Proveedor *')" />
-                        <x-select-input 
-                            name="id_proveedor" 
-                            id="id_proveedor"
-                            :options="$proveedor" 
-                            :data="['id', 'razon_social']"
-                            :selected="old('id_proveedor')" 
-                            class="block mt-1 w-full"
-                            required
-                        />
-                        <x-input-error :messages="$errors->get('id_proveedor')" class="mt-2" />
-                    </div>
-                    <div>
+
+                    <div id="divProyecto" class="hidden">
                         <x-input-label for="id_proyecto" :value="__('Proyecto')" />
-                        <x-select-input 
-                            name="id_proyecto" 
+                        <x-select-input
+                            name="id_proyecto"
                             id="id_proyecto"
-                            :options="$proyectos" 
+                            :options="$proyectos"
                             :data="['id', 'nombre_proyecto']"
-                            :selected="old('id_proyecto')" 
+                            :selected="old('id_proyecto')"
                             class="block mt-1 w-full"
                         />
                         <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
@@ -81,7 +101,7 @@
 
                 <!-- Segunda columna -->
                 <div class="w-full h-full xl:w-1/2 text-center border-2 border-gray-400 rounded-2xl">
-                    <p class="font-bold text-xl mb-3">Materiales Pedidos</p>
+                    <p class="font-bold text-xl mb-3">Materiales o Insumos Comprados</p>
                     <div id="selectMateriales"></div>
                 </div>
             </div>

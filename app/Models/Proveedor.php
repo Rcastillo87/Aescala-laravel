@@ -20,12 +20,23 @@ class Proveedor extends Model
         'nit',
         'direccion',
         'telefono',
-        'activo'
+        'activo',
+        'tipo'
     ];
 
     public static $estado = [
         1 => 'Activo',
         2 => 'Desactivado'
+    ];
+
+    public static $tipo = [
+        1 => 'Material',
+        2 => 'Insumo'
+    ];
+
+    public static $classTipo = [
+        1 => 'span-blue',
+        2 => 'span-yellow'
     ];
 
     public static $classEstado = [
@@ -37,6 +48,12 @@ class Proveedor extends Model
     {
         return '<span class="'.(self::$classEstado[$this->activo] ?? 'default-class').'">'
              . (self::$estado[$this->activo] ?? 'Desconocido') . '</span>';
+    }
+
+    public function getSpanTipoAttribute()
+    {
+        return '<span class="'.(self::$classTipo[$this->tipo] ?? 'default-class').'">'
+             . (self::$tipo[$this->tipo] ?? 'Desconocido') . '</span>';
     }
 
     public function pedidos()

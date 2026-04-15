@@ -1,33 +1,172 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-    new TomSelect("#id_material",{
-        create: true,
-        sortField: {
-            field: "text",
-            direction: "asc"
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ── Referencias DOM ──────────────────────────────────────────────────────
+    const tipoSelect     = document.querySelector('[name="tipo"]');
+    const proveedorSelect = document.getElementById('id_proveedor');
+    const materialSelect  = document.getElementById('id_material');
+    const divProyecto    = document.getElementById('divProyecto');
+    const proyectoSelect = document.getElementById('id_proyecto');
+    const selectMateriales = document.getElementById('selectMateriales');
+
+    // ── Datos desde el DOM ───────────────────────────────────────────────────
+    const arrayMateriales  = JSON.parse(document.getElementById('arrayMateriales').value  || '[]');
+    const arrayInsumos     = JSON.parse(document.getElementById('arrayInsumos').value     || '[]');
+    const arrayProveedores = JSON.parse(document.getElementById('arrayProveedores').value || '[]');
+
+    // ── Estado ───────────────────────────────────────────────────────────────
+    const addedMaterials = new Set();
+
+    // ── Instancia TomSelect ──────────────────────────────────────────────────
+    const tomSelectInstance = new TomSelect('#id_material', {
+        create: false,
+        sortField: { field: 'text', direction: 'asc' },
+        placeholder: 'Busqueda..',
+        onInitialize: function () {
+            this.wrapper.classList.add('tom-select-custom');
         },
-        onInitialize: function() {
-            this.wrapper.classList.add("tom-select-custom");
-        },
-        onChange: function(value) {
-            if(value) {
+        onChange: function (value) {
+            if (value) {
                 addSelectedMaterial(value);
                 this.clear();
             }
         }
     });
 
-    // Obtener datos de materiales
-const materialesEl = document.getElementById('arrayMateriales');
-if (!materialesEl) return;
-const materialesData = JSON.parse(materialesEl.value);
-const addedMaterials = new Set(); // Para trackear materiales añadidos
+    // Empieza deshabilitado
+    tomSelectInstance.disable();
 
+    // ── Helpers select nativo (proveedor) ────────────────────────────────────
+    const disableSelect = (el) => {
+        el.setAttribute('disabled', true);
+        el.classList.add('bg-gray-100', 'cursor-not-allowed');
+    };
 
-    // Función para agregar material seleccionado
+    const enableSelect = (el) => {
+        el.removeAttribute('disabled');
+        el.classList.remove('bg-gray-100', 'cursor-not-allowed');
+    };
+
+    const clearSelect = (el) => {
+        el.innerHTML = '<option value="">-- Seleccione --</option>';
+    };
+
+    const fillSelect = (el, data, valueKey, textKey) => {
+        clearSelect(el);
+        data.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item[valueKey];
+            option.textContent = item[textKey].toLowerCase();
+            el.appendChild(option);
+        });
+    };
+
+    // ── Helpers TomSelect (material) ─────────────────────────────────────────
+    const fillTomSelect = (data, valueKey, textKey) => {
+        tomSelectInstance.clearOptions();
+        const options = data.map(item => ({
+            value: String(item[valueKey]),
+            text: item[textKey]
+        }));
+        tomSelectInstance.addOptions(options);
+        tomSelectInstance.refreshOptions(false);
+    };
+
+    // ── Devuelve el array activo según tipo ──────────────────────────────────
+    const getActiveData = () => {
+        const tipo = tipoSelect ? tipoSelect.value : '';
+        if (tipo === '1') return arrayMateriales;
+        if (tipo === '2') return arrayInsumos;
+        return [];
+    };
+
+    const getActiveKey = () => {
+        const tipo = tipoSelect ? tipoSelect.value : '';
+        return tipo === '2' ? 'nombre_insumo' : 'nombre_material';
+    };
+
+    // ── Limpiar materiales seleccionados ─────────────────────────────────────
+    const clearSelectedMaterials = () => {
+        addedMaterials.clear();
+        selectMateriales.innerHTML = '';
+    };
+
+    // ── Filtrar proveedores por tipo ─────────────────────────────────────────
+    const filterProveedores = (tipo) => {
+        const filtrados = arrayProveedores.filter(p => p.tipo == tipo);
+        fillSelect(proveedorSelect, filtrados, 'id', 'razon_social');
+    };
+
+    // ── Lógica cambio de tipo ────────────────────────────────────────────────
+    const manejarCambioTipo = () => {
+        const tipo = tipoSelect ? tipoSelect.value : '';
+        clearSelectedMaterials();
+
+        if (!tipo) {
+            divProyecto.classList.add('hidden');
+            proyectoSelect.value = '';
+            clearSelect(proveedorSelect);
+            disableSelect(proveedorSelect);
+            tomSelectInstance.clearOptions();
+            tomSelectInstance.disable();
+            return;
+        }
+
+        enableSelect(proveedorSelect);
+
+        if (tipo === '1') {
+            divProyecto.classList.remove('hidden');
+            filterProveedores(1);
+            fillTomSelect(arrayMateriales, 'id', 'nombre_material');
+        }
+
+        if (tipo === '2') {
+            divProyecto.classList.add('hidden');
+            proyectoSelect.value = '';
+            filterProveedores(2);
+            fillTomSelect(arrayInsumos, 'id', 'nombre_insumo');
+        }
+
+        tomSelectInstance.enable();
+    };
+
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', manejarCambioTipo);
+        manejarCambioTipo(); // ejecutar al cargar por si hay old()
+    }
+
+    // ── Cambio de proveedor → historial de la API ────────────────────────────
+    if (proveedorSelect) {
+        proveedorSelect.addEventListener('change', function () {
+            const proveedorId = this.value;
+            clearSelectedMaterials();
+
+            if (!proveedorId) return;
+
+            fetch(`hPedidoproveedor/${proveedorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.status || !data.data.length) return;
+
+                    const activeData = getActiveData();
+                    const nameKey   = getActiveKey();
+
+                    data.data.forEach(id => {
+                        // Verificar que el ID existe en el array activo
+                        const existe = activeData.find(m => m.id == id);
+                        if (existe) {
+                            addSelectedMaterial(String(id));
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching provider info:', error);
+                });
+        });
+    }
+
+    // ── Agregar material/insumo a la lista ───────────────────────────────────
     function addSelectedMaterial(materialId) {
-
-        // Validar si el material ya fue añadido
-        if(addedMaterials.has(materialId)) {
+        if (addedMaterials.has(materialId)) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Material duplicado',
@@ -38,133 +177,123 @@ const addedMaterials = new Set(); // Para trackear materiales añadidos
             return;
         }
 
-        const material = materialesData.find(m => m.id == materialId);
-        if(!material) return;
+        const activeData = getActiveData();
+        const nameKey    = getActiveKey();
+        const material   = activeData.find(m => m.id == materialId);
+        const tipo       = tipoSelect.value;
+
+        console.log(tipo);
+
+        if (!material) return;
 
         addedMaterials.add(materialId);
-
         const materialIndex = addedMaterials.size - 1;
 
+        const nombre = material[nameKey] || '';
+
         const materialDiv = document.createElement('div');
-        materialDiv.className = 'bg-white px-2 py-1 border-2 m-1 space-y-1 border-blue-500 rounded-xl';
+        materialDiv.className = 'bg-white dark:bg-gray-800 px-2 py-1 border-2 m-1 space-y-1 border-blue-500 rounded-xl';
         materialDiv.innerHTML = `
-            <div class="flex items-center">
-                <p class="text-md font-bold text-gray-500">Material: <span class="ml-2 text-black">${material.nombre_material}</span></p>
+            <div class="flex items-center justify-between">
+                <p class="text-md font-bold text-gray-500 dark:text-gray-300">
+                    Material: <span class="ml-2 text-black dark:text-white">${nombre}</span>
+                </p>
+                <button class="border-2 border-red-500 rounded-md p-0.5" type="button" onclick="removeMaterial(this, '${materialId}')">
+                    <svg class="w-5 h-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                    </svg>
+                </button>
             </div>
-            <div class="flex flex-col-2 text-center justify-center space-x-2">
-                <div class="flex w-full space-x-2">
-                    <button class="border-2 border-red-500 rounded-md" type="button" onclick="removeMaterial(this, ${material.id})">
-                        <svg class="w-7 h-7 text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
-                        </svg>
-                    </button>
-                    <div class="flex items-center justify-center text-[12px] text-center font-bold rounded h-8 w-[120px] text-white bg-gradient-to-tr from-red-600 to-red-400">
-                        ${material.unidades}: ${material.cantidad}
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center justify-center text-[11px] mt-6 font-bold rounded h-7 px-2 text-white bg-gradient-to-tr from-red-600 to-red-400 whitespace-nowrap">
+                        ${material.unidades??'Unid'}: ${material.cantidad ?? 0}
                     </div>
-                    <input type="number"
-                        value="1"
-                        min="1"
-                        name="materiales[${materialIndex}][cantidad]"
-                        placeholder="Cantidad"
-                        class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
-                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
-                        onchange="calculateTotal(this, null, ${materialIndex}, ${material.cantidad})">
+                    <div class="flex-2 max-w-[200px]">
+                        <label class="text-xs text-gray-500 dark:text-gray-400">Cantidad</label>
+                        <input type="number"
+                            value="1" min="1"
+                            name="materiales[${materialIndex}][cantidad]"
+                            placeholder="Cantidad"
+                            class="text-sm py-1 px-2 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
+                                focus:border-indigo-500 dark:focus:border-indigo-600 rounded-md shadow-sm block w-full"
+                            onchange="calculateTotal(this, null, ${materialIndex})">
+                    </div>
+                    <div class="flex-1 ${(tipo == 1)? '' : 'hidden' }">
+                        <label class="text-xs text-gray-500 dark:text-gray-400">Valor venta</label>
+                        <input type="number"
+                            value="${material.valor_unidad ?? 0}"
+                            name="materiales[${materialIndex}][valor_unidad]"
+                            placeholder="Valor venta"
+                            class="text-sm py-1 px-2 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
+                                focus:border-indigo-500 dark:focus:border-indigo-600 rounded-md shadow-sm block w-full"
+                            onchange="calculateTotal(null, this, ${materialIndex})">
+                    </div>
+                    <div class="flex-1 ${(tipo == 1)? '' : 'hidden' }">
+                        <label class="text-xs text-gray-500 dark:text-gray-400">Valor compra</label>
+                        <input type="number"
+                            value="${material.valor_inventario ?? 0}"
+                            name="materiales[${materialIndex}][valor_compra]"
+                            placeholder="Valor compra"
+                            class="text-sm py-1 px-2 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
+                                focus:border-indigo-500 dark:focus:border-indigo-600 rounded-md shadow-sm block w-full">
+                    </div>
                 </div>
-                <div class="w-full">
-                    <input type="number"
-                        value="${material.valor_unidad}"
-                        name="materiales[${materialIndex}][valor_unidad]"
-                        placeholder="Valor venta"
-                        class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
-                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full moneda-cop"
-                        onchange="calculateTotal(null, this, ${materialIndex}, ${material.cantidad})">
+                ${material.descripccion ? `
+                <p class="text-xs text-gray-500 dark:text-gray-400 text-start">
+                    Obs: <span class="text-black dark:text-white">${material.descripccion}</span>
+                </p>` : ''}
+                <div class="flex justify-between items-center bg-gradient-to-r from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 rounded p-1 ${(tipo == 1)? '' : 'hidden' }">
+                    <p class="text-sm font-medium">
+                        <span class="valor">${formatCurrency(material.valor_unidad ?? 0)}</span>
+                        × <span class="quantity">1</span>
+                        = <b class="text-red-500 total">${formatCurrency(material.valor_unidad ?? 0)}</b>
+                    </p>
+                    ${material.spanTipo ? `<span class="text-xs">${material.spanTipo}</span>` : ''}
                 </div>
-                <div class="w-full">
-                    <input type="number"
-                        value="${material.valor_inventario}"
-                        name="materiales[${materialIndex}][valor_compra]"
-                        placeholder="Valor compra"
-                        class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
-                        focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full moneda-cop">
-                </div>
-            </div>
-            <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion??''}</small></p>
-            <div class="md:flex bg-gradient-to-r text-left md:justify-between from-slate-200 to-slate-100 rounded p-1 w-full">
-                <p class="font-medium"><span class="valor">${formatCurrency(material.valor_unidad)}</span> *
-                <span class="quantity">1</span> = <b class="text-red-500 total">${formatCurrency(material.valor_unidad)}</b></p>
-                <p>Tipo: ${material.spanTipo}</p>
             </div>
             <input type="hidden" name="materiales[${materialIndex}][id_material]" value="${material.id}">
         `;
 
-        document.getElementById('selectMateriales').appendChild(materialDiv);
+        selectMateriales.appendChild(materialDiv);
     }
 
-    // Función para calcular total
-    window.calculateTotal = function(input1, input2, index, maxCant) {
+    // ── Calcular total ───────────────────────────────────────────────────────
+    window.calculateTotal = function (inputCant, inputValor, index) {
+        const cantInput   = inputCant  || document.querySelector(`[name="materiales[${index}][cantidad]"]`);
+        const valorInput  = inputValor || document.querySelector(`[name="materiales[${index}][valor_unidad]"]`);
+        const container   = (inputCant || inputValor).closest('div.bg-white, div.dark\\:bg-gray-800');
 
-        var container = null
-        var quantity = null
-        var total = null
+        if (!cantInput || !valorInput || !container) return;
 
-        if(input1){
-            const cantIngresada = input1.value;
-            if(cantIngresada < 1){
-                input1.value = 1
-            }
-            container = input1.closest('div.bg-white');
-            const inputValor = document.querySelector(`[name="materiales[${index}][valor_unidad]"]`);
-            const price = parseFloat(inputValor.value);
-            quantity = parseInt(input1.value) || 0;
-            total = price * quantity;
-            container.querySelector('.quantity').textContent = quantity;
-        }
+        let cantidad = parseInt(cantInput.value) || 1;
+        let valor    = parseFloat(valorInput.value) || 0;
 
-        if(input2){
-            container = input2.closest('div.bg-white');
-            const inputValor = document.querySelector(`[name="materiales[${index}][cantidad]"]`);
-            const count = parseFloat(inputValor.value);
-            quantity = parseInt(input2.value) || 0;
-            if(quantity<0){
-                input2.value = 0;
-                quantity = 0;
-            }
-            total = count * quantity;
+        if (cantidad < 1) { cantInput.value = 1; cantidad = 1; }
+        if (valor < 0)    { valorInput.value = 0; valor = 0; }
 
-            container.querySelector('.valor').textContent = formatCurrency(quantity);
-            container.querySelector('.total').textContent = `${formatCurrency(total)}`;
+        const total = cantidad * valor;
 
-        }
-        container.querySelector('.total').textContent = `${formatCurrency(total)}`;
+        const elCantidad = container.querySelector('.quantity');
+        const elValor    = container.querySelector('.valor');
+        const elTotal    = container.querySelector('.total');
 
+        if (elCantidad) elCantidad.textContent = cantidad;
+        if (elValor)    elValor.textContent    = formatCurrency(valor);
+        if (elTotal)    elTotal.textContent    = formatCurrency(total);
     };
 
-    // Función para remover material
-    window.removeMaterial = function(button, materialId) {
-        const container = button.closest('div.bg-white');
-        container.remove();
-        // Remover de la lista de materiales añadidos
+    // ── Remover material ─────────────────────────────────────────────────────
+    window.removeMaterial = function (button, materialId) {
+        const container = button.closest('div.bg-white, div.dark\\:bg-gray-800');
+        if (container) container.remove();
         addedMaterials.delete(String(materialId));
-
     };
 
-    const idProveedor = document.getElementById('id_proveedor');
-    if(idProveedor){
-        idProveedor.addEventListener('change', function() {
-            const proveedorId = this.value;
-            addedMaterials.clear();
-            document.getElementById('selectMateriales').innerHTML = '';
-
-            fetch(`hPedidoproveedor/${proveedorId}`)
-                .then(response => response.json())
-                .then(data => {
-                    data.data.forEach(item => {
-                        addSelectedMaterial( item.toString() );
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching provider info:', error);
-                });
-        });
-    }
+    // ── Formato moneda ───────────────────────────────────────────────────────
+    // (asumiendo que formatCurrency ya está definido globalmente en otro archivo)
+    // Si no, descomenta esto:
+    // window.formatCurrency = (value) =>
+    //     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(value);
 });

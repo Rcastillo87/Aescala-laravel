@@ -23,7 +23,7 @@
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="razon_social" :value="__('Nombre | Razón')" />
-                        <x-text-input id="razon_social" class="block mt-1 w-full" type="text" name="razon_social" :value="Request('razon_social')" 
+                        <x-text-input id="razon_social" class="block mt-1 w-full" type="text" name="razon_social" :value="Request('razon_social')"
                          autofocus />
                     </div>
                     <div class="p-2 shrink-0 w-[40]">
@@ -39,8 +39,19 @@
                         <x-text-input id="telefono" class="block mt-1 w-full" type="text" name="telefono" :value="Request('telefono')" />
                     </div>
                     <div class="p-2 shrink-0 w-[200px]">
-                        <x-input-label for="activo" :value="__('activo')" />
-                        <select name="activo" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 
+                        <x-input-label for="tipo" :value="__('Tipo Proveedor')" />
+                        <select name="tipo" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500
+                            dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
+                            <option value="">-- Seleccione --</option>
+                            @foreach ($tipos as $key => $value)
+                                <option value="{{$key}}" {{(Request('tipo') == $key)?'selected':'' }}>
+                                    {{$value}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="p-2 shrink-0 w-[200px]">
+                        <x-input-label for="activo" :value="__('Activo')" />
+                        <select name="activo" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500
                             dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
                             <option value="">-- Seleccione --</option>
                             @foreach ($activo as $key => $value)
@@ -49,6 +60,7 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
                              text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"
@@ -57,7 +69,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                             </svg>
                         </button>
-                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 
+                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900
                             bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip ">
                             Buscar
                             <div class="tooltip-arrow" data-popper-arrow></div>

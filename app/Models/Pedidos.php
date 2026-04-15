@@ -23,7 +23,8 @@ class Pedidos extends Model
         'vr_unidad',
         'vr_compra',
         'cantidad',
-        'fecha'
+        'fecha',
+        'tipo'
     ];
 
     // Relación con el modelo Proveedor
@@ -35,6 +36,11 @@ class Pedidos extends Model
     // Relación con el modelo Material
     public function material()
     {
-        return $this->belongsTo(InventarioMaterial::class, 'id_material');
+        if($this->tipo == 1){
+            return $this->belongsTo(InventarioMaterial::class, 'id_material');
+        } else {
+            return $this->belongsTo(Insumos::class, 'id_material');
+        }
+
     }
 }

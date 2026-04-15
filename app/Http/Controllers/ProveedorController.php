@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Proveedor;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class ProveedorController extends Controller
 {
@@ -28,12 +29,16 @@ class ProveedorController extends Controller
         ->when(Request('activo'), function ($query, $activo) {
             return $query->where('activo', $activo);
         })
+        ->when(Request('tipo'), function ($query, $tipo) {
+            return $query->where('tipo', $tipo);
+        })
         ->paginate(10)
         ->appends(request()->query());
 
         $activo = Proveedor::$estado;
-        $headers = ['Nombre | Razón', 'Documento | NIT', 'Direccion', 'Telefono', 'Fecha de Creacion', 'Estado', 'Opciones'];
-        return view('proveedor.index', compact('title', 'items', 'headers', 'activo'));
+        $tipos = Proveedor::$tipo;
+        $headers = ['Nombre | Razón', 'Documento | NIT', 'Direccion', 'Telefono', 'Fecha de Creacion', 'Estado y Tipo', 'Opciones'];
+        return view('proveedor.index', compact('title', 'items', 'headers', 'activo', 'tipos'));
     }
 
     public function create( )
@@ -51,7 +56,8 @@ class ProveedorController extends Controller
         $proveedor = $id?Proveedor::find($id):null;
         $title = $id?'Editar Proveedor':'Crear Proveedor';
         $estado = Proveedor::$estado;
-        return view('proveedor.create', compact('title', 'proveedor', 'estado'));
+        $tipos = Proveedor::$tipo;
+        return view('proveedor.create', compact('title', 'proveedor', 'estado', 'tipos'));
     }
 
     public function save(Request $req)
@@ -61,7 +67,8 @@ class ProveedorController extends Controller
             'razon_social' => 'required|string|max:100',
             'nit' => 'required|string|max:14',
             'direccion' => 'nullable|string|max:100',
-            'telefono' => 'nullable|string|max:20'
+            'telefono' => 'nullable|string|max:20',
+            'tipo' => ['required', Rule::in(array_keys(Proveedor::$tipo))],
         ]);
 
         $msg = ucfirst($req->id ? 'Proveedor editado con éxito' : 'Proveedor creado con éxito');
