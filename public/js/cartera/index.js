@@ -142,7 +142,7 @@ async function mostrarPagosOtroSi(id, nombreOtroSi, pazSalvo) {
         }
 
         const data = result.data.pagado;
-        const totalDeve = result.data.totalDeve;
+        const totalDeve = Number(result.data.totalDeve);
         const totalPago = result.data.totalPago;
 
         if(pazSalvo == 1){
