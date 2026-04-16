@@ -227,7 +227,7 @@ class CarteraController extends Controller
                     }
                 })->filter()->first();
             } else {
-                $descripcion = 'Pago Otro Si # ' . $item->rc;
+                $descripcion = 'Pago Otro Si # ' . $item->otro_si->numero;
             }
 
             return (object) [
