@@ -518,7 +518,7 @@ class SolicitudController extends Controller
     }
 
     public function delete($id){
-        Gate::authorize('otro_si.delete');
+        //Gate::authorize('otro_si.delete');
         $inicio  = microtime(true);
         $request = request();
 
