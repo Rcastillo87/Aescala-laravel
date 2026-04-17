@@ -54,7 +54,7 @@
                             5 => 'Require Aprobacion',
                             6 => 'Aprobado'
                         ];
-                        $estadosItems = unset($estadosItems[1]);
+                        //$estadosItems = unset($estadosItems[1]);
                         $arr = array_merge($estadosItems, $arr);
                     @endphp
                     <div class="p-2 shrink-0 w-[40]">
