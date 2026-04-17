@@ -54,7 +54,9 @@
                             5 => 'Require Aprobacion',
                             6 => 'Aprobado'
                         ];
+                        $estadosItems = unset(self::$estadosItems[1]);
                         $arr = array_merge($estadosItems, $arr);
+                        dd($arr);
                     @endphp
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado_item" :value="__('Estado Item')" />
