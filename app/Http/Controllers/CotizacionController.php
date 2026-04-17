@@ -50,7 +50,7 @@ class CotizacionController extends Controller
     }
 
     public function PDFCotizacion($id){
-        Gate::authorize('cotizacion.PDFCotizacion');
+        //Gate::authorize('cotizacion.PDFCotizacion');
 
         $proyecto = SolicitudMaterial::find($id)->proyecto;
         $datos = (new Cotizacion)->dataCotizacion($id);
