@@ -151,6 +151,28 @@
                                     </div>
                                 @endif
 
+                                @if ($item->totalPago > 0)
+                                    <!-- Botón certificadoPZPDF -->
+                                    <div class="relative">
+                                        <a tabindex="0"
+                                        data-tooltip-target="certificadoPZPDF{{$item->id}}"
+                                        data-tooltip-trigger="hover"
+                                        href="{{ route('cartera.certificadoPZPDF', ['id' => $item->id, 'tipo' => 2]) }}"
+                                        target="_blank"
+                                        class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
+                                            focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
+                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"/>
+                                            </svg>
+                                        </a>
+                                        <div id="certificadoPZPDF{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                            Certificado Paz y Salvo
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
+                                    </div>
+                                @endif
+                                
                             </div>
                         </td>
                     </tr>
