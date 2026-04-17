@@ -22,7 +22,7 @@ class PedidosController extends Controller
     public function index( )
     {
         Gate::authorize('pedidos.index');
-        $title = 'Lista de Pedidos';
+        $title = 'Lista de Compras';
         $items = Pedidos::with(['proveedor', 'material'])
         ->selectRaw('id_factura,
                     DATE(fecha) as fecha,
