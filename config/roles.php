@@ -180,7 +180,7 @@ return [
         'solicitud.saveSolicitud'           => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'solicitud.pdfDespacho'             => ['isAdmin', 'isUser', 'isAlmacenista', 'isTecnico'],
         'solicitud.delete'                  => ['isAdmin', 'isUser', 'isColab', 'isContratista', 'isAlmacenista', 'isTecnico'],
-        //'solicitud.PDFCotizacion'           => ['isAdmin', 'isAnalista', 'isAlmacenista', 'isTecnico'],
+        'solicitud.PDFCotizacion'           => ['isAdmin', 'isAnalista', 'isAlmacenista', 'isTecnico'],
         'solicitud.solicitarCotizacion'     => ['isAdmin', 'isAnalista', 'isAlmacenista', 'isTecnico'],
 
         // ── configuracion.* ────────────────────────────────────
