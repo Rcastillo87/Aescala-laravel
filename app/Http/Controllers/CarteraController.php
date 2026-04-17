@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class CarteraController extends Controller
 {
@@ -185,6 +186,43 @@ class CarteraController extends Controller
                 'totalPago' => $totalPago ?? 0
             ],
         ], 200);
+    }
+
+    public function certificadoPZPDF($idProyecto, $tipo)
+    {
+        try {
+            $pago = Pagos::with('proyecto', 'otro_si')->where(['id_proyecto' => $idProyecto, 'tipo_pago' => $tipo])->first();
+            $carbon = \Carbon\Carbon::parse($pago->proyecto->fecha_firma);
+            $carbon->locale('es');
+            $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
+        
+            // Firma representante (igual que ya haces)
+            $path = public_path('img/firmaRepre.png');
+        
+            if (file_exists($path)) {
+                $imageData = file_get_contents($path);
+                $imageInfo = getimagesize($path);
+                $mime = $imageInfo['mime'];
+                $base64 = 'data:' . $mime . ';base64,' . base64_encode($imageData);
+            } else {
+                $base64 = null;
+            }
+    
+            $data = [
+                "id_proyecto"       => $pago->proyecto->id,
+                "fecha_contrato"    => mb_strtoupper($fechaTexto, 'UTF-8'),
+                "nombre_cliente"    => \Illuminate\Support\Str::title($pago->proyecto->nombre_cliente),
+                "tipo_doc_cliente"  => Proyecto::$tipoDocumento[$pago->proyecto->tipo_doc_cliente][1] ?? '',
+                "documento_cliente" => number_format($pago->proyecto->cedula_cliente, 0, ',', '.'),
+                "imgRepre"          => $base64,
+            ];
+
+            $pdf = PDF::loadView('cartera.certificadoPZPDF', $data);
+            return $pdf->stream('certificadoPZPDF-' . $idProyecto . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Error generando certificado PDF: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
     }
 
     public function reciboPDF($id, $tipo)
