@@ -74,7 +74,7 @@
                                         <a tabindex="0"
                                         data-tooltip-target="certificadoPZPDF{{$item->id}}"
                                         data-tooltip-trigger="hover"
-                                        href="{{ route('cartera.certificadoPZPDF', ['id' => $item->id, 'tipo' => 2]) }}"
+                                        href="{{ route('cartera.certificadoPZPDF', ['id' => $item->id, 'tipo' => 1]) }}"
                                         target="_blank"
                                         class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
                                             focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
