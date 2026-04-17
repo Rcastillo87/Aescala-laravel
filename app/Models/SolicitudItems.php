@@ -63,8 +63,8 @@ class SolicitudItems extends Model
             $span[] = '<span class="span-orange">Aprobado</span>';
         }
 
-        $span[] = '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
-             . (self::$estados[$this->estado] ?? 'Desconocido') . '</span>';
+        $span[] = ($this->estado != 2)? '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">' 
+            . (self::$estados[$this->estado] ?? 'Desconocido') . '</span>' : '';
 
         return $span;
     }
