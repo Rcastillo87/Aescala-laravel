@@ -65,7 +65,7 @@
                         <p class="text-white text-2xl font-bold">{{$diasTrascuridos}} / {{$diasProyec}}</p>
                         <span class="text-white text-xl font-bold">{{$porcen}}%</span>
                         <small class="text-white hidden xl:flex">F In: {{$item->fecIni}}</small>
-                        <small class="text-white hidden xl:flex">F Es: {{$item->fec_fin_est}}</small>
+                        <small class="text-white hidden xl:flex">F Co: {{$item->fec_fin_est}}</small>
                     </div>
                 @endif
                 <div id="tooltip-hover-porcent-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
