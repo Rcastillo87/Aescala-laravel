@@ -13,6 +13,7 @@
             'id',
             'nombre_almacen',
             'tipo',
+            'editar',
             'id_user',
             'created_at',
             'acciones',
@@ -23,6 +24,7 @@
             'id'            => 'ID',
             'nombre_almacen' => 'Nombre Almacen',
             'tipo'          => 'Tipo',
+            'editar'        =>'Permite Editar Cantidades',
             'id_user'       => 'Encargado Almacen',
             'created_at'    => 'Fecha de Creacion',
             'acciones'      => 'Opciones',
@@ -40,6 +42,7 @@
         :customCells="[
             'id_user'=> fn($item) => $item->user->nombre_completo ?? 'N/A',
             'tipo' => fn($item) => $item->spanTipo,
+            'editar' => fn($item) => $item->spanEditar,
             'acciones' => fn($item) => view('almacen.partials.actions', compact('item'))->render(),
         ]"
     />

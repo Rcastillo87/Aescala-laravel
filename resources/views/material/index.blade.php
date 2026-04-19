@@ -67,13 +67,13 @@
                 $item->spanEstado . ' ' . $item->spanAprobar,
 
             'zona' => fn($item) =>
-                e($zonas[$item->zona] ?? '--'),
+                e($zonas[$item->zona] ?? '--')  . ' / ' .  e($fases[$item->fase] ?? '--'),
 
             'acciones' => fn($item) =>
                 view('material.partials.actions', compact('item'))->render(),
         ]"
     />
-    
+
     @if($items->hasPages())
         {{ $items->links() }}
     @endif

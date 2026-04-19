@@ -51,12 +51,14 @@
 
                     @php
                         $arr = [
-                            5 => 'Require Aprobacion',
-                            6 => 'Aprobado'
+                            0 => "Pendiente Despacho",
+                            //1 => "Despacho Parcial",
+                            2 => "Despachado",
+                            3 => "Cancelado",
+                            4 => "Require Aprobacion",
+                            5 => "Aprobado",
                         ];
-                        unset($estadosItems[1]);
-                        $estadosItems = array_values($estadosItems);
-                        $arr = array_merge($estadosItems, $arr);
+                        //$arr = array_merge($estadosItems, $arr);
                     @endphp
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado_item" :value="__('Estado Item')" />

@@ -53,6 +53,8 @@ class AlmacenController extends Controller
                 'integer',
                 Rule::unique('almacenes', 'id_user')->ignore($req->id)
             ],
+
+            'editar' => ['required', 'integer', Rule::in(array_keys(Almacenes::$txEditar))],
             'tipo' => ['required', 'integer', Rule::in(array_keys(Almacenes::$tipo))],
         ]);
 

@@ -28,7 +28,8 @@ class InventarioMaterial extends Model
         'activo',
         'aprobar',
         'id_proveedor',
-        'zona'
+        'zona',
+        'fase'
     ];
 
     protected $appends = ['spanTipo', 'unidades'];
@@ -101,6 +102,14 @@ class InventarioMaterial extends Model
         5 => 'Gal',
         6 => 'Lit',
         7 => 'Par'
+    ];
+
+    public static $fases = [
+        1 => 'Fase 1',
+        2 => 'Fase 2',
+        3 => 'Fase 3',
+        4 => 'Fase aire',
+        5 => 'Fase gas'
     ];
 
     public static $classEstado = [

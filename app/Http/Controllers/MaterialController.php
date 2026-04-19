@@ -53,6 +53,9 @@ class MaterialController extends Controller
             ->when(request('zona'), fn ($q, $zona) =>
                 $q->where('zona', $zona)
             )
+            ->when(request('fase'), fn ($q, $fase) =>
+                $q->where('fase', $fase)
+            )
             ->when(request('rango'), function ($q, $rango) {
                 match ((int) $rango) {
                     1 => $q->where('cantidad', 0)->where('cantidad_min', '<>', 0),
@@ -79,8 +82,8 @@ class MaterialController extends Controller
         }
 
         $items = $query->paginate($perPage)->appends(request()->query());
-
         $zonas = InventarioMaterial::$zonas;
+        $fases = InventarioMaterial::$fases;
 
         $columns = [
             'nombre_material',
@@ -102,7 +105,7 @@ class MaterialController extends Controller
             'proveedor'       => 'Proveedor Principal',
             'tipo'            => 'Tipo Material',
             'estado'          => 'Estado / Requiere Aprobación',
-            'zona'           => 'Zonas',
+            'zona'           => 'Zonas / Fases',
             'acciones'        => 'Opciones',
         ];
 
@@ -116,7 +119,8 @@ class MaterialController extends Controller
             'estado',
             'tipos',
             'proveedores',
-            'zonas'
+            'zonas',
+            'fases'
         ));
     }
 
@@ -196,6 +200,7 @@ class MaterialController extends Controller
         $tipos = InventarioMaterial::$tipo;
         $proveedores = Proveedor::where('activo', 1)->get()->toArray();
         $zonas = InventarioMaterial::$zonas;
+        $fases = InventarioMaterial::$fases;
 
         if(Auth::user()->isAlmacenista){
             $tipo = Almacenes::where('id_user', Auth::user()->id)->first()?->tipo;
@@ -207,7 +212,7 @@ class MaterialController extends Controller
         } else {
             return back()->with('error', 'No posees el perfil para entrar en este  modulo.');
         }
-        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material', 'proveedores', 'zonas', 'tipo'));
+        return view('material.create', compact( 'title', 'unidades', 'tipos', 'material', 'proveedores', 'zonas', 'tipo', 'fases'));
     }
 
     public function save(Request $req)
@@ -238,10 +243,14 @@ class MaterialController extends Controller
                 Rule::exists('inventario_proveedores', 'id')
             ],
             'zona' => [ 'nullable',  Rule::in(array_keys(InventarioMaterial::$zonas))],
+            'fase' => [ 'nullable',  Rule::in(array_keys(InventarioMaterial::$fases))],
         ]);
 
-        if(!(Auth::user()->isAlmacenista || Auth::user()->isAdmin) && $req->id) {
-            $data = array_diff_key($data, ['cantidad' => '']);
+
+        if(Auth::user()->isAlmacenista && $req->id){
+            if(Almacenes::where(['id_user' => Auth::user()->id, 'editar' => 1])->first()->exists()){
+                $data = array_diff_key($data, ['cantidad' => '']);
+            }
         }
 
         if (!$req->id) {

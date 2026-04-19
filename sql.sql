@@ -3,8 +3,7 @@ INSERT INTO areas_empresa
 VALUES
 (1, 'Diseño'),
 (2, 'Contabilidad'),
-(3, 'Comercial'),
-(4, 'Carpinteria'),
+(3, 'Comercial'),(4, 'Carpinteria'),
 (5, 'Bodega'),
 (6, 'Operaciones');
 
@@ -13,3 +12,23 @@ uso laravel 12, flowbite, atom select y js
 ALTER TABLE aescala.inventario_proveedores ADD tipo SMALLINT DEFAULT 1 NULL COMMENT '1 materiales, 2 insumos';
 ALTER TABLE aescala.inventario_pedidos DROP FOREIGN KEY FK2_id_material;
 ALTER TABLE inventario_pedidos ADD tipo SMALLINT DEFAULT 1 NULL COMMENT '1 materiales, 2 insumos';
+
+
+ALTER TABLE aescala.almacenes ADD editar SMALLINT DEFAULT 0 NULL;
+
+ALTER TABLE aescala.inventario_materiales ADD fase INT NULL;
+
+update inventario_materiales set fase = 1
+	where id in(185,6,103,170,65,177,228,179,229,122,120,279,125,412,97,100,99,101,191,169,174,189,250,251,241,128,190,127,323,80,109,110,111,359,46,43,344,194,197,200,105,195,262,201,299,216,314,196,199,205,334,337,338,339,317,315,204,316,499,301,217,221,220,218,219,121,210,264,214,259,198,206,207,208,213,350,348,303,340,349,304,341,107,322,357,236,212,211,401,409,193)
+
+
+update inventario_materiales set fase = 2
+	where id in(272,273,275,32,39,289,509,309,310,473,474,475,342,332,490,343,333,232,256,66,108);
+
+
+update inventario_materiales set fase = 3
+	where id in(139,148,11,137,67,8,79,48,242,30,7,76,75,318,321,58,60,327,82,84,142,141,287,288,352,504,293);
+
+
+update inventario_materiales set fase = 4
+	where id in(461,462,592,457,458,583,584,488,377,707,192,639,638);
