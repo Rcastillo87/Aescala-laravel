@@ -12,15 +12,15 @@
                     <div>
                         <input type="hidden" name="cotizar" value="0">
                         <label class="inline-flex items-center cursor-pointer">
-                            <input 
-                                type="checkbox" 
-                                name="cotizar" 
-                                value="1" 
+                            <input
+                                type="checkbox"
+                                name="cotizar"
+                                value="1"
                                 class="sr-only peer"
                             >
-                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer 
-                                dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute 
-                                after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer
+                                dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute
+                                after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600
                                 peer-checked:bg-blue-600"></div>
                             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
                                 Es una cotización
@@ -31,27 +31,27 @@
                     @if (!Auth::user()->isAnalista)
                         <div>
                             <x-input-label for="id_fases" :value="__('Seleccione la fase')" />
-                            <x-select-input 
+                            <x-select-input
                                 id="id_fases"
-                                name="id_fases" 
+                                name="id_fases"
                                 :options="$fases"
                                 :datax="true"
                                 :data="['id', 'name_fase']"
-                                class="block mt-1 w-full" 
+                                class="block mt-1 w-full"
                             />
                         </div>
                     @endif
 
                     <div>
                         <x-input-label for="id_proyecto" :value="__('Seleccione Proyecto *')" />
-                        <x-select-input 
+                        <x-select-input
                             placeholder="Busqueda.."
                             autocomplete="off"
-                            name="id_proyecto" 
+                            name="id_proyecto"
                             id="id_proyecto"
-                            :options="$proyectos" 
+                            :options="$proyectos"
                             :data="['id', 'nombre_proyecto']"
-                            :selected="old('id_proyecto')" 
+                            :selected="old('id_proyecto')"
                             class="block mt-1 w-full"
                         />
                         <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
@@ -59,14 +59,14 @@
                     <div>
                         <input class="hidden" value="{{ json_encode($materiales) }}"  id="arrayMateriales" name="arrayMateriales" disabled>
                         <x-input-label for="id_material" :value="__('Seleccione Material')" />
-                        <x-select-input 
+                        <x-select-input
                             placeholder="Busqueda.."
                             autocomplete="off"
-                            name="id_material" 
+                            name="id_material"
                             id="id_material"
-                            :options="$materiales" 
+                            :options="$materiales"
                             :data="['id', 'nombre_material']"
-                            :selected="old('id_material')" 
+                            :selected="old('id_material')"
                             class="block mt-1 w-full"
                         />
                         <x-input-error :messages="$errors->get('id_material')" class="mt-2" />
@@ -78,7 +78,7 @@
                             name="observacion"
                             autofocus
                             oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
-                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 
+                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600
                             focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full overflow-hidden resize-none leading-6 py-2"
                             >{{old('observacion')}}</textarea>
                         <x-input-error :messages="$errors->get('observacion')" class="mt-2" />

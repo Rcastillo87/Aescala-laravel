@@ -14,7 +14,6 @@ use App\Models\Proyecto;
 use App\Models\SolicitudItems;
 use App\Models\User;
 use App\Models\Despachos;
-use App\Models\Fase;
 use App\Http\Requests\SaveSolicitudRequest;
 use App\Traits\RegistraBitacora;
 use Illuminate\Support\Facades\Gate;
@@ -139,12 +138,22 @@ class SolicitudController extends Controller
         } else {
             $arr = [3];
         }
-        $fases = Fase::whereIn('id', $arr)->get()->map(function ($item) {
-            $ids = explode(',', $item['id_materiales']);
+
+        $fasesDB = InventarioMaterial::whereIn('fase', $arr)
+            ->get(['id', 'fase'])
+            ->groupBy('fase');
+
+        $fases = collect($arr)->map(function ($fase) use ($fasesDB) {
             return [
-                'id' => $item['id'],
-                'name_fase' => $item['fase'],
-                'materiales' => $ids
+                'id'         => $fase,
+                'name_fase'  => InventarioMaterial::$fases[$fase],
+                'materiales' => isset($fasesDB[$fase])
+                    ? $fasesDB[$fase]
+                        ->pluck('id')
+                        ->map(fn($id) => (string) $id)
+                        ->values()
+                        ->toArray()
+                    : [],
             ];
         })->toArray();
 
