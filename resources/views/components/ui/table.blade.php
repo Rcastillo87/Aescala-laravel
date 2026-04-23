@@ -7,11 +7,12 @@
     'rowClass' => '',
     'columnClass' => [],
     'headerClass' => [],
+    'rowTheaderClass' => '',
 ])
 
 <div class="relative overflow-x-auto rounded-lg border border-gray-200">
     <table class="w-full text-sm text-gray-700 {{ $tableClass }}">
-        <thead class="bg-orange-500 text-xs text-white uppercase">
+        <thead class="bg-orange-500 text-xs text-white uppercase {{ $rowTheaderClass }}">
             <tr>
                 @foreach($columns as $col)
                     <th class="px-4 py-3 text-center whitespace-nowrap {{ $headerClass[$col] ?? '' }}">
