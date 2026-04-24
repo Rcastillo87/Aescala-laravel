@@ -6,6 +6,7 @@
             @csrf
             <div class="flex flex-wrap border border-gray-200 m-2 rounded-lg">
                 <input type="hidden" id="tipo" name="tipo">
+                <input type="hidden" id="id_tipo" name="id_tipo">
 
                 <div id="id_concepto" class="w-full max-w-full p-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <x-input-label for="id_proyecto" :value="__('Seleccione Proyecto *')" />
