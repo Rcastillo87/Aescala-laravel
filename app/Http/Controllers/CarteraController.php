@@ -130,22 +130,44 @@ class CarteraController extends Controller
 
         $valTotalPagado = Pagos::where(['tipo_pago' => 1, 'id_proyecto' => $id])->sum('valor_pagado');
 
-        $pagos = Pagos::with(['proyecto', 'otro_si'])
-                ->where('id_proyecto', $id)
-                ->get()
-                ->map(function ($item) use ($porcenTx) {
-                    $campo = "termino_{$item->concepto}_por";
-                    return [
-                        "id" => $item->id,
-                        "concepto" => ($item->tipo_pago == 1)
-                            ? 'Porcentaje: ' . ($item->proyecto?->$campo ?? 0) . '% ' . ($porcenTx[$item->concepto] ?? '')
-                            : 'Otro Si N° ' . ($item->numero ?? ''),
-                        "valor_pago" => $item->valor_pagado,
-                        "factura" => $item->fv,
-                        "fecha_pago" => $item->fecha_pago,
-                        "comentarios" => $item->comentario,
-                    ];
-                })->toArray();
+        $pagosPro = Pagos::with('proyecto')
+            ->where([
+                'id_proyecto' => $id,
+                'tipo_pago' => 1
+            ])->get()
+            ->map(function ($item) use ($porcenTx) {
+                $campo = "termino_{$item->concepto}_por";
+                return [
+                    "id" => $item->id,
+                    "concepto" => 'Porcentaje: '
+                        . ($item->proyecto?->$campo ?? 0)
+                        . '% '
+                        . ($porcenTx[$item->concepto] ?? ''),
+                    "valor_pago" => $item->valor_pagado,
+                    "factura" => $item->fv,
+                    "fecha_pago" => $item->fecha_pago,
+                    "comentarios" => $item->comentario,
+                ];
+            })->toArray();
+        
+        $pagosOtrosi = Pagos::with('otro_si')
+            ->where([
+                'id_proyecto' => $id,
+                'tipo_pago' => 2
+            ])->get()
+            ->map(function ($item) {
+                return [
+                    "id" => $item->id,
+                    "concepto" => 'Otro Sí N° '
+                        . ($item->otro_si?->numero ?? ''),
+                    "valor_pago" => $item->valor_pagado,
+                    "factura" => $item->fv,
+                    "fecha_pago" => $item->fecha_pago,
+                    "comentarios" => $item->comentario,
+                ];
+            })->toArray();
+
+$pagos = array_merge($pagosPro, $pagosOtrosi);
 
         $contraProyec = [
             "id_proyecto" => $id,
