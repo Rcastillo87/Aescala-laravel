@@ -32,3 +32,6 @@ update inventario_materiales set fase = 3
 
 update inventario_materiales set fase = 4
 	where id in(461,462,592,457,458,583,584,488,377,707,192,639,638);
+
+
+ALTER TABLE pagos ADD COLUMN id_pago BIGINT UNSIGNED NULL AFTER tipo_pago;
