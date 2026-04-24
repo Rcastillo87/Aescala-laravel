@@ -382,6 +382,7 @@ class Proyecto extends Model
             if (!empty($this->$campo) && $this->$campo >= 0) {
                 $porcentaje = $this->$campo;
                 $arrayPagos[] = [
+                    'id_tipo' => $this->id,
                     'msg' => "Pago del {$porcentaje}% - {$txtArr[$i]}",
                     'campo' => $i,
                     'tipo_pago' => 1
