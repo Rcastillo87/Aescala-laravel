@@ -358,39 +358,36 @@ class CarteraController extends Controller
     public function deletePago($id)
     {
         Gate::authorize('cartera.deletePago');
+        
         $pago = Pagos::findOrFail($id);
         $tipo_pago = $pago->tipo_pago;
-        $id_proyecto = $pago->id_proyecto;
-
+        $id_tipo = $pago->id_tipo; // El ID del Proyecto o del OtroSí
+        
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             $pago->delete();
-
             if ($tipo_pago == 1) {
-                $proyecto = Proyecto::find($id_proyecto);
-                $totalPagado = $proyecto->totalPagado;
-
-                if ($totalPagado < ($proyecto->total ?? 0)) {
-                    $proyecto->update(['paz_salvo' => 0]);
-                }
-            } elseif ($tipo_pago == 2) {
-                $otroSi = Otrosi::find($id_proyecto);
-                $totalPagado = Pagos::where([
-                    'id_proyecto' => $id_proyecto,
-                    'tipo_pago'   => 2
-                ])->sum('valor_pagado');
-
-                if ($totalPagado < ($otroSi->totalDeve ?? 0)) {
-                    $otroSi->update(['paz_salvo' => 0]);
+                $proy = Proyecto::find($id_tipo);
+                if ($proy) {
+                    $pazYSalvo = $proy->valance ? 1 : 0; 
+                    $proy->update(['paz_salvo' => $pazYSalvo]);
                 }
             }
-
+            
+            if ($tipo_pago == 2) {
+                $otroSi = Otrosi::find($id_tipo);
+                if ($otroSi) {
+                    $pazYSalvo = $otroSi->valanceOtroSi ? 1 : 0;
+                    $otroSi->update(['paz_salvo' => $pazYSalvo]);
+                }
+            }
+    
             DB::commit();
             return response()->json([
                 'status'  => true,
                 'message' => 'Pago eliminado correctamente.',
             ]);
+    
         } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json([
@@ -400,5 +397,4 @@ class CarteraController extends Controller
             ], 500);
         }
     }
-
 }
