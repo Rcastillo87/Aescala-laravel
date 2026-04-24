@@ -53,9 +53,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
  });
 
 
- async function loadCartera(id) {
+async function loadCartera(id) {
     try {
-
         // =========================
         // LOADING SWEETALERT
         // =========================
@@ -63,170 +62,222 @@ document.addEventListener("DOMContentLoaded", function(event) {
             title: 'Cargando...',
             text: 'Obteniendo información de la cartera',
             allowOutsideClick: false,
+            showConfirmButton: false,
             didOpen: () => {
                 Swal.showLoading();
             }
         });
 
         const res = await fetch(`pagosProyecto/${id}`);
-        const data = await res.json();
+        const response = await res.json();
 
-        Swal.close(); // 🔥 cerrar loading cuando responde
+        Swal.close();
 
+        if (!response.status) {
+            throw new Error(response.message || 'Error al consultar');
+        }
+
+        const data = response.data;
         const div = document.getElementById('divCartera');
         div.innerHTML = '';
 
         // =========================
-        // TABLA PAGOS
+        // TABLA DE PAGOS
         // =========================
         let pagosHTML = `
-        <div class="mb-6">
-            <h2 class="text-lg font-semibold mb-2">Lista de Pagos realizados</h2>
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold mb-3">
+                    Lista de Pagos Realizados
+                </h2>
 
-            <div class="overflow-x-auto rounded-xl border shadow bg-white">
-                <table class="w-full text-sm text-center">
-                    <thead class="bg-green-700 text-white uppercase text-xs">
-                        <tr>
-                            <th class="p-2">Concepto</th>
-                            <th class="p-2">Valor</th>
-                            <th class="p-2">Factura</th>
-                            <th class="p-2">Fecha</th>
-                            <th class="p-2">Comentario</th>
-                            <th class="p-2">Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-md bg-white">
+                    <table class="w-full text-sm text-center">
+                        <thead class="bg-green-700 text-white uppercase text-xs">
+                            <tr>
+                                <th class="p-3">Concepto</th>
+                                <th class="p-3">Valor Pago</th>
+                                <th class="p-3">Factura</th>
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Comentario</th>
+                                <th class="p-3">Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
         `;
 
-        if (data.pagos.length) {
-            data.pagos.forEach(p => {
+        if (data.pagos.length > 0) {
+            data.pagos.forEach(item => {
                 pagosHTML += `
-                <tr class="border-t hover:bg-gray-50">
-                    <td class="p-2">${p.concepto}</td>
-                    <td class="p-2">$${formatMoney(p.valor_pago)}</td>
-                    <td class="p-2">${p.factura}</td>
-                    <td class="p-2">${p.fecha_pago}</td>
-                    <td class="p-2">${p.comentarios ?? '--'}</td>
-                    <td class="p-2">
-                        <button onclick="deletePago(${p.id})"
-                            class="bg-red-600 hover:bg-red-700 text-white rounded-full w-8 h-8">
-                            ✕
-                        </button>
-                    </td>
-                </tr>`;
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="p-3">${item.concepto}</td>
+                        <td class="p-3">$${formatMoney(item.valor_pago)}</td>
+                        <td class="p-3">${item.factura ?? '--'}</td>
+                        <td class="p-3">${item.fecha_pago ?? '--'}</td>
+                        <td class="p-3">${item.comentarios ?? '--'}</td>
+                        <td class="p-3">
+                            <button
+                                onclick="deletePago(${item.id})"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white transition"
+                            >
+                                ✕
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
 
             pagosHTML += `
                 <tr class="bg-gray-100 font-semibold">
                     <td colspan="6" class="p-3 text-right">
                         Total Pagado:
-                        <span class="text-red-600">$${formatMoney(data.total_pagos)}</span>
+                        <span class="text-red-600 ml-2">
+                            $${formatMoney(data.total_pagos)}
+                        </span>
                     </td>
-                </tr>`;
+                </tr>
+            `;
         } else {
             pagosHTML += `
                 <tr>
-                    <td colspan="6" class="p-3">No hay registros</td>
-                </tr>`;
+                    <td colspan="6" class="p-4 text-center">
+                        No hay registros
+                    </td>
+                </tr>
+            `;
         }
 
-        pagosHTML += `</tbody></table></div></div>`;
-
-        // =========================
-        // RESUMEN
-        // =========================
-        let resumenHTML = `
-        <div class="grid md:grid-cols-2 gap-4">
-
-            <div class="rounded-xl border shadow bg-white p-4">
-                <h2 class="font-semibold mb-3">Resumen Total</h2>
-                <table class="w-full text-sm text-center">
-                    <thead class="bg-green-700 text-white text-xs">
-                        <tr>
-                            <th class="p-2">Concepto</th>
-                            <th class="p-2">Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        pagosHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         `;
 
-        data.resumen.items.forEach(r => {
+        // =========================
+        // RESUMEN TOTAL
+        // =========================
+        let resumenHTML = `
+            <div class="grid md:grid-cols-2 gap-5 mb-6">
+                <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4">
+                    <h2 class="text-lg font-semibold mb-3">
+                        Resumen Total
+                    </h2>
+
+                    <table class="w-full text-sm text-center">
+                        <thead class="bg-green-700 text-white text-xs uppercase">
+                            <tr>
+                                <th class="p-3">Concepto</th>
+                                <th class="p-3">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
+
+        data.resumen.forEach(item => {
             resumenHTML += `
                 <tr class="border-t">
-                    <td class="p-2">${r.concepto}</td>
-                    <td class="p-2">$${formatMoney(r.valor_total)}</td>
-                </tr>`;
+                    <td class="p-3">${item.concepto}</td>
+                    <td class="p-3">$${formatMoney(item.valor_total)}</td>
+                </tr>
+            `;
         });
 
         resumenHTML += `
                 <tr class="bg-gray-100 font-semibold">
                     <td>Total Proyecto</td>
-                    <td>$${formatMoney(data.resumen.total_proyecto)}</td>
+                    <td>$${formatMoney(data.total_proyecto)}</td>
                 </tr>
+
                 <tr class="bg-gray-100 font-semibold">
                     <td>Total Pagado</td>
-                    <td>$${formatMoney(data.resumen.total_pagado)}</td>
+                    <td>$${formatMoney(data.total_pagado)}</td>
                 </tr>
+
                 <tr class="bg-gray-100 font-semibold text-red-600">
-                    <td>Saldo</td>
-                    <td>$${formatMoney(data.resumen.saldo)}</td>
+                    <td>Saldo Pendiente</td>
+                    <td>$${formatMoney(
+                        data.total_proyecto - data.total_pagado
+                    )}</td>
                 </tr>
-            </tbody></table></div>
+            </tbody>
+            </table>
+            </div>
         `;
 
         // =========================
         // RELACIÓN DE PAGOS
         // =========================
         let relacionHTML = `
-        <div class="rounded-xl border shadow bg-white p-4 overflow-x-auto">
-            <h2 class="font-semibold mb-3">Relación de pagos</h2>
-            <table class="w-full text-sm text-center">
-                <thead class="bg-green-700 text-white text-xs">
-                    <tr>
-                        <th>Concepto</th>
+            <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4 overflow-x-auto">
+                <h2 class="text-lg font-semibold mb-3">
+                    Relación de Pagos
+                </h2>
+
+                <table class="w-full text-sm text-center">
+                    <thead class="bg-green-700 text-white text-xs uppercase">
+                        <tr>
+                            <th class="p-3">Concepto</th>
         `;
 
-        data.porcentajes.forEach(p => {
-            relacionHTML += `<th>${p}%</th>`;
+        data.porcentajes.forEach(porcentaje => {
+            relacionHTML += `
+                <th class="p-3">
+                    ${porcentaje ? porcentaje + '%' : ''}
+                </th>
+            `;
         });
 
-        relacionHTML += `</tr></thead><tbody>`;
+        relacionHTML += `
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
 
-        relacionHTML += `<tr class="border-t">
-            <td>Contrato</td>`;
-        data.relacion_pagos.contrato.forEach(v => {
-            relacionHTML += `<td>$${formatMoney(v)}</td>`;
+        // Contrato principal
+        data.relacion_pagos.forEach(item => {
+            relacionHTML += `<tr class="border-t">`;
+
+            item.forEach((valor, index) => {
+                if (index === 0) {
+                    relacionHTML += `
+                        <td class="p-3 font-medium">
+                            ${valor}
+                        </td>
+                    `;
+                } else {
+                    relacionHTML += `
+                        <td class="p-3">
+                            $${formatMoney(valor)}
+                        </td>
+                    `;
+                }
+            });
+
+            relacionHTML += `</tr>`;
         });
-        relacionHTML += `</tr>`;
 
-        relacionHTML += `<tr class="border-t font-semibold">
-            <td>Pagado</td>`;
-        data.relacion_pagos.totales.forEach(v => {
-            relacionHTML += `<td>$${formatMoney(v)}</td>`;
-        });
-        relacionHTML += `</tr>`;
-
-        relacionHTML += `</tbody></table></div></div>`;
+        relacionHTML += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        `;
 
         div.innerHTML = pagosHTML + resumenHTML + relacionHTML;
 
-    } catch (e) {
+    } catch (error) {
+        console.error(error);
 
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo cargar la cartera'
+            text: 'No se pudo cargar la información de cartera'
         });
-
-        console.error(e);
     }
 }
 
-// =========================
-// FORMATO DINERO
-// =========================
 function formatMoney(value) {
-    return new Intl.NumberFormat('es-CO').format(value);
+    return new Intl.NumberFormat('es-CO').format(value || 0);
 }
 
 
