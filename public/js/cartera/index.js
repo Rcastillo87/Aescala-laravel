@@ -102,7 +102,7 @@ async function loadCartera(id) {
 
         const data = response.data;
         const div = document.getElementById('divCartera');
-        renderSelectConcepto(data);
+        renderSelectConcepto(data.select);
         div.innerHTML = '';
 
         /*
