@@ -115,8 +115,19 @@ class CarteraController extends Controller
     {
         Gate::authorize('cartera.pagosProyecto');
 
-        $porcenTx = Proyecto::$porcenTX;
-        $proyecto = Proyecto::with('otro_si')->find($id);
+        $proyecto = Proyecto::with('otro_si')->findOrFail($id);
+        $selectPro = $proyecto->pagos;
+        $selectOtrosi = $proyecto->otro_si()->get()
+            ->map(function ($item) {
+                return [
+                    'msg' => "Otro Si N° " . $item->numero,
+                    'campo' => '',
+                    'tipo_pago' => 2
+                ];
+            });
+
+        $select = array_merge($selectPro, $selectOtrosi);
+
         $porcentProyec = [
             $proyecto->termino_1_por,
             $proyecto->termino_2_por,
@@ -127,69 +138,58 @@ class CarteraController extends Controller
         ];
 
         $valProyecto = $proyecto->total;
-
-        $valTotalPagado = Pagos::where(['tipo_pago' => 1, 'id_proyecto' => $id])->sum('valor_pagado');
-
-        $pagosPro = Pagos::with('proyecto')
-            ->where([
-                'id_proyecto' => $id,
-                'tipo_pago' => 1
-            ])->get()
-            ->map(function ($item) use ($porcenTx) {
-                $campo = "termino_{$item->concepto}_por";
-                return [
-                    "id" => $item->id,
-                    "concepto" => 'Porcentaje: '
-                        . ($item->proyecto?->$campo ?? 0)
-                        . '% '
-                        . ($porcenTx[$item->concepto] ?? ''),
-                    "valor_pago" => $item->valor_pagado,
-                    "factura" => $item->fv,
-                    "fecha_pago" => $item->fecha_pago,
-                    "comentarios" => $item->comentario,
-                ];
-            })->toArray();
-        
-        $pagosOtrosi = Pagos::with('otro_si')
-            ->where([
-                'id_proyecto' => $id,
-                'tipo_pago' => 2
-            ])->get()
-            ->map(function ($item) {
-                return [
-                    "id" => $item->id,
-                    "concepto" => 'Otro Sí N° '
-                        . ($item->otro_si?->numero ?? ''),
-                    "valor_pago" => $item->valor_pagado,
-                    "factura" => $item->fv,
-                    "fecha_pago" => $item->fecha_pago,
-                    "comentarios" => $item->comentario,
-                ];
-            })->toArray();
-
-$pagos = array_merge($pagosPro, $pagosOtrosi);
-
         $contraProyec = [
             "id_proyecto" => $id,
+            "id_pago" => $id,
             "tipo" => 1,
             "concepto" => "Contrato Proyecto",
             "valor_total" => $valProyecto
         ];
-
         $contraOtrosi = $proyecto->otro_si()
             ->where('estado', 1)
             ->get()
-            ->map(function ($item) {
+            ->map(function ($item) use ($id) {
                 return [
-                    "id_proyecto" => $item->id_proyecto,
+                    "id_proyecto" => $id,
+                    "id_pago" => $item->id,
                     "tipo" => 2,
                     "concepto" => "Otro Si N° " . $item->numero,
-                    "valor_total" => $item->TotalDeve,
+                    "valor_total" => $item->total_deve,
                 ];
             })
             ->toArray();
-
         $contratos = array_merge([$contraProyec], $contraOtrosi);
+
+        $valTotalPagado = Pagos::where('id_proyecto', $id)->sum('valor_pagado');
+        
+        $porcenTx = Proyecto::$porcenTX;
+        $pagos = Pagos::with(['proyecto', 'otro_si'])
+            ->where('id_proyecto', $id)
+            ->get()
+            ->map(function ($item) use ($porcenTx) {
+                if ($item->tipo_pago == 1) {
+                    $campo = "termino_{$item->concepto}_por";
+                    $concepto = 'Porcentaje: '
+                        . ($item->proyecto?->$campo ?? 0)
+                        . '% '
+                        . ($porcenTx[$item->concepto] ?? '');
+                } else {
+                    $concepto = 'Otro Sí N° '
+                        . ($item->otro_si?->numero ?? '');
+                }
+                return [
+                    "id" => $item->id,
+                    "id_proyecto" => $item->id_proyecto,
+                    "id_pago" => $item->id_pago,
+                    "tipo_pago" => $item->tipo_pago,
+                    "concepto" => $concepto,
+                    "valor_pago" => $item->valor_pagado,
+                    "factura" => $item->fv,
+                    "fecha_pago" => $item->fecha_pago,
+                    "comentarios" => $item->comentario,
+                ];
+            })
+            ->toArray();
 
         $pagosAgrupados = Pagos::selectRaw('
                 concepto,
@@ -214,20 +214,12 @@ $pagos = array_merge($pagosPro, $pagosOtrosi);
             $pagosAgrupados->get(6)?->total_pagado ?? 0,
         ];
 
-        $agrupadoPagosOtrosi = Otrosi::with([
-                'pagos' => function ($q) {
-                    $q->where('tipo_pago', 2)
-                      ->orderBy('fecha_pago', 'desc');
-                }
-            ])
+        $agrupadoPagosOtrosi = Otrosi::whereHas('pagos')
             ->where('id_proyecto', $id)
-            ->orderBy('id_proyecto', 'desc')
+            ->orderBy('id', 'desc')
             ->get()
             ->map(function ($item) {
-                return [
-                    'Otro Sí N° ' . $item->numero,
-                    $item->pagos->pluck('valor_pagado')->toArray()
-                ];
+                return array_merge(['Otro Sí N° ' . $item->numero], $item->pagos->pluck('valor_pagado')->toArray());
             })
             ->toArray();
 
@@ -241,10 +233,7 @@ $pagos = array_merge($pagosPro, $pagosOtrosi);
                 "total_proyecto" => $valProyecto,
                 "total_pagado" => $valTotalPagado,
                 "porcentajes" => $porcentProyec,
-                "relacion_pagos" => [
-                    $pagosAgrupados,
-                    $agrupadoPagosOtrosi
-                ]
+                "relacion_pagos" => array_merge($agrupadoPagosProyecto, $agrupadoPagosOtrosi)
             ]
         ], 200);
     }
