@@ -24,51 +24,14 @@ class CarteraController extends Controller
         $title = 'Lista de Cartera';
         $usuario = Auth::user();
 
-        $items_1 = Proyecto::with(['user'])
-            ->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
-                return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
-            })
-            ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
-                return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
-            })
-            ->when(Request('id_userSerch'), function ($query, $id_user) {
-                return $query->where('id_user', $id_user);
-            })
-            ->whereIn('id_estado', [1, 3, 5])
-            ->WhereRaw('(termino_1_por + termino_2_por + termino_3_por + termino_4_por + termino_5_por + termino_6_por) > 0')
-            ->paginate(10, ['*'], 'page_proyectos')
-            ->appends(request()->query());
-
-        $items_2 = Otrosi::with(['user_encargado', 'proyecto'])
-            ->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
-                return $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
-                    $q->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
-                });
-            })
-            ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
-                return $query->whereHas('proyecto', function ($q) use ($nombre_cliente) {
-                    $q->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
-                });
-            })
-            ->when(Request('id_userSerch'), function ($query, $id_user) {
-                return $query->where('id_user_encargado', $id_user);
-            })
-            ->where('estado', 1)
-            ->whereHas('proyecto', function ($query) {
-                $query->whereIn('id_estado', [1, 3, 5]);
-            })
-            ->paginate(10, ['*'], 'page_otrosi')
-            ->appends(request()->query());
-
-        $userColab = User::where('id_rol', 3)->where('activo', 1)
-            ->get(['id', 'nombre_completo'])
+        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5])
+            ->whereNotNull('cedula_cliente')
+            ->whereNotNull('tipo_doc_cliente')
+            ->orderBy('nombre_proyecto', 'ASC')
+            ->get(['id', 'nombre_proyecto'])
             ->toArray();
 
-        $headers_1 = ['Proyecto', 'Cliente', 'En Cargado',  'Estado Proyecto', 'Pagos / Total', 'Paz & Salvo', 'Opciones'];
-
-        $headers_2 = ['Otro Si',  'Cliente', 'En Cargado', 'Estado Otro Si', 'Pagos / Total', 'Paz & Salvo', 'Opciones'];
-
-        return view('cartera.index', compact( 'title', 'items_1', 'items_2', 'headers_1', 'headers_2', 'userColab'));
+        return view('cartera.index', compact( 'title', 'proyectos'));
     }
 
     public function save(Request $request)
@@ -148,43 +111,79 @@ class CarteraController extends Controller
         }
     }
 
-    public function pagos($id)
+    public function pagosProyecto($id)
     {
-        Gate::authorize('cartera.pagos');
-        $item = Proyecto::findOrFail($id);
-        $pagos = $item->pagos;
-        $lista = $item->pagos()->where('tipo_pago', 1)->get();
-        $totalApagar = $item->total ?? 0;
+        Gate::authorize('cartera.pagosProyecto');
+
+        $porcenTx = Proyecto::$porcenTX;
+        $proyecto = Proyecto::with('otro_si')->find($id);
+        $porcentProyec = [
+            $proyecto->termino_1_por,
+            $proyecto->termino_2_por,
+            $proyecto->termino_3_por,
+            $proyecto->termino_4_por,
+            $proyecto->termino_5_por,
+            $proyecto->termino_6_por,
+        ];
+
+        $valProyecto = $proyecto->total;
+
+        $valTotalPagado = Pagos::where(['tipo_pago' => 1, 'id_proyecto' => $id])->sum('valor_pagado');
+
+        $pagos = Pagos::with(['proyecto', 'otro_si'])
+                ->where('id_proyecto', $id)
+                ->get()
+                ->map(function ($item) use ($porcenTx) {
+                    $campo = "termino_{$item->concepto}_por";
+                    return [
+                        "id" => $item->id,
+                        "concepto" => ($item->tipo_pago == 1)
+                            ? 'Porcentaje: ' . ($item->proyecto?->$campo ?? 0) . '% ' . ($porcenTx[$item->concepto] ?? '')
+                            : 'Otro Si N° ' . ($item->numero ?? ''),
+                        "valor_pago" => $item->valor_pagado,
+                        "factura" => $item->fv,
+                        "fecha_pago" => $item->fecha_pago,
+                        "comentarios" => $item->comentario,
+                    ];
+                })->toArray();
+
+        $contraProyec = [
+            "id_proyecto" => $id,
+            "tipo" => 1,
+            "concepto" => "Contrato Proyecto",
+            "valor_total" => $valProyecto
+        ];
+
+        $contraOtrosi = $proyecto->otro_si()
+            ->where('estado', 1)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    "id_proyecto" => $item->id_proyecto,
+                    "tipo" => 2,
+                    "concepto" => "Otro Si N° " . $item->numero,
+                    "valor_total" => $item->TotalDeve,
+                ];
+            })
+            ->toArray();
+
+        $contratos = array_merge($contraProyec, $contraOtrosi);
+
         return response()->json([
             'status' => true,
             'message' => 'Consulta exitosa',
             'data' => [
-                'id_proyecto' => $item->id,
-                'pagado' => $lista,
-                'conceptos_pago' => $pagos,
-                'total_apagar' => $totalApagar,
-            ],
-        ], 200);
-    }
-
-    public function pagosOtroSi($id)
-    {
-        Gate::authorize('cartera.pagosOtroSi');
-        $item = Otrosi::with('pagos')->findOrFail($id);
-        $pagos = $item->pagos()->where('tipo_pago', 2)->get();
-        $totalPago = Pagos::where([
-            'id_proyecto' => $item->id,
-            'tipo_pago'   => 2
-        ])->sum('valor_pagado');
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Consulta exitosa',
-            'data' => [
-                'pagado' => $pagos,
-                'totalDeve' => $item->totalDeve ?? 0,
-                'totalPago' => $totalPago ?? 0
-            ],
+                "pagos" => $pagos,
+                "total_pagos" => Pagos::sum('valor_pagado'),
+                "resumen" => $contratos,
+                "total_proyecto" => $valProyecto,
+                "total_pagado" => $valTotalPagado,
+                "porcentajes" => $porcentProyec,
+                "relacion_pagos" => [
+                    "contrato" => [400000, 800000, 1200000, 1600000, 2000000],
+                    "totales" => [100000, 200000, 300000, 400000, 500000]
+                ]
+            ]
         ], 200);
     }
 
@@ -195,10 +194,10 @@ class CarteraController extends Controller
             $carbon = \Carbon\Carbon::parse($pago->proyecto->fecha_firma);
             $carbon->locale('es');
             $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
-        
+
             // Firma representante (igual que ya haces)
             $path = public_path('img/firmaRepre.png');
-        
+
             if (file_exists($path)) {
                 $imageData = file_get_contents($path);
                 $imageInfo = getimagesize($path);
@@ -207,7 +206,7 @@ class CarteraController extends Controller
             } else {
                 $base64 = null;
             }
-    
+
             $data = [
                 "id_proyecto"       => $pago->proyecto->id,
                 "fecha_contrato"    => mb_strtoupper($fechaTexto, 'UTF-8'),

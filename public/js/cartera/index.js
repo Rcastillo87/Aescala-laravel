@@ -1,238 +1,234 @@
-async function mostrarPagos(id, nombreProyecto, pazSalvo) {
-    try {
-        Swal.fire({
-            title: 'Cargando pagos...',
-            text: 'Por favor espera',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
-
-        document.getElementById('tipo').value = 1;
-        document.getElementById('proyecto_id').value = id;
-        const response = await fetch(`pagos/${id}`);
-        const result = await response.json();
-        Swal.close();
-
-        if (!result.status) {
-            Swal.fire('Error', result.message, 'error');
-            return;
+document.addEventListener("DOMContentLoaded", function(event) {
+    new TomSelect("#id_proyecto",{
+        create: true,
+        dropdownParent: 'body',
+        sortField: {
+            field: "text",
+            direction: "asc"
+        },
+        onInitialize: function() {
+            this.wrapper.classList.add("tom-select-custom");
         }
+    });
 
-        const data = result.data.pagado;
-        const conceptos = result.data.conceptos_pago;
-        const totalApagar = result.data.total_apagar;
+    const proyecto = document.getElementById('id_proyecto');
 
-        if(pazSalvo == 1){
-            document.getElementById('formPago').classList.add('hidden');
+    // todos los inputs que quieres controlar
+    const campos = [
+        document.getElementById('concepto'),
+        document.getElementById('fecha_pago'),
+        document.getElementById('fv'),
+        document.getElementById('valor_pagado'),
+        document.getElementById('comentario'),
+    ];
+
+    function toggleCampos() {
+        const tieneProyecto = proyecto.value && proyecto.value !== '';
+
+        if (!tieneProyecto) {
+            document.getElementById('divCartera').innerHTML = '';
         } else {
-            document.getElementById('formPago').classList.remove('hidden');
+            loadCartera(proyecto.value);
         }
 
-        document.getElementById('txTitulo').textContent = 'Pagos del Proyecto: ' + nombreProyecto;
-        const select = document.getElementById('concepto');
-        select.innerHTML = '<option value="">-- Seleccione --</option>';
-        conceptos.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.termino; // valor interno
-            option.textContent = item.msg;
-            //option.dataset.valor = item.valor_apagar; // dato extra opcional
-            select.appendChild(option);
+        campos.forEach(campo => {
+            if (!campo) return;
+
+            if (!tieneProyecto) {
+                campo.setAttribute('disabled', true);
+                campo.classList.add('bg-gray-100', 'cursor-not-allowed');
+            } else {
+                campo.removeAttribute('disabled');
+                campo.classList.remove('bg-gray-100', 'cursor-not-allowed');
+            }
+        });
+    }
+
+    // ejecutar al cargar
+    toggleCampos();
+
+    // escuchar cambios
+    proyecto.addEventListener('change', toggleCampos);
+
+ });
+
+
+ async function loadCartera(id) {
+    try {
+
+        // =========================
+        // LOADING SWEETALERT
+        // =========================
+        Swal.fire({
+            title: 'Cargando...',
+            text: 'Obteniendo información de la cartera',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
 
-        const contenedor = document.getElementById('tablaPagos');
-        const tablaHTML = `
-        <table class="w-full text-sm text-gray-700">
-            <thead class="bg-green-700 text-white text-center uppercase">
-                <tr>
-                    <th class="px-2 py-2">Recibo De Caja</th>
-                    <th class="px-2 py-2">Factura de Venta</th>
-                    <th class="px-2 py-2">Concepto</th>
-                    <th class="px-2 py-2">Valor Pagado</th>
-                    <th class="px-2 py-2">Fecha de Pago</th>
-                    <th class="px-2 py-2">Comentario</th>
-                    <th class="px-2 py-2">Opciones</th>
-                </tr>
-            </thead>
-            <tbody id="bodyTablaPagos" class="divide-y divide-gray-100 text-center"></tbody>
-        </table>
+        const res = await fetch(`pagosProyecto/${id}`);
+        const data = await res.json();
+
+        Swal.close(); // 🔥 cerrar loading cuando responde
+
+        const div = document.getElementById('divCartera');
+        div.innerHTML = '';
+
+        // =========================
+        // TABLA PAGOS
+        // =========================
+        let pagosHTML = `
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Lista de Pagos realizados</h2>
+
+            <div class="overflow-x-auto rounded-xl border shadow bg-white">
+                <table class="w-full text-sm text-center">
+                    <thead class="bg-green-700 text-white uppercase text-xs">
+                        <tr>
+                            <th class="p-2">Concepto</th>
+                            <th class="p-2">Valor</th>
+                            <th class="p-2">Factura</th>
+                            <th class="p-2">Fecha</th>
+                            <th class="p-2">Comentario</th>
+                            <th class="p-2">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
-        contenedor.innerHTML = tablaHTML;
 
-        const tbody = document.getElementById('bodyTablaPagos');
-        tbody.innerHTML = '';
-        let totalPagado = 0;
+        if (data.pagos.length) {
+            data.pagos.forEach(p => {
+                pagosHTML += `
+                <tr class="border-t hover:bg-gray-50">
+                    <td class="p-2">${p.concepto}</td>
+                    <td class="p-2">$${formatMoney(p.valor_pago)}</td>
+                    <td class="p-2">${p.factura}</td>
+                    <td class="p-2">${p.fecha_pago}</td>
+                    <td class="p-2">${p.comentarios ?? '--'}</td>
+                    <td class="p-2">
+                        <button onclick="deletePago(${p.id})"
+                            class="bg-red-600 hover:bg-red-700 text-white rounded-full w-8 h-8">
+                            ✕
+                        </button>
+                    </td>
+                </tr>`;
+            });
 
-        if (!data || data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="py-4 text-gray-500 text-center italic">
-                        No hay pagos registrados.
+            pagosHTML += `
+                <tr class="bg-gray-100 font-semibold">
+                    <td colspan="6" class="p-3 text-right">
+                        Total Pagado:
+                        <span class="text-red-600">$${formatMoney(data.total_pagos)}</span>
                     </td>
                 </tr>`;
         } else {
-            data.forEach(pago => {
-                totalPagado += Number(pago.valor_pagado);
-                const getConcepto = conceptos.find(c => c.termino === Number(pago.concepto));
-                const fila = `
-                    <tr class="hover:bg-gray-50 transition-all">
-                        <th class="px-2 py-1 text-center">${pago.rc}</th>
-                        <th class="px-2 py-1 text-center">${pago.fv??''}</th>
-                        <th class="px-2 py-1 text-center">${getConcepto.msg}</th>
-                        <td class="px-2 py-1 text-center">$${pago.valor_pagado.toLocaleString()}</td>
-                        <td class="px-2 py-1 text-center">$${pago.fecha_pago}</td>
-                        <td class="px-2 py-1 text-center w-50">${pago.comentario || '-'}</td>
-                        <td class="px-2 py-1 text-center">
-                            <a onclick="deletePago(${pago.id})"
-                                class="inline-flex items-center justify-center w-9 h-9 rounded-full border-2 bg-red-600 hover:bg-red-700 border-red-700 focus:ring-red-300 text-white transition-all focus:ring-2 focus:ring-offset-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </a>
-                        </td>
-                    </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', fila);
-            });
+            pagosHTML += `
+                <tr>
+                    <td colspan="6" class="p-3">No hay registros</td>
+                </tr>`;
         }
 
-        // Calcular saldo pendiente
-        const saldoPendiente = totalApagar - totalPagado;
+        pagosHTML += `</tbody></table></div></div>`;
 
-        // Fila de totales
-        const filaTotales = `
-            <tr class="bg-gray-100 font-semibold border-t">
-                <td colspan="2" class="py-3 px-4 text-right text-gray-700">Total A Pagar: $${totalApagar.toLocaleString()}</td>
-                <td colspan="2" class="py-3 px-4 text-right text-gray-700">Total Pagado: $${totalPagado.toLocaleString()}</td>
-                <td colspan="3" class="py-3 px-4 text-right">
-                    <span class="text-gray-600">Saldo pendiente:</span>
-                    <span class="font-bold text-red-600 ml-2">$${saldoPendiente.toLocaleString()}</span>
-                </td>
-            </tr>
+        // =========================
+        // RESUMEN
+        // =========================
+        let resumenHTML = `
+        <div class="grid md:grid-cols-2 gap-4">
+
+            <div class="rounded-xl border shadow bg-white p-4">
+                <h2 class="font-semibold mb-3">Resumen Total</h2>
+                <table class="w-full text-sm text-center">
+                    <thead class="bg-green-700 text-white text-xs">
+                        <tr>
+                            <th class="p-2">Concepto</th>
+                            <th class="p-2">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
-        tbody.insertAdjacentHTML('beforeend', filaTotales);
 
-        // Mostrar el modal
-        window.dispatchEvent(new CustomEvent('open-modal', { detail: 'modalPagos-modal' }));
-
-    } catch (error) {
-        Swal.close();
-        Swal.fire('Error', 'No se pudo obtener la información de los pagos.', 'error');
-        console.error(error);
-    }
-}
-
-async function mostrarPagosOtroSi(id, nombreOtroSi, pazSalvo) {
-    try {
-        Swal.fire({
-            title: 'Cargando pagos...',
-            text: 'Por favor espera',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
+        data.resumen.items.forEach(r => {
+            resumenHTML += `
+                <tr class="border-t">
+                    <td class="p-2">${r.concepto}</td>
+                    <td class="p-2">$${formatMoney(r.valor_total)}</td>
+                </tr>`;
         });
 
-        document.getElementById('tipo').value = 2;
-        document.getElementById('proyecto_id').value = id;
-        const response = await fetch(`pagosOtroSi/${id}`);
-        const result = await response.json();
-        Swal.close();
-
-        if (!result.status) {
-            Swal.fire('Error', result.message, 'error');
-            return;
-        }
-
-        const data = result.data.pagado;
-        const totalDeve = Number(result.data.totalDeve);
-        const totalPago = result.data.totalPago;
-
-        if(pazSalvo == 1){
-            document.getElementById('formPago').classList.add('hidden');
-        } else {
-            document.getElementById('formPago').classList.remove('hidden');
-        }
-
-        document.getElementById('txTitulo').textContent = `Pagos de ${nombreOtroSi}`;
-        const divselect = document.getElementById('id_concepto');
-        divselect.classList.add('hidden');
-        const select = document.getElementById('concepto');
-        select.disabled = true;
-
-        const contenedor = document.getElementById('tablaPagos');
-        const tablaHTML = `
-        <table class="w-full text-sm text-gray-700">
-            <thead class="bg-green-700 text-white text-center uppercase">
-                <tr>
-                    <th class="px-2 py-2">Recibo De Caja</th>
-                    <th class="px-2 py-2">Factura de Venta</th>
-                    <th class="px-2 py-2">Valor Pagado</th>
-                    <th class="px-2 py-2">Fecha de Pago</th>
-                    <th class="px-2 py-2">Comentario</th>
-                    <th class="px-2 py-2">Opciones</th>
+        resumenHTML += `
+                <tr class="bg-gray-100 font-semibold">
+                    <td>Total Proyecto</td>
+                    <td>$${formatMoney(data.resumen.total_proyecto)}</td>
                 </tr>
-            </thead>
-            <tbody id="bodyTablaPagos" class="divide-y divide-gray-100 text-center"></tbody>
-        </table>
+                <tr class="bg-gray-100 font-semibold">
+                    <td>Total Pagado</td>
+                    <td>$${formatMoney(data.resumen.total_pagado)}</td>
+                </tr>
+                <tr class="bg-gray-100 font-semibold text-red-600">
+                    <td>Saldo</td>
+                    <td>$${formatMoney(data.resumen.saldo)}</td>
+                </tr>
+            </tbody></table></div>
         `;
-        contenedor.innerHTML = tablaHTML;
 
-        const tbody = document.getElementById('bodyTablaPagos');
-        tbody.innerHTML = '';
-
-        if (!data || data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="py-4 text-gray-500 text-center italic">
-                        No hay pagos registrados.
-                    </td>
-                </tr>`;
-        } else {
-            data.forEach(pago => {
-                const fila = `
-                    <tr class="hover:bg-gray-50 transition-all">
-                        <th class="px-2 py-1 text-center">${pago.rc}</th>
-                        <th class="px-2 py-1 text-center">${pago.fv??''}</th>
-                        <td class="px-2 py-1 text-center">$${pago.valor_pagado.toLocaleString()}</td>
-                        <td class="px-2 py-1 text-center">$${pago.fecha_pago}</td>
-                        <td class="px-2 py-1 text-center w-50">${pago.comentario || '-'}</td>
-                        <td class="px-2 py-1 text-center">
-                            <a onclick="deletePago(${pago.id})"
-                                class="inline-flex items-center justify-center w-9 h-9 rounded-full border-2 bg-red-600 hover:bg-red-700 border-red-700 focus:ring-red-300 text-white transition-all focus:ring-2 focus:ring-offset-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </a>
-                        </td>
-                    </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', fila);
-            });
-        }
-
-        // Calcular saldo pendiente
-        const saldoPendiente =  totalDeve - totalPago;
-
-        // Fila de totales
-        const filaTotales = `
-            <tr class="bg-gray-100 font-semibold border-t">
-                <td colspan="2" class="py-3 px-4 text-right text-gray-700">Total A Pagar: $${totalDeve.toLocaleString()}</td>
-                <td colspan="2" class="py-3 px-4 text-right text-gray-700">Total Pagado: $${totalPago.toLocaleString()}</td>
-                <td colspan="2" class="py-3 px-4 text-right">
-                    <span class="text-gray-600">Saldo pendiente:</span>
-                    <span class="font-bold text-red-600 ml-2">$${saldoPendiente.toLocaleString()}</span>
-                </td>
-            </tr>
+        // =========================
+        // RELACIÓN DE PAGOS
+        // =========================
+        let relacionHTML = `
+        <div class="rounded-xl border shadow bg-white p-4 overflow-x-auto">
+            <h2 class="font-semibold mb-3">Relación de pagos</h2>
+            <table class="w-full text-sm text-center">
+                <thead class="bg-green-700 text-white text-xs">
+                    <tr>
+                        <th>Concepto</th>
         `;
-        tbody.insertAdjacentHTML('beforeend', filaTotales);
 
-        // Mostrar el modal
-        window.dispatchEvent(new CustomEvent('open-modal', { detail: 'modalPagos-modal' }));
+        data.porcentajes.forEach(p => {
+            relacionHTML += `<th>${p}%</th>`;
+        });
 
-    } catch (error) {
-        Swal.close();
-        Swal.fire('Error', 'No se pudo obtener la información de los pagos.', 'error');
-        console.error(error);
+        relacionHTML += `</tr></thead><tbody>`;
+
+        relacionHTML += `<tr class="border-t">
+            <td>Contrato</td>`;
+        data.relacion_pagos.contrato.forEach(v => {
+            relacionHTML += `<td>$${formatMoney(v)}</td>`;
+        });
+        relacionHTML += `</tr>`;
+
+        relacionHTML += `<tr class="border-t font-semibold">
+            <td>Pagado</td>`;
+        data.relacion_pagos.totales.forEach(v => {
+            relacionHTML += `<td>$${formatMoney(v)}</td>`;
+        });
+        relacionHTML += `</tr>`;
+
+        relacionHTML += `</tbody></table></div></div>`;
+
+        div.innerHTML = pagosHTML + resumenHTML + relacionHTML;
+
+    } catch (e) {
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo cargar la cartera'
+        });
+
+        console.error(e);
     }
 }
+
+// =========================
+// FORMATO DINERO
+// =========================
+function formatMoney(value) {
+    return new Intl.NumberFormat('es-CO').format(value);
+}
+
 
 document.getElementById('formPago').addEventListener('submit', async function (e) {
     e.preventDefault();

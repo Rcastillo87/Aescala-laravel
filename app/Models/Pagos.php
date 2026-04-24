@@ -78,4 +78,6 @@ class Pagos extends Model
         return $pagado >= $totalDebe;
     }
 
+
+
 }

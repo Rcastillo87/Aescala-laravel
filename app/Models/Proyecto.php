@@ -363,18 +363,20 @@ class Proyecto extends Model
         return $this->pagos()->where(['tipo_pago' => 1])->sum('valor_pagado');
     }
 
+    public static $porcenTX = [
+        1 => 'correspondiente al inicio de la etapa de diseño.',
+        2 => 'correspondiente a la aprobación del diseño para dar inicio a la obra.',
+        3 => 'correspondiente al corte de carpintería.',
+        4 => 'correspondiente al inicio de la instalación de carpintería.',
+        5 => 'correspondiente al inicio de la instalación de accesorios, grifería y mesón.',
+        6 => 'correspondiente al pago final por la entrega de la obra.',
+    ];
+
     public function getPagosAttribute()
     {
         $arrayPagos = [];
         $total = $this->total;
-        $txtArr = [
-            1 => 'correspondiente al inicio de la etapa de diseño.',
-            2 => 'correspondiente a la aprobación del diseño para dar inicio a la obra.',
-            3 => 'correspondiente al corte de carpintería.',
-            4 => 'correspondiente al inicio de la instalación de carpintería.',
-            5 => 'correspondiente al inicio de la instalación de accesorios, grifería y mesón.',
-            6 => 'correspondiente al pago final por la entrega de la obra.',
-        ];
+        $txtArr = self::$porcenTX;
 
         for ($i = 1; $i <= 6; $i++) {
             $campo = "termino_{$i}_por";

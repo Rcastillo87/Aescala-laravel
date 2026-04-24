@@ -164,8 +164,7 @@ return [
 
         // ── cartera.* ──────────────────────────────────────────
         'cartera.index'             => ['isAdmin', 'iscartera'],
-        'cartera.pagos'             => ['isAdmin', 'iscartera'],
-        'cartera.pagosOtroSi'       => ['isAdmin', 'iscartera'],
+        'cartera.pagosProyecto'     => ['isAdmin', 'iscartera'],
         'cartera.save'              => ['isAdmin', 'iscartera'],
         'cartera.reciboPDF'         => ['isAdmin', 'iscartera'],
         'cartera.deletePago'        => ['isAdmin', 'iscartera'],
