@@ -53,6 +53,33 @@ document.addEventListener("DOMContentLoaded", function(event) {
  });
 
 
+function renderSelectConcepto(select) {
+    const select = document.getElementById('concepto');
+    if (!select) return;
+    select.innerHTML = `
+        <option value="">Seleccione un concepto</option>
+    `;
+
+    if (Array.isArray(select)) {
+        data.select.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.campo??'';
+            option.textContent = item.msg;
+            option.dataset.tipoPago = item.tipo_pago;
+            select.appendChild(option);
+        });
+    }
+
+    select.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const tipoPago = selectedOption.dataset.tipoPago || '';
+        const inputTipoPago = document.getElementById('tipo_pago');
+        if (inputTipoPago) {
+            inputTipoPago.value = tipoPago;
+        }
+    });
+}
+
 async function loadCartera(id) {
     try {
         Swal.fire({
@@ -76,6 +103,7 @@ async function loadCartera(id) {
 
         const data = response.data;
         const div = document.getElementById('divCartera');
+        renderSelectConcepto(data);
         div.innerHTML = '';
 
         /*
