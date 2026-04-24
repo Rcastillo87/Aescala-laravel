@@ -39,7 +39,7 @@ class CarteraController extends Controller
     {
         Gate::authorize('cartera.save');
         $val = [
-            'proyecto_id'  => ['required', 'integer', Rule::exists('proyectos', 'id')],
+            'id_proyecto'  => ['required', 'integer', Rule::exists('proyectos', 'id')],
             'id_tipo'         => 'required|integer',
             'tipo'         => 'required|integer|in:1,2',
             'valor_pagado' => 'required|numeric|min:0',
@@ -71,12 +71,12 @@ class CarteraController extends Controller
             DB::beginTransaction();
 
             $rc = Pagos::where([
-                'id_proyecto'  => $request->proyecto_id,
+                'id_proyecto'  => $request->id_proyecto,
                 'tipo_pago'    => $request->tipo,
             ])->max('rc') + 1;
 
             $pago = Pagos::create([
-                'id_proyecto'  => $request->proyecto_id,
+                'id_proyecto'  => $request->id_proyecto,
                 'tipo_pago'    => $request->tipo,
                 'id_tipo'      => $request->id_tipo,
                 'valor_pagado' => $request->valor_pagado,
@@ -89,11 +89,11 @@ class CarteraController extends Controller
             ]);
 
             if ($pago->valance && $request->tipo == 1) {
-                Proyecto::find($request->proyecto_id)->update(['paz_salvo' => 1]);
+                Proyecto::find($request->id_proyecto)->update(['paz_salvo' => 1]);
             }
 
             if ($pago->valanceOtroSi && $request->tipo == 2) {
-                Otrosi::find($request->proyecto_id)->update(['paz_salvo' => 1]);
+                Otrosi::find($request->id_proyecto)->update(['paz_salvo' => 1]);
             }
 
             DB::commit();
