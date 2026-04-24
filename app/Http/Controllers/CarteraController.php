@@ -114,128 +114,136 @@ class CarteraController extends Controller
     public function pagosProyecto($id)
     {
         Gate::authorize('cartera.pagosProyecto');
-
-        $proyecto = Proyecto::with('otro_si')->findOrFail($id);
-        $selectPro = $proyecto->pagos;
-        $selectOtrosi = $proyecto->otro_si()->get()
-            ->map(function ($item) {
-                return [
-                    'msg' => "Otro Si N° " . $item->numero,
-                    'campo' => '',
-                    'tipo_pago' => 2
-                ];
-            });
-
-        $select = array_merge($selectPro, $selectOtrosi);
-
-        $porcentProyec = [
-            $proyecto->termino_1_por,
-            $proyecto->termino_2_por,
-            $proyecto->termino_3_por,
-            $proyecto->termino_4_por,
-            $proyecto->termino_5_por,
-            $proyecto->termino_6_por,
-        ];
-
-        $valProyecto = $proyecto->total;
-        $contraProyec = [
-            "id_proyecto" => $id,
-            "id_pago" => $id,
-            "tipo" => 1,
-            "concepto" => "Contrato Proyecto",
-            "valor_total" => $valProyecto
-        ];
-        $contraOtrosi = $proyecto->otro_si()
-            ->where('estado', 1)
-            ->get()
-            ->map(function ($item) use ($id) {
-                return [
-                    "id_proyecto" => $id,
-                    "id_pago" => $item->id,
-                    "tipo" => 2,
-                    "concepto" => "Otro Si N° " . $item->numero,
-                    "valor_total" => $item->total_deve,
-                ];
-            })
-            ->toArray();
-        $contratos = array_merge([$contraProyec], $contraOtrosi);
-
-        $valTotalPagado = Pagos::where('id_proyecto', $id)->sum('valor_pagado');
-        
-        $porcenTx = Proyecto::$porcenTX;
-        $pagos = Pagos::with(['proyecto', 'otro_si'])
-            ->where('id_proyecto', $id)
-            ->get()
-            ->map(function ($item) use ($porcenTx) {
-                if ($item->tipo_pago == 1) {
-                    $campo = "termino_{$item->concepto}_por";
-                    $concepto = 'Porcentaje: '
-                        . ($item->proyecto?->$campo ?? 0)
-                        . '% '
-                        . ($porcenTx[$item->concepto] ?? '');
-                } else {
-                    $concepto = 'Otro Sí N° '
-                        . ($item->otro_si?->numero ?? '');
-                }
-                return [
-                    "id" => $item->id,
-                    "id_proyecto" => $item->id_proyecto,
-                    "id_pago" => $item->id_pago,
-                    "tipo_pago" => $item->tipo_pago,
-                    "concepto" => $concepto,
-                    "valor_pago" => $item->valor_pagado,
-                    "factura" => $item->fv,
-                    "fecha_pago" => $item->fecha_pago,
-                    "comentarios" => $item->comentario,
-                ];
-            })
-            ->toArray();
-
-        $pagosAgrupados = Pagos::selectRaw('
-                concepto,
-                id_proyecto,
-                SUM(valor_pagado) as total_pagado
-            ')
-            ->where([
-                'tipo_pago' => 1,
-                'id_proyecto' => $id
-            ])
-            ->groupBy('concepto', 'id_proyecto')
-            ->get()
-            ->keyBy('concepto');
-        
-        $agrupadoPagosProyecto = [
-            'Contrato',
-            $pagosAgrupados->get(1)?->total_pagado ?? 0,
-            $pagosAgrupados->get(2)?->total_pagado ?? 0,
-            $pagosAgrupados->get(3)?->total_pagado ?? 0,
-            $pagosAgrupados->get(4)?->total_pagado ?? 0,
-            $pagosAgrupados->get(5)?->total_pagado ?? 0,
-            $pagosAgrupados->get(6)?->total_pagado ?? 0,
-        ];
-
-        $agrupadoPagosOtrosi = Otrosi::whereHas('pagos')
-            ->where('id_proyecto', $id)
-            ->orderBy('id', 'desc')
-            ->get()
-            ->map(function ($item) {
-                return array_merge(['Otro Sí N° ' . $item->numero], $item->pagos->pluck('valor_pagado')->toArray());
-            })
-            ->toArray();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Consulta exitosa',
-            'data' => [
-                "pagos" => $pagos,
-                "total_pagos" => Pagos::where('id_proyecto', $id)->sum('valor_pagado'),
-                "resumen" => $contratos,
-                "total_proyecto" => $valProyecto,
-                "total_pagado" => $valTotalPagado,
-                "porcentajes" => $porcentProyec,
-                "relacion_pagos" => array_merge($agrupadoPagosProyecto, $agrupadoPagosOtrosi)
-            ]
-        ], 200);
+        try {
+            $proyecto = Proyecto::with('otro_si')->findOrFail($id);
+            $selectPro = $proyecto->pagos;
+            $selectOtrosi = $proyecto->otro_si()->get()
+                ->map(function ($item) {
+                    return [
+                        'msg' => "Otro Si N° " . $item->numero,
+                        'campo' => '',
+                        'tipo_pago' => 2
+                    ];
+                });
+    
+            $select = array_merge($selectPro, $selectOtrosi);
+    
+            $porcentProyec = [
+                $proyecto->termino_1_por,
+                $proyecto->termino_2_por,
+                $proyecto->termino_3_por,
+                $proyecto->termino_4_por,
+                $proyecto->termino_5_por,
+                $proyecto->termino_6_por,
+            ];
+    
+            $valProyecto = $proyecto->total;
+            $contraProyec = [
+                "id_proyecto" => $id,
+                "id_pago" => $id,
+                "tipo" => 1,
+                "concepto" => "Contrato Proyecto",
+                "valor_total" => $valProyecto
+            ];
+            $contraOtrosi = $proyecto->otro_si()
+                ->where('estado', 1)
+                ->get()
+                ->map(function ($item) use ($id) {
+                    return [
+                        "id_proyecto" => $id,
+                        "id_pago" => $item->id,
+                        "tipo" => 2,
+                        "concepto" => "Otro Si N° " . $item->numero,
+                        "valor_total" => $item->total_deve,
+                    ];
+                })
+                ->toArray();
+            $contratos = array_merge([$contraProyec], $contraOtrosi);
+    
+            $valTotalPagado = Pagos::where('id_proyecto', $id)->sum('valor_pagado');
+            
+            $porcenTx = Proyecto::$porcenTX;
+            $pagos = Pagos::with(['proyecto', 'otro_si'])
+                ->where('id_proyecto', $id)
+                ->get()
+                ->map(function ($item) use ($porcenTx) {
+                    if ($item->tipo_pago == 1) {
+                        $campo = "termino_{$item->concepto}_por";
+                        $concepto = 'Porcentaje: '
+                            . ($item->proyecto?->$campo ?? 0)
+                            . '% '
+                            . ($porcenTx[$item->concepto] ?? '');
+                    } else {
+                        $concepto = 'Otro Sí N° '
+                            . ($item->otro_si?->numero ?? '');
+                    }
+                    return [
+                        "id" => $item->id,
+                        "id_proyecto" => $item->id_proyecto,
+                        "id_pago" => $item->id_pago,
+                        "tipo_pago" => $item->tipo_pago,
+                        "concepto" => $concepto,
+                        "valor_pago" => $item->valor_pagado,
+                        "factura" => $item->fv,
+                        "fecha_pago" => $item->fecha_pago,
+                        "comentarios" => $item->comentario,
+                    ];
+                })
+                ->toArray();
+    
+            $pagosAgrupados = Pagos::selectRaw('
+                    concepto,
+                    id_proyecto,
+                    SUM(valor_pagado) as total_pagado
+                ')
+                ->where([
+                    'tipo_pago' => 1,
+                    'id_proyecto' => $id
+                ])
+                ->groupBy('concepto', 'id_proyecto')
+                ->get()
+                ->keyBy('concepto');
+            
+            $agrupadoPagosProyecto = [
+                'Contrato',
+                $pagosAgrupados->get(1)?->total_pagado ?? 0,
+                $pagosAgrupados->get(2)?->total_pagado ?? 0,
+                $pagosAgrupados->get(3)?->total_pagado ?? 0,
+                $pagosAgrupados->get(4)?->total_pagado ?? 0,
+                $pagosAgrupados->get(5)?->total_pagado ?? 0,
+                $pagosAgrupados->get(6)?->total_pagado ?? 0,
+            ];
+    
+            $agrupadoPagosOtrosi = Otrosi::whereHas('pagos')
+                ->where('id_proyecto', $id)
+                ->orderBy('id', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    return array_merge(['Otro Sí N° ' . $item->numero], $item->pagos->pluck('valor_pagado')->toArray());
+                })
+                ->toArray();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Consulta exitosa',
+                'data' => [
+                    "pagos" => $pagos,
+                    "total_pagos" => Pagos::where('id_proyecto', $id)->sum('valor_pagado'),
+                    "resumen" => $contratos,
+                    "total_proyecto" => $valProyecto,
+                    "total_pagado" => $valTotalPagado,
+                    "porcentajes" => $porcentProyec,
+                    "relacion_pagos" => array_merge($agrupadoPagosProyecto, $agrupadoPagosOtrosi)
+                ]
+            ], 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => 'Error al consultar pagos.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function certificadoPZPDF($idProyecto, $tipo)
