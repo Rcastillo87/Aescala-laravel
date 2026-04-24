@@ -55,9 +55,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 async function loadCartera(id) {
     try {
-        // =========================
-        // LOADING SWEETALERT
-        // =========================
         Swal.fire({
             title: 'Cargando...',
             text: 'Obteniendo información de la cartera',
@@ -81,9 +78,12 @@ async function loadCartera(id) {
         const div = document.getElementById('divCartera');
         div.innerHTML = '';
 
-        // =========================
-        // TABLA DE PAGOS
-        // =========================
+        /*
+        =====================================
+        TABLA DE PAGOS REALIZADOS
+        =====================================
+        */
+
         let pagosHTML = `
             <div class="mb-6">
                 <h2 class="text-lg font-semibold mb-3">
@@ -109,7 +109,7 @@ async function loadCartera(id) {
             data.pagos.forEach(item => {
                 pagosHTML += `
                     <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3">${item.concepto}</td>
+                        <td class="p-3">${item.concepto ?? '--'}</td>
                         <td class="p-3">$${formatMoney(item.valor_pago)}</td>
                         <td class="p-3">${item.factura ?? '--'}</td>
                         <td class="p-3">${item.fecha_pago ?? '--'}</td>
@@ -153,9 +153,12 @@ async function loadCartera(id) {
             </div>
         `;
 
-        // =========================
-        // RESUMEN TOTAL
-        // =========================
+        /*
+        =====================================
+        RESUMEN GENERAL
+        =====================================
+        */
+
         let resumenHTML = `
             <div class="grid md:grid-cols-2 gap-5 mb-6">
                 <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4">
@@ -173,40 +176,47 @@ async function loadCartera(id) {
                         <tbody>
         `;
 
-        data.resumen.forEach(item => {
-            resumenHTML += `
-                <tr class="border-t">
-                    <td class="p-3">${item.concepto}</td>
-                    <td class="p-3">$${formatMoney(item.valor_total)}</td>
-                </tr>
-            `;
-        });
+        if (data.resumen.length > 0) {
+            data.resumen.forEach(item => {
+                resumenHTML += `
+                    <tr class="border-t">
+                        <td class="p-3">${item.concepto}</td>
+                        <td class="p-3">$${formatMoney(item.valor_total)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        const saldoPendiente =
+            (Number(data.total_proyecto) || 0) -
+            (Number(data.total_pagado) || 0);
 
         resumenHTML += `
-                <tr class="bg-gray-100 font-semibold">
-                    <td>Total Proyecto</td>
-                    <td>$${formatMoney(data.total_proyecto)}</td>
-                </tr>
+                    <tr class="bg-gray-100 font-semibold">
+                        <td class="p-3">Total Proyecto</td>
+                        <td class="p-3">$${formatMoney(data.total_proyecto)}</td>
+                    </tr>
 
-                <tr class="bg-gray-100 font-semibold">
-                    <td>Total Pagado</td>
-                    <td>$${formatMoney(data.total_pagado)}</td>
-                </tr>
+                    <tr class="bg-gray-100 font-semibold">
+                        <td class="p-3">Total Pagado</td>
+                        <td class="p-3">$${formatMoney(data.total_pagado)}</td>
+                    </tr>
 
-                <tr class="bg-gray-100 font-semibold text-red-600">
-                    <td>Saldo Pendiente</td>
-                    <td>$${formatMoney(
-                        data.total_proyecto - data.total_pagado
-                    )}</td>
-                </tr>
-            </tbody>
+                    <tr class="bg-gray-100 font-semibold text-red-600">
+                        <td class="p-3">Saldo Pendiente</td>
+                        <td class="p-3">$${formatMoney(saldoPendiente)}</td>
+                    </tr>
+                </tbody>
             </table>
-            </div>
+        </div>
         `;
 
-        // =========================
-        // RELACIÓN DE PAGOS
-        // =========================
+        /*
+        =====================================
+        RELACIÓN DE PAGOS
+        =====================================
+        */
+
         let relacionHTML = `
             <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4 overflow-x-auto">
                 <h2 class="text-lg font-semibold mb-3">
@@ -219,13 +229,16 @@ async function loadCartera(id) {
                             <th class="p-3">Concepto</th>
         `;
 
-        data.porcentajes.forEach(porcentaje => {
-            relacionHTML += `
-                <th class="p-3">
-                    ${porcentaje ? porcentaje + '%' : ''}
-                </th>
-            `;
-        });
+        // encabezados porcentajes contrato
+        if (Array.isArray(data.porcentajes)) {
+            data.porcentajes.forEach(porcentaje => {
+                relacionHTML += `
+                    <th class="p-3">
+                        ${porcentaje ? porcentaje + '%' : ''}
+                    </th>
+                `;
+            });
+        }
 
         relacionHTML += `
                         </tr>
@@ -233,28 +246,37 @@ async function loadCartera(id) {
                     <tbody>
         `;
 
-        // Contrato principal
-        data.relacion_pagos.forEach(item => {
-            relacionHTML += `<tr class="border-t">`;
+        if (Array.isArray(data.relacion_pagos) && data.relacion_pagos.length > 0) {
+            data.relacion_pagos.forEach(item => {
+                relacionHTML += `<tr class="border-t">`;
 
-            item.forEach((valor, index) => {
-                if (index === 0) {
-                    relacionHTML += `
-                        <td class="p-3 font-medium">
-                            ${valor}
-                        </td>
-                    `;
-                } else {
-                    relacionHTML += `
-                        <td class="p-3">
-                            $${formatMoney(valor)}
-                        </td>
-                    `;
-                }
+                item.forEach((valor, index) => {
+                    if (index === 0) {
+                        relacionHTML += `
+                            <td class="p-3 font-medium">
+                                ${valor}
+                            </td>
+                        `;
+                    } else {
+                        relacionHTML += `
+                            <td class="p-3">
+                                $${formatMoney(valor)}
+                            </td>
+                        `;
+                    }
+                });
+
+                relacionHTML += `</tr>`;
             });
-
-            relacionHTML += `</tr>`;
-        });
+        } else {
+            relacionHTML += `
+                <tr>
+                    <td colspan="7" class="p-4 text-center">
+                        No hay relación de pagos
+                    </td>
+                </tr>
+            `;
+        }
 
         relacionHTML += `
                     </tbody>
@@ -277,7 +299,9 @@ async function loadCartera(id) {
 }
 
 function formatMoney(value) {
-    return new Intl.NumberFormat('es-CO').format(value || 0);
+    return new Intl.NumberFormat('es-CO').format(
+        Number(value) || 0
+    );
 }
 
 
