@@ -63,7 +63,8 @@ class Otrosi extends Model
 
     public function pagos()
     {
-        return $this->hasMany(Pagos::class, 'id_proyecto', 'id');
+        return $this->hasMany(Pagos::class, 'id_pago', 'id')
+            ->where('tipo_pago', 2);
     }
 
     public function getTokenEncripAttribute()
@@ -160,7 +161,10 @@ class Otrosi extends Model
 
     public function getTotalPagoAttribute()
     {
-        return $this->pagos()->where(['id_proyecto' => $this->id, 'tipo_pago' => 2])->sum('valor_pagado');
+        return $this->pagos()->where([
+            'id_pago' => $this->id,
+            'tipo_pago' => 2
+        ])->sum('valor_pagado');
     }
 
     public function getApazAttribute()
