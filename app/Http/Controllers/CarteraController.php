@@ -15,6 +15,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class CarteraController extends Controller
 {
@@ -38,18 +39,16 @@ class CarteraController extends Controller
     {
         Gate::authorize('cartera.save');
         $val = [
-            'proyecto_id'  => 'required|integer',
+            'proyecto_id'  => ['required', 'integer', Rule::exists('proyectos', 'id')],
+            'id_tipo'         => 'required|integer',
             'tipo'         => 'required|integer|in:1,2',
             'valor_pagado' => 'required|numeric|min:0',
             'comentario'   => 'nullable|string|max:500',
             'fv'           => 'nullable|string|max:20',
             'fecha_pago'   => 'required|date',
+            'concepto'     => 'nullable|integer|between:1,6'
         ];
-
-        if($request->tipo == 1){
-            $val = array_merge($val, ['concepto'     => 'required|integer|between:1,6']);
-        }
-
+        
         $validator = Validator::make($request->all(), $val, [
             'required' => 'Este campo es obligatorio.',
             'integer'  => 'Debe ser un número válido.',
@@ -79,6 +78,7 @@ class CarteraController extends Controller
             $pago = Pagos::create([
                 'id_proyecto'  => $request->proyecto_id,
                 'tipo_pago'    => $request->tipo,
+                'id_tipo'      => $request->id_tipo,
                 'valor_pagado' => $request->valor_pagado,
                 'fecha_pago'   => $request->fecha_pago,
                 'comentario'   => $request->comentario ?? '',
