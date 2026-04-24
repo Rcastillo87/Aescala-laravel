@@ -167,21 +167,61 @@ class CarteraController extends Controller
             })
             ->toArray();
 
-        $contratos = array_merge($contraProyec, $contraOtrosi);
+        $contratos = array_merge([$contraProyec], $contraOtrosi);
+
+        $pagosAgrupados = Pagos::selectRaw('
+                concepto,
+                id_proyecto,
+                SUM(valor_pagado) as total_pagado
+            ')
+            ->where([
+                'tipo_pago' => 1,
+                'id_proyecto' => $id
+            ])
+            ->groupBy('concepto', 'id_proyecto')
+            ->get()
+            ->keyBy('concepto');
+        
+        $agrupadoPagosProyecto = [
+            'Contrato',
+            $pagosAgrupados->get(1)?->total_pagado ?? 0,
+            $pagosAgrupados->get(2)?->total_pagado ?? 0,
+            $pagosAgrupados->get(3)?->total_pagado ?? 0,
+            $pagosAgrupados->get(4)?->total_pagado ?? 0,
+            $pagosAgrupados->get(5)?->total_pagado ?? 0,
+            $pagosAgrupados->get(6)?->total_pagado ?? 0,
+        ];
+
+        $agrupadoPagosOtrosi = Otrosi::with([
+                'pagos' => function ($q) {
+                    $q->where('tipo_pago', 2)
+                      ->orderBy('fecha_pago', 'desc');
+                }
+            ])
+            ->where('id_proyecto', $id)
+            ->orderBy('id_proyecto', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'Otro Sí N° ' . $item->numero,
+                    $item->pagos->pluck('valor_pagado')->toArray()
+                ];
+            })
+            ->toArray();
 
         return response()->json([
             'status' => true,
             'message' => 'Consulta exitosa',
             'data' => [
                 "pagos" => $pagos,
-                "total_pagos" => Pagos::sum('valor_pagado'),
+                "total_pagos" => Pagos::where('id_proyecto', $id)->sum('valor_pagado'),
                 "resumen" => $contratos,
                 "total_proyecto" => $valProyecto,
                 "total_pagado" => $valTotalPagado,
                 "porcentajes" => $porcentProyec,
                 "relacion_pagos" => [
-                    "contrato" => [400000, 800000, 1200000, 1600000, 2000000],
-                    "totales" => [100000, 200000, 300000, 400000, 500000]
+                    $pagosAgrupados,
+                    $agrupadoPagosOtrosi
                 ]
             ]
         ], 200);
