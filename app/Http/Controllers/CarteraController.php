@@ -124,7 +124,7 @@ class CarteraController extends Controller
                         'campo' => '',
                         'tipo_pago' => 2
                     ];
-                });
+                })->toArray();
     
             $select = array_merge($selectPro, $selectOtrosi);
     
