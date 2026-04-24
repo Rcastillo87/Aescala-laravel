@@ -384,6 +384,7 @@ class Proyecto extends Model
                 $arrayPagos[] = [
                     'msg' => "Pago del {$porcentaje}% - {$txtArr[$i]}",
                     'campo' => $i,
+                    'tipo_pago' => 1
                 ];
             }
         }
