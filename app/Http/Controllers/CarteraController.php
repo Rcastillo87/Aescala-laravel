@@ -120,6 +120,7 @@ class CarteraController extends Controller
             $selectOtrosi = $proyecto->otro_si()->get()
                 ->map(function ($item) {
                     return [
+                        'id_tipo' => $item->id,
                         'msg' => "Otro Si N° " . $item->numero,
                         'campo' => '',
                         'tipo_pago' => 2
