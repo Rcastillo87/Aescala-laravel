@@ -73,7 +73,7 @@ function renderSelectConcepto(select) {
     select.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
         const tipoPago = selectedOption.dataset.tipoPago || '';
-        const inputTipoPago = document.getElementById('tipo_pago');
+        const inputTipoPago = document.getElementById('tipo');
         if (inputTipoPago) {
             inputTipoPago.value = tipoPago;
         }
