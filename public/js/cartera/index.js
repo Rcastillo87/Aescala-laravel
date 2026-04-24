@@ -65,6 +65,7 @@ function renderSelectConcepto(data) {
             option.textContent = item.msg;
             // Guardamos el tipo de pago en el dataset
             option.dataset.tipoPago = item.tipo_pago ?? '';
+            option.dataset.id_tipo = item.id_tipo;
             selectElement.appendChild(option);
         });
     }
@@ -72,9 +73,14 @@ function renderSelectConcepto(data) {
     selectElement.onchange = function () {
         const selectedOption = this.options[this.selectedIndex];
         const tipoPago = selectedOption ? (selectedOption.dataset.tipoPago || '') : '';
+        const idTipo = selectedOption ? (selectedOption.dataset.idTipo || '') : '';
         const inputTipoPago = document.getElementById('tipo');
         if (inputTipoPago) {
             inputTipoPago.value = tipoPago;
+        }
+        const inputidTipo = document.getElementById('id_tipo');
+        if (inputidTipo) {
+            inputidTipo.value = idTipo;
         }
     };
 }
