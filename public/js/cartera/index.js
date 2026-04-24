@@ -52,36 +52,39 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
  });
 
-
 function renderSelectConcepto(data) {
     const selectElement = document.getElementById('concepto');
     if (!selectElement) return;
+
+    // Limpiamos el select
     selectElement.innerHTML = '<option value="">Seleccione un concepto</option>';
 
     if (data && Array.isArray(data)) {
         data.forEach(item => {
             const option = document.createElement('option');
-            option.value = item.campo ?? '';
+            option.value = (item.tipo_pago === 1) ? item.campo : item.id_tipo;
             option.textContent = item.msg;
-            // Guardamos el tipo de pago en el dataset
             option.dataset.tipoPago = item.tipo_pago ?? '';
-            option.dataset.id_tipo = item.id_tipo;
+            option.dataset.idTipo = item.id_tipo ?? ''; 
             selectElement.appendChild(option);
         });
     }
 
+    // Evento para actualizar los inputs ocultos
     selectElement.onchange = function () {
         const selectedOption = this.options[this.selectedIndex];
-        const tipoPago = selectedOption ? (selectedOption.dataset.tipoPago || '') : '';
-        const idTipo = selectedOption ? (selectedOption.dataset.idTipo || '') : '';
+        if (!selectedOption || selectedOption.value === "") {
+            document.getElementById('tipo').value = "";
+            document.getElementById('id_tipo').value = "";
+            return;
+        }
+
+        const tipoPago = selectedOption.dataset.tipoPago || '';
+        const idTipo = selectedOption.dataset.idTipo || '';
         const inputTipoPago = document.getElementById('tipo');
-        if (inputTipoPago) {
-            inputTipoPago.value = tipoPago;
-        }
+        if (inputTipoPago) inputTipoPago.value = tipoPago;
         const inputidTipo = document.getElementById('id_tipo');
-        if (inputidTipo) {
-            inputidTipo.value = idTipo;
-        }
+        if (inputidTipo) inputidTipo.value = idTipo;
     };
 }
 
