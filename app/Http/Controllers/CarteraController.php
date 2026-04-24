@@ -233,7 +233,8 @@ class CarteraController extends Controller
                     "total_proyecto" => $valProyecto,
                     "total_pagado" => $valTotalPagado,
                     "porcentajes" => $porcentProyec,
-                    "relacion_pagos" => array_merge($agrupadoPagosProyecto, $agrupadoPagosOtrosi)
+                    "relacion_pagos" => array_merge($agrupadoPagosProyecto, $agrupadoPagosOtrosi),
+                    "select" => $select
                 ]
             ], 200);
         } catch (\Throwable $e) {
