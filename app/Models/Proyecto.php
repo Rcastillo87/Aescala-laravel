@@ -375,18 +375,15 @@ class Proyecto extends Model
     public function getPagosAttribute()
     {
         $arrayPagos = [];
-        $total = $this->total;
         $txtArr = self::$porcenTX;
 
         for ($i = 1; $i <= 6; $i++) {
             $campo = "termino_{$i}_por";
-            if (!empty($this->$campo) && $this->$campo > 0) {
+            if (!empty($this->$campo) && $this->$campo >= 0) {
                 $porcentaje = $this->$campo;
                 $arrayPagos[] = [
                     'msg' => "Pago del {$porcentaje}% - {$txtArr[$i]}",
-                    'termino' => $i,
-                    'porcentaje' => $porcentaje,
-                    'valor_apagar' => ceil($total * $porcentaje / 100),
+                    'campo' => $i,
                 ];
             }
         }
