@@ -214,10 +214,7 @@ async function loadCartera(id) {
         `;
 
         if (data.resumen.length > 0) {
-
-
             data.resumen.forEach(item => {
-
                 const btnPZ = `<a data-tooltip-target="tooltip-hover-pz-${item.tipo}-${item.id_pago}" data-tooltip-trigger="hover" href="/cartera/certificadoPZPDF/${item.id_pago}/${item.tipo}" target="_blank"
                         class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4
                             focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -265,24 +262,36 @@ async function loadCartera(id) {
             (Number(data.total_pagado) || 0);
 
         resumenHTML += `
-                    <tr class="bg-gray-100 font-semibold">
-                        <td class="p-3">Total Proyecto</td>
-                        <td class="p-3">${formatCurrency(data.total_proyecto)}</td>
-                    </tr>
-
-                    <tr class="bg-gray-100 font-semibold">
-                        <td class="p-3">Total Pagado</td>
-                        <td class="p-3">${formatCurrency(data.total_pagado)}</td>
-                    </tr>
-
-                    <tr class="bg-gray-100 font-semibold text-red-600">
-                        <td class="p-3">Saldo Pendiente</td>
-                        <td class="p-3">${formatCurrency(saldoPendiente)}</td>
-                    </tr>
                 </tbody>
             </table>
-        </div>
-        `;
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+                <div class="rounded-xl border border-gray-200 shadow-sm bg-white p-4">
+                    <p class="text-sm text-gray-500 font-medium">
+                        Total Proyecto
+                    </p>
+                    <p class="text-xl font-bold text-gray-800 mt-2">
+                        ${formatCurrency(data.total_proyecto)}
+                    </p>
+                </div>
+                <div class="rounded-xl border border-gray-200 shadow-sm bg-white p-4">
+                    <p class="text-sm text-gray-500 font-medium">
+                        Total Pagado
+                    </p>
+                    <p class="text-xl font-bold text-green-600 mt-2">
+                        ${formatCurrency(data.total_pagado)}
+                    </p>
+                </div>
+                <div class="rounded-xl border border-red-200 shadow-sm bg-red-50 p-4">
+                    <p class="text-sm text-red-500 font-medium">
+                        Saldo Pendiente
+                    </p>
+                    <p class="text-xl font-bold text-red-600 mt-2">
+                        ${formatCurrency(saldoPendiente)}
+                    </p>
+                </div>
+            </div>
+        </div>`;
 
         /*
         =====================================
