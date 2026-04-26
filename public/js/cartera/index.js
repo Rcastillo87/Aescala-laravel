@@ -127,7 +127,7 @@ async function loadCartera(id) {
                 </h2>
 
                 <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-md bg-white">
-                    <table class="w-full text-sm text-center">
+                    <table class="w-full text-sm text-center mb-2">
                         <thead class="bg-green-700 text-white uppercase text-xs">
                             <tr>
                                 <th class="p-3">Concepto</th>
