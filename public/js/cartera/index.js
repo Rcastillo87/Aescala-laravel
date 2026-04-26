@@ -65,7 +65,7 @@ function renderSelectConcepto(data) {
             option.value = (item.tipo_pago === 1) ? item.campo : item.id_tipo;
             option.textContent = item.msg;
             option.dataset.tipoPago = item.tipo_pago ?? '';
-            option.dataset.idTipo = item.id_tipo ?? ''; 
+            option.dataset.idTipo = item.id_tipo ?? '';
             selectElement.appendChild(option);
         });
     }
@@ -100,7 +100,7 @@ async function loadCartera(id) {
             }
         });
 
-        const res = await fetch(`pagosProyecto/${id}`);
+        const res = await fetch(`/cartera/pagosProyecto/${id}`);
         const response = await res.json();
 
         Swal.close();
@@ -146,7 +146,7 @@ async function loadCartera(id) {
                 pagosHTML += `
                     <tr class="border-t hover:bg-gray-50">
                         <td class="p-3">${item.concepto ?? '--'}</td>
-                        <td class="p-3">$${formatMoney(item.valor_pago)}</td>
+                        <td class="p-3">${formatCurrency(item.valor_pago)}</td>
                         <td class="p-3">${item.factura ?? '--'}</td>
                         <td class="p-3">${item.fecha_pago ?? '--'}</td>
                         <td class="p-3">${item.comentarios ?? '--'}</td>
@@ -167,7 +167,7 @@ async function loadCartera(id) {
                     <td colspan="6" class="p-3 text-right">
                         Total Pagado:
                         <span class="text-red-600 ml-2">
-                            $${formatMoney(data.total_pagos)}
+                            ${formatCurrency(data.total_pagos)}
                         </span>
                     </td>
                 </tr>
@@ -207,17 +207,54 @@ async function loadCartera(id) {
                             <tr>
                                 <th class="p-3">Concepto</th>
                                 <th class="p-3">Valor</th>
+                                <th class="p-3">Opciones</th>
                             </tr>
                         </thead>
                         <tbody>
         `;
 
         if (data.resumen.length > 0) {
+
+
             data.resumen.forEach(item => {
+
+                const btnPZ = `<a data-tooltip-target="tooltip-hover-pz-${item.tipo}-${item.id_pago}" data-tooltip-trigger="hover" href="/cartera/certificadoPZPDF/${item.id_pago}/${item.tipo}" target="_blank"
+                        class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4
+                            focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12.5l2 2 4-4m5 1.5V7a2 2 0 0 0-2-2h-3.5L12 3 9.5 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6"
+                            />
+                        </svg>
+                    </a>
+                    <div id="tooltip-hover-pz-${item.tipo}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                        PDF Paz y Salvo
+                        <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
+                    </div>`;
+
                 resumenHTML += `
                     <tr class="border-t">
                         <td class="p-3">${item.concepto}</td>
-                        <td class="p-3">$${formatMoney(item.valor_total)}</td>
+                        <td class="p-3">${formatCurrency(item.valor_total)}</td>
+                        <td class="p-1">
+                            <div class=" flex items-center justify-center space-x-2">
+                                <a data-tooltip-target="tooltip-hover-contratoPdf-${item.tipo}-${item.id_pago}" data-tooltip-trigger="hover" href="${item.urlContrato}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
+                                        focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"></path>
+                                    </svg>
+                                </a>
+                                <div id="tooltip-hover-contratoPdf-${item.tipo}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                    PDF Contrato
+                                    <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
+                                </div>
+                                ${item.pazysalvo == 1 ? btnPZ : ''}
+                            </div>
+                        </td>
                     </tr>
                 `;
             });
@@ -230,17 +267,17 @@ async function loadCartera(id) {
         resumenHTML += `
                     <tr class="bg-gray-100 font-semibold">
                         <td class="p-3">Total Proyecto</td>
-                        <td class="p-3">$${formatMoney(data.total_proyecto)}</td>
+                        <td class="p-3">${formatCurrency(data.total_proyecto)}</td>
                     </tr>
 
                     <tr class="bg-gray-100 font-semibold">
                         <td class="p-3">Total Pagado</td>
-                        <td class="p-3">$${formatMoney(data.total_pagado)}</td>
+                        <td class="p-3">${formatCurrency(data.total_pagado)}</td>
                     </tr>
 
                     <tr class="bg-gray-100 font-semibold text-red-600">
                         <td class="p-3">Saldo Pendiente</td>
-                        <td class="p-3">$${formatMoney(saldoPendiente)}</td>
+                        <td class="p-3">${formatCurrency(saldoPendiente)}</td>
                     </tr>
                 </tbody>
             </table>
@@ -296,7 +333,7 @@ async function loadCartera(id) {
                     } else {
                         relacionHTML += `
                             <td class="p-3">
-                                $${formatMoney(valor)}
+                                ${formatCurrency(valor)}
                             </td>
                         `;
                     }
@@ -322,7 +359,7 @@ async function loadCartera(id) {
         `;
 
         div.innerHTML = pagosHTML + resumenHTML + relacionHTML;
-
+        initFlowbite();
     } catch (error) {
         console.error(error);
 
@@ -333,13 +370,6 @@ async function loadCartera(id) {
         });
     }
 }
-
-function formatMoney(value) {
-    return new Intl.NumberFormat('es-CO').format(
-        Number(value) || 0
-    );
-}
-
 
 document.getElementById('formPago').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -365,7 +395,9 @@ document.getElementById('formPago').addEventListener('submit', async function (e
 
         if (result.status) {
             Swal.fire('Éxito', result.message, 'success');
-            setTimeout(() => window.location.reload(), 1200);
+            setTimeout(() => {
+                window.location = result.url;
+            }, 1200);
         } else {
             mostrarErrores(result.errors ?? {});
             Swal.fire('Error', result.message, 'error');
@@ -398,8 +430,8 @@ deletePago = async (id) => {
                 didOpen: () => Swal.showLoading()
             });
 
-            const response = await fetch(`deleetePago/${id}`, {
-                method: 'POST',
+            const response = await fetch(`/cartera/deletePago/${id}`, {
+                method: 'DELETE',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -411,7 +443,9 @@ deletePago = async (id) => {
 
             if (resData.status) {
                 Swal.fire('Éxito', resData.message, 'success');
-                setTimeout(() => window.location.reload(), 1200);
+                setTimeout(() => {
+                    window.location = resData.url;
+                }, 1200);
             } else {
                 Swal.fire('Error', resData.message, 'error');
             }

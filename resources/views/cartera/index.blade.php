@@ -17,7 +17,7 @@
                         id="id_proyecto"
                         :options="$proyectos"
                         :data="['id', 'nombre_proyecto']"
-                        :selected="old('id_proyecto')"
+                        :selected="old('id_proyecto', $id_proyecto)"
                         class="block mt-1 w-full"
                     />
                     <x-input-error :messages="$errors->get('id_proyecto')" class="mt-2" />
@@ -88,10 +88,6 @@
     </div>
 
     <div id="divCartera"></div>
-
-
-
-
 
 @endsection
 

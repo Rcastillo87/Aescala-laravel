@@ -70,16 +70,6 @@
                                     </svg>
                                     <span class="flex-1 ms-3 whitespace-nowrap">
                                         Cartera
-                                        @if (Auth::user()->newCarterapro != 0)
-                                            <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
-                                                {{ Auth::user()->newCarterapro }}
-                                            </span>
-                                        @endif
-                                        @if (Auth::user()->newCarteraOtroSi != 0)
-                                            <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-green-600 rounded-full">
-                                                {{ Auth::user()->newCarteraOtroSi }}
-                                            </span>
-                                        @endif
                                     </span>
                                 </a>
                             </li>

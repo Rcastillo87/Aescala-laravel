@@ -222,18 +222,19 @@
                             </div>
                         </div>
 
-                        <!-- Botón Otro si-->
-                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || !$item->otro_si()->where('estado', 1)->exists() ) hidden @endif">
+
+                        <!-- Botón Cartera-->
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || ($item->entreProyecto->count() === 0)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cartera-{{$item->id}}" data-tooltip-trigger="hover"
-                               href="{{Route('cartera.index', ['nombre_proyecto' => $item->nombre_proyecto])}}"
-                               class="flex items-center justify-center w-10 h-10 text-white bg-yellow-700 hover:bg-white hover:text-yellow-800 border-2 border-yellow-800 focus:ring-4
-                                      focus:outline-none focus:ring-yellow-300 font-medium rounded-full text-sm dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 cursor-pointer">
+                               href="{{Route('cartera.indexPagosProyecto', $item->id)}}"
+                               class="flex items-center justify-center w-10 h-10 text-white bg-slate-400 hover:bg-white hover:text-slate-500 border-2 border-slate-500 focus:ring-4
+                                      focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-400 dark:hover:bg-slate-500 dark:focus:ring-slate-500 cursor-pointer">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                                 </svg>
                             </a>
                             <div id="tooltip-hover-cartera-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                                Cartera Otro Si
+                                Cartera
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>

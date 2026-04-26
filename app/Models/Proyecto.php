@@ -358,6 +358,11 @@ class Proyecto extends Model
             ->value('total') - $this->descuento;
     }
 
+    public function getTotalOtroSiAttribute()
+    {
+        return $this->otro_si->sum('total_deve');
+    }
+
     public function getTotalPagadoAttribute()
     {
         return $this->pagos()->where(['tipo_pago' => 1])->sum('valor_pagado');

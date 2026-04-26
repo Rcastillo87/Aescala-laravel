@@ -48,12 +48,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function formatCurrency(value) {
-  const num = typeof value === 'number' ? value : parseFloat(value) || 0;
+    const num =
+        typeof value === 'number'
+            ? value
+            : parseFloat(value) || 0;
 
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP'
-  }).format(num);
+    return '$ ' + num.toLocaleString('es-CO', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
 }
 
 document.addEventListener('input', function (e) {
@@ -66,9 +69,7 @@ document.addEventListener('input', function (e) {
 
     if (!span) {
         span = document.createElement('span');
-        span.className =
-            'formatted-span right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none';
-            //'formatted-span absolute right-2 top-9 text-sm font-semibold text-green-600 pointer-events-none';
+        span.className = 'formatted-span right-2 top-9 text-md font-semibold mt-0.5 text-green-600 pointer-events-none';
         input.parentNode.appendChild(span);
     }
 

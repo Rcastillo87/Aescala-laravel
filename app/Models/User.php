@@ -181,28 +181,6 @@ class User extends Authenticatable
 
     }
 
-    public static function getnewCarteraProAttribute()
-    {
-        return Proyecto::whereIn('id_estado', [1, 5])
-            ->whereHas('entreProyecto')
-            ->whereDoesntHave('pagos', function ($q) {
-                $q->where('tipo_pago', 1);
-            })
-            ->count();
-    }
-
-    public static function getnewCarteraOtroSiAttribute()
-    {
-        return Otrosi::whereIn('estado', [1])
-            ->whereHas('proyecto', function ($q) {
-                $q->whereIn('id_estado', [1, 5]);
-            })
-            ->whereDoesntHave('pagos', function ($q) {
-                $q->where('tipo_pago', 2);
-            })
-            ->count();
-    }
-
     public static $roles = [
         1 => 'Administrador',
         2 => 'Usuario',

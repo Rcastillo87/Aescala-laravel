@@ -34,13 +34,13 @@ class Pagos extends Model
     {
         return $this->belongsTo(Otrosi::class, 'id_pago', 'id');
     }
-    
+
     public function getValanceAttribute()
     {
         if ($this->tipo_pago != 1) {
             return false;
         }
-        
+
         $proyecto = $this->proyecto;
         if (!$proyecto) {
             return false;
@@ -53,7 +53,7 @@ class Pagos extends Model
         ])->sum('valor_pagado');
         return $pagado >= $debe;
     }
-    
+
     public function getValanceOtroSiAttribute()
     {
         if ($this->tipo_pago != 2) {
