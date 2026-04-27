@@ -333,6 +333,7 @@ async function loadCartera(id) {
                 relacionHTML += `<tr class="border-t">`;
 
                 item.forEach((valor, index) => {
+                    let valorFinal = parseFloat(valor) || 0;
                     if (index === 0) {
                         relacionHTML += `
                             <td class="p-3 font-medium">
@@ -342,7 +343,7 @@ async function loadCartera(id) {
                     } else {
                         relacionHTML += `
                             <td class="p-3">
-                                ${formatCurrency( parseFloat(valor) / 100 )}
+                                ${formatCurrency(valorFinal)}
                             </td>
                         `;
                     }
