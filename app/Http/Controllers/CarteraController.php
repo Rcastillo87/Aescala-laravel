@@ -72,6 +72,8 @@ class CarteraController extends Controller
 
             $valProyecto = $proyecto->total;
             $valOtrosis = $proyecto->TotalOtroSi?? 0;
+            $valTotodal = $proyecto->total + $proyecto->TotalOtroSi?? 0;
+            
             $contraProyec = [
                 "id_proyecto" => $id,
                 "id_pago" => $id,
@@ -129,7 +131,7 @@ class CarteraController extends Controller
                 })
                 ->toArray();
 
-            $pagosAgrupados = Pagos::selectRaw('
+            /*$pagosAgrupados = Pagos::selectRaw('
                     concepto,
                     id_proyecto,
                     SUM(valor_pagado) as total_pagado
@@ -140,16 +142,22 @@ class CarteraController extends Controller
                 ])
                 ->groupBy('concepto', 'id_proyecto')
                 ->get()
-                ->keyBy('concepto');
+                ->keyBy('concepto');*/
 
             $agrupadoPagosProyecto = [
                 'Contrato',
-                $pagosAgrupados->get(1)?->total_pagado ?? 0,
+                $porcentProyec[0] * $valTotodal,
+                $porcentProyec[1] * $valTotodal,
+                $porcentProyec[2] * $valTotodal,
+                $porcentProyec[3] * $valTotodal,
+                $porcentProyec[4] * $valTotodal,
+                $porcentProyec[5] * $valTotodal
+                /*$pagosAgrupados->get(1)?->total_pagado ?? 0,
                 $pagosAgrupados->get(2)?->total_pagado ?? 0,
                 $pagosAgrupados->get(3)?->total_pagado ?? 0,
                 $pagosAgrupados->get(4)?->total_pagado ?? 0,
                 $pagosAgrupados->get(5)?->total_pagado ?? 0,
-                $pagosAgrupados->get(6)?->total_pagado ?? 0,
+                $pagosAgrupados->get(6)?->total_pagado ?? 0,*/
             ];
 
             $agrupadoPagosOtrosi = Otrosi::whereHas('pagos')
@@ -168,7 +176,7 @@ class CarteraController extends Controller
                     "pagos" => $pagos,
                     "total_pagos" => Pagos::where('id_proyecto', $id)->sum('valor_pagado'),
                     "resumen" => $contratos,
-                    "total_proyecto" => $valProyecto + $valOtrosis,
+                    "total_proyecto" => $valTotodal,
                     "total_pagado" => $valTotalPagado,
                     "porcentajes" => $porcentProyec,
                     "relacion_pagos" => array_merge([$agrupadoPagosProyecto], $agrupadoPagosOtrosi),
