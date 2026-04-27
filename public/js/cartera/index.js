@@ -341,6 +341,10 @@ async function loadCartera(id) {
                             </td>
                         `;
                     } else {
+                        let valorFinal = parseFloat(valor) || 0;
+                        if (item[0] === "Contrato") {
+                            valorFinal = valorFinal / 100;
+                        }
                         relacionHTML += `
                             <td class="p-3">
                                 ${formatCurrency(valorFinal)}
