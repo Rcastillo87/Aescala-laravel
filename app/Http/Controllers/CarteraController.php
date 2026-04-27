@@ -160,8 +160,7 @@ class CarteraController extends Controller
                 $pagosAgrupados->get(6)?->total_pagado ?? 0,*/
             ];
 
-            $agrupadoPagosOtrosi = Otrosi::whereHas('pagos')
-                ->where('id_proyecto', $id)
+            $agrupadoPagosOtrosi = Otrosi::where('id_proyecto', $id)
                     ->orderBy('id', 'desc')
                     ->get()
                     ->map(function ($item) {
