@@ -249,7 +249,7 @@ async function loadCartera(id) {
                                     PDF Contrato
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
-                                ${item.pazysalvo == 1 ? btnPZ : ''}
+                                ${( (item.tipo == 1) && ((item.total_proyecto - item.total_pagado) <= 0)) ? btnPZ : ''}
                             </div>
                         </td>
                     </tr>
