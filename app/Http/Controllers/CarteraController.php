@@ -162,12 +162,38 @@ class CarteraController extends Controller
 
             $agrupadoPagosOtrosi = Otrosi::whereHas('pagos')
                 ->where('id_proyecto', $id)
+                    ->orderBy('id', 'desc')
+                    ->get()
+                    ->map(function ($item) {
+                        $valor = (float) $item->totalDeve; 
+                        $posicion1 = 0;
+                        $posicion2 = 0;
+                        if ($valor < 10000000) {
+                            $posicion1 = $valor;
+                            $posicion2 = 0;
+                        } else {
+                            $posicion1 = $valor / 2;
+                            $posicion2 = $valor / 2;
+                        }
+                        return [
+                            'Otro Sí N° ' . $item->numero,
+                	        0,
+                            $posicion1,
+                            $posicion2,
+                            0,
+                            0,
+                            0
+                        ];
+                    })->toArray();
+
+                
+                /*->where('id_proyecto', $id)
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map(function ($item) {
                     return array_merge(['Otro Sí N° ' . $item->numero], $item->pagos->pluck('valor_pagado')->toArray());
                 })
-                ->toArray();
+                ->toArray();*/
 
             return response()->json([
                 'status' => true,
