@@ -342,7 +342,7 @@ async function loadCartera(id) {
                     } else {
                         relacionHTML += `
                             <td class="p-3">
-                                ${formatCurrency(valor)}
+                                ${formatCurrency( parseFloat(valor) / 100 )}
                             </td>
                         `;
                     }
