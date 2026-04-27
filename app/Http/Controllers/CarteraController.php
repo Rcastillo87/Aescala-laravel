@@ -146,12 +146,12 @@ class CarteraController extends Controller
 
             $agrupadoPagosProyecto = [
                 'Contrato',
-                $porcentProyec[0] * $valTotodal,
-                $porcentProyec[1] * $valTotodal,
-                $porcentProyec[2] * $valTotodal,
-                $porcentProyec[3] * $valTotodal,
-                $porcentProyec[4] * $valTotodal,
-                $porcentProyec[5] * $valTotodal
+                $porcentProyec[0] * $valProyecto,
+                $porcentProyec[1] * $valProyecto,
+                $porcentProyec[2] * $valProyecto,
+                $porcentProyec[3] * $valProyecto,
+                $porcentProyec[4] * $valProyecto,
+                $porcentProyec[5] * $valProyecto
                 /*$pagosAgrupados->get(1)?->total_pagado ?? 0,
                 $pagosAgrupados->get(2)?->total_pagado ?? 0,
                 $pagosAgrupados->get(3)?->total_pagado ?? 0,
