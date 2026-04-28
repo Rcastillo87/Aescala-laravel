@@ -342,34 +342,28 @@ async function loadCartera(id) {
         
         let arrPorcenSum = {};
         if (Array.isArray(data.relacion_pagos) && data.relacion_pagos.length > 0) {
+
+            let arrPorcenSum = {}; 
             data.relacion_pagos.forEach(item => {
                 relacionHTML += `<tr class="border-t">`;
-                let valorNumerico = parseFloat(valor) || 0;
                 item.forEach((valor, index) => {
-                    let valorFinal = parseFloat(valor) || 0;
+                    let valorNumerico = parseFloat(valor) || 0;
                     if (index === 0) {
                         relacionHTML += `
-                            <td class="p-3 font-medium">
+                            <td class="p-3 font-medium text-left">
                                 ${valor}
-                            </td>
-                        `;
+                            </td>`;
                     } else {
                         arrPorcenSum[index] = (arrPorcenSum[index] || 0) + valorNumerico;
-                        let valorFinal = parseFloat(valor) || 0;
-                        if (item[0] === "Contrato") {
-                            valorFinal = valorFinal / 100;
-                        }
+                        let valorMostrar = (item[0] === "Contrato") ? valorNumerico / 100 : valorNumerico;
                         relacionHTML += `
                             <td class="p-3">
-                                ${formatCurrency(valorFinal)}
-                            </td>
-                        `;
+                                ${formatCurrency(valorMostrar)}
+                            </td>`;
                     }
                 });
-
                 relacionHTML += `</tr>`;
             });
-
             relacionHTML += `
                 </tbody>
                 <tfoot class="bg-gray-100 dark:bg-gray-800 font-bold border-t-2 border-gray-300">
