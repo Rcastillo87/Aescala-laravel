@@ -337,46 +337,48 @@ class CarteraController extends Controller
     public function reciboPDF($id, $tipo)
     {
         Gate::authorize('cartera.reciboPDF');
-        $items = Pagos::where([
-            'id_pago' => $id,
-            'tipo_pago'   => $tipo,
-        ])->first();
-
-        if ($items->isEmpty()) {
+    
+        // 1. Usamos get() para obtener una colección y poder mapear después
+        $pagosQuery = Pagos::where([
+            'id_pago'   => $id,
+            'tipo_pago' => $tipo,
+        ])->get();
+    
+        if ($pagosQuery->isEmpty()) {
             abort(404, 'No hay pagos para este recibo');
         }
-
+    
+        // Tomamos el primero para obtener datos generales del proyecto/otrosi
+        $primerPago = $pagosQuery->first();
+    
         if ($tipo == 1) {
-            $proyecto = $items->proyecto;
-            $pagos = $proyecto->Pagos;
+            $proyecto = $primerPago->proyecto;
+            $pagosReferencia = $proyecto->Pagos; // Esto viene del Accesor getPagosAttribute
             $totalPago = $proyecto->totalPagado;
         } else {
-            $otroSi = $items->otro_si;
+            $otroSi = $primerPago->otro_si;
             $proyecto = $otroSi->proyecto;
-            $pagos = '';
+            $pagosReferencia = '';
             $totalPago = $otroSi->totalPago;
         }
-
-        $dptArray = json_decode(
-            file_get_contents(storage_path('json/jsonCityColombia.json')),
-            true
-        );
-
+    
+        // Carga de Geografía
+        $pathJson = storage_path('json/jsonCityColombia.json');
+        $dptArray = json_decode(file_get_contents($pathJson), true);
+    
         $ciudad_dpt = $dptArray[$proyecto->departamento]['departamento'] . ', ' .
-                    $dptArray[$proyecto->departamento]['ciudades'][$proyecto->ciudad];
-
-        $items = $items->map(function ($item) use ($pagos) {
-
-            if($item->tipo_pago == 1) {
-                $descripcion = collect($pagos)->map(function ($concepto) use ($item) {
-                    if ($concepto['termino'] == $item->concepto) {
-                        return $concepto['msg'];
-                    }
-                })->filter()->first();
+                      $dptArray[$proyecto->departamento]['ciudades'][$proyecto->ciudad];
+    
+        // 2. Mapeamos la colección de pagos
+        $itemsMapeados = $pagosQuery->map(function ($item) use ($pagosReferencia) {
+            if ($item->tipo_pago == 1) {
+                // Buscamos la descripción en el array de términos del proyecto
+                $descripcion = collect($pagosReferencia)->where('campo', $item->concepto)->first()['msg'] 
+                               ?? 'Pago de Proyecto';
             } else {
-                $descripcion = 'Pago Otro Si # ' . $item->otro_si->numero;
+                $descripcion = 'Pago Otro Si # ' . ($item->otro_si->numero ?? '');
             }
-
+    
             return (object) [
                 'rc'           => $item->rc,
                 'fecha_pago'   => $item->fecha_pago,
@@ -385,22 +387,24 @@ class CarteraController extends Controller
                 'comentario'   => $item->comentario
             ];
         });
-
+    
         $data = [
-            'items'    => $items,
-            'proyecto' => $proyecto,
+            'items'         => $itemsMapeados,
+            'proyecto'      => $proyecto,
             'ciudad_dpt'    => $ciudad_dpt,
             'tipo_doc_acro' => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][0] ?? '',
             'total_pago'    => $totalPago,
-            'logo' => public_path('img/logo.png')
+            'logo'          => public_path('img/logo.png')
         ];
-
+    
         $pdf = Pdf::loadView('cartera.reciboPDF', $data)
             ->setPaper('letter', 'portrait')
-            ->setOption('isHtml5ParserEnabled', true)
-            ->setOption('isRemoteEnabled', true)
-            ->setOption('defaultFont', 'DejaVu Sans');
-
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled'      => true,
+                'defaultFont'          => 'DejaVu Sans'
+            ]);
+    
         return $pdf->stream('recibo-'.$id.'.pdf');
     }
 
