@@ -231,7 +231,7 @@ class CarteraController extends Controller
             'comentario'   => 'nullable|string|max:500',
             'fv'           => 'nullable|string|max:20',
             'fecha_pago'   => 'required|date',
-            'concepto'     => 'nullable|integer|between:1,6'
+            'concepto'     => 'nullable|integer'
         ];
 
         $validator = Validator::make($request->all(), $val, [
