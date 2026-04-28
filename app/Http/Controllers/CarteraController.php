@@ -81,7 +81,8 @@ class CarteraController extends Controller
                 "concepto" => "Contrato Proyecto",
                 "valor_total" => $valProyecto,
                 "urlContrato" => route('proyecto.contratoPdf', $id),
-                "pazysalvo" => $proyecto->paz_salvo
+                "pazysalvo" => $proyecto->paz_salvo,
+                "urlRecivo" => route('cartera.reciboPDF', $id, 1)
             ];
             $contraOtrosi = $proyecto->otro_si()
                 ->where('estado', 1)
@@ -94,7 +95,8 @@ class CarteraController extends Controller
                         "concepto" => "Otro Si N° " . $item->numero,
                         "valor_total" => $item->total_deve,
                         "urlContrato" => route('otro_si.otroSiPdf', $item->id),
-                        "pazysalvo" => $item->paz_salvo
+                        "pazysalvo" => $item->paz_salvo,
+                        "urlRecivo" => route('cartera.reciboPDF',$item->id, 2)
                     ];
                 })
                 ->toArray();
@@ -336,20 +338,20 @@ class CarteraController extends Controller
     {
         Gate::authorize('cartera.reciboPDF');
         $items = Pagos::where([
-            'id_proyecto' => $id,
+            'id_pago' => $id,
             'tipo_pago'   => $tipo,
-        ])->get();
+        ])->first();
 
         if ($items->isEmpty()) {
             abort(404, 'No hay pagos para este recibo');
         }
 
         if ($tipo == 1) {
-            $proyecto = $items->first()->proyecto;
+            $proyecto = $items->proyecto;
             $pagos = $proyecto->Pagos;
             $totalPago = $proyecto->totalPagado;
         } else {
-            $otroSi = $items->first()->otro_si;
+            $otroSi = $items->otro_si;
             $proyecto = $otroSi->proyecto;
             $pagos = '';
             $totalPago = $otroSi->totalPago;
