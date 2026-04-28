@@ -339,12 +339,12 @@ async function loadCartera(id) {
                     </thead>
                     <tbody>
         `;
-
+        
+        let arrPorcenSum = {};
         if (Array.isArray(data.relacion_pagos) && data.relacion_pagos.length > 0) {
             data.relacion_pagos.forEach(item => {
                 relacionHTML += `<tr class="border-t">`;
-
-                let arrPorcenSum = {};
+                let valorNumerico = parseFloat(valor) || 0;
                 item.forEach((valor, index) => {
                     let valorFinal = parseFloat(valor) || 0;
                     if (index === 0) {
