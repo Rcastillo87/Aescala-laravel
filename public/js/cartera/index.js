@@ -344,6 +344,7 @@ async function loadCartera(id) {
             data.relacion_pagos.forEach(item => {
                 relacionHTML += `<tr class="border-t">`;
 
+                let arrPorcenSum = {};
                 item.forEach((valor, index) => {
                     let valorFinal = parseFloat(valor) || 0;
                     if (index === 0) {
@@ -353,6 +354,7 @@ async function loadCartera(id) {
                             </td>
                         `;
                     } else {
+                        arrPorcenSum[index] = (arrPorcenSum[index] || 0) + valorNumerico;
                         let valorFinal = parseFloat(valor) || 0;
                         if (item[0] === "Contrato") {
                             valorFinal = valorFinal / 100;
@@ -367,6 +369,21 @@ async function loadCartera(id) {
 
                 relacionHTML += `</tr>`;
             });
+
+            relacionHTML += `
+                </tbody>
+                <tfoot class="bg-gray-100 dark:bg-gray-800 font-bold border-t-2 border-gray-300">
+                    <tr>
+                        <td class="p-3 text-left uppercase text-xs">Totales</td>
+                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[1] || 0)}</td>
+                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[2] || 0)}</td>
+                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[3] || 0)}</td>
+                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[4] || 0)}</td>
+                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[5] || 0)}</td>
+                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[6] || 0)}</td>
+                    </tr>
+                </tfoot>
+            </table>`;
         } else {
             relacionHTML += `
                 <tr>
