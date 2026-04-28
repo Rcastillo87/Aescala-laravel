@@ -271,7 +271,7 @@ async function loadCartera(id) {
                                     PDF Recivo
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
-                                ${ item.urlRecivo == '' ? '' : btnRecivo }
+                                ${ item.urlRecivo !== '' ? btnRecivo : '' }
                                 ${( (item.tipo == 1) && ((item.total_proyecto - item.total_pagado) <= 0)) ? btnPZ : ''}
                             </div>
                         </td>
