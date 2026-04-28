@@ -82,7 +82,7 @@ class CarteraController extends Controller
                 "valor_total" => $valProyecto,
                 "urlContrato" => route('proyecto.contratoPdf', $id),
                 "pazysalvo" => $proyecto->paz_salvo,
-                "urlRecivo" => route('cartera.reciboPDF', $id, 1)
+                "urlRecivo" => route('cartera.reciboPDF', ['id' => $id, 'tipo' => 1])
             ];
             $contraOtrosi = $proyecto->otro_si()
                 ->where('estado', 1)
@@ -96,7 +96,7 @@ class CarteraController extends Controller
                         "valor_total" => $item->total_deve,
                         "urlContrato" => route('otro_si.otroSiPdf', $item->id),
                         "pazysalvo" => $item->paz_salvo,
-                        "urlRecivo" => route('cartera.reciboPDF',$item->id, 2)
+                        "urlRecivo" => route('cartera.reciboPDF', ['id' => $item->id, 'tipo' => 2])
                     ];
                 })
                 ->toArray();
