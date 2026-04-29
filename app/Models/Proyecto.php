@@ -144,6 +144,9 @@ class Proyecto extends Model
                     $dptArray[$this->departamento]['ciudades'][$this->ciudad];
 
         $meses   = ceil($this->dias_trabajo / 24);
+
+        $txDia = $this->numeroATexto( $this->dias_trabajo );
+
         $txMeses = $this->numeroATexto($meses);
         $total   = $this->entreProyecto()
                     ->selectRaw('SUM(valor_total * cantidad) as total')
@@ -202,7 +205,7 @@ class Proyecto extends Model
             "direccion_proye"     => $this->direccion,
             "area_privada_proye"  => $this->area_privada,
             "dias_proye"          => $this->dias_contrato,
-            "meses_proye"         => $meses,
+            "meses_proye"         => $txDia,
             "tx_meses_proye"      => Str::title($txMeses),
             "tx_valor_total"      => Str::title($txTotal),
             "valor_total"         => number_format($total, 0, ',', '.'),

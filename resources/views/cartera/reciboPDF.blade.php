@@ -181,7 +181,7 @@
                     <td class="text-justify">{{ $item->descripcion }}</td>
                     <td class="text-justify">{{ $item->comentario }}</td>
                     <td class="text-right">
-                        $ {{ number_format($item->valor_pago, 0, ',', '.') }}
+                        $ {{ number_format($item->valor_pagado, 0, ',', '.') }}
                     </td>
                 </tr>
                 @endforeach

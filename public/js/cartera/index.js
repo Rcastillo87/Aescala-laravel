@@ -143,6 +143,19 @@ async function loadCartera(id) {
 
         if (data.pagos.length > 0) {
             data.pagos.forEach(item => {
+
+                 const btnRecivo =
+                    `<a data-tooltip-target="tooltip-hover-recivo-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover" href="${item.urlRecivo}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
+                            focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
+                        </svg>
+                    </a>
+                    <div id="tooltip-hover-recivo-${item.tipo_pago}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                        PDF Recivo
+                        <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
+                    </div>`;
+
                 pagosHTML += `
                     <tr class="border-t hover:bg-gray-50">
                         <td class="p-3">${item.concepto ?? '--'}</td>
@@ -151,12 +164,19 @@ async function loadCartera(id) {
                         <td class="p-3">${item.fecha_pago ?? '--'}</td>
                         <td class="p-3">${item.comentarios ?? '--'}</td>
                         <td class="p-3">
-                            <button
-                                onclick="deletePago(${item.id})"
-                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white transition"
-                            >
-                                ✕
-                            </button>
+                            <div class=" flex items-center justify-center space-x-2">
+                                <a data-tooltip-target="tooltip-hover-delete-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover" onclick="deletePago(${item.id})" class="flex items-center justify-center w-10 h-10 text-white bg-red-700 hover:bg-white hover:text-red-800 border-2 border-red-800 focus:ring-4
+                                        focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                    </svg>
+                                </a>
+                                <div id="tooltip-hover-delete-${item.tipo_pago}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                    Eliminar Pago
+                                    <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
+                                </div>
+                                ${ item.urlRecivo !== '' ? btnRecivo : '' }
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -233,17 +253,6 @@ async function loadCartera(id) {
                         <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                     </div>`;
 
-                 const btnRecivo = `<a data-tooltip-target="tooltip-hover-recivo-${item.tipo}-${item.id_pago}" data-tooltip-trigger="hover" href="${item.urlRecivo}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
-                                        focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
-                                    </svg>
-                                </a>
-                                <div id="tooltip-hover-recivo-${item.tipo}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
-                                    PDF Recivo
-                                    <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
-                                </div>`;
-
                 resumenHTML += `
                     <tr class="border-t">
                         <td class="p-3">${item.concepto}</td>
@@ -260,7 +269,6 @@ async function loadCartera(id) {
                                     PDF Contrato
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
-                                ${ item.urlRecivo !== '' ? btnRecivo : '' }
                                 ${( (item.tipo == 1) && ((item.total_proyecto - item.total_pagado) <= 0)) ? btnPZ : ''}
                             </div>
                         </td>
@@ -339,11 +347,11 @@ async function loadCartera(id) {
                     </thead>
                     <tbody>
         `;
-        
+
         let arrPorcenSum = {};
         if (Array.isArray(data.relacion_pagos) && data.relacion_pagos.length > 0) {
 
-            let arrPorcenSum = {}; 
+            let arrPorcenSum = {};
             data.relacion_pagos.forEach(item => {
                 relacionHTML += `<tr class="border-t">`;
                 item.forEach((valor, index) => {
@@ -355,10 +363,9 @@ async function loadCartera(id) {
                             </td>`;
                     } else {
                         arrPorcenSum[index] = (arrPorcenSum[index] || 0) + valorNumerico;
-                        let valorMostrar = (item[0] === "Contrato") ? valorNumerico / 100 : valorNumerico;
                         relacionHTML += `
                             <td class="p-3">
-                                ${formatCurrency(valorMostrar)}
+                                ${formatCurrency(valorNumerico)}
                             </td>`;
                     }
                 });
