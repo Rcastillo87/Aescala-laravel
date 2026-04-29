@@ -43,7 +43,8 @@ document.getElementById('download-search-excel').addEventListener('click', funct
     const params = new URLSearchParams(window.location.search);
     params.set('export', 1);
 
-    const url = `index?${params.toString()}`;
+    //const url = `index?${params.toString()}`;
+    const url = `${window.location.pathname}?${params.toString()}`;
 
     // Crear descarga sin recargar la página
     const link = document.createElement('a');
