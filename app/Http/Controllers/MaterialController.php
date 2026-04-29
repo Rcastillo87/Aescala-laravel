@@ -126,7 +126,6 @@ class MaterialController extends Controller
 
     private function exportExcel($items)
     {
-        Gate::authorize('material.exportExcel');
         $headers = [
             "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=inventario_materiales.xls"
