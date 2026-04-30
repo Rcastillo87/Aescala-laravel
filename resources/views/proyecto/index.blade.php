@@ -165,7 +165,7 @@
 
                         <!-- Botón Contrato -->
                             <div class="relative
-                            @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isColab || Auth::user()->isComer) || ($item->entreProyecto->count() === 0))
+                            @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isColab || Auth::user()->isComer || Auth::user()->isAlmacenista) || ($item->entreProyecto->count() === 0))
                                 hidden
                             @endif">
                             <a tabindex="0"
@@ -207,7 +207,7 @@
 
 
                         <!-- Botón Cambio de Estado -->
-                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer)) hidden @endif">
+                        <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isAlmacenista)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="cambiarEstado({{ $item->id }}, {{$item->id_estado}})"
                                class="flex items-center justify-center w-10 h-10 text-white bg-violet-700 hover:bg-white hover:text-violet-800 border-2 border-violet-800 focus:ring-4

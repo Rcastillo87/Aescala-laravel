@@ -33,7 +33,7 @@ return [
         // ── Grupo Proyectos ────────────────────────────────────
         'comercial'     => ['isAdmin', 'isComer'],
         'cartera'       => ['isAdmin', 'iscartera'],
-        'proyecto'      => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista'],
+        'proyecto'      => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista'],
         'otro_si'       => ['isAdmin', 'isUser', 'iscartera'],
         'tareas'        => ['isAdmin', 'isUser'],
 
@@ -89,7 +89,7 @@ return [
         'herramienta.savePrestamo'  => ['isAdmin', 'isUser'],
 
         // ── proyecto.* ─────────────────────────────────────────
-        'proyecto.index'                => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista'],
+        'proyecto.index'                => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista'],
         'proyecto.create'               => ['isAdmin', 'isUser'],
         'proyecto.save'                 => ['isAdmin', 'isUser'],
         'proyecto.begin'                => ['isAdmin', 'isUser'],

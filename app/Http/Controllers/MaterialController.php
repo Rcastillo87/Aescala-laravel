@@ -131,6 +131,8 @@ class MaterialController extends Controller
             "Content-Disposition" => "attachment; filename=inventario_materiales.xls"
         ];
 
+        $zonas = InventarioMaterial::$zonas;
+
         return response()->stream(function () use ($items) {
 
             // 🔑 BOM UTF-8 (corrige acentos y evita corrupción)
@@ -150,6 +152,7 @@ class MaterialController extends Controller
                         <th>Proveedor Principal</th>
                         <th>Estado Item</th>
                         <th>Requiere Aprobación</th>
+                        <th>Zonas</th>
                         <th>Descripción</th>
                     </tr>
                 </thead>
@@ -168,6 +171,7 @@ class MaterialController extends Controller
                     <td>".e(optional($item->proveedor)->razon_social)."</td>
                     <td>".e($item->estado)."</td>
                     <td>".($item->aprobar ? 'SI' : 'NO')."</td>
+                    <td>".e($zonas[$item->zona])."</td>
                     <td>".e($item->descripccion)."</td>
                 </tr>";
             }
