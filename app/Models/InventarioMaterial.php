@@ -78,7 +78,7 @@ class InventarioMaterial extends Model
 
     public function getTxZonaAttribute()
     {
-        return self::$zonas[$this->id_unidazonad] ?? '--';
+        return self::$zonas[$this->zona] ?? '--';
     }
 
     public static $estado = [
