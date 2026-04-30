@@ -77,13 +77,12 @@ class MaterialController extends Controller
                 fn ($q, $id) => $q->where('id_proveedor', $id)
             );
 
-        $zonas = InventarioMaterial::$zonas;
-
         if (request('export') == 1) {
-            return $this->exportExcel($query->get(), $zonas);
+            return $this->exportExcel($query->get());
         }
 
         $items = $query->paginate($perPage)->appends(request()->query());
+        $zonas = InventarioMaterial::$zonas;
         $fases = InventarioMaterial::$fases;
 
         $columns = [
@@ -131,8 +130,8 @@ class MaterialController extends Controller
             "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=inventario_materiales.xls"
         ];
-
         return response()->stream(function () use ($items) {
+
             // 🔑 BOM UTF-8 (corrige acentos y evita corrupción)
             echo "\xEF\xBB\xBF";
 
@@ -157,9 +156,6 @@ class MaterialController extends Controller
                 <tbody>";
 
             foreach ($items as $item) {
-                $idZona = $item->zona; 
-                $nombreZona = $zonas[$idZona] ?? '--';
-
                 echo "<tr>
                     <td>".e($item->nombre_material)."</td>
                     <td style=\"mso-number-format:'\\@'\">".e($item->codigo)."</td>
@@ -172,7 +168,7 @@ class MaterialController extends Controller
                     <td>".e(optional($item->proveedor)->razon_social)."</td>
                     <td>".e($item->estado)."</td>
                     <td>".($item->aprobar ? 'SI' : 'NO')."</td>
-                    <td>".e($nombreZona)."</td>
+                    <td>".e($zonas[$item->txZona])."</td>
                     <td>".e($item->descripccion)."</td>
                 </tr>";
             }

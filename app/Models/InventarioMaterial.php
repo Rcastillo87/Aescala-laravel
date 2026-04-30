@@ -32,7 +32,7 @@ class InventarioMaterial extends Model
         'fase'
     ];
 
-    protected $appends = ['spanTipo', 'unidades'];
+    protected $appends = ['spanTipo', 'unidades', 'txZona'];
 
     protected $casts = [
         'tipo' => 'integer',
@@ -74,6 +74,11 @@ class InventarioMaterial extends Model
     public function getUnidadesAttribute()
     {
         return self::$unidades[$this->id_unidad] ?? 'Desconocido';
+    }
+
+    public function getTxZonaAttribute()
+    {
+        return self::$zonas[$this->id_unidazonad] ?? '--';
     }
 
     public static $estado = [
