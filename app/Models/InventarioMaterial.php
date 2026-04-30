@@ -36,6 +36,8 @@ class InventarioMaterial extends Model
 
     protected $casts = [
         'tipo' => 'integer',
+        'zona' => 'integer', // <--- AÑADE ESTA LÍNEA
+        'fase' => 'integer', // Aprovecha y añade fase también
     ];
 
     public function getSpanEstadoAttribute()

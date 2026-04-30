@@ -157,8 +157,8 @@ class MaterialController extends Controller
                 <tbody>";
 
             foreach ($items as $item) {
-                $valorZona = trim($item->zona);
-                $nombreZona = $zonas[$valorZona] ?? '--';
+                $idZona = $item->zona; 
+                $nombreZona = $zonas[$idZona] ?? '--';
 
                 echo "<tr>
                     <td>".e($item->nombre_material)."</td>
