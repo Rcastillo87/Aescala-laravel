@@ -133,6 +133,8 @@ class MaterialController extends Controller
         ];
 
         return response()->stream(function () use ($items) {
+            $valorZona = trim($item->zona);
+            $nombreZona = $zonas[$valorZona] ?? '--';
 
             // 🔑 BOM UTF-8 (corrige acentos y evita corrupción)
             echo "\xEF\xBB\xBF";
@@ -170,7 +172,7 @@ class MaterialController extends Controller
                     <td>".e(optional($item->proveedor)->razon_social)."</td>
                     <td>".e($item->estado)."</td>
                     <td>".($item->aprobar ? 'SI' : 'NO')."</td>
-                    <td>".e($zonas[$item->zona]?? '--')."</td>
+                    <td>".e($nombreZona)."</td>
                     <td>".e($item->descripccion)."</td>
                 </tr>";
             }
