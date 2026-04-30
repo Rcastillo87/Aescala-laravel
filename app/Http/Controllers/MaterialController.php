@@ -168,7 +168,7 @@ class MaterialController extends Controller
                     <td>".e(optional($item->proveedor)->razon_social)."</td>
                     <td>".e($item->estado)."</td>
                     <td>".($item->aprobar ? 'SI' : 'NO')."</td>
-                    <td>".e($zonas[$item->txZona])."</td>
+                    <td>".e($item->txZona)."</td>
                     <td>".e($item->descripccion)."</td>
                 </tr>";
             }
