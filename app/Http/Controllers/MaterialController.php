@@ -133,9 +133,6 @@ class MaterialController extends Controller
         ];
 
         return response()->stream(function () use ($items) {
-            $valorZona = trim($item->zona);
-            $nombreZona = $zonas[$valorZona] ?? '--';
-
             // 🔑 BOM UTF-8 (corrige acentos y evita corrupción)
             echo "\xEF\xBB\xBF";
 
@@ -160,6 +157,9 @@ class MaterialController extends Controller
                 <tbody>";
 
             foreach ($items as $item) {
+                $valorZona = trim($item->zona);
+                $nombreZona = $zonas[$valorZona] ?? '--';
+
                 echo "<tr>
                     <td>".e($item->nombre_material)."</td>
                     <td style=\"mso-number-format:'\\@'\">".e($item->codigo)."</td>
