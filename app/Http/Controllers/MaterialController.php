@@ -124,7 +124,7 @@ class MaterialController extends Controller
         ));
     }
 
-    private function exportExcel($items, $zonas)
+    private function exportExcel($items)
     {
         $headers = [
             "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
