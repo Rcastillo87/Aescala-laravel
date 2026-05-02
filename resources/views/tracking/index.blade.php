@@ -676,7 +676,7 @@ let selectedDevice  = null;
 // ── ICONS ─────────────────────────────────────────────────────
 function makeIcon(type = 'live', label = '') {
     const labelHtml = (type === 'live' && label)
-        ? `<div style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(45,55,72,.92);color:#fff;font-size:9px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 6px;border-radius:4px;white-space:nowrap;border:1px solid rgba(232,73,15,.5);box-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none;">${label}</div>`
+        ? `<div style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(45,55,72,.92);color:#fff;font-size:10px;font-weight:700;font-family:'Figtree',sans-serif;padding:2px 6px;border-radius:4px;white-space:nowrap;border:1px solid rgba(232,73,15,.5);box-shadow:0 2px 6px rgba(0,0,0,.4);pointer-events:none;">${label}</div>`
         : '';
     return L.divIcon({
         className: '',
@@ -842,7 +842,7 @@ async function fetchRealtime() {
         });
 
         json.data.forEach(d => {
-            const shortLabel = d.label?.split('(')[0].trim() ?? '';
+            const shortLabel = d.user_name?? d.label?.split('(')[0].trim() ?? '';
             if (realtimeMarkers[d.device_id]) {
                 realtimeMarkers[d.device_id].setLatLng([d.lat, d.lng]);
                 realtimeMarkers[d.device_id].setIcon(makeIcon('live', shortLabel));
