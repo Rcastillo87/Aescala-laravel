@@ -32,12 +32,14 @@ class Almacenes extends Model
 
     public static $classTipo = [
         1 => 'span-green',
-        2 => 'span-red'
+        2 => 'span-red',
+        3 => 'span-yellow'
     ];
 
     public static $tipo = [
         1 => 'Obra Blanca',
-        2 => 'Carpinteria'
+        2 => 'Carpinteria',
+        3 => 'Todos'
     ];
 
     public static $txEditar = [
