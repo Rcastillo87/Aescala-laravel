@@ -85,6 +85,8 @@ class MaterialController extends Controller
         $zonas = InventarioMaterial::$zonas;
         $fases = InventarioMaterial::$fases;
 
+        $tipoAlma = Almacenes::where('id_user', Auth::user()->id)->first()?->tipo;
+
         $columns = [
             'nombre_material',
             'codigo',
@@ -118,6 +120,7 @@ class MaterialController extends Controller
             'headers',
             'estado',
             'tipos',
+            'tipoAlma',
             'proveedores',
             'zonas',
             'fases'
