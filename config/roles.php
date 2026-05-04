@@ -49,7 +49,7 @@ return [
         'tracking'      => ['isAdmin', 'isUser'],
         'calendario'    => ['isAdmin', 'isUser'],
         'almacen'       => ['isAdmin', 'isUser'],
-        'insumos'       => ['isAdmin', 'isUser', 'isAnalista'],  // ← NUEVO
+        'insumos'       => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],  // ← NUEVO
 
         // ── Solo Admin ─────────────────────────────────────────
         'configuracion' => ['isAdmin'],
@@ -206,14 +206,14 @@ return [
         'almacen.save'              => ['isAdmin', 'isUser'],
 
         // ── insumos.* ──────────────────────────────────────────  ← NUEVO
-        'insumos.index'             => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.create'            => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.edit'              => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.save'              => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.editStatus'        => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.entregaInsumo'     => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.history'           => ['isAdmin', 'isUser', 'isAnalista'],
-        'insumos.historyInsumo'     => ['isAdmin', 'isUser', 'isAnalista'],
+        'insumos.index'             => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.create'            => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.edit'              => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.save'              => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.editStatus'        => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.entregaInsumo'     => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.history'           => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'insumos.historyInsumo'     => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
 
         // ── tracking.* ─────────────────────────────────────────
         'tracking.index'            => ['isAdmin', 'isUser'],
