@@ -34,17 +34,15 @@
                          autofocus />
                     </div>
 
-                    @if (!Auth::user()->isAlmacenista)
-                        <div class="p-2 shrink-0 w-[40]">
-                            <x-input-label for="tipo" :value="__('Tipo Material')" />
-                            <x-select-input
-                                name="tipo"
-                                :options="$tipos"
-                                :selected="Request('tipo')"
-                                class="block mt-1 w-full"
-                            />
-                        </div>
-                    @endif
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="tipo" :value="__('Tipo Material')" />
+                        <x-select-input
+                            name="tipo"
+                            :options="$tipos"
+                            :selected="Request('tipo')"
+                            class="block mt-1 w-full"
+                        />
+                    </div>
 
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="estado" :value="__('Estado')" />
