@@ -94,7 +94,7 @@ class SolicitudController extends Controller
         $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
 
         $headers = ['Nombre del Proyecto', 'Ubicación', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Opciones'];
-        if(!(Auth::User()->isAdmin || Auth::user()->isAnalista)) {
+        if(!(Auth::User()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista)) {
             $headers = ['Nombre del Proyecto', 'Ubicación', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
         return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'estadosItems', 'userColab', 'ubicacion', 'departamentos'));
