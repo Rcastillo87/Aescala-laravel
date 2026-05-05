@@ -209,7 +209,7 @@ class DespachoController extends Controller
             ->appends(request()->query());
 
 
-        $agrupados = Despachos::with(['proyecto', 'user', 'material'])
+        $agrupados = Despachos::with(['proyecto', 'user', 'material', 'user_despacho'])
             ->whereIn('codigo', $items->pluck('codigo'))
             ->orderBy('createdAt', 'desc')
             ->get()
@@ -224,6 +224,7 @@ class DespachoController extends Controller
                     'tipo' =>  $first->spanEstado,
                     'proyecto' => optional($first->proyecto)->nombre_proyecto ?? 'N/A',
                     'usuario' => optional($first->user)->nombre_completo ?? 'N/A',
+                    'usuarioDespacho' => optional($first->user_despacho)->nombre_completo ?? 'N/A',
                     'cantidad_items' => $group->count(),
                     'total_cobro' => '$ ' . number_format(
                         $group->where('cobro', 1)
@@ -242,6 +243,7 @@ class DespachoController extends Controller
             'tipo',
             'proyecto',
             'usuario',
+            'usuarioDespacho',
             'cantidad_items',
             'total_cobro',
             'createdAt',
@@ -254,6 +256,7 @@ class DespachoController extends Controller
             'tipo'       => 'Tipo',
             'proyecto'   => 'Nombre Proyecto',
             'usuario'    => 'Usuario que recibe el despacho',
+            'usuarioDespacho'    => 'Usuario que Despacho',
             'cantidad_items' => 'Cantidad de Items',
             'total_cobro'     => 'Total a Cobrar',
             'createdAt'  => 'Fecha de Registro',

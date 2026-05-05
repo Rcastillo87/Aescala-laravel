@@ -30,7 +30,7 @@
                             {{ $item->proyecto->ubicacion !== null ? ($ubicacion[$item->proyecto->ubicacion] ?? 'N/A') : 'N/A' }}
                         </td>
 
-                        @if (Auth::User()->isAdmin || Auth::user()->isAnalista)
+                        @if (Auth::User()->isAdmin || Auth::user()->isAnalista|| Auth::user()->isAlmacenista)
                             <td class="py-2 text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                                 {{ $item->usuario->nombre_completo }}
                             </td>
