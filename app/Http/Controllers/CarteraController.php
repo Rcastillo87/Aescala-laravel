@@ -103,7 +103,7 @@ class CarteraController extends Controller
             $valTotalPagado = Pagos::where('id_proyecto', $id)->sum('valor_pagado');
 
             $porcenTx = Proyecto::$porcenTX;
-            $pagos = Pagos::with(['proyecto', 'otro_si'])
+            $pagos = Pagos::with(['proyecto', 'otro_si', 'soporte'])
                 ->where('id_proyecto', $id)
                 ->get()
                 ->map(function ($item) use ($porcenTx, $id) {
@@ -127,6 +127,8 @@ class CarteraController extends Controller
                         "fecha_pago" => $item->fecha_pago,
                         "comentarios" => $item->comentario,
                         "urlRecivo" => route('cartera.reciboPDF', $item->id)
+                        "soporte" => $item->soporte,
+                        "url_soporte" => $item->soporte? 
                     ];
                 })
                 ->toArray();

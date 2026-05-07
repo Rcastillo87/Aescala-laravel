@@ -84,4 +84,11 @@ class Pagos extends Model
             default => 'Desconocido',
         };
     }
+
+    // app/Models/Pagos.php
+    public function soporte()
+    {
+        return $this->morphOne(Documento::class, 'documentable');
+    }
+
 }

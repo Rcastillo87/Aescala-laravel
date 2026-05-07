@@ -143,8 +143,9 @@ async function loadCartera(id) {
 
         if (data.pagos.length > 0) {
             data.pagos.forEach(item => {
+                const tieneSoporte = item.soporte;
 
-                 const btnRecivo =
+                const btnRecivo =
                     `<a data-tooltip-target="tooltip-hover-recivo-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover" href="${item.urlRecivo}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
                             focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -176,6 +177,21 @@ async function loadCartera(id) {
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
                                 ${ item.urlRecivo !== '' ? btnRecivo : '' }
+
+                                <button 
+                                    @click="$dispatch('open-modal-soporte', { 
+                                        id_pago: ${item.id}, 
+                                        tiene_archivo: ${tieneSoporte ? 'true' : 'false'},
+                                        url_ver: '${item.url_soporte ?? ''}', 
+                                        nombre_archivo: '${tieneSoporte?.nombre ?? ''}'
+                                    })"
+                                    class="flex items-center justify-center w-10 h-10 text-white ${tieneSoporte ? 'bg-blue-600 border-blue-800' : 'bg-gray-500 border-gray-700'} hover:bg-white hover:text-blue-800 border-2 focus:ring-4 focus:outline-none font-medium rounded-full text-sm transition-colors"
+                                    title="Soporte de Pago">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                    </svg>
+                                </button>
+
                             </div>
                         </td>
                     </tr>
