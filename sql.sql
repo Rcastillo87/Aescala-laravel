@@ -35,3 +35,16 @@ update inventario_materiales set fase = 4
 
 
 ALTER TABLE pagos ADD COLUMN id_pago BIGINT UNSIGNED NULL AFTER tipo_pago;
+
+
+CREATE TABLE documentos (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    documentable_type VARCHAR(255) NOT NULL, -- El nombre del modelo o tabla (id_tabla)
+    documentable_id BIGINT UNSIGNED NOT NULL,   -- El ID del registro relacionado (id_registro)
+    nombre VARCHAR(255) NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    contenido LONGBLOB NOT NULL,             -- Almacena el binario comprimido
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX (documentable_type, documentable_id)
+);

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Otrosi;
 use App\Models\Proyecto;
 use App\Models\Pagos;
-use App\Models\User;
+use App\Models\Documento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -126,9 +126,9 @@ class CarteraController extends Controller
                         "factura" => $item->fv,
                         "fecha_pago" => $item->fecha_pago,
                         "comentarios" => $item->comentario,
-                        "urlRecivo" => route('cartera.reciboPDF', $item->id)
+                        "urlRecivo" => route('cartera.reciboPDF', $item->id),
                         "soporte" => $item->soporte,
-                        "url_soporte" => $item->soporte? 
+                        "url_soporte" => $item->soporte? route('cartera.viewDocumento', $item->soporte->id) : ''
                     ];
                 })
                 ->toArray();
@@ -398,4 +398,13 @@ class CarteraController extends Controller
             ], 500);
         }
     }
+
+    public function viewDocumento($id)
+    {
+        $doc = Documento::findOrFail($id);
+        return response($doc->contenido_descomprimido)
+                ->header('Content-Type', $doc->mime_type)
+                ->header('Content-Disposition', 'inline; filename="' . $doc->nombre . '"');
+    }
+
 }

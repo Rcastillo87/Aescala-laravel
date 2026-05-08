@@ -178,19 +178,24 @@ async function loadCartera(id) {
                                 </div>
                                 ${ item.urlRecivo !== '' ? btnRecivo : '' }
 
-                                <button 
-                                    @click="$dispatch('open-modal-soporte', { 
-                                        id_pago: ${item.id}, 
+                                <button
+                                    @click="$dispatch('documentoModal', {
+                                        id_pago: ${item.id},
                                         tiene_archivo: ${tieneSoporte ? 'true' : 'false'},
-                                        url_ver: '${item.url_soporte ?? ''}', 
+                                        url_ver: '${item.url_soporte ?? ''}',
                                         nombre_archivo: '${tieneSoporte?.nombre ?? ''}'
                                     })"
-                                    class="flex items-center justify-center w-10 h-10 text-white ${tieneSoporte ? 'bg-blue-600 border-blue-800' : 'bg-gray-500 border-gray-700'} hover:bg-white hover:text-blue-800 border-2 focus:ring-4 focus:outline-none font-medium rounded-full text-sm transition-colors"
-                                    title="Soporte de Pago">
+                                    data-tooltip-target="tooltip-hover-doc-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover"
+                                    class="flex items-center justify-center w-10 h-10 text-white ${tieneSoporte ? 'bg-blue-600 border-blue-800' : 'bg-gray-500 border-gray-700'}
+                                    hover:bg-white hover:text-blue-800 border-2 focus:ring-4 focus:outline-none font-medium rounded-full text-sm transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                                     </svg>
                                 </button>
+                                <div id="tooltip-hover-doc-${item.tipo_pago}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                    Eliminar Pago
+                                    <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
+                                </div>
 
                             </div>
                         </td>

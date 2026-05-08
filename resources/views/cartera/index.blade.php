@@ -88,7 +88,7 @@
     </div>
 
     <div id="divCartera"></div>
-
+    @include('documentoModal')
 @endsection
 
 @section('scripts')

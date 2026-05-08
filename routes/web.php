@@ -21,6 +21,7 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\AlmacenController;
 use App\Http\Controllers\InsumosController;
+use App\Http\Controllers\DocumentoController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -85,6 +86,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $latest->getFilename()
         );
     })->name('descargar.db');
+
+
+    Route::prefix('documento')->name('documento.')->group(function () {
+        Route::post('/save', [DocumentoController::class, 'save'])->name('save');
+        Route::get('/view', [DocumentoController::class, 'view'])->name('view');
+        Route::delete('/destroy', [DocumentoController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('tracking')->name('tracking.')->middleware('role:tracking')->middleware(['auth'])->group(function () {
         Route::get('/index',    [TrackingController::class, 'index'])->name('index');
@@ -218,6 +226,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reciboPDF/{id}', [CarteraController::class, 'reciboPDF'])->name('reciboPDF');
         Route::get('/certificadoPZPDF/{id}/{tipo}', [CarteraController::class, 'certificadoPZPDF'])->name('certificadoPZPDF');
         Route::delete('/deletePago/{id}', [CarteraController::class, 'deletePago'])->name('deletePago');
+        Route::get('/viewDocumento/{id}', [CarteraController::class, 'viewDocumento'])->name('viewDocumento');
     });
 
     Route::prefix('solicitud')->name('solicitud.')->middleware('role:solicitud')->group(function () {
