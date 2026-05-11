@@ -29,4 +29,9 @@ class PagoRefe extends Model
         return $this->morphTo();
     }
 
+    public function pago()
+    {
+        return $this->belongsTo(Pagos::class, 'id_pago', 'id');
+    }
+
 }

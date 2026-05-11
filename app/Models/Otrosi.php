@@ -61,12 +61,6 @@ class Otrosi extends Model
         return $this->hasMany(AreaEntregable::class, 'id_otro_si', 'id');
     }
 
-    public function pagos()
-    {
-        return $this->hasMany(Pagos::class, 'id_pago', 'id')
-            ->where('tipo_pago', 2);
-    }
-
     public function getTokenEncripAttribute()
     {
         $token = Crypt::encryptString($this->id . '||' . $this->numero. '||' . $this->fecha_creacion);

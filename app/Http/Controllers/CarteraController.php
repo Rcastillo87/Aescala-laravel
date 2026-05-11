@@ -138,30 +138,45 @@ class CarteraController extends Controller
                 $porcentProyec[5] * $valProyecto/100
             ];
 
+            $pagosConceptos = PagoRefe::whereHas('pago', function ($q) use ($id) {
+                    $q->where('id_proyecto', $id);
+                })
+                ->where('reference_type', 'App\Models\Proyecto')
+                ->select('concepto')
+                ->selectRaw('SUM(valor) as total')
+                ->groupBy('concepto')
+                ->get()
+                ->pluck('total', 'concepto');
+
+            $restas = [];
+            $firstCero = '';
+            for ($i = 1; $i <= 6; $i++) { 
+                $pagado = $pagosConceptos[$i] ?? 0;
+                $debePagar = $agrupadoPagosProyecto[$i] ?? 0;
+                $restas[$i] = $debePagar - $pagado;
+                if ($firstCero === '' && $pagado < $debePagar) {
+                    $firstCero = $i;
+                }
+            }
+
             $agrupadoPagosOtrosi = Otrosi::where('id_proyecto', $id)
-                    ->orderBy('id', 'desc')
-                    ->get()
-                    ->map(function ($item) {
-                        $valor = (float) $item->totalDeve;
-                        $posicion1 = 0;
-                        $posicion2 = 0;
-                        if ($valor < 10000000) {
-                            $posicion1 = $valor;
-                            $posicion2 = 0;
-                        } else {
-                            $posicion1 = $valor / 2;
-                            $posicion2 = $valor / 2;
+                ->orderBy('id', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    $valor = (float) $item->totalDeve;
+                    $arr = ['Otro Sí N° ' . $item->numero, 0, 0, 0, 0, 0, 0];
+
+                    $pos = $firstCero == 1 ? 2 : $firstCero;
+                    if ($valor < 10000000) {
+                        return $arr[$pos] = $valor;
+                    } else {
+                        if($pos == 6){
+                            return $arr[$pos] = $valor;
                         }
-                        return [
-                            'Otro Sí N° ' . $item->numero,
-                	        0,
-                            $posicion1,
-                            $posicion2,
-                            0,
-                            0,
-                            0
-                        ];
-                    })->toArray();
+                        $arr[$pos] = $valor/2;
+                        $arr[$pos + 1] = $valor/2;
+                    }
+                })->toArray();
 
             return response()->json([
                 'status' => true,
