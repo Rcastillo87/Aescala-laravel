@@ -66,7 +66,7 @@
 
         <form action="{{ route('documento.save') }}" method="POST" enctype="multipart/form-data" class="p-6">
             @csrf
-            <input type="hidden" name="id_tabla" value="App\Models\Pagos">
+            <input type="hidden" name="id_tabla" id="id_tabla">
             <input type="hidden" name="id_registro" :value="pagoId">
 
             <!-- Contenedor Principal de Previsualización -->

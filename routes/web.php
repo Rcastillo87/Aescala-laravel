@@ -224,7 +224,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/indexPagosProyecto/{id}', [CarteraController::class, 'indexPagosProyecto'])->name('indexPagosProyecto');
         Route::post('/save', [CarteraController::class, 'save'])->name('save');
         Route::get('/reciboPDF/{id}', [CarteraController::class, 'reciboPDF'])->name('reciboPDF');
-        Route::get('/certificadoPZPDF/{id}/{tipo}', [CarteraController::class, 'certificadoPZPDF'])->name('certificadoPZPDF');
+        Route::get('/certificadoPZPDF/{id}', [CarteraController::class, 'certificadoPZPDF'])->name('certificadoPZPDF');
         Route::delete('/deletePago/{id}', [CarteraController::class, 'deletePago'])->name('deletePago');
         Route::get('/viewDocumento/{id}', [CarteraController::class, 'viewDocumento'])->name('viewDocumento');
     });

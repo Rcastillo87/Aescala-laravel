@@ -382,6 +382,15 @@ class Proyecto extends Model
         return $this->pagosReferencia()->sum('valor');
     }
 
+    public function getValanceAttribute(){
+        return $this->totalPagado >= $this->total;
+    }
+
+    public function soporteFact()
+    {
+        return $this->morphOne(Documento::class, 'documentable');
+    }
+
     public static $porcenTX = [
         1 => 'correspondiente al inicio de la etapa de diseño',
         2 => 'correspondiente a la aprobación del diseño para dar inicio a la obra',

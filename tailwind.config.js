@@ -31,6 +31,8 @@ export default {
         'sm:items-center',
 
         // Clases de colores y fondos
+        'bg-yellow-600',
+        'border-yellow-800',
         'bg-white',
         'bg-red-100',
         'bg-green-100',

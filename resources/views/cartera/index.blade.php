@@ -100,13 +100,17 @@
             </div>
         </div>
 
-        <div class="flex justify-end p-2">
+        <div class="flex justify-between p-2">
             <button
                 form="formPago"
                 type="submit"
                 class="bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all">
                 Guardar Pago
             </button>
+
+            <div id="idDivBotones">
+
+            </div>
         </div>
     </form>
 </div>

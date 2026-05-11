@@ -47,7 +47,7 @@ class CarteraController extends Controller
 
     private function datapagosProyecto($id){
         try {
-            $proyecto = Proyecto::with('otro_si')->findOrFail($id);
+            $proyecto = Proyecto::with(['otro_si', 'soporteFact'])->findOrFail($id);
             $selectPro = $proyecto->dataSelect;
             $selectOtrosi = $proyecto->otro_si()->get()
                 ->map(function ($item) {
@@ -173,7 +173,8 @@ class CarteraController extends Controller
                     "resumen" => $contratos,
                     "porcentajes" => $porcentProyec,
                     "relacion_pagos" => array_merge([$agrupadoPagosProyecto], $agrupadoPagosOtrosi),
-                    "select" => $select
+                    "select" => $select,
+                    "soporteFact" => $proyecto->soporteFact
                 ]
             ], 200);
         } catch (\Throwable $e) {
@@ -191,13 +192,13 @@ class CarteraController extends Controller
         Gate::authorize('cartera.save');
         $val = [
             'id_proyecto'  => ['required', 'integer', Rule::exists('proyectos', 'id')],
-            'id_tipo'      => 'required|integer',
-            'tipo'         => 'required|integer|in:1,2',
-            'valor_pagado' => 'required|numeric|min:0',
             'comentario'   => 'nullable|string|max:500',
-            'fv'           => 'nullable|string|max:20',
             'fecha_pago'   => 'required|date',
-            'concepto'     => 'nullable|integer'
+            'referencias' => [ 'required', 'array', 'min:1'],
+            'referencias.*.reference_type' => [ 'required', 'string'],
+            'referencias.*.reference_id' => [ 'required', 'integer'],
+            'referencias.*.concepto' => [ 'nullable'],
+            'referencias.*.valor' => [ 'required', 'numeric', 'min:1'],
         ];
 
         $validator = Validator::make($request->all(), $val, [
@@ -205,10 +206,28 @@ class CarteraController extends Controller
             'integer'  => 'Debe ser un número válido.',
             'numeric'  => 'Debe ser un valor numérico.',
             'between'  => 'Valor fuera del rango permitido.',
-            'in'       => 'Valor inválido.',
+            'array'    => 'Formato inválido.',
             'min'      => 'El valor debe ser mayor a 0.',
             'date'     => 'Fecha inválida.',
         ]);
+
+        $validator->after(function ($validator) use ($request) {
+            $referencias = $request->referencias ?? [];
+            $combinaciones = [];
+            foreach ($referencias as $index => $item) {
+                $key =
+                    ($item['reference_type'] ?? '') . '|' .
+                    ($item['reference_id'] ?? '') . '|' .
+                    ($item['concepto'] ?? '');
+                if (in_array($key, $combinaciones)) {
+                    $validator->errors()->add(
+                        "referencias.$index.reference_id",
+                        'La referencia está repetida.'
+                    );
+                }
+                $combinaciones[] = $key;
+            }
+        });
 
         if ($validator->fails()) {
             return response()->json([
@@ -220,31 +239,38 @@ class CarteraController extends Controller
 
         try {
             DB::beginTransaction();
-
-            $rc = Pagos::where([
-                'id_proyecto'  => $request->id_proyecto,
-                'tipo_pago'    => $request->tipo,
-            ])->max('rc') + 1;
-
             $pago = Pagos::create([
                 'id_proyecto'  => $request->id_proyecto,
-                'tipo_pago'    => $request->tipo,
-                'id_pago'      => $request->id_tipo,
-                'valor_pagado' => $request->valor_pagado,
                 'fecha_pago'   => $request->fecha_pago,
                 'comentario'   => $request->comentario ?? '',
-                'concepto'     => $request->concepto,
-                'fv'           => $request->fv,
-                'rc'           => $rc,
                 'id_user'      => Auth::id(),
             ]);
 
-            if ($pago->valance && $request->tipo == 1) {
-                Proyecto::find($request->id_proyecto)->update(['paz_salvo' => 1]);
-            }
+            foreach ($request->referencias as $item) {
+                $referencia = $pago->pago_refe()->create([
+                    'reference_type' => $item['reference_type'],
+                    'reference_id'   => $item['reference_id'],
+                    'concepto'       => $item['concepto'],
+                    'valor'          => $item['valor'],
+                ]);
 
-            if ($pago->valanceOtroSi && $request->tipo == 2) {
-                Otrosi::find($request->id_tipo)->update(['paz_salvo' => 1]);
+                if ($referencia->reference_type === Proyecto::class) {
+                    $proyecto = Proyecto::find($referencia->reference_id);
+                    if ($proyecto && $proyecto->valance) {
+                        $proyecto->update([
+                            'paz_salvo' => 1
+                        ]);
+                    }
+                }
+
+                if ($referencia->reference_type === Otrosi::class) {
+                    $otroSi = Otrosi::find($referencia->reference_id);
+                    if ($otroSi && $otroSi->valance) {
+                        $otroSi->update([
+                            'paz_salvo' => 1
+                        ]);
+                    }
+                }
             }
 
             DB::commit();
@@ -263,11 +289,12 @@ class CarteraController extends Controller
         }
     }
 
-    public function certificadoPZPDF($id_pago, $tipo)
+    public function certificadoPZPDF($id)
     {
         try {
-            $pago = Pagos::with('proyecto', 'otro_si')->where(['id_pago' => $id_pago, 'tipo_pago' => $tipo])->first();
-            $carbon = \Carbon\Carbon::parse($pago->proyecto->fecha_firma);
+
+            $proy = Proyecto::find($id);
+            $carbon = \Carbon\Carbon::parse($proy->fecha_firma);
             $carbon->locale('es');
             $fechaTexto = $carbon->translatedFormat('d \d\e F \d\e Y');
 
@@ -284,16 +311,16 @@ class CarteraController extends Controller
             }
 
             $data = [
-                "id_proyecto"       => $pago->proyecto->id,
+                "id_proyecto"       => $proy->id,
                 "fecha_contrato"    => mb_strtoupper($fechaTexto, 'UTF-8'),
-                "nombre_cliente"    => \Illuminate\Support\Str::title($pago->proyecto->nombre_cliente),
-                "tipo_doc_cliente"  => Proyecto::$tipoDocumento[$pago->proyecto->tipo_doc_cliente][1] ?? '',
-                "documento_cliente" => number_format($pago->proyecto->cedula_cliente, 0, ',', '.'),
+                "nombre_cliente"    => \Illuminate\Support\Str::title($proy->nombre_cliente),
+                "tipo_doc_cliente"  => Proyecto::$tipoDocumento[$proy->tipo_doc_cliente][1] ?? '',
+                "documento_cliente" => number_format($proy->cedula_cliente, 0, ',', '.'),
                 "imgRepre"          => $base64,
             ];
 
             $pdf = PDF::loadView('cartera.certificadoPZPDF', $data);
-            return $pdf->stream('certificadoPZPDF-' . $id_pago . '.pdf');
+            return $pdf->stream('certificadoPZPDF-' . $id . '.pdf');
         } catch (\Exception $e) {
             \Log::error('Error generando certificado PDF: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());

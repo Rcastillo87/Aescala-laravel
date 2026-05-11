@@ -169,6 +169,10 @@ class Otrosi extends Model
         return $this->pagosReferencia()->sum('valor');
     }
 
+    public function getValanceAttribute(){
+        return $this->totalDeve >= $this->totalPago;
+    }
+
     public function getApazAttribute()
     {
         return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>':
