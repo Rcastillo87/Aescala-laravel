@@ -711,6 +711,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("id_user_proy").value = proyecto.id_user;
             document.getElementById("id_user_obra_blanca").value = proyecto.id_user_obra_blanca;
             document.getElementById("id_user_carpinteria").value = proyecto.id_user_carpinteria;
+            document.getElementById("id_user_diseno").value = proyecto.id_user_diseno;
 
             document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
             document.getElementById("observacion").textContent = proyecto.observacion ?? '';

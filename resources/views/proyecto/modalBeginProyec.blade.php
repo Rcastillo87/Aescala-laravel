@@ -144,6 +144,19 @@
                 </div>
 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
+                    <x-input-label for="id_user_diseno" :value="__('Diseñador Encargado')" />
+                    <x-select-input
+                        name="id_user_diseno"
+                        id="id_user_diseno"
+                        :options="$userDiseno"
+                        :data="['id', 'nombre_completo']"
+                        :selected="old('id_user_diseno')"
+                        class="block mt-1 w-full"
+                    />
+                    <x-input-error :messages="$errors->get('id_user_diseno')" class="mt-2" />
+                </div>
+
+                <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                     <label class="inline-flex items-center me-5 cursor-pointer py-7 px-2">
                         <input type="hidden" name="conFechaDise" id="conFechaDise" value="0">
                         <input id="checkboxFechaDise" name="checkboxFechaDise" type="checkbox"

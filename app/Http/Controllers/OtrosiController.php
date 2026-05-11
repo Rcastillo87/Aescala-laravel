@@ -7,7 +7,6 @@ use App\Mail\FirmaContratoMail;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -18,7 +17,6 @@ use App\Models\Otrosi;
 use App\Models\User;
 use App\Models\Proyecto;
 use App\Models\Area;
-use App\Models\AreaEntregable;
 
 class OtrosiController extends Controller
 {
@@ -26,7 +24,7 @@ class OtrosiController extends Controller
     {
         Gate::authorize('otro_si.index');
 
-        $title = 'Lista de Otro Si';
+        $title = 'Lista de Otrosí';
         $usuario = Auth::user();
 
         $items = Otrosi::with(['proyecto', 'user_encargado'])
@@ -75,14 +73,15 @@ class OtrosiController extends Controller
             ->get(['id', 'nombre_completo'])
             ->toArray();
 
-        $title = $id ? 'Editar Otro Si' : 'Crear Otro Si';
+        $title = $id ? 'Editar Otrosí' : 'Crear Otrosí';
 
         $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5])
             ->when(!Auth::user()->isAdmin, function ($query) {
                 $query->where(function ($q) {
                     $q->where('id_user', Auth::user()->id)
                     ->orWhere('id_user_obra_blanca', Auth::user()->id)
-                    ->orWhere('id_user_carpinteria', Auth::user()->id);
+                    ->orWhere('id_user_carpinteria', Auth::user()->id)
+                    ->orWhere('id_user_diseno', Auth::user()->id);
                 });
             })
             ->whereNotNull('cedula_cliente')

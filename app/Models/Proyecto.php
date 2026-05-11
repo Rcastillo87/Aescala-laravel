@@ -37,6 +37,7 @@ class Proyecto extends Model
         'id_user_obra_blanca',
         'id_user_carpinteria',
         'id_user_comercial',
+        'id_user_diseno',
         'area_privada',
         'termino_1_por',
         'termino_2_por',
@@ -314,6 +315,11 @@ class Proyecto extends Model
         return $this->belongsTo(User::class, 'id_user_carpinteria');
     }
 
+    public function userDiseno()
+    {
+        return $this->belongsTo(User::class, 'id_user_diseno');
+    }
+
     public function tareas()
     {
         return $this->hasMany(Tarea::class, 'id_proyecto', 'id');
@@ -366,21 +372,26 @@ class Proyecto extends Model
         return $this->otro_si->sum('total_deve');
     }
 
+    public function pagosReferencia()
+    {
+        return $this->morphMany(PagoRefe::class, 'reference');
+    }
+
     public function getTotalPagadoAttribute()
     {
-        return $this->pagos()->where(['tipo_pago' => 1])->sum('valor_pagado');
+        return $this->pagosReferencia()->sum('valor');
     }
 
     public static $porcenTX = [
-        1 => 'correspondiente al inicio de la etapa de diseño.',
-        2 => 'correspondiente a la aprobación del diseño para dar inicio a la obra.',
-        3 => 'correspondiente al corte de carpintería.',
-        4 => 'correspondiente al inicio de la instalación de carpintería.',
-        5 => 'correspondiente al inicio de la instalación de accesorios, grifería y mesón.',
-        6 => 'correspondiente al pago final por la entrega de la obra.',
+        1 => 'correspondiente al inicio de la etapa de diseño',
+        2 => 'correspondiente a la aprobación del diseño para dar inicio a la obra',
+        3 => 'correspondiente al corte de carpintería',
+        4 => 'correspondiente al inicio de la instalación de carpintería',
+        5 => 'correspondiente al inicio de la instalación de accesorios, grifería y mesón',
+        6 => 'correspondiente al pago final por la entrega de la obra',
     ];
 
-    public function getPagosAttribute()
+    public function getDataSelectAttribute()
     {
         $arrayPagos = [];
         $txtArr = self::$porcenTX;
@@ -389,11 +400,11 @@ class Proyecto extends Model
             $campo = "termino_{$i}_por";
             if (!empty($this->$campo) && $this->$campo >= 0) {
                 $porcentaje = $this->$campo;
-                $arrayPagos[] = [
-                    'id_tipo' => $this->id,
-                    'msg' => "Pago del {$porcentaje}% - {$txtArr[$i]}",
-                    'campo' => $i,
-                    'tipo_pago' => 1
+                $arrayPagos[$i] = [
+                    'reference_id'   => $this->id,
+                    'reference_type' => self::class,
+                    'msg'            => "Abono del {$porcentaje}% - {$txtArr[$i]}",
+                    'concepto'       => $i,
                 ];
             }
         }

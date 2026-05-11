@@ -90,7 +90,7 @@
 <body>
 
 <header>
-    <img src="{{ public_path('img/logo.png') }}" alt="Logo">
+    <img src="{{ public_path('img/logo.png') }}" alt="Logo Empresa">
 </header>
 
 <h1>CERTIFICACIÓN DE PAZ Y SALVO</h1>

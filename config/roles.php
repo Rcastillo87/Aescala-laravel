@@ -33,8 +33,8 @@ return [
         // ── Grupo Proyectos ────────────────────────────────────
         'comercial'     => ['isAdmin', 'isComer'],
         'cartera'       => ['isAdmin', 'iscartera'],
-        'proyecto'      => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista'],
-        'otro_si'       => ['isAdmin', 'isUser', 'iscartera'],
+        'proyecto'      => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista', 'isDiseno'],
+        'otro_si'       => ['isAdmin', 'isUser', 'iscartera', 'isDiseno'],
         'tareas'        => ['isAdmin', 'isUser'],
 
         // ── Grupo Materiales ───────────────────────────────────
@@ -89,7 +89,7 @@ return [
         'herramienta.savePrestamo'  => ['isAdmin', 'isUser'],
 
         // ── proyecto.* ─────────────────────────────────────────
-        'proyecto.index'                => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista'],
+        'proyecto.index'                => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista', 'isDiseno'],
         'proyecto.create'               => ['isAdmin', 'isUser'],
         'proyecto.save'                 => ['isAdmin', 'isUser'],
         'proyecto.begin'                => ['isAdmin', 'isUser'],
@@ -104,7 +104,7 @@ return [
         'proyecto.pdfDespachos'         => ['isAdmin', 'isUser', 'isAlmacenista', 'isContratista', 'isColab'],
         'proyecto.pdfDespacho'          => ['isAdmin', 'isUser', 'isAlmacenista', 'isContratista', 'isColab'],
         'proyecto.listComparativo'      => ['isAdmin', 'isUser', 'isAnalista'],
-        'proyecto.contratoPdf'          => ['isAdmin', 'isUser', 'isComer'],
+        'proyecto.contratoPdf'          => ['isAdmin', 'isUser', 'isComer', 'isDiseno'],
         'proyecto.excelDespachoProyecto'=> ['isAdmin', 'isUser'],
         'proyecto.excelDespachosGeneral'=> ['isAdmin', 'isUser'],
         'proyecto.trataDatosPDF'        => ['isAdmin', 'isUser'],
@@ -153,14 +153,12 @@ return [
         'pedidos.hPedidoproveedor'  => ['isAdmin', 'isUser', 'isAlmacenista'],
 
         // ── otro_si.* ──────────────────────────────────────────
-        'otro_si.index'             => ['isAdmin', 'isUser', 'iscartera'],
-        'otro_si.create'            => ['isAdmin', 'isUser'],
-        'otro_si.edit'              => ['isAdmin', 'isUser'],
-        'otro_si.save'              => ['isAdmin', 'isUser'],
-        'otro_si.otroSiPdf'         => ['isAdmin', 'isUser', 'iscartera'],
-        'otro_si.plantilla_otrosi'  => ['isAdmin', 'isUser'],
-        'otro_si.valiPlantilla'     => ['isAdmin', 'isUser'],
-        'otro_si.sendLinkByEmail'   => ['isAdmin', 'isUser'],
+        'otro_si.index'             => ['isAdmin', 'isUser', 'iscartera', 'isDiseno'],
+        'otro_si.create'            => ['isAdmin', 'isUser', 'isDiseno'],
+        'otro_si.edit'              => ['isAdmin', 'isUser', 'isDiseno'],
+        'otro_si.save'              => ['isAdmin', 'isUser', 'isDiseno'],
+        'otro_si.otroSiPdf'         => ['isAdmin', 'isUser', 'iscartera', 'isDiseno'],
+        'otro_si.sendLinkByEmail'   => ['isAdmin', 'isUser', 'isDiseno'],
 
         // ── cartera.* ──────────────────────────────────────────
         'cartera.index'             => ['isAdmin', 'iscartera'],

@@ -125,6 +125,12 @@
                             <span class="text-md text-black">{{$item->userCarpi['nombre_completo']}}</span>
                         </div>
                     @endif
+                    @if($item->userDiseno)
+                        <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
+                            <p class="text-lg text-gray-500 font-bold">Diseñador Encargado</p>
+                            <span class="text-md text-black">{{$item->userDiseno['nombre_completo']}}</span>
+                        </div>
+                    @endif
                     @if($item->fec_fin_real)
                         <div class="w-full max-w-full pl-2 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0 mb-1 pt-1">
                             <p class="text-lg text-gray-500 font-bold">Fecha de Entrega</p>
@@ -165,7 +171,7 @@
 
                         <!-- Botón Contrato -->
                             <div class="relative
-                            @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isColab || Auth::user()->isComer || Auth::user()->isAlmacenista) || ($item->entreProyecto->count() === 0))
+                            @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isColab || Auth::user()->isComer || Auth::user()->isAlmacenista || Auth::user()->isDiseno) || ($item->entreProyecto->count() === 0))
                                 hidden
                             @endif">
                             <a tabindex="0"
@@ -275,7 +281,7 @@
                         </div>-->
 
                         <!-- Botón despachos -->
-                        <div class="relative">
+                        <div class="relative {{!Auth::user()->isDiseno ? '' : 'hidden'}}">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-despachos-{{$item->id}}" data-tooltip-trigger="hover"
                                onclick="listaDespachos({{$item->id}})" x-data=""
                                x-on:click="$dispatch('open-modal', 'despachos-modal')"

@@ -154,6 +154,11 @@ class User extends Authenticatable
         return ($this->id_rol == 9)? true: false;
     }
 
+    public function getIsDisenoAttribute()
+    {
+        return ($this->id_rol == 10)? true: false;
+    }
+
     public function getNewProyectAttribute()
     {
         return Proyecto::when(Auth::user()->isColab, function ($query) {
@@ -184,13 +189,14 @@ class User extends Authenticatable
     public static $roles = [
         1 => 'Administrador',
         2 => 'Usuario',
-        3 => 'Arquitecto',
+        3 => 'Residente',
         4 => 'Comercial',
         5 => 'Cartera',
         6 => 'Analista',
         7 => 'Contratista',
         8 => 'Tecnico',
         9 => 'Almacenista',
+        10 => 'Diseño',
     ];
 
     public static $ClassRol = [
@@ -203,6 +209,7 @@ class User extends Authenticatable
         7 => 'span-cyan',
         8 => 'span-orange',
         9 => 'span-purple',
+        10 => 'span-indigo',
     ];
 
     public static $estado = [

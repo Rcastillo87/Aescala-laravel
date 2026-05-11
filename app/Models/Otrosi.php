@@ -159,18 +159,30 @@ class Otrosi extends Model
                     ->value('subtotal');
     }
 
+    public function pagosReferencia()
+    {
+        return $this->morphMany(PagoRefe::class, 'reference');
+    }
+
     public function getTotalPagoAttribute()
     {
-        return $this->pagos()->where([
-            'id_pago' => $this->id,
-            'tipo_pago' => 2
-        ])->sum('valor_pagado');
+        return $this->pagosReferencia()->sum('valor');
     }
 
     public function getApazAttribute()
     {
         return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>':
             '<span class="span-red">NO</span>';
+    }
+
+    public function getDataSelectAttribute()
+    {
+        return [
+            'reference_id'   => $this->id,
+            'reference_type' => self::class,
+            'msg'            => "Otrosí N° {$this->numero}",
+            'concepto'       => '',
+        ];
     }
 
 }

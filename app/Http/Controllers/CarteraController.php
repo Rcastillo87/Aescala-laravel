@@ -48,15 +48,10 @@ class CarteraController extends Controller
     private function datapagosProyecto($id){
         try {
             $proyecto = Proyecto::with('otro_si')->findOrFail($id);
-            $selectPro = $proyecto->pagos;
+            $selectPro = $proyecto->dataSelect;
             $selectOtrosi = $proyecto->otro_si()->get()
                 ->map(function ($item) {
-                    return [
-                        'id_tipo' => $item->id,
-                        'msg' => "Otro Si N° " . $item->numero,
-                        'campo' => '',
-                        'tipo_pago' => 2
-                    ];
+                    return $item->dataSelect;
                 })->toArray();
 
             $select = array_merge($selectPro, $selectOtrosi);
@@ -91,7 +86,7 @@ class CarteraController extends Controller
                         "id_proyecto" => $id,
                         "id_pago" => $item->id,
                         "tipo" => 2,
-                        "concepto" => "Otro Si N° " . $item->numero,
+                        "concepto" => "Otrosí N° " . $item->numero,
                         "valor_total" => $item->total_deve,
                         "urlContrato" => route('otro_si.otroSiPdf', $item->id),
                         "pazysalvo" => $item->paz_salvo
@@ -100,30 +95,30 @@ class CarteraController extends Controller
                 ->toArray();
             $contratos = array_merge([$contraProyec], $contraOtrosi);
 
-            $valTotalPagado = Pagos::where('id_proyecto', $id)->sum('valor_pagado');
+            $valTotalPagado = Pagos::where('id_proyecto', $id)->get()->sum('valorTotal');
 
-            $porcenTx = Proyecto::$porcenTX;
-            $pagos = Pagos::with(['proyecto', 'otro_si', 'soporte'])
+            $pagos = Pagos::with(['proyecto', 'soporte', 'pago_refe.reference'])
                 ->where('id_proyecto', $id)
                 ->get()
-                ->map(function ($item) use ($porcenTx, $id) {
-                    if ($item->tipo_pago == 1) {
-                        $campo = "termino_{$item->concepto}_por";
-                        $concepto = 'Porcentaje: '
-                            . ($item->proyecto?->$campo ?? 0)
-                            . '% '
-                            . ($porcenTx[$item->concepto] ?? '');
-                    } else {
-                        $concepto = 'Otro Sí N° ' . ($item->otro_si?->numero ?? '');
-                    }
+                ->map(function ($item) {
+                    $texto = $item->pago_refe
+                        ->map(function ($ref) {
+                            $data = $ref->reference?->data_select;
+                            if (!$data) {
+                                return null;
+                            }
+                            if (is_array($data) && isset($data[$ref->concepto])) {
+                                return $data[$ref->concepto]['msg'];
+                            }
+                            return $data['msg'] ?? null;
+                        })
+                        ->filter()
+                        ->implode(', ');
                     return [
                         "id" => $item->id,
                         "id_proyecto" => $item->id_proyecto,
-                        "id_pago" => $item->id_pago,
-                        "tipo_pago" => $item->tipo_pago,
-                        "concepto" => $concepto,
-                        "valor_pago" => $item->valor_pagado,
-                        "factura" => $item->fv,
+                        "concepto" => $texto,
+                        "valor_pago" => $item->valorTotal,
                         "fecha_pago" => $item->fecha_pago,
                         "comentarios" => $item->comentario,
                         "urlRecivo" => route('cartera.reciboPDF', $item->id),
@@ -173,10 +168,9 @@ class CarteraController extends Controller
                 'message' => 'Consulta exitosa',
                 'data' => [
                     "pagos" => $pagos,
-                    "total_pagos" => Pagos::where('id_proyecto', $id)->sum('valor_pagado'),
-                    "resumen" => $contratos,
                     "total_proyecto" => $valTotodal,
                     "total_pagado" => $valTotalPagado,
+                    "resumen" => $contratos,
                     "porcentajes" => $porcentProyec,
                     "relacion_pagos" => array_merge([$agrupadoPagosProyecto], $agrupadoPagosOtrosi),
                     "select" => $select
@@ -311,20 +305,28 @@ class CarteraController extends Controller
         Gate::authorize('cartera.reciboPDF');
 
         // 1. Usamos get() para obtener una colección y poder mapear después
-        $pagosQuery = Pagos::find($id);
+        $pagosQuery = Pagos::with('pago_refe.reference')->find($id);
 
         if (!$pagosQuery) {
             abort(404, 'El pago no existe');
         }
 
         $proyecto = $pagosQuery->proyecto;
-        $totalPago = $pagosQuery->valor_pagado;
+        $totalPago = $pagosQuery->valorTotal;
 
-        if ($pagosQuery->tipo_pago == 1) {
-            $descripcion = collect($proyecto->Pagos)->where('campo', $pagosQuery->concepto)->first()['msg'] ?? 'Pago de Proyecto';
-        } else {
-            $descripcion = 'Pago Otro Si # ' . ($pagosQuery->otro_si->numero ?? '');
-        }
+        $descripcion = $pagosQuery->pago_refe
+            ->map(function ($ref) {
+                $data = $ref->reference?->data_select;
+                if (!$data) {
+                    return null;
+                }
+                if (is_array($data) && isset($data[$ref->concepto])) {
+                    return $data[$ref->concepto]['msg'];
+                }
+                return $data['msg'] ?? null;
+            })
+            ->filter()
+            ->implode(', ');
 
         $pagosQuery->descripcion = $descripcion;
 
@@ -340,18 +342,10 @@ class CarteraController extends Controller
             'proyecto'      => $proyecto,
             'ciudad_dpt'    => $ciudad_dpt,
             'tipo_doc_acro' => Proyecto::$tipoDocumento[$proyecto->tipo_doc_cliente][0] ?? '',
-            'total_pago'    => $totalPago,
-            'logo'          => public_path('img/logo.png')
+            'total_pago'    => $totalPago
         ];
 
-        $pdf = Pdf::loadView('cartera.reciboPDF', $data)
-            ->setPaper('letter', 'portrait')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled'      => true,
-                'defaultFont'          => 'DejaVu Sans'
-            ]);
-
+        $pdf = Pdf::loadView('cartera.reciboPDF', $data);
         return $pdf->stream('recibo-'.$id.'.pdf');
     }
 

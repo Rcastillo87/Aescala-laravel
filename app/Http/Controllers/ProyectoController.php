@@ -71,16 +71,12 @@ class ProyectoController extends Controller
                 return $query->where('id_user', $id_user);
             })
             ->when($contra, function ($query, $contra) {
-                return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_carpinteria', $contra);
+                return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_carpinteria', $contra)->orwhere('id_user_diseno', $contra);
             })
             ->whereNotNull('id_estado')
             ->orderBy('id', 'desc')
             ->paginate($perPage)
             ->appends(request()->query());
-
-        $userColab = User::where('id_rol', 3)->where('activo', 1)
-            ->get(['id', 'nombre_completo'])
-            ->toArray();
 
         $estadoTarea = Tarea::$estado;
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
@@ -98,21 +94,31 @@ class ProyectoController extends Controller
         $tipoDoc = Proyecto::$tipoDocumento;
         $ubicacion = Proyecto::$ubicacion;
 
+        $userColab = User::where('id_rol', 3)->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
+
+        $userDiseno = User::where('id_rol', 10)->where('activo', 1)
+            ->get(['id', 'nombre_completo'])
+            ->toArray();
 
         $colaUsers = User::where('id_rol', 3)
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
+
         $contraUsers = User::where('id_rol', 7)
             ->where('activo', 1)
             ->get(['id', 'nombre_completo'])
             ->toArray();
+
         return view('proyecto.index', compact(
             'title',
             'items',
             'estado',
             'departamentos',
             'userColab',
+            'userDiseno',
             'estadoTarea',
             'tareaTipo',
             'tipoDoc',
@@ -250,6 +256,11 @@ class ProyectoController extends Controller
                 'integer',
                 Rule::exists('users', 'id'),
             ],
+            'id_user_diseno' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
             'dias_trabajo_begin' => [
                 'required_if:conFechaFin_b,0',
                 'integer',
@@ -275,6 +286,7 @@ class ProyectoController extends Controller
             'id_user_proy'           => 'arquitecto encargado',
             'id_user_obra_blanca'    => 'contratista de obra blanca',
             'id_user_carpinteria'    => 'contratista de carpintería',
+            'id_user_diseno'         => 'diseñador encargado',
             'dias_trabajo_begin'     => 'días de duración del proyecto',
             'conFechaFin_b'          => 'con fecha fin',
             'fec_inicio_begin'       => 'fecha de inicio del proyecto',

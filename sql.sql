@@ -48,3 +48,25 @@ CREATE TABLE documentos (
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX (documentable_type, documentable_id)
 );
+
+
+ALTER TABLE proyectos ADD COLUMN id_user_diseno BIGINT NULL AFTER id_user_comercial;
+
+ALTER TABLE aescala.pagos DROP COLUMN tipo_pago;
+ALTER TABLE aescala.pagos DROP COLUMN id_pago;
+ALTER TABLE aescala.pagos DROP COLUMN valor_pagado;
+ALTER TABLE aescala.pagos DROP COLUMN concepto;
+ALTER TABLE aescala.pagos DROP COLUMN rc;
+ALTER TABLE aescala.pagos DROP COLUMN fv;
+
+CREATE TABLE aescala.pago_referencia (
+    id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
+    id_pago BIGINT UNSIGNED NOT NULL,
+    reference_type VARCHAR(255) NOT NULL,
+    reference_id BIGINT UNSIGNED NOT NULL,
+    concepto VARCHAR(255) NULL,
+    valor BIGINT UNSIGNED NOT NULL,
+    CONSTRAINT pago_referencia_pk PRIMARY KEY (id),
+    INDEX idx_pago_referencia_ref (reference_type, reference_id),
+    INDEX idx_pago_referencia_pago (id_pago)
+);

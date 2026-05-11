@@ -15,10 +15,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     // todos los inputs que quieres controlar
     const campos = [
-        document.getElementById('concepto'),
         document.getElementById('fecha_pago'),
-        document.getElementById('fv'),
-        document.getElementById('valor_pagado'),
         document.getElementById('comentario'),
     ];
 
@@ -52,42 +49,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
  });
 
-function renderSelectConcepto(data) {
-    const selectElement = document.getElementById('concepto');
-    if (!selectElement) return;
-
-    // Limpiamos el select
-    selectElement.innerHTML = '<option value="">Seleccione un concepto</option>';
-
-    if (data && Array.isArray(data)) {
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = (item.tipo_pago === 1) ? item.campo : item.id_tipo;
-            option.textContent = item.msg;
-            option.dataset.tipoPago = item.tipo_pago ?? '';
-            option.dataset.idTipo = item.id_tipo ?? '';
-            selectElement.appendChild(option);
-        });
-    }
-
-    // Evento para actualizar los inputs ocultos
-    selectElement.onchange = function () {
-        const selectedOption = this.options[this.selectedIndex];
-        if (!selectedOption || selectedOption.value === "") {
-            document.getElementById('tipo').value = "";
-            document.getElementById('id_tipo').value = "";
-            return;
-        }
-
-        const tipoPago = selectedOption.dataset.tipoPago || '';
-        const idTipo = selectedOption.dataset.idTipo || '';
-        const inputTipoPago = document.getElementById('tipo');
-        if (inputTipoPago) inputTipoPago.value = tipoPago;
-        const inputidTipo = document.getElementById('id_tipo');
-        if (inputidTipo) inputidTipo.value = idTipo;
-    };
-}
-
 async function loadCartera(id) {
     try {
         Swal.fire({
@@ -111,7 +72,15 @@ async function loadCartera(id) {
 
         const data = response.data;
         const div = document.getElementById('divCartera');
-        renderSelectConcepto(data.select);
+        dataSelect = data.select;
+
+        contenedor.innerHTML = '';
+        indexReferencia = 0;
+
+        if (dataSelect.length > 0) {
+            agregarReferencia();
+        }
+
         div.innerHTML = '';
 
         /*
@@ -132,7 +101,6 @@ async function loadCartera(id) {
                             <tr>
                                 <th class="p-3">Concepto</th>
                                 <th class="p-3">Valor Pago</th>
-                                <th class="p-3">Factura</th>
                                 <th class="p-3">Fecha</th>
                                 <th class="p-3">Comentario</th>
                                 <th class="p-3">Opciones</th>
@@ -146,14 +114,14 @@ async function loadCartera(id) {
                 const tieneSoporte = item.soporte;
 
                 const btnRecivo =
-                    `<a data-tooltip-target="tooltip-hover-recivo-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover" href="${item.urlRecivo}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
+                    `<a data-tooltip-target="tooltip-hover-recivo-${item.id}" data-tooltip-trigger="hover" href="${item.urlRecivo}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
                             focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
                         </svg>
                     </a>
-                    <div id="tooltip-hover-recivo-${item.tipo_pago}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
-                        PDF Recivo
+                    <div id="tooltip-hover-recivo-${item.id}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                        PDF Recibo
                         <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                     </div>`;
 
@@ -161,18 +129,17 @@ async function loadCartera(id) {
                     <tr class="border-t hover:bg-gray-50">
                         <td class="p-3">${item.concepto ?? '--'}</td>
                         <td class="p-3">${formatCurrency(item.valor_pago)}</td>
-                        <td class="p-3">${item.factura ?? '--'}</td>
                         <td class="p-3">${item.fecha_pago ?? '--'}</td>
                         <td class="p-3">${item.comentarios ?? '--'}</td>
                         <td class="p-3">
                             <div class=" flex items-center justify-center space-x-2">
-                                <a data-tooltip-target="tooltip-hover-delete-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover" onclick="deletePago(${item.id})" class="flex items-center justify-center w-10 h-10 text-white bg-red-700 hover:bg-white hover:text-red-800 border-2 border-red-800 focus:ring-4
+                                <a data-tooltip-target="tooltip-hover-delete-${item.id}" data-tooltip-trigger="hover" onclick="deletePago(${item.id})" class="flex items-center justify-center w-10 h-10 text-white bg-red-700 hover:bg-white hover:text-red-800 border-2 border-red-800 focus:ring-4
                                         focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
                                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
                                     </svg>
                                 </a>
-                                <div id="tooltip-hover-delete-${item.tipo_pago}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                <div id="tooltip-hover-delete-${item.id}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
                                     Eliminar Pago
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
@@ -185,15 +152,15 @@ async function loadCartera(id) {
                                         url_ver: '${item.url_soporte ?? ''}',
                                         nombre_archivo: '${tieneSoporte?.nombre ?? ''}'
                                     })"
-                                    data-tooltip-target="tooltip-hover-doc-${item.tipo_pago}-${item.id_pago}" data-tooltip-trigger="hover"
+                                    data-tooltip-target="tooltip-hover-doc-${item.id}" data-tooltip-trigger="hover"
                                     class="flex items-center justify-center w-10 h-10 text-white ${tieneSoporte ? 'bg-blue-600 border-blue-800' : 'bg-gray-500 border-gray-700'}
                                     hover:bg-white hover:text-blue-800 border-2 focus:ring-4 focus:outline-none font-medium rounded-full text-sm transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                                     </svg>
                                 </button>
-                                <div id="tooltip-hover-doc-${item.tipo_pago}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
-                                    Eliminar Pago
+                                <div id="tooltip-hover-doc-${item.id}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                    Comprobante de Pago
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
 
@@ -208,7 +175,7 @@ async function loadCartera(id) {
                     <td colspan="6" class="p-3 text-right">
                         Total Pagado:
                         <span class="text-red-600 ml-2">
-                            ${formatCurrency(data.total_pagos)}
+                            ${formatCurrency(data.total_pagado)}
                         </span>
                     </td>
                 </tr>
@@ -522,3 +489,176 @@ deletePago = async (id) => {
     }
 }
 
+
+let dataSelect = [];
+let indexReferencia = 0;
+const contenedor = document.getElementById('contenedorReferencias');
+document.getElementById('btnAddReferencia').addEventListener('click', agregarReferencia);
+
+function agregarReferencia() {
+    const html = `
+        <div class="referencia-item border rounded-xl p-4 bg-gray-50 relative">
+            <button
+                type="button"
+                class="btnEliminar absolute top-3 right-3 text-red-600 hover:text-red-800">
+                ✕
+            </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Concepto del Pago *
+                    </label>
+                    <select
+                        class="references border-gray-300 rounded-lg shadow-sm block w-full"
+                        required>
+                        <option value="">
+                            Seleccione...
+                        </option>
+                        ${generarOpciones()}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Valor de la Referencia *
+                    </label>
+                    <input
+                        type="number"
+                        min="0"
+                        name="referencias[${indexReferencia}][valor]"
+                        class="valorReferencia block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-300 focus:border-blue-400"
+                        placeholder="Ej: 200.000"
+                        required>
+                </div>
+            </div>
+            <input type="hidden" name="referencias[${indexReferencia}][reference_type]" class="reference_type">
+            <input type="hidden" name="referencias[${indexReferencia}][reference_id]" class="reference_id">
+            <input type="hidden" name="referencias[${indexReferencia}][concepto]" class="concepto">
+        </div>
+    `;
+
+    contenedor.insertAdjacentHTML('beforeend', html);
+    const item = contenedor.lastElementChild;
+    configurarEventos(item);
+    indexReferencia++;
+}
+
+function generarOpciones() {
+    return dataSelect.map(item => {
+        return `
+            <option
+                value="${item.reference_type}|${item.reference_id}|${item.concepto}"
+                data-reference_type="${item.reference_type}"
+                data-reference_id="${item.reference_id}"
+                data-concepto="${item.concepto}">
+                ${item.msg}
+            </option>
+        `;
+    }).join('');
+}
+
+function configurarEventos(item) {
+    const select = item.querySelector('.references');
+    const valor = item.querySelector('.valorReferencia');
+    const btnEliminar = item.querySelector('.btnEliminar');
+
+    select.addEventListener('change', function () {
+        const option = this.options[this.selectedIndex];
+        item.querySelector('.reference_type').value = option.dataset.reference_type;
+        item.querySelector('.reference_id').value = option.dataset.reference_id;
+        item.querySelector('.concepto').value = option.dataset.concepto;
+        validarDuplicados(this);
+    });
+
+    valor.addEventListener('input', actualizarTotal);
+
+    btnEliminar.addEventListener('click', function () {
+        const totalReferencias = document.querySelectorAll('.referencia-item').length;
+        if (totalReferencias <= 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mínimo una referencia',
+                text: 'Debe existir al menos una referencia de pago.'
+            });
+            return;
+        }
+        Swal.fire({
+            title: 'Eliminar referencia',
+            text: '¿Desea eliminar esta referencia?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                item.remove();
+                actualizarTotal();
+            }
+        });
+    });
+}
+
+function validarDuplicados(selectActual) {
+    const valores = [];
+    let repetido = false;
+    document.querySelectorAll('.references').forEach(select => {
+        if (!select.value) return;
+        if (valores.includes(select.value)) {
+            repetido = true;
+        }
+        valores.push(select.value);
+    });
+
+    if (repetido) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Referencia duplicada',
+            text: 'No puede seleccionar la misma referencia más de una vez.'
+        });
+        selectActual.value = '';
+        const item = selectActual.closest('.referencia-item');
+        item.querySelector('.reference_type').value = '';
+        item.querySelector('.reference_id').value = '';
+        item.querySelector('.concepto').value = '';
+    }
+}
+
+function actualizarTotal() {
+    let total = 0;
+    document.querySelectorAll('.valorReferencia').forEach(input => {
+        total += Number(input.value) || 0;
+    });
+    document.getElementById('totalReferencias').innerText =
+        total.toLocaleString('es-CO', {
+            style: 'currency',
+            currency: 'COP'
+        });
+}
+
+document.getElementById('formPago').addEventListener('submit', function(e){
+    const referencias = document.querySelectorAll('.referencia-item');
+    if(referencias.length === 0){
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Debe ingresar mínimo una referencia'
+        });
+        return;
+    }
+
+    let valido = true;
+    referencias.forEach(item => {
+        const select = item.querySelector('.references');
+        const valor = item.querySelector('.valorReferencia');
+        if(!select.value || !valor.value){
+            valido = false;
+        }
+    });
+
+    if(!valido){
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Complete todas las referencias'
+        });
+    }
+});
