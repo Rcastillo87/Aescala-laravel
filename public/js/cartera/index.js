@@ -103,6 +103,7 @@ async function loadCartera(id) {
                                 <th class="p-3">Valor Pago</th>
                                 <th class="p-3">Fecha</th>
                                 <th class="p-3">Comentario</th>
+                                <th class="p-3">RC</th>
                                 <th class="p-3">Opciones</th>
                             </tr>
                         </thead>
@@ -131,6 +132,7 @@ async function loadCartera(id) {
                         <td class="p-3">${formatCurrency(item.valor_pago)}</td>
                         <td class="p-3">${item.fecha_pago ?? '--'}</td>
                         <td class="p-3">${item.comentarios ?? '--'}</td>
+                        <td class="p-3">${item.rc ?? '--'}</td>
                         <td class="p-3">
                             <div class=" flex items-center justify-center space-x-2">
                                 <a data-tooltip-target="tooltip-hover-delete-${item.id}" data-tooltip-trigger="hover" onclick="deletePago(${item.id})" class="flex items-center justify-center w-10 h-10 text-white bg-red-700 hover:bg-white hover:text-red-800 border-2 border-red-800 focus:ring-4
@@ -170,6 +172,24 @@ async function loadCartera(id) {
                                 </button>
                                 <div id="tooltip-hover-doc-${item.id}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
                                     Comprobante de Pago
+                                    <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
+                                </div>
+
+                                <button
+                                    @click="
+                                        document.getElementById('id_pago_rc').value = ${item.id}??'';
+                                        document.getElementById('rc').value = '${item.rc??''}';
+                                        $dispatch('open-modal', 'modalRC')"
+                                    data-tooltip-target="tooltip-hover-rc-${item.id}"
+                                    data-tooltip-trigger="hover"
+                                    class="flex items-center justify-center w-10 h-10 text-white bg-orange-600 border-orange-800
+                                    hover:bg-white hover:text-orange-800 border-2 focus:ring-4 focus:outline-none font-medium rounded-full text-sm transition-colors">
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6.2V5h11v1.2M8 5v14m-3 0h6m2-6.8V11h8v1.2M17 11v8m-1.5 0h3"/>
+                                    </svg>
+                                </button>
+                                <div id="tooltip-hover-rc-${item.id}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                    Ingresar RC
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
 
@@ -399,12 +419,22 @@ async function loadCartera(id) {
                     <tbody>
         `;
 
-        let arrPorcenSum = {};
         if (Array.isArray(data.relacion_pagos) && data.relacion_pagos.length > 0) {
 
-            let arrPorcenSum = {};
-            data.relacion_pagos.forEach(item => {
-                relacionHTML += `<tr class="border-t">`;
+            const cantidad = data.relacion_pagos.length - 1;
+
+            data.relacion_pagos.forEach((item, index0) => {
+
+                let val = cantidad - index0;
+                let color = '';
+                if(val == 1){
+                    color = 'text-green-700 font-bold bg-green-50';
+                }
+                if(val == 0){
+                    color = 'text-red-700 font-bold bg-red-50';
+                }
+
+                relacionHTML += `<tr class="border-t ${color}">`;
                 item.forEach((valor, index) => {
                     let valorNumerico = parseFloat(valor) || 0;
                     if (index === 0) {
@@ -413,7 +443,6 @@ async function loadCartera(id) {
                                 ${valor}
                             </td>`;
                     } else {
-                        arrPorcenSum[index] = (arrPorcenSum[index] || 0) + valorNumerico;
                         relacionHTML += `
                             <td class="p-3">
                                 ${formatCurrency(valorNumerico)}
@@ -422,20 +451,6 @@ async function loadCartera(id) {
                 });
                 relacionHTML += `</tr>`;
             });
-            relacionHTML += `
-                </tbody>
-                <tfoot class="bg-gray-100 dark:bg-gray-800 font-bold border-t-2 border-gray-300">
-                    <tr>
-                        <td class="p-3 text-left uppercase text-xs">Totales</td>
-                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[1] || 0)}</td>
-                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[2] || 0)}</td>
-                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[3] || 0)}</td>
-                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[4] || 0)}</td>
-                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[5] || 0)}</td>
-                        <td class="p-3 text-green-700">${formatCurrency(arrPorcenSum[6] || 0)}</td>
-                    </tr>
-                </tfoot>
-            </table>`;
         } else {
             relacionHTML += `
                 <tr>
@@ -563,10 +578,10 @@ function agregarReferencia() {
         <div class="referencia-item border rounded-xl p-4 bg-gray-50 relative">
             <button
                 type="button"
-                class="btnEliminar absolute top-3 right-3 text-red-600 hover:text-red-800">
+                class="btnEliminar absolute top-2 right-2 text-white bg-red-600 hover:bg-red-800 rounded-md px-2 py-1">
                 ✕
             </button>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         Concepto del Pago *

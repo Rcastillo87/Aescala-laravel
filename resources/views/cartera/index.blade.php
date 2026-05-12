@@ -118,6 +118,7 @@
 <div id="divCartera"></div>
 
 @include('documentoModal')
+@include('cartera.modalRC')
 @endsection
 @section('scripts')
 

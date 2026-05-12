@@ -132,7 +132,6 @@ class Otrosi extends Model
             "adicionales"       => $arr,
             "subtotal"          => number_format($subtotal, 0, ',', '.'),
             "valor_total"       => number_format($valorTotal, 0, ',', '.'),
-            "img_firma"         => '',
             "imgRepre"          => $base64,
             "nombre_proyecto" => $this->proyecto->nombre_proyecto,
             "img_firma"         => $this->img_firma,

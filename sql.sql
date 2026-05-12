@@ -70,3 +70,6 @@ CREATE TABLE aescala.pago_referencia (
     INDEX idx_pago_referencia_ref (reference_type, reference_id),
     INDEX idx_pago_referencia_pago (id_pago)
 );
+
+ALTER TABLE aescala.pagos ADD rc varchar(20) NULL;
+ALTER TABLE aescala.pagos CHANGE rc rc varchar(20) NULL AFTER comentario;

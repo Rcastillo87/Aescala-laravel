@@ -18,6 +18,7 @@ class Pagos extends Model
         'id_user',
         'fecha_pago',
         'comentario',
+        'rc'
     ];
 
     public function proyecto()
