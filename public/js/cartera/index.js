@@ -705,11 +705,7 @@ function actualizarTotal() {
     document.querySelectorAll('.valorReferencia').forEach(input => {
         total += Number(input.value) || 0;
     });
-    document.getElementById('totalReferencias').innerText =
-        total.toLocaleString('es-CO', {
-            style: 'currency',
-            currency: 'COP'
-        });
+    document.getElementById('totalReferencias').innerText = formatCurrency(total);
 }
 
 document.getElementById('formPago').addEventListener('submit', function(e){

@@ -224,17 +224,25 @@ class CarteraController extends Controller
                     return $arr;
                 })->toArray();
 
-            $linePagos = array_map(function($a, $b) {
-                return (float)$a + (float)$b;
-            }, $lineaPagoPro, $linePagoOtrosi[0]);
-            $linePagos = array_combine(array_keys($lineaPagoPro), $linePagos);
+            if(!empty($linePagoOtrosi)){
+                $linePagos = array_map(function($a, $b) {
+                    return (float)$a + (float)$b;
+                }, $lineaPagoPro, $linePagoOtrosi[0]);
+                $linePagos = array_combine(array_keys($lineaPagoPro), $linePagos);
+            } else {
+                $linePagos = $lineaPagoPro;
+            }
 
-            $datos1 = array_slice([$lineDeveProy][0], 1);
-            $datos2 = array_slice($lineDeveOtrosi[0], 1);
             $lineDeve = [];
-            foreach ($datos1 as $index => $valor) {
-                $nuevoIndice = $index + 1;
-                $lineDeve[$nuevoIndice] = (float)$valor + (float)($datos2[$index] ?? 0);
+            if(!empty($lineDeveOtrosi)){
+                $datos1 = array_slice([$lineDeveProy][0], 1);
+                $datos2 = array_slice($lineDeveOtrosi[0], 1);
+                foreach ($datos1 as $index => $valor) {
+                    $nuevoIndice = $index + 1;
+                    $lineDeve[$nuevoIndice] = (float)$valor + (float)($datos2[$index] ?? 0);
+                }
+            } else {
+                $lineDeve = array_slice([$lineDeveProy][0], 1);
             }
 
             $lineBalance = array_map(function($a, $b) {

@@ -9,9 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectMateriales = document.getElementById('selectMateriales');
 
     // ── Datos desde el DOM ───────────────────────────────────────────────────
-    const arrayMateriales  = JSON.parse(document.getElementById('arrayMateriales').value  || '[]');
-    const arrayInsumos     = JSON.parse(document.getElementById('arrayInsumos').value     || '[]');
-    const arrayProveedores = JSON.parse(document.getElementById('arrayProveedores').value || '[]');
+    const inputMateriales = document.getElementById('arrayMateriales');
+    const arrayMateriales = inputMateriales ? JSON.parse(inputMateriales.value || '[]'): [];
+
+    const arrayInsumosInput =  document.getElementById('arrayInsumos');
+    const arrayInsumos     = arrayInsumosInput ? JSON.parse(arrayInsumosInput.value || '[]'): [];
+
+    const arrayProveedoresInput =  document.getElementById('arrayProveedores');
+    const arrayProveedores     = arrayProveedoresInput ? JSON.parse(arrayProveedoresInput.value || '[]'): [];
 
     // ── Estado ───────────────────────────────────────────────────────────────
     const addedMaterials = new Set();
