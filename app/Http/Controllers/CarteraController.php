@@ -130,8 +130,8 @@ class CarteraController extends Controller
                 })
                 ->toArray();
 
+            //valance proyecto
             $lineDeveProy = [
-                'Contrato',
                 $porcentProyec[0] * $valProyecto/100,
                 $porcentProyec[1] * $valProyecto/100,
                 $porcentProyec[2] * $valProyecto/100,
@@ -141,117 +141,53 @@ class CarteraController extends Controller
             ];
 
             $lineaPagoPro = PagoRefe::whereHas('pago', function ($q) use ($id) {
-                    $q->where('id_proyecto', $id);
-                })
-                ->where('reference_type', 'App\Models\Proyecto')
-                ->select('concepto')
-                ->selectRaw('SUM(valor) as total')
-                ->groupBy('concepto')
-                ->get()
-                ->pluck('total', 'concepto')->toArray();
+                $q->where('id_proyecto', $id);
+            })
+            ->where('reference_type', 'App\Models\Proyecto')
+            ->selectRaw('SUM(valor) as total')
+            ->groupBy('concepto')
+            ->orderBy('concepto', 'ASC')
+            ->get()
+            ->pluck('total')->toArray();
 
-            $lineDevePro = [];
-            $firstCero = '';
-            for ($i = 1; $i <= 6; $i++) {
-                $pagado = $lineaPagoPro[$i] ?? 0;
-                $debePagar = $lineDeveProy[$i] ?? 0;
-                $lineDevePro[$i] = $debePagar - $pagado;
-                if ($firstCero == '' && $pagado < $debePagar) {
-                    $firstCero = $i;
-                }
+            if(empty($lineaPagoPro)){
+                $lineaPagoPro = [0, 0, 0, 0, 0, 0];
             }
 
+            $lineBalancePro = array_map(function($a, $b) {
+                return (float)$a - (float)$b;
+            }, $lineDeveProy, $lineaPagoPro);
+
+            $dataBalancePro = array_merge([$lineDeveProy], [$lineaPagoPro], [$lineBalancePro]);
+
+            //valance otrosi
             $lineDeveOtrosi = Otrosi::where('id_proyecto', $id)
-                ->orderBy('id', 'desc')
+                ->orderBy('numero', 'ASC')
                 ->get()
-                ->map(function ($item) use ($firstCero) {
-                    $valor = (float) $item->totalDeve;
-                    $arr = ['Otro Sí N° ' . $item->numero, 0, 0, 0, 0, 0, 0];
-
-                    if(!$firstCero){
-                        if ($valor < 10000000) {
-                            $arr[2] = $valor;
-                            return $arr;
-                        }
-                        $arr[2] = $valor/2;
-                        $arr[3] = $valor/2;
-                        return $arr;
-                    }
-
-                    $pos = $firstCero == 1 ? 2 : $firstCero;
-                    if ($valor < 10000000) {
-                        $arr[$pos] = $valor;
-                        return $arr;
-                    } else {
-                        if($pos == 6){
-                            $arr[$pos] = $valor;
-                            return $arr;
-                        }
-                        $arr[$pos] = $valor/2;
-                        $arr[$pos + 1] = $valor/2;
-                        return $arr;
-                    }
-                })->toArray();
+                ->pluck('total_deve', 'numero')
+                ->toArray();
 
             $linePagoOtrosi = Otrosi::where('id_proyecto', $id)
-                ->orderBy('id', 'desc')
+                ->orderBy('numero', 'ASC')
                 ->get()
-                ->map(function ($item) use ($firstCero) {
-                    $valor = (float) $item->totalPago;
-                    $arr = [ 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0];
+                ->pluck('total_pago', 'numero')
+                ->toArray();
 
-                    if(!$firstCero){
-                        if ($valor < 10000000) {
-                            $arr[2] = $valor;
-                            return $arr;
-                        }
-                        $arr[2] = $valor/2;
-                        $arr[3] = $valor/2;
-                        return $arr;
-                    }
-
-                    $pos = $firstCero == 1 ? 2 : $firstCero;
-                    if ($valor < 10000000) {
-                        $arr[$pos] = $valor;
-                    } else {
-                        if($pos == 6){
-                            $arr[$pos] = $valor;
-                            return $arr;
-                        }
-                        $arr[$pos] = $valor/2;
-                        $arr[$pos + 1] = $valor/2;
-                    }
-                    return $arr;
-                })->toArray();
-
-            if(!empty($linePagoOtrosi)){
-                $linePagos = array_map(function($a, $b) {
-                    return (float)$a + (float)$b;
-                }, $lineaPagoPro, $linePagoOtrosi[0]);
-                $linePagos = array_combine(array_keys($lineaPagoPro), $linePagos);
-            } else {
-                $linePagos = $lineaPagoPro;
+            if(empty($linePagoOtrosi)){
+                $cant = count($lineDeveOtrosi);
+                $linePagoOtrosi = array_fill(1, $cant, 0);
             }
 
-            $lineDeve = [];
-            if(!empty($lineDeveOtrosi)){
-                $datos1 = array_slice([$lineDeveProy][0], 1);
-                $datos2 = array_slice($lineDeveOtrosi[0], 1);
-                foreach ($datos1 as $index => $valor) {
-                    $nuevoIndice = $index + 1;
-                    $lineDeve[$nuevoIndice] = (float)$valor + (float)($datos2[$index] ?? 0);
-                }
-            } else {
-                $lineDeve = array_slice([$lineDeveProy][0], 1);
-            }
-
-            $lineBalance = array_map(function($a, $b) {
+            $lineBalanceOtrosi = array_map(function($a, $b) {
                 return (float)$a - (float)$b;
-            }, $lineDeve, $linePagos);
-            $lineBalance = array_combine(array_keys($lineDeve), $lineBalance);
+            }, $lineDeveOtrosi, $linePagoOtrosi);
+            $lineBalanceOtrosi = array_combine(array_keys($lineDeveOtrosi), $lineBalanceOtrosi);
 
-            $lineDeve = array_merge(['Totales'], $lineDeve);
-            $lineBalance = array_merge(['Deve'], $lineBalance);
+            $dataBalanceOtrosi = [
+                array_values($lineDeveOtrosi),
+                array_values($linePagoOtrosi),
+                array_values($lineBalanceOtrosi)
+            ];
 
             return response()->json([
                 'status' => true,
@@ -262,7 +198,8 @@ class CarteraController extends Controller
                     "total_pagado" => $valTotalPagado,
                     "resumen" => $contratos,
                     "porcentajes" => $porcentProyec,
-                    "relacion_pagos" => array_merge([$lineDeveProy], $lineDeveOtrosi, [$lineDeve], [$lineBalance]),
+                    "valance_pro" => $dataBalancePro,
+                    "valance_otrosi" => $dataBalanceOtrosi,
                     "select" => $select,
                     "soporteFact" => $proyecto->soporteFact
                 ]

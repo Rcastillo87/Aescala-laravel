@@ -90,7 +90,7 @@ async function loadCartera(id) {
         */
 
         let pagosHTML = `
-            <div class="mb-6">
+            <div class="my-6">
                 <h2 class="text-lg font-semibold mb-3">
                     Lista de Pagos Realizados
                 </h2>
@@ -386,14 +386,14 @@ async function loadCartera(id) {
 
         /*
         =====================================
-        RELACIÓN DE PAGOS
+        Balance del Proyecto
         =====================================
         */
 
         let relacionHTML = `
             <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4 overflow-x-auto">
                 <h2 class="text-lg font-semibold mb-3">
-                    Relación de Pagos
+                    Balance del Proyecto
                 </h2>
 
                 <table class="w-full text-sm text-center">
@@ -419,12 +419,10 @@ async function loadCartera(id) {
                     <tbody>
         `;
 
-        if (Array.isArray(data.relacion_pagos) && data.relacion_pagos.length > 0) {
-
-            const cantidad = data.relacion_pagos.length - 1;
-
-            data.relacion_pagos.forEach((item, index0) => {
-
+        if (Array.isArray(data.valance_pro) && data.valance_pro.length > 0) {
+            const cantidad = data.valance_pro.length - 1;
+            const txPro = ['Costo del Proyecto', 'Pago/Abonos del Proyecto', 'Deve del Proyecto'];
+            data.valance_pro.forEach((item, index0) => {
                 let val = cantidad - index0;
                 let color = '';
                 if(val == 1){
@@ -433,21 +431,13 @@ async function loadCartera(id) {
                 if(val == 0){
                     color = 'text-red-700 font-bold bg-red-50';
                 }
-
-                relacionHTML += `<tr class="border-t ${color}">`;
+                relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${txPro[index0]}</td>`;
                 item.forEach((valor, index) => {
                     let valorNumerico = parseFloat(valor) || 0;
-                    if (index === 0) {
-                        relacionHTML += `
-                            <td class="p-3 font-medium text-left">
-                                ${valor}
-                            </td>`;
-                    } else {
-                        relacionHTML += `
-                            <td class="p-3">
-                                ${formatCurrency(valorNumerico)}
-                            </td>`;
-                    }
+                    relacionHTML += `
+                        <td class="p-3">
+                            ${formatCurrency(valorNumerico)}
+                        </td>`;
                 });
                 relacionHTML += `</tr>`;
             });
@@ -455,7 +445,53 @@ async function loadCartera(id) {
             relacionHTML += `
                 <tr>
                     <td colspan="7" class="p-4 text-center">
-                        No hay relación de pagos
+                        No hay data del proyecto
+                    </td>
+                </tr>
+            `;
+        }
+
+        relacionHTML +=`
+            <tr>
+                <td colspan="7" class="px-4 py-2 text-center text-lg bg-gray-200 font-semibold text-black items-center">
+                    Balance Otrosi
+                </td>
+            </tr>
+        `;
+
+        if (Array.isArray(data.valance_otrosi) && data.valance_otrosi.length > 0 && data.valance_otrosi[0][0]){
+            relacionHTML += `<tr><th class="p-3">Concepto</th>`;
+            for (let index = 0; index < data.valance_otrosi[0].length; index++) {
+                relacionHTML += `<th class="p-3"> Otrosi N ${index + 1}</th>`;
+            }
+            relacionHTML += `</tr>`;
+
+            const cantidad0 = data.valance_otrosi.length - 1;
+            const txPro0 = ['Costo del Otrosi', 'Pago/Abonos del Otrosi', 'Deve del Otrosi'];
+            data.valance_otrosi.forEach((item, index0) => {
+                let val = cantidad0 - index0;
+                let color = '';
+                if(val == 1){
+                    color = 'text-green-700 font-bold bg-green-50';
+                }
+                if(val == 0){
+                    color = 'text-red-700 font-bold bg-red-50';
+                }
+                relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${txPro0[index0]}</td>`;
+                item.forEach((valor, index) => {
+                    let valorNumerico = parseFloat(valor) || 0;
+                    relacionHTML += `
+                        <td class="p-3">
+                            ${formatCurrency(valorNumerico)}
+                        </td>`;
+                });
+                relacionHTML += `</tr>`;
+            });
+        } else{
+            relacionHTML += `
+                <tr>
+                    <td colspan="7" class="p-4 text-center">
+                        No hay Otrosi
                     </td>
                 </tr>
             `;
