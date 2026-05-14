@@ -47,6 +47,11 @@ Route::get('/csrf-refresh', function () {
 })->middleware('throttle:30,1')->name('csrf.refresh');
 
 
+Route::get('/web', function () {
+    return view('web');
+})->name('web');
+
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', function () {
