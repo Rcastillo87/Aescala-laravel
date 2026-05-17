@@ -232,7 +232,7 @@
                         <!-- Botón Cartera-->
                         <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || ($item->entreProyecto->count() === 0)) hidden @endif">
                             <a tabindex="0" data-tooltip-target="tooltip-hover-cartera-{{$item->id}}" data-tooltip-trigger="hover"
-                               href="{{Route('cartera.indexPagosProyecto', $item->id)}}"
+                               href="{{Route('cartera.index', $item->id)}}"
                                class="flex items-center justify-center w-10 h-10 text-white bg-slate-400 hover:bg-white hover:text-slate-500 border-2 border-slate-500 focus:ring-4
                                       focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-400 dark:hover:bg-slate-500 dark:focus:ring-slate-500 cursor-pointer">
                                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

@@ -372,20 +372,6 @@ class Proyecto extends Model
         return $this->otro_si->sum('total_deve');
     }
 
-    public function pagosReferencia()
-    {
-        return $this->morphMany(PagoRefe::class, 'reference');
-    }
-
-    public function getTotalPagadoAttribute()
-    {
-        return $this->pagosReferencia()->sum('valor');
-    }
-
-    public function getValanceAttribute(){
-        return $this->totalPagado >= $this->total;
-    }
-
     public function soporteFact()
     {
         return $this->morphOne(Documento::class, 'documentable');
@@ -399,25 +385,5 @@ class Proyecto extends Model
         5 => 'correspondiente al inicio de la instalación de accesorios, grifería y mesón',
         6 => 'correspondiente al pago final por la entrega de la obra',
     ];
-
-    public function getDataSelectAttribute()
-    {
-        $arrayPagos = [];
-        $txtArr = self::$porcenTX;
-
-        for ($i = 1; $i <= 6; $i++) {
-            $campo = "termino_{$i}_por";
-            if (!empty($this->$campo) && $this->$campo >= 0) {
-                $porcentaje = $this->$campo;
-                $arrayPagos[$i] = [
-                    'reference_id'   => $this->id,
-                    'reference_type' => self::class,
-                    'msg'            => "Abono del {$porcentaje}% - {$txtArr[$i]}",
-                    'concepto'       => $i,
-                ];
-            }
-        }
-        return $arrayPagos;
-    }
 
 }

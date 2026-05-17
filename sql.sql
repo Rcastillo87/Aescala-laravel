@@ -52,24 +52,32 @@ CREATE TABLE documentos (
 
 ALTER TABLE proyectos ADD COLUMN id_user_diseno BIGINT NULL AFTER id_user_comercial;
 
-ALTER TABLE aescala.pagos DROP COLUMN tipo_pago;
-ALTER TABLE aescala.pagos DROP COLUMN id_pago;
-ALTER TABLE aescala.pagos DROP COLUMN valor_pagado;
-ALTER TABLE aescala.pagos DROP COLUMN concepto;
-ALTER TABLE aescala.pagos DROP COLUMN rc;
-ALTER TABLE aescala.pagos DROP COLUMN fv;
+-- aescala.pagos definition
 
-CREATE TABLE aescala.pago_referencia (
-    id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
-    id_pago BIGINT UNSIGNED NOT NULL,
-    reference_type VARCHAR(255) NOT NULL,
-    reference_id BIGINT UNSIGNED NOT NULL,
-    concepto VARCHAR(255) NULL,
-    valor BIGINT UNSIGNED NOT NULL,
-    CONSTRAINT pago_referencia_pk PRIMARY KEY (id),
-    INDEX idx_pago_referencia_ref (reference_type, reference_id),
-    INDEX idx_pago_referencia_pago (id_pago)
+CREATE TABLE `pagos` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id_proyecto` bigint NOT NULL,
+  `id_user` bigint DEFAULT NULL,
+  `valor` bigint unsigned DEFAULT '0',
+  `fecha_pago` date NOT NULL,
+  `comentario` text,
+  `rc` varchar(20) NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pagos_id_proyecto` (`id_proyecto`),
+  KEY `pagos_id_user` (`id_user`),
+  CONSTRAINT `pagos_id_proyecto` FOREIGN KEY (`id_proyecto`) REFERENCES `proyectos` (`id`),
+  CONSTRAINT `pagos_id_user` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
 );
 
-ALTER TABLE aescala.pagos ADD rc varchar(20) NULL;
-ALTER TABLE aescala.pagos CHANGE rc rc varchar(20) NULL AFTER comentario;
+CREATE TABLE aescala.otro_si_refe_pago (
+	id BIGINT auto_increment NOT NULL,
+	id_otro_si BIGINT NOT NULL,
+	referencia INT NOT NULL,
+	valor BIGINT UNSIGNED DEFAULT 0 NOT NULL,
+	CONSTRAINT otro_si_refe_pago_pk PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;

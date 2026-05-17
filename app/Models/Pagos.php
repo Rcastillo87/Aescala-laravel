@@ -16,6 +16,7 @@ class Pagos extends Model
     protected $fillable = [
         'id_proyecto',
         'id_user',
+        'valor',
         'fecha_pago',
         'comentario',
         'rc'
@@ -30,15 +31,6 @@ class Pagos extends Model
     public function soporte()
     {
         return $this->morphOne(Documento::class, 'documentable');
-    }
-
-    public function pago_refe()
-    {
-        return $this->hasMany(PagoRefe::class, 'id_pago', 'id');
-    }
-
-    public function getValorTotalAttribute(){
-        return $this->pago_refe()->sum('valor');
     }
 
 }

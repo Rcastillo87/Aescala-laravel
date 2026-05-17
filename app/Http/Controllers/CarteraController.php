@@ -8,36 +8,21 @@ use App\Models\Otrosi;
 use App\Models\Proyecto;
 use App\Models\Pagos;
 use App\Models\Documento;
-use App\Models\PagoRefe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
 class CarteraController extends Controller
 {
-    public function index($id_proyecto = '')
+    public function index($id_proyecto)
     {
         Gate::authorize('cartera.index');
-        $title = 'Lista de Cartera';
-        $usuario = Auth::user();
-
-        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5])
-            ->whereNotNull('cedula_cliente')
-            ->whereNotNull('tipo_doc_cliente')
-            ->orderBy('nombre_proyecto', 'ASC')
-            ->get(['id', 'nombre_proyecto'])
-            ->toArray();
-
-        return view('cartera.index', compact( 'title', 'proyectos', 'id_proyecto'));
-    }
-
-    public function indexPagosProyecto($id){
-        return $this->index($id);
+        $title = 'Cartera abonos del proyecto';
+        $proyecto = Proyecto::find($id_proyecto);
+        return view('cartera.index', compact( 'title', 'id_proyecto', 'proyecto'));
     }
 
     public function pagosProyecto($id)
@@ -49,13 +34,6 @@ class CarteraController extends Controller
     private function datapagosProyecto($id){
         try {
             $proyecto = Proyecto::with(['otro_si', 'soporteFact'])->findOrFail($id);
-            $selectPro = $proyecto->dataSelect;
-            $selectOtrosi = $proyecto->otro_si()->get()
-                ->map(function ($item) {
-                    return $item->dataSelect;
-                })->toArray();
-
-            $select = array_merge($selectPro, $selectOtrosi);
 
             $porcentProyec = [
                 $proyecto->termino_1_por,
@@ -72,8 +50,6 @@ class CarteraController extends Controller
 
             $contraProyec = [
                 "id_proyecto" => $id,
-                "id_pago" => $id,
-                "tipo" => 1,
                 "concepto" => "Contrato Proyecto",
                 "valor_total" => $valProyecto,
                 "urlContrato" => route('proyecto.contratoPdf', $id),
@@ -85,8 +61,6 @@ class CarteraController extends Controller
                 ->map(function ($item) use ($id) {
                     return [
                         "id_proyecto" => $id,
-                        "id_pago" => $item->id,
-                        "tipo" => 2,
                         "concepto" => "Otrosí N° " . $item->numero,
                         "valor_total" => $item->total_deve,
                         "urlContrato" => route('otro_si.otroSiPdf', $item->id),
@@ -98,27 +72,13 @@ class CarteraController extends Controller
 
             $valTotalPagado = Pagos::where('id_proyecto', $id)->get()->sum('valorTotal');
 
-            $pagos = Pagos::with(['proyecto', 'soporte', 'pago_refe.reference'])
+            $pagos = Pagos::with(['proyecto', 'soporte'])
                 ->where('id_proyecto', $id)
                 ->get()
                 ->map(function ($item) {
-                    $texto = $item->pago_refe
-                        ->map(function ($ref) {
-                            $data = $ref->reference?->data_select;
-                            if (!$data) {
-                                return null;
-                            }
-                            if (is_array($data) && isset($data[$ref->concepto])) {
-                                return $data[$ref->concepto]['msg'];
-                            }
-                            return $data['msg'] ?? null;
-                        })
-                        ->filter()
-                        ->implode(', ');
                     return [
                         "id" => $item->id,
                         "id_proyecto" => $item->id_proyecto,
-                        "concepto" => $texto,
                         "valor_pago" => $item->valorTotal,
                         "fecha_pago" => $item->fecha_pago,
                         "comentarios" => $item->comentario,
@@ -140,54 +100,32 @@ class CarteraController extends Controller
                 $porcentProyec[5] * $valProyecto/100
             ];
 
-            $lineaPagoPro = PagoRefe::whereHas('pago', function ($q) use ($id) {
-                $q->where('id_proyecto', $id);
-            })
-            ->where('reference_type', 'App\Models\Proyecto')
-            ->selectRaw('SUM(valor) as total')
-            ->groupBy('concepto')
-            ->orderBy('concepto', 'ASC')
-            ->get()
-            ->pluck('total')->toArray();
 
-            if(empty($lineaPagoPro)){
-                $lineaPagoPro = [0, 0, 0, 0, 0, 0];
-            }
-
-            $lineBalancePro = array_map(function($a, $b) {
-                return (float)$a - (float)$b;
-            }, $lineDeveProy, $lineaPagoPro);
-
-            $dataBalancePro = array_merge([$lineDeveProy], [$lineaPagoPro], [$lineBalancePro]);
-
-            //valance otrosi
-            $lineDeveOtrosi = Otrosi::where('id_proyecto', $id)
-                ->orderBy('numero', 'ASC')
+            $lineDeveOtrosi = Otrosi::with('otrosi_refe')
+                ->where('id_proyecto', $id)
                 ->get()
-                ->pluck('total_deve', 'numero')
+                ->map(function ($item) {
+                    if ($item->otrosi_refe->isEmpty()) {
+                        return ['no', 'no', 'no', 'no', 'no', 'no'];
+                    }
+                    $a = $item->totalRefeOtroSi;
+                    $b = $item->totalDeve;
+                    $c = ($b - $a) == 0 ? 0 : 'no';
+                    $line = [0, $c, $c, $c, $c, $c];
+                    foreach ($item->otrosi_refe as $data) {
+                        if ($data->referencia >= 1 && $data->referencia <= 5) {
+                            $line[$data->referencia] = $data->valor;
+                        }
+                    }
+                    return $line;
+                })
                 ->toArray();
 
-            $linePagoOtrosi = Otrosi::where('id_proyecto', $id)
-                ->orderBy('numero', 'ASC')
-                ->get()
-                ->pluck('total_pago', 'numero')
-                ->toArray();
-
-            if(empty($linePagoOtrosi)){
-                $cant = count($lineDeveOtrosi);
-                $linePagoOtrosi = array_fill(1, $cant, 0);
+            if(empty($lineDeveOtrosi)){
+                $valance = [$lineDeveProy];
+            } else {
+                $valance = array_merge([$lineDeveProy], $lineDeveOtrosi);
             }
-
-            $lineBalanceOtrosi = array_map(function($a, $b) {
-                return (float)$a - (float)$b;
-            }, $lineDeveOtrosi, $linePagoOtrosi);
-            $lineBalanceOtrosi = array_combine(array_keys($lineDeveOtrosi), $lineBalanceOtrosi);
-
-            $dataBalanceOtrosi = [
-                array_values($lineDeveOtrosi),
-                array_values($linePagoOtrosi),
-                array_values($lineBalanceOtrosi)
-            ];
 
             return response()->json([
                 'status' => true,
@@ -198,9 +136,7 @@ class CarteraController extends Controller
                     "total_pagado" => $valTotalPagado,
                     "resumen" => $contratos,
                     "porcentajes" => $porcentProyec,
-                    "valance_pro" => $dataBalancePro,
-                    "valance_otrosi" => $dataBalanceOtrosi,
-                    "select" => $select,
+                    "valance_pro" => $valance,
                     "soporteFact" => $proyecto->soporteFact
                 ]
             ], 200);
@@ -221,40 +157,16 @@ class CarteraController extends Controller
             'id_proyecto'  => ['required', 'integer', Rule::exists('proyectos', 'id')],
             'comentario'   => 'nullable|string|max:500',
             'fecha_pago'   => 'required|date',
-            'referencias' => [ 'required', 'array', 'min:1'],
-            'referencias.*.reference_type' => [ 'required', 'string'],
-            'referencias.*.reference_id' => [ 'required', 'integer'],
-            'referencias.*.concepto' => [ 'nullable'],
-            'referencias.*.valor' => [ 'required', 'numeric', 'min:1'],
+            'valor' => [ 'required', 'numeric', 'min:1'],
         ];
 
         $validator = Validator::make($request->all(), $val, [
             'required' => 'Este campo es obligatorio.',
             'integer'  => 'Debe ser un número válido.',
             'numeric'  => 'Debe ser un valor numérico.',
-            'between'  => 'Valor fuera del rango permitido.',
-            'array'    => 'Formato inválido.',
             'min'      => 'El valor debe ser mayor a 0.',
             'date'     => 'Fecha inválida.',
         ]);
-
-        $validator->after(function ($validator) use ($request) {
-            $referencias = $request->referencias ?? [];
-            $combinaciones = [];
-            foreach ($referencias as $index => $item) {
-                $key =
-                    ($item['reference_type'] ?? '') . '|' .
-                    ($item['reference_id'] ?? '') . '|' .
-                    ($item['concepto'] ?? '');
-                if (in_array($key, $combinaciones)) {
-                    $validator->errors()->add(
-                        "referencias.$index.reference_id",
-                        'La referencia está repetida.'
-                    );
-                }
-                $combinaciones[] = $key;
-            }
-        });
 
         if ($validator->fails()) {
             return response()->json([
@@ -269,41 +181,15 @@ class CarteraController extends Controller
             $pago = Pagos::create([
                 'id_proyecto'  => $request->id_proyecto,
                 'fecha_pago'   => $request->fecha_pago,
+                'valor'        => $request->valor,
                 'comentario'   => $request->comentario ?? '',
                 'id_user'      => Auth::id(),
             ]);
 
-            foreach ($request->referencias as $item) {
-                $referencia = $pago->pago_refe()->create([
-                    'reference_type' => $item['reference_type'],
-                    'reference_id'   => $item['reference_id'],
-                    'concepto'       => $item['concepto'],
-                    'valor'          => $item['valor'],
-                ]);
-
-                if ($referencia->reference_type === Proyecto::class) {
-                    $proyecto = Proyecto::find($referencia->reference_id);
-                    if ($proyecto && $proyecto->valance) {
-                        $proyecto->update([
-                            'paz_salvo' => 1
-                        ]);
-                    }
-                }
-
-                if ($referencia->reference_type === Otrosi::class) {
-                    $otroSi = Otrosi::find($referencia->reference_id);
-                    if ($otroSi && $otroSi->valance) {
-                        $otroSi->update([
-                            'paz_salvo' => 1
-                        ]);
-                    }
-                }
-            }
-
             DB::commit();
             return response()->json([
                 'status'  => true,
-                'url' => route('cartera.indexPagosProyecto', $request->id_proyecto),
+                'url' => route('cartera.index', $request->id_proyecto),
                 'message' => 'Pago registrado correctamente.',
             ]);
         } catch (\Throwable $e) {
@@ -434,7 +320,7 @@ class CarteraController extends Controller
             return response()->json([
                 'status'  => true,
                 'message' => 'Pago eliminado correctamente.',
-                'url' => route('cartera.indexPagosProyecto', $id_proyecto),
+                'url' => route('cartera.index', $id_proyecto),
             ]);
 
         } catch (\Throwable $e) {

@@ -1,53 +1,7 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-    new TomSelect("#id_proyecto",{
-        create: true,
-        dropdownParent: 'body',
-        sortField: {
-            field: "text",
-            direction: "asc"
-        },
-        onInitialize: function() {
-            this.wrapper.classList.add("tom-select-custom");
-        }
-    });
-
-    const proyecto = document.getElementById('id_proyecto');
-
-    // todos los inputs que quieres controlar
-    const campos = [
-        document.getElementById('fecha_pago'),
-        document.getElementById('comentario'),
-    ];
-
-    function toggleCampos() {
-        const tieneProyecto = proyecto.value && proyecto.value !== '';
-
-        if (!tieneProyecto) {
-            document.getElementById('divCartera').innerHTML = '';
-        } else {
-            loadCartera(proyecto.value);
-        }
-
-        campos.forEach(campo => {
-            if (!campo) return;
-
-            if (!tieneProyecto) {
-                campo.setAttribute('disabled', true);
-                campo.classList.add('bg-gray-100', 'cursor-not-allowed');
-            } else {
-                campo.removeAttribute('disabled');
-                campo.classList.remove('bg-gray-100', 'cursor-not-allowed');
-            }
-        });
-    }
-
-    // ejecutar al cargar
-    toggleCampos();
-
-    // escuchar cambios
-    proyecto.addEventListener('change', toggleCampos);
-
- });
+document.addEventListener('DOMContentLoaded', async () => {
+    const id = document.getElementById('id_proyecto').value;
+    await loadCartera(id);
+});
 
 async function loadCartera(id) {
     try {
@@ -72,14 +26,6 @@ async function loadCartera(id) {
 
         const data = response.data;
         const div = document.getElementById('divCartera');
-        dataSelect = data.select;
-
-        contenedor.innerHTML = '';
-        indexReferencia = 0;
-
-        if (dataSelect.length > 0) {
-            agregarReferencia();
-        }
 
         div.innerHTML = '';
 
@@ -90,16 +36,15 @@ async function loadCartera(id) {
         */
 
         let pagosHTML = `
-            <div class="my-6">
-                <h2 class="text-lg font-semibold mb-3">
+            <div class="my-4">
+                <h2 class="text-lg font-semibold mb-2">
                     Lista de Pagos Realizados
                 </h2>
 
-                <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-md bg-white">
+                <div class="overflow-x-auto mb-2 rounded-xl border border-gray-200 shadow-md bg-white">
                     <table class="w-full text-sm text-center mb-2">
                         <thead class="bg-green-700 text-white uppercase text-xs">
                             <tr>
-                                <th class="p-3">Concepto</th>
                                 <th class="p-3">Valor Pago</th>
                                 <th class="p-3">Fecha</th>
                                 <th class="p-3">Comentario</th>
@@ -128,7 +73,6 @@ async function loadCartera(id) {
 
                 pagosHTML += `
                     <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3">${item.concepto ?? '--'}</td>
                         <td class="p-3">${formatCurrency(item.valor_pago)}</td>
                         <td class="p-3">${item.fecha_pago ?? '--'}</td>
                         <td class="p-3">${item.comentarios ?? '--'}</td>
@@ -201,7 +145,7 @@ async function loadCartera(id) {
 
             pagosHTML += `
                 <tr class="bg-gray-100 font-semibold">
-                    <td colspan="6" class="p-3 text-right">
+                    <td colspan="5" class="p-3 text-right">
                         Total Pagado:
                         <span class="text-red-600 ml-2">
                             ${formatCurrency(data.total_pagado)}
@@ -212,7 +156,7 @@ async function loadCartera(id) {
         } else {
             pagosHTML += `
                 <tr>
-                    <td colspan="6" class="p-4 text-center">
+                    <td colspan="5" class="p-4 text-center">
                         No hay registros
                     </td>
                 </tr>
@@ -233,7 +177,7 @@ async function loadCartera(id) {
         */
 
         let resumenHTML = `
-            <div class="grid md:grid-cols-2 gap-5 mb-6">
+            <div class="grid md:grid-cols-2 gap-2 mb-2">
                 <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4">
                     <h2 class="text-lg font-semibold mb-3">
                         Resumen Total
@@ -433,10 +377,10 @@ async function loadCartera(id) {
                 }
                 relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${txPro[index0]}</td>`;
                 item.forEach((valor, index) => {
-                    let valorNumerico = parseFloat(valor) || 0;
+                    let valorNumerico = valor;//parseFloat(valor) || 0;
                     relacionHTML += `
                         <td class="p-3">
-                            ${formatCurrency(valorNumerico)}
+                            ${valorNumerico}
                         </td>`;
                 });
                 relacionHTML += `</tr>`;
@@ -446,52 +390,6 @@ async function loadCartera(id) {
                 <tr>
                     <td colspan="7" class="p-4 text-center">
                         No hay data del proyecto
-                    </td>
-                </tr>
-            `;
-        }
-
-        relacionHTML +=`
-            <tr>
-                <td colspan="7" class="px-4 py-2 text-center text-lg bg-gray-200 font-semibold text-black items-center">
-                    Balance Otrosi
-                </td>
-            </tr>
-        `;
-
-        if (Array.isArray(data.valance_otrosi) && data.valance_otrosi.length > 0 && data.valance_otrosi[0][0]){
-            relacionHTML += `<tr><th class="p-3">Concepto</th>`;
-            for (let index = 0; index < data.valance_otrosi[0].length; index++) {
-                relacionHTML += `<th class="p-3"> Otrosi N ${index + 1}</th>`;
-            }
-            relacionHTML += `</tr>`;
-
-            const cantidad0 = data.valance_otrosi.length - 1;
-            const txPro0 = ['Costo del Otrosi', 'Pago/Abonos del Otrosi', 'Deve del Otrosi'];
-            data.valance_otrosi.forEach((item, index0) => {
-                let val = cantidad0 - index0;
-                let color = '';
-                if(val == 1){
-                    color = 'text-green-700 font-bold bg-green-50';
-                }
-                if(val == 0){
-                    color = 'text-red-700 font-bold bg-red-50';
-                }
-                relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${txPro0[index0]}</td>`;
-                item.forEach((valor, index) => {
-                    let valorNumerico = parseFloat(valor) || 0;
-                    relacionHTML += `
-                        <td class="p-3">
-                            ${formatCurrency(valorNumerico)}
-                        </td>`;
-                });
-                relacionHTML += `</tr>`;
-            });
-        } else{
-            relacionHTML += `
-                <tr>
-                    <td colspan="7" class="p-4 text-center">
-                        No hay Otrosi
                     </td>
                 </tr>
             `;
@@ -602,173 +500,3 @@ deletePago = async (id) => {
         console.error(error);
     }
 }
-
-
-let dataSelect = [];
-let indexReferencia = 0;
-const contenedor = document.getElementById('contenedorReferencias');
-document.getElementById('btnAddReferencia').addEventListener('click', agregarReferencia);
-
-function agregarReferencia() {
-    const html = `
-        <div class="referencia-item border rounded-xl p-4 bg-gray-50 relative">
-            <button
-                type="button"
-                class="btnEliminar absolute top-2 right-2 text-white bg-red-600 hover:bg-red-800 rounded-md px-2 py-1">
-                ✕
-            </button>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Concepto del Pago *
-                    </label>
-                    <select
-                        class="references border-gray-300 rounded-lg shadow-sm block w-full"
-                        required>
-                        <option value="">
-                            Seleccione...
-                        </option>
-                        ${generarOpciones()}
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Valor de la Referencia *
-                    </label>
-                    <input
-                        type="number"
-                        min="0"
-                        name="referencias[${indexReferencia}][valor]"
-                        class="valorReferencia block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-300 focus:border-blue-400 moneda-cop"
-                        placeholder="Ej: 200.000"
-                        required>
-                </div>
-            </div>
-            <input type="hidden" name="referencias[${indexReferencia}][reference_type]" class="reference_type">
-            <input type="hidden" name="referencias[${indexReferencia}][reference_id]" class="reference_id">
-            <input type="hidden" name="referencias[${indexReferencia}][concepto]" class="concepto">
-        </div>
-    `;
-
-    contenedor.insertAdjacentHTML('beforeend', html);
-    const item = contenedor.lastElementChild;
-    configurarEventos(item);
-    indexReferencia++;
-}
-
-function generarOpciones() {
-    return dataSelect.map(item => {
-        return `
-            <option
-                value="${item.reference_type}|${item.reference_id}|${item.concepto}"
-                data-reference_type="${item.reference_type}"
-                data-reference_id="${item.reference_id}"
-                data-concepto="${item.concepto}">
-                ${item.msg}
-            </option>
-        `;
-    }).join('');
-}
-
-function configurarEventos(item) {
-    const select = item.querySelector('.references');
-    const valor = item.querySelector('.valorReferencia');
-    const btnEliminar = item.querySelector('.btnEliminar');
-
-    select.addEventListener('change', function () {
-        const option = this.options[this.selectedIndex];
-        item.querySelector('.reference_type').value = option.dataset.reference_type;
-        item.querySelector('.reference_id').value = option.dataset.reference_id;
-        item.querySelector('.concepto').value = option.dataset.concepto;
-        validarDuplicados(this);
-    });
-
-    valor.addEventListener('input', actualizarTotal);
-
-    btnEliminar.addEventListener('click', function () {
-        const totalReferencias = document.querySelectorAll('.referencia-item').length;
-        if (totalReferencias <= 1) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Mínimo una referencia',
-                text: 'Debe existir al menos una referencia de pago.'
-            });
-            return;
-        }
-        Swal.fire({
-            title: 'Eliminar referencia',
-            text: '¿Desea eliminar esta referencia?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                item.remove();
-                actualizarTotal();
-            }
-        });
-    });
-}
-
-function validarDuplicados(selectActual) {
-    const valores = [];
-    let repetido = false;
-    document.querySelectorAll('.references').forEach(select => {
-        if (!select.value) return;
-        if (valores.includes(select.value)) {
-            repetido = true;
-        }
-        valores.push(select.value);
-    });
-
-    if (repetido) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Referencia duplicada',
-            text: 'No puede seleccionar la misma referencia más de una vez.'
-        });
-        selectActual.value = '';
-        const item = selectActual.closest('.referencia-item');
-        item.querySelector('.reference_type').value = '';
-        item.querySelector('.reference_id').value = '';
-        item.querySelector('.concepto').value = '';
-    }
-}
-
-function actualizarTotal() {
-    let total = 0;
-    document.querySelectorAll('.valorReferencia').forEach(input => {
-        total += Number(input.value) || 0;
-    });
-    document.getElementById('totalReferencias').innerText = formatCurrency(total);
-}
-
-document.getElementById('formPago').addEventListener('submit', function(e){
-    const referencias = document.querySelectorAll('.referencia-item');
-    if(referencias.length === 0){
-        e.preventDefault();
-        Swal.fire({
-            icon: 'error',
-            title: 'Debe ingresar mínimo una referencia'
-        });
-        return;
-    }
-
-    let valido = true;
-    referencias.forEach(item => {
-        const select = item.querySelector('.references');
-        const valor = item.querySelector('.valorReferencia');
-        if(!select.value || !valor.value){
-            valido = false;
-        }
-    });
-
-    if(!valido){
-        e.preventDefault();
-        Swal.fire({
-            icon: 'error',
-            title: 'Complete todas las referencias'
-        });
-    }
-});
