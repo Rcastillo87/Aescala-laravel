@@ -41,7 +41,7 @@
 @include('documentoModal')
 @include('cartera.modalRC')
 @include('cartera.modalPagos')
-
+@include('cartera.modalOtroSiRefe')
 @endsection
 
 @section('scripts')

@@ -12,11 +12,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use App\Rules\Base64PngOrNull;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 use App\Models\Otrosi;
 use App\Models\User;
 use App\Models\Proyecto;
 use App\Models\Area;
+use App\Models\OtrosiRefe;
 
 class OtrosiController extends Controller
 {
@@ -275,6 +278,57 @@ class OtrosiController extends Controller
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Error al enviar el enlace: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function saveRefe(Request $request)
+    {
+        Gate::authorize('cartera.save');
+        $val = [
+            'id_proyecto'  => ['required', 'integer', Rule::exists('proyectos', 'id')],
+            'valor_referecia' => [ 'required', 'integer', 'min:1'],
+            'referencia' => [ 'required', 'integer', 'min:1'],
+            'numero' => [ 'required', 'integer', 'min:1'],
+        ];
+
+        $validator = Validator::make($request->all(), $val, [
+            'required' => 'Este campo es obligatorio.',
+            'integer'  => 'Debe ser un número válido.',
+            'min'      => 'El valor debe ser mayor a 0.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Hay errores en el formulario.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $otrosi = Otrosi::where(['id_proyecto' => $request->id_proyecto, 'numero' => $request->numero])->first();
+            OtrosiRefe::create([
+                'id_otro_si'  => $otrosi->id,
+                'valor' => $request->valor_referecia,
+                'referencia' => $request->referencia,
+                'id_user'      => Auth::id(),
+            ]);
+
+            DB::commit();
+            return response()->json([
+                'status'  => true,
+                'url' => route('cartera.index', $request->id_proyecto),
+                'message' => 'Pago registrado correctamente.',
+            ]);
+        } catch (\Throwable $e) {
+            dd($e->getMessage());
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => 'Error al registrar el pago.',
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

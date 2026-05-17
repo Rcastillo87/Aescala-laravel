@@ -15,7 +15,8 @@ class OtrosiRefe extends Model
     protected $fillable = [
         'id_otro_si',
         'referencia',
-        'valor'
+        'valor',
+        'id_user'
     ];
 
     public function otro_si()

@@ -197,7 +197,7 @@ async function loadCartera(id) {
         const soporteFact = data.soporteFact;
 
         if (data.resumen.length > 0) {
-            data.resumen.forEach(item => {
+            data.resumen.forEach((item, index) => {
                 const btnPZ = `<a data-tooltip-target="tooltip-hover-pz-${item.tipo}-${item.id_pago}" data-tooltip-trigger="hover" href="/cartera/certificadoPZPDF/${item.id_pago}/${item.tipo}" target="_blank"
                         class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4
                             focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -222,13 +222,13 @@ async function loadCartera(id) {
                         <td class="p-3">${formatCurrency(item.valor_total)}</td>
                         <td class="p-1">
                             <div class=" flex items-center justify-center space-x-2">
-                                <a data-tooltip-target="tooltip-hover-contratoPdf-${item.tipo}-${item.id_pago}" data-tooltip-trigger="hover" href="${item.urlContrato}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
+                                <a data-tooltip-target="tooltip-hover-contratoPdf-${index}" data-tooltip-trigger="hover" href="${item.urlContrato}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
                                         focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
                                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"></path>
                                     </svg>
                                 </a>
-                                <div id="tooltip-hover-contratoPdf-${item.tipo}-${item.id_pago}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
+                                <div id="tooltip-hover-contratoPdf-${index}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(849.333px, -113.333px);" data-popper-escaped="" data-popper-placement="top">
                                     PDF Contrato
                                     <div class="tooltip-arrow" data-popper-arrow="" style="position: absolute; left: 0px; transform: translate(54.6667px, 0px);"></div>
                                 </div>
@@ -365,23 +365,62 @@ async function loadCartera(id) {
 
         if (Array.isArray(data.valance_pro) && data.valance_pro.length > 0) {
             const cantidad = data.valance_pro.length - 1;
-            const txPro = ['Costo del Proyecto', 'Pago/Abonos del Proyecto', 'Deve del Proyecto'];
+            const txPro = ['Costo del Proyecto', 'Costo del Total', 'Saldo Pendiente'];
             data.valance_pro.forEach((item, index0) => {
-                let val = cantidad - index0;
                 let color = '';
-                if(val == 1){
+                let tx = '';
+                const val = cantidad - index0;
+                if (index0 === 0) {
+                    tx = txPro[0];
+                } else if (val === 1) {
                     color = 'text-green-700 font-bold bg-green-50';
-                }
-                if(val == 0){
+                    tx = txPro[1];
+                } else if (val === 0) {
                     color = 'text-red-700 font-bold bg-red-50';
+                    tx = txPro[2];
+                } else if (val > 1) {
+                    tx = 'Costo del Otrosi N ' + index0;
                 }
-                relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${txPro[index0]}</td>`;
+
+                relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${tx}</td>`;
                 item.forEach((valor, index) => {
-                    let valorNumerico = valor;//parseFloat(valor) || 0;
-                    relacionHTML += `
-                        <td class="p-3">
-                            ${formatCurrency(valorNumerico)}
+                    if ( valor >= 0 ) {
+                        let valorNumerico = parseFloat(valor) || 0;
+                        relacionHTML += `<td class="p-3">${formatCurrency(valorNumerico)}</td>`;
+                    } else {
+                        relacionHTML += `<td class="p-3">
+                            <div class=" flex items-center justify-center space-x-2">
+                                <button
+                                    @click="
+                                        const max = ${Math.abs(valor)};
+                                        const referencia = ${index};
+                                        const numero = ${index0};
+                                        document.getElementById('referencia').value = referencia;
+                                        document.getElementById('numero').value = numero;
+                                        document.getElementById('txTitlePagoRefe').innerHTML = \`Crear Referencia de Pago del Otrosi N \${referencia}\`;
+                                        const input = document.getElementById('valor_referecia');
+                                        input.max = max;
+                                        input.value = max;
+                                        let label = formatCurrency(max);
+                                        document.getElementById('txlabelValor').innerHTML =
+                                            \`<span class='font-medium text-sm text-gray-400'>
+                                                Valor Maximo:
+                                            </span> \${label}\`;
+                                        \$dispatch('open-modal', 'modalOtroSiRefe');"
+                                    data-tooltip-target="tooltip-hover-abono-${index}-${index0}" data-tooltip-trigger="hover"
+                                    class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-700 hover:bg-white hover:text-cyan-800 border-2 border-cyan-800 focus:ring-4
+                                      focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6"/>
+                                    </svg>
+                                </button>
+                                <div id="tooltip-hover-abono-${index}-${index0}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="inset: auto auto 0px 0px; transform: translate(556.25px, -117.5px); position: absolute; margin: 0px;" data-popper-placement="top">
+                                    Defina Pago/Abono Otrosi
+                                    <div class="tooltip-arrow" data-popper-arrow="" style="left: 0px; transform: translate(51.25px, 0px); position: absolute;"></div>
+                                </div>
+                            </div>
                         </td>`;
+                    }
                 });
                 relacionHTML += `</tr>`;
             });
@@ -500,3 +539,42 @@ deletePago = async (id) => {
         console.error(error);
     }
 }
+
+document.getElementById('formOtrosiRefe').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    limpiarErrores();
+
+    const formData = new FormData(this);
+
+    try {
+        Swal.fire({
+            title: 'Guardando referencia...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+
+        const result = await response.json();
+        Swal.close();
+
+        if (result.status) {
+            Swal.fire('Éxito', result.message, 'success');
+            setTimeout(() => {
+                window.location = result.url;
+            }, 1200);
+        } else {
+            mostrarErrores(result.errors ?? {});
+            Swal.fire('Error', result.message, 'error');
+        }
+
+    } catch (error) {
+        Swal.close();
+        Swal.fire('Error', 'No se pudo guardar la referencia del pago.', 'error');
+        console.error(error);
+    }
+});

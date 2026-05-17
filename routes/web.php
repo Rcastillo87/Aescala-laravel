@@ -221,6 +221,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [OtrosiController::class, 'create'])->name('create');
         Route::get('/otroSiPdf/{id}', [OtrosiController::class, 'otroSiPdf'])->name('otroSiPdf');
         Route::post('/sendLinkByEmail', [OtrosiController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
+        Route::post('/saveRefe', [OtrosiController::class, 'saveRefe'])->name('saveRefe');
     });
 
     Route::prefix('cartera')->name('cartera.')->middleware('role:cartera')->group(function () {

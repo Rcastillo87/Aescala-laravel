@@ -70,7 +70,7 @@ class CarteraController extends Controller
                 ->toArray();
             $contratos = array_merge([$contraProyec], $contraOtrosi);
 
-            $valTotalPagado = Pagos::where('id_proyecto', $id)->get()->sum('valorTotal');
+            $valTotalPagado = Pagos::where('id_proyecto', $id)->get()->sum('valor');
 
             $pagos = Pagos::with(['proyecto', 'soporte'])
                 ->where('id_proyecto', $id)
@@ -79,7 +79,7 @@ class CarteraController extends Controller
                     return [
                         "id" => $item->id,
                         "id_proyecto" => $item->id_proyecto,
-                        "valor_pago" => $item->valorTotal,
+                        "valor_pago" => $item->valor,
                         "fecha_pago" => $item->fecha_pago,
                         "comentarios" => $item->comentario,
                         "urlRecivo" => route('cartera.reciboPDF', $item->id),
@@ -100,31 +100,63 @@ class CarteraController extends Controller
                 $porcentProyec[5] * $valProyecto/100
             ];
 
-
+            $lineDeveTTOtroSi = [0, 0, 0, 0, 0, 0];
             $lineDeveOtrosi = Otrosi::with('otrosi_refe')
                 ->where('id_proyecto', $id)
+                ->orderBy('numero', 'asc')
                 ->get()
-                ->map(function ($item) {
-                    if ($item->otrosi_refe->isEmpty()) {
-                        return ['no', 'no', 'no', 'no', 'no', 'no'];
-                    }
-                    $a = $item->totalRefeOtroSi;
+                ->map(function ($item) use (&$lineDeveTTOtroSi) {
                     $b = $item->totalDeve;
-                    $c = ($b - $a) == 0 ? 0 : 'no';
-                    $line = [0, $c, $c, $c, $c, $c];
-                    foreach ($item->otrosi_refe as $data) {
-                        if ($data->referencia >= 1 && $data->referencia <= 5) {
-                            $line[$data->referencia] = $data->valor;
+                    $a = $item->totalRefeOtroSi;
+                    $c = $b - $a;
+                    if ($c == 0) {
+                        $line = [0, 0, 0, 0, 0, 0];
+                    } else {
+                        $line = [0, -$c, -$c, -$c, -$c, -$c];
+                    }
+
+                    $refe = $item->otrosi_refe()->get();
+                    if ($refe->isEmpty()) {
+                        $array = array_fill(0, 5, -$b);
+                        return array_merge([0], $array);
+                    } else {
+                        foreach ($refe as $data) {
+                            $lineDeveTTOtroSi[$data->referencia] += $data->valor;
+                            if ($data->referencia >= 1 && $data->referencia <= 5) {
+                                $line[$data->referencia] = $data->valor;
+                            }
                         }
                     }
                     return $line;
                 })
                 ->toArray();
 
+            $lineTTDeve = [];
+            foreach ($lineDeveProy as $key => $valor) {
+                $lineTTDeve[$key] = $valor + (is_numeric($lineDeveTTOtroSi[$key]) ? $lineDeveTTOtroSi[$key] : 0);
+            }
+
+            $lineTTResta = [];
+            $acumulado = $valTotalPagado;
+            $ban = 0;
+            foreach ($lineTTDeve as $key => $valor) {
+                if($ban == 1){
+                    $lineTTResta[$key] = $valor;
+                    continue ;
+                }
+                $acumulado = $acumulado - $valor;
+                if($acumulado > 0){
+                    $lineTTResta[$key] = 0;
+                } else {
+                    $lineTTResta[$key] = abs($acumulado);
+                    $ban = 1;
+                }
+            }
+
             if(empty($lineDeveOtrosi)){
-                $valance = [$lineDeveProy];
+                $valance = array_merge([$lineDeveProy], [$lineTTDeve], [$lineTTResta]);
             } else {
-                $valance = array_merge([$lineDeveProy], $lineDeveOtrosi);
+                $valance = array_merge([$lineDeveProy], $lineDeveOtrosi, [$lineTTDeve], [$lineTTResta]);
             }
 
             return response()->json([
@@ -178,7 +210,7 @@ class CarteraController extends Controller
 
         try {
             DB::beginTransaction();
-            $pago = Pagos::create([
+            Pagos::create([
                 'id_proyecto'  => $request->id_proyecto,
                 'fecha_pago'   => $request->fecha_pago,
                 'valor'        => $request->valor,

@@ -28,7 +28,6 @@
                             value="{{ now() }}"
                             required
                         />
-                        <div data-error-for="fecha_pago" class="mt-2 text-sm text-red-600 hidden"></div>
                     </div>
                 </div>
 
@@ -36,7 +35,6 @@
                     <x-input-label for="valor" :value="__('Valor Abonado *')" />
                     <x-text-input id="valor" min="0" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-300 focus:border-blue-400 moneda-cop"
                         type="number" name="valor" placeholder="Ej: 200000" required/>
-                        <div data-error-for="valor" class="mt-2 text-sm text-red-600 hidden"></div>
                 </div>
 
                 <div class="max-w-full p-2 shrink-0 w-full md:flex-0">
@@ -50,7 +48,7 @@
                 <div class="flex w-full justify-end p-2">
                     <button form="formPago" type="submit"
                         class="bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all">
-                        Guardar Pago
+                        Guardar Abono
                     </button>
                 </div>
             </div>

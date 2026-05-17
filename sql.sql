@@ -74,10 +74,8 @@ CREATE TABLE `pagos` (
 CREATE TABLE aescala.otro_si_refe_pago (
 	id BIGINT auto_increment NOT NULL,
 	id_otro_si BIGINT NOT NULL,
+    id_user bigint DEFAULT NULL,
 	referencia INT NOT NULL,
 	valor BIGINT UNSIGNED DEFAULT 0 NOT NULL,
 	CONSTRAINT otro_si_refe_pago_pk PRIMARY KEY (id)
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
+);
