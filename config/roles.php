@@ -93,7 +93,7 @@ return [
         'proyecto.create'               => ['isAdmin', 'isUser'],
         'proyecto.save'                 => ['isAdmin', 'isUser'],
         'proyecto.begin'                => ['isAdmin', 'isUser'],
-        'proyecto.editStatus'           => ['isAdmin', 'isUser'],
+        'proyecto.editStatus'           => ['isAdmin', 'isUser', 'isComer'],
         'proyecto.saveTarea'            => ['isAdmin', 'isUser'],
         'proyecto.editTarea'            => ['isAdmin', 'isUser', 'isColab', 'isContratista'],
         'proyecto.deleteTarea'          => ['isAdmin', 'isUser'],
