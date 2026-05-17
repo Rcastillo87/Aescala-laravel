@@ -380,7 +380,7 @@ async function loadCartera(id) {
                     let valorNumerico = valor;//parseFloat(valor) || 0;
                     relacionHTML += `
                         <td class="p-3">
-                            ${valorNumerico}
+                            ${formatCurrency(valorNumerico)}
                         </td>`;
                 });
                 relacionHTML += `</tr>`;
