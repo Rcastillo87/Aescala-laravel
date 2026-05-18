@@ -188,9 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const conFechaFin = document.getElementById('checkboxFecha');
     const fechaFinContainer = document.getElementById('fechaFinBegin');
-    const diasTrabajoContainer = document.getElementById('diasTrabajoBegin');
     const fechaFinInput = document.getElementById('fec_fin_estimado_b');
-    const diasTrabajoInput = document.getElementById('dias_trabajo_begin');
     const conFechaFinInput = document.getElementById('conFechaFin_b');
 
     const conFechaDiseInput = document.getElementById('conFechaDise');
@@ -203,18 +201,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (conFechaFin.checked) {
             conFechaFinInput.value = 1;
             fechaFinContainer.classList.remove('hidden');
-            diasTrabajoContainer.classList.add('hidden');
             fechaFinInput.required = true;
-            diasTrabajoInput.required = false;
-            if(diasTrabajoInput.value < '1'){
-                diasTrabajoInput.value = '1';
-            }
         } else {
             conFechaFinInput.value = 0;
             fechaFinContainer.classList.add('hidden');
-            diasTrabajoContainer.classList.remove('hidden');
             fechaFinInput.required = false;
-            diasTrabajoInput.required = true;
         }
     }
 
@@ -713,7 +704,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("id_user_carpinteria").value = proyecto.id_user_carpinteria;
             document.getElementById("id_user_diseno").value = proyecto.id_user_diseno;
 
-            document.getElementById("dias_trabajo_begin").value = proyecto.dias_trabajo ?? 1;
             document.getElementById("observacion").textContent = proyecto.observacion ?? '';
             document.getElementById("ubicacion").value = proyecto.ubicacion ?? '';
 

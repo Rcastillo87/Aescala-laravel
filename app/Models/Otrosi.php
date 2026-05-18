@@ -24,8 +24,7 @@ class Otrosi extends Model
         'fecha_firma',
         'estado',
         'sugerencia_cliente',
-        'img_firma',
-        'paz_salvo',
+        'img_firma'
     ];
 
     public static $estadoTX = [
@@ -150,12 +149,6 @@ class Otrosi extends Model
         return $this->area_entregable()
                     ->selectRaw('SUM(valor * cantidad) as subtotal')
                     ->value('subtotal');
-    }
-
-    public function getApazAttribute()
-    {
-        return ($this->paz_salvo==1) ? '<span class="span-green">SI</span>':
-            '<span class="span-red">NO</span>';
     }
 
     public function otrosi_refe(){

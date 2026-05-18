@@ -8,6 +8,7 @@ use App\Models\Otrosi;
 use App\Models\Proyecto;
 use App\Models\Pagos;
 use App\Models\Documento;
+use App\Models\Festivos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -46,7 +47,7 @@ class CarteraController extends Controller
 
             $valProyecto = $proyecto->total;
             $valOtrosis = $proyecto->TotalOtroSi?? 0;
-            $valTotodal = $proyecto->total + $valOtrosis;
+            $valTotodal = $valProyecto + $valOtrosis;
 
             $contraProyec = [
                 "id_proyecto" => $id,
@@ -218,6 +219,25 @@ class CarteraController extends Controller
                 'id_user'      => Auth::id(),
             ]);
 
+            $pro = Proyecto::find($request->id_proyecto);
+            $valProyecto = $pro->total;
+            $valOtrosis = $pro->TotalOtroSi?? 0;
+            $valTotal = $valProyecto + $valOtrosis;
+
+            $valAbonado = Pagos::where('id_proyecto', $request->id_proyecto)->sum('valor');
+            if($valAbonado >= $valTotal){
+                $pro->paz_salvo = 1;
+            }
+            if($pro->id_estado == 2){
+                $pro->fec_inicio = $request->fecha_pago;
+                $pro->fec_fin_estimado = (new Festivos)->calcularFechaFin($request->fecha_pago, $pro->dias_contrato);
+                $diasComision = $pro->dias_contrato - 10;
+                if($diasComision > 0){
+                    $pro->fecha_comision = (new Festivos)->calcularFechaFin($request->fecha_pago, $diasComision);
+                }
+                $pro->id_estado = 1;
+            }
+            $pro->save();
             DB::commit();
             return response()->json([
                 'status'  => true,

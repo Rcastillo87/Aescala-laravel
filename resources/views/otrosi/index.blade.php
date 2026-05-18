@@ -17,7 +17,7 @@
                             {{ strtolower($item->proyecto->nombre_proyecto) }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
-                            {{ strtolower($item->user_encargado->nombre_completo) }}
+                            {{ strtolower($item->user_encargado?->nombre_completo??'--') }}
                         </td>
                         <td class="py-2 truncate max-w-xs text-center bg-transparent border-b dark:border-white/40 shadow-transparent">
                             N° {{ $item->numero }}

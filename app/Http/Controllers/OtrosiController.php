@@ -78,7 +78,7 @@ class OtrosiController extends Controller
 
         $title = $id ? 'Editar Otrosí' : 'Crear Otrosí';
 
-        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5])
+        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5, 2])
             ->when(!Auth::user()->isAdmin, function ($query) {
                 $query->where(function ($q) {
                     $q->where('id_user', Auth::user()->id)

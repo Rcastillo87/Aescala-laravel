@@ -40,6 +40,11 @@ class ProyectoController extends Controller
         $festivos->festivos($year + 1);
         $perPage = request('per_page', 10);
 
+        $tareatipo = TareaTipo::where('orden', '>',  0)
+                        ->orderBy('orden', 'asc')
+                        ->get(['id', 'orden', 'porcentage'])
+                        ->toArray();
+
         if (Request('id_userSerch') || Request('nombre_proyecto') || Request('nombre_cliente') || request('id_estado')) {
             if (request('id_estado')) {
                 $est = [request('id_estado')];
@@ -74,7 +79,7 @@ class ProyectoController extends Controller
                 return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_carpinteria', $contra)->orwhere('id_user_diseno', $contra);
             })
             ->whereNotNull('id_estado')
-            ->orderBy('id', 'desc')
+            ->orderBy('fec_inicio', 'desc')
             ->paginate($perPage)
             ->appends(request()->query());
 
@@ -133,7 +138,8 @@ class ProyectoController extends Controller
             'headerComparativo',
             'proyecto',
             'contraUsers',
-            'ubicacion'
+            'ubicacion',
+            'tareatipo'
         ));
     }
 
@@ -261,11 +267,6 @@ class ProyectoController extends Controller
                 'integer',
                 Rule::exists('users', 'id'),
             ],
-            'dias_trabajo_begin' => [
-                'required_if:conFechaFin_b,0',
-                'integer',
-                'min:1'
-            ],
             'conFechaFin_b' => 'required|integer|in:0,1',
             'observacion' => 'nullable|string',
             'fec_inicio_begin' => ['required', 'date', 'date_format:Y-m-d'],
@@ -283,7 +284,7 @@ class ProyectoController extends Controller
 
         $arrayAttributes = [
             'id_proyecto_begin'      => 'proyecto',
-            'id_user_proy'           => 'arquitecto encargado',
+            'id_user_proy'           => 'Residente',
             'id_user_obra_blanca'    => 'contratista de obra blanca',
             'id_user_carpinteria'    => 'contratista de carpintería',
             'id_user_diseno'         => 'diseñador encargado',
@@ -298,9 +299,12 @@ class ProyectoController extends Controller
         ];
 
         $data = $req->validate($valbase, [], $arrayAttributes);
+
+        $pro = Proyecto::find($data['id_proyecto_begin']);
+
         if ($data['conFechaFin_b'] == 0) {
-            $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $data['dias_trabajo_begin']);
-            $data['dias_trabajo'] = $data['dias_trabajo_begin'];
+            $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $pro->dias_contrato);
+            $data['dias_trabajo'] = $pro->dias_contrato;
         } else {
             $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
             $data['dias_trabajo'] = ceil((new Festivos)->contarDiasHabiles($data['fec_inicio_begin'], $data['fec_fin_estimado_b'], $festivos));
@@ -309,7 +313,7 @@ class ProyectoController extends Controller
 
         $data['fec_inicio'] = $data['fec_inicio_begin'];
         $data['id_user'] = $data['id_user_proy'];
-        $pro = Proyecto::find($data['id_proyecto_begin']);
+
         if (($pro->id_estado == 2) && ($data['conFechaDise'] == 0)) {
             $data['id_estado'] = 1;
         } elseif ($data['conFechaDise'] == 1) {

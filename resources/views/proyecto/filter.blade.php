@@ -24,7 +24,7 @@
                 <div class="flex flex-wrap gap-1">
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_proyecto" :value="__('Nombre Proyecto')" />
-                        <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')" 
+                        <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto" :value="Request('nombre_proyecto')"
                          autofocus />
                     </div>
                     @php
@@ -32,40 +32,40 @@
                     @endphp
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado" :value="__('Estado Proyecto')" />
-                        <x-select-input 
-                            name="id_estado" 
-                            :options="$estado" 
-                            :selected="Request('id_estado')" 
-                            class="block mt-1 w-full" 
+                        <x-select-input
+                            name="id_estado"
+                            :options="$estado"
+                            :selected="Request('id_estado')"
+                            class="block mt-1 w-full"
                         />
                     </div>
                     @if (Auth::user()->isNotcolab)
                         <div class="p-2 shrink-0 w-[40]">
-                            <x-input-label for="id_userSerch" :value="__('Arquitecto Encargado')" />
-                            <x-select-input 
-                                name="id_userSerch" 
+                            <x-input-label for="id_userSerch" :value="__('Residente')" />
+                            <x-select-input
+                                name="id_userSerch"
                                 :data="['id', 'nombre_completo']"
-                                :options="$userColab" 
-                                :selected="Request('id_userSerch')" 
-                                class="block mt-1 w-full" 
+                                :options="$userColab"
+                                :selected="Request('id_userSerch')"
+                                class="block mt-1 w-full"
                             />
                         </div>
                     @endif
                     @if (Auth::user()->isNotcolab)
                         <div class="p-2 shrink-0 w-[40]">
                             <x-input-label for="id_contratista" :value="__('Contratistas')" />
-                            <x-select-input 
-                                name="id_contratista" 
+                            <x-select-input
+                                name="id_contratista"
                                 :data="['id', 'nombre_completo']"
-                                :options="$contraUsers" 
-                                :selected="Request('id_contratista')" 
-                                class="block mt-1 w-full" 
+                                :options="$contraUsers"
+                                :selected="Request('id_contratista')"
+                                class="block mt-1 w-full"
                             />
                         </div>
                     @endif
                     <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="nombre_cliente" :value="__('Nombre Cliente')" />
-                        <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="Request('nombre_cliente')" 
+                        <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="Request('nombre_cliente')"
                          autofocus />
                     </div>
                     <div class="p-2 shrink-0">
@@ -76,7 +76,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                             </svg>
                         </button>
-                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 
+                        <div id="tooltip-search" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900
                             bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip ">
                             Buscar
                             <div class="tooltip-arrow" data-popper-arrow></div>

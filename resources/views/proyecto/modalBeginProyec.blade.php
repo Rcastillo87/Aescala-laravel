@@ -96,15 +96,9 @@
                     </div>
                     <x-input-error :messages="$errors->get('fec_fin')" class="mt-2" />
                 </div>
-                <div id="diasTrabajoBegin" class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                    <x-input-label for="dias_trabajo_begin" :value="__('Días Duración del Proyecto *')" />
-                    <x-text-input id="dias_trabajo_begin" class="block w-full" type="number"
-                                    name="dias_trabajo_begin" value="{{ old('dias_trabajo_begin') }}"/>
-                    <x-input-error :messages="$errors->get('dias_trabajo_begin', 1)" class="mt-2" />
-                </div>
 
                 <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                    <x-input-label for="id_user" :value="__('Arquitecto Encargado *')" />
+                    <x-input-label for="id_user" :value="__('Residente *')" />
                     <x-select-input
                         name="id_user_proy"
                         id="id_user_proy"

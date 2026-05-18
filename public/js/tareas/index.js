@@ -151,7 +151,7 @@ async function openAvance(page = 1, id) {
 
 function tableAvances(data) {
     const contenedor = document.getElementById('avanceList');
-    
+
     if (!data || data.length === 0) {
         contenedor.innerHTML = `
             <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50">
@@ -163,7 +163,7 @@ function tableAvances(data) {
 
     // Mapear colores para cada tarea
     const colores = [
-        'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
+        'bg-blue-500', 'bg-green-500', 'bg-purple-500',
         'bg-yellow-500', 'bg-red-500', 'bg-indigo-500',
         'bg-pink-500', 'bg-teal-500', 'bg-orange-500',
         'bg-cyan-500', 'bg-lime-500', 'bg-amber-500',
@@ -179,9 +179,9 @@ function tableAvances(data) {
         const colorClaro = color.replace('500', '200');
         const colorMedio = color.replace('500', '400');
         const colorOscuro = color;
-        
+
         // Usar el estado proporcionado por la API
-        const estadoHTML = tarea.estado 
+        const estadoHTML = tarea.estado
             ? tarea.estado.replace('span-yellow', 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800')
             : '<span class="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Estado no definido</span>';
 
@@ -207,11 +207,11 @@ function tableAvances(data) {
             html += `
                 <ol class="relative border-l border-gray-200 ml-2">
             `;
-            
+
             tarea.avances.forEach((avance, avanceIndex) => {
-                const avanceColor = avanceIndex % 3 === 0 ? colorClaro : 
+                const avanceColor = avanceIndex % 3 === 0 ? colorClaro :
                                   avanceIndex % 3 === 1 ? colorMedio : colorOscuro;
-                
+
                 html += `
                     <li class="mb-4 ml-6 group">
                         <div class="absolute w-3 h-3 ${avanceColor} rounded-full mt-1.5 -left-1.5 border border-white"></div>
@@ -222,13 +222,13 @@ function tableAvances(data) {
                                 Eliminar
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Actualizado: 
+                        <p class="text-xs text-gray-500 mt-1">Actualizado:
                             ${new Date(avance.updatedAt).getFullYear()}-${String(new Date(avance.updatedAt).getMonth() + 1).padStart(2, '0')}-${String(new Date(avance.updatedAt).getDate()).padStart(2, '0')} ${String(new Date(avance.updatedAt).getHours()).padStart(2, '0')}:${String(new Date(avance.updatedAt).getMinutes()).padStart(2, '0')}
                         </p>
                     </li>
                 `;
             });
-            
+
             html += `
                 </ol>
             `;
@@ -284,7 +284,7 @@ function confirmDelete(id) {
                     });
                 } else {
                     Swal.fire("Error", "No se pudo eliminar la data.", "error");
-                } 
+                }
             } catch (error) {
                 Swal.fire("Error", "No se pudo eliminar la data.", "error");
             }

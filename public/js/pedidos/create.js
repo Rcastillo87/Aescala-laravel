@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Referencias DOM ──────────────────────────────────────────────────────
     const tipoSelect     = document.querySelector('[name="tipo"]');
     const proveedorSelect = document.getElementById('id_proveedor');
-    const materialSelect  = document.getElementById('id_material');
     const divProyecto    = document.getElementById('divProyecto');
     const proyectoSelect = document.getElementById('id_proyecto');
     const selectMateriales = document.getElementById('selectMateriales');
@@ -22,23 +21,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const addedMaterials = new Set();
 
     // ── Instancia TomSelect ──────────────────────────────────────────────────
-    const tomSelectInstance = new TomSelect('#id_material', {
-        create: false,
-        sortField: { field: 'text', direction: 'asc' },
-        placeholder: 'Busqueda..',
-        onInitialize: function () {
-            this.wrapper.classList.add('tom-select-custom');
-        },
-        onChange: function (value) {
-            if (value) {
-                addSelectedMaterial(value);
-                this.clear();
+    const materialSelect = document.getElementById('id_material');
+    let tomSelectInstance = null;
+    if (materialSelect) {
+        tomSelectInstance = new TomSelect(materialSelect, {
+            create: false,
+            sortField: { field: 'text', direction: 'asc' },
+            placeholder: 'Busqueda..',
+            onInitialize: function () {
+                this.wrapper.classList.add('tom-select-custom');
+            },
+            onChange: function (value) {
+                if (value) {
+                    addSelectedMaterial(value);
+                    this.clear();
+                }
             }
-        }
-    });
-
-    // Empieza deshabilitado
-    tomSelectInstance.disable();
+        });
+        tomSelectInstance.disable();
+    }
 
     // ── Helpers select nativo (proveedor) ────────────────────────────────────
     const disableSelect = (el) => {

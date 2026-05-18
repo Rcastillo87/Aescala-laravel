@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use App\View\Components\AppLayout;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
-use NumberFormatter;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -56,6 +54,7 @@ class Proyecto extends Model
         'paz_salvo',
         'acepta_trata_datos',
         'fecha_firma',
+        'fecha_comision'
     ];
 
     protected $casts = [
@@ -370,6 +369,13 @@ class Proyecto extends Model
     public function getTotalOtroSiAttribute()
     {
         return $this->otro_si->sum('total_deve');
+    }
+
+    public function getMaxTareaAttribute()
+    {
+        return $this->tareas()
+            ->join('tarea_tipos', 'tarea_tipos.id', '=', 'tareas.id_tarea_tipo')
+            ->max('tarea_tipos.orden');
     }
 
     public function soporteFact()

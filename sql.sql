@@ -71,7 +71,7 @@ CREATE TABLE `pagos` (
   CONSTRAINT `pagos_id_user` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
 );
 
-CREATE TABLE aescala.otro_si_refe_pago (
+CREATE TABLE otro_si_refe_pago (
 	id BIGINT auto_increment NOT NULL,
 	id_otro_si BIGINT NOT NULL,
     id_user bigint DEFAULT NULL,
@@ -79,3 +79,10 @@ CREATE TABLE aescala.otro_si_refe_pago (
 	valor BIGINT UNSIGNED DEFAULT 0 NOT NULL,
 	CONSTRAINT otro_si_refe_pago_pk PRIMARY KEY (id)
 );
+
+ALTER TABLE proyectos ADD fecha_comision date NULL;
+ALTER TABLE otro_si DROP COLUMN paz_salvo;
+
+ALTER TABLE tarea_tipos DROP COLUMN createdAt;
+ALTER TABLE tarea_tipos DROP COLUMN updatedAt;
+ALTER TABLE tarea_tipos ADD porcentage INT UNSIGNED DEFAULT 0 NULL;

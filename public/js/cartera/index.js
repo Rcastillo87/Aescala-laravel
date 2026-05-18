@@ -177,7 +177,7 @@ async function loadCartera(id) {
         */
 
         let resumenHTML = `
-            <div class="grid md:grid-cols-2 gap-2 mb-2">
+            <div class="grid lg:grid-cols-2 gap-2 mb-2">
                 <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4">
                     <h2 class="text-lg font-semibold mb-3">
                         Resumen Total
