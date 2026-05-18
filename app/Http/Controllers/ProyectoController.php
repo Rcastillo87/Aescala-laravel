@@ -1229,8 +1229,10 @@ class ProyectoController extends Controller
             'detalle'     => $request->detalle,
         ]);
 
-        $nuevaFin = $this->recalcularFechaFin($proyecto);
+        $nuevaFin = $this->recalcularFechaFin($proyecto, true);
+        $nuevaComi = $this->recalcularFechaFin($proyecto, false);
         $proyecto->fec_fin_estimado = $nuevaFin;
+        $proyecto->fecha_comision = $nuevaComi;
         $proyecto->save();
 
         return response()->json([
@@ -1240,10 +1242,14 @@ class ProyectoController extends Controller
     }
 
     // ─── Recalcular fecha fin ──────────────────────────────────────────
-    private function recalcularFechaFin(Proyecto $proyecto): Carbon
+    private function recalcularFechaFin(Proyecto $proyecto, $ban): Carbon
     {
         $inicio       = Carbon::parse($proyecto->fec_inicio)->startOfDay();
-        $diasObjetivo = (float) $proyecto->dias_trabajo;
+        if($ban){
+            $diasObjetivo = (float) $proyecto->dias_trabajo;
+        } else {
+            $diasObjetivo = (float) $proyecto->dias_trabajo - 10;
+        }
 
         $festivos = Festivos::where('date', '>=', $inicio->toDateString())
             ->pluck('date')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
