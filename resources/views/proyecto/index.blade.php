@@ -182,6 +182,13 @@
                         </div>
                     @endif
 
+                    @if($item->paz_salvo == 1)
+                        <div class="min-w-0">
+                            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Paz & salvo</p>
+                            <p class="text-sm text-gray-700 leading-snug font-medium">{!! $item->apaz !!}</p>
+                        </div>
+                    @endif
+
                     @if($item->observacion)
                         <div class="min-w-0 xs:col-span-2 md:col-span-3 xl:col-span-4">
                             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Observación</p>

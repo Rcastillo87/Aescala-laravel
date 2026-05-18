@@ -219,25 +219,46 @@ class CarteraController extends Controller
                 'id_user'      => Auth::id(),
             ]);
 
-            $pro = Proyecto::find($request->id_proyecto);
-            $valProyecto = $pro->total;
-            $valOtrosis = $pro->TotalOtroSi?? 0;
-            $valTotal = $valProyecto + $valOtrosis;
+            $pro = Proyecto::findOrFail($request->id_proyecto);
+            $valOtroSiRefe      = (float) $pro->allTotalRefeOtroSi;
+            $valOtrosis         = (float) ($pro->totalOtroSi ?? 0);
+            $cambio             = $valOtroSiRefe - $valOtrosis;//valor consfigurado como referecia 0 si consfigurado
 
-            $valAbonado = Pagos::where('id_proyecto', $request->id_proyecto)->sum('valor');
-            if($valAbonado >= $valTotal){
-                $pro->paz_salvo = 1;
-            }
-            if($pro->id_estado == 2){
-                $pro->fec_inicio = $request->fecha_pago;
-                $pro->fec_fin_estimado = (new Festivos)->calcularFechaFin($request->fecha_pago, $pro->dias_contrato);
-                $diasComision = $pro->dias_contrato - 10;
-                if($diasComision > 0){
-                    $pro->fecha_comision = (new Festivos)->calcularFechaFin($request->fecha_pago, $diasComision);
+            $valProyecto        = (float) $pro->total;
+            $porcentajeInicial  = $pro->termino_1_por + $pro->termino_2_por;
+            $valProyectoPor     = ($porcentajeInicial * $valProyecto) / 100;
+            $valFirstOtroSiRefe = (float) $pro->firstTotalRefeOtroSi;
+
+            // Equivale al 50% del proyecto + referencias iniciales del otrosí
+            $valTotal50 = $valProyectoPor + $valFirstOtroSiRefe;
+
+            $valAbonado = (float) Pagos::where('id_proyecto', $pro->id)->sum('valor');//valor total de todos los abonos
+
+            if ($cambio == 0 && $valAbonado >= $valTotal50) {
+                if ($pro->id_estado == 2) {
+                    $pro->fec_inicio = $request->fecha_pago;
+                    $pro->fec_fin_estimado = (new Festivos)
+                        ->calcularFechaFin(
+                            $request->fecha_pago,
+                            $pro->dias_contrato
+                        );
+                    $diasComision = $pro->dias_contrato - 10;
+                    if ($diasComision > 0) {
+                        $pro->fecha_comision = (new Festivos)
+                            ->calcularFechaFin(
+                                $request->fecha_pago,
+                                $diasComision
+                            );
+                    }
+                    $pro->id_estado = 1;
                 }
-                $pro->id_estado = 1;
+                if(($valProyecto + $valOtrosis) <= $valAbonado){
+                    $pro->paz_salvo = 1;
+                } else{
+                    $pro->paz_salvo = 0;
+                }
+                $pro->save();
             }
-            $pro->save();
             DB::commit();
             return response()->json([
                 'status'  => true,

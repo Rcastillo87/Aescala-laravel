@@ -392,4 +392,21 @@ class Proyecto extends Model
         6 => 'correspondiente al pago final por la entrega de la obra',
     ];
 
+    public function getAllTotalRefeOtroSiAttribute()
+    {
+        return OtrosiRefe::query()
+            ->join('otro_si', 'otro_si.id', '=', 'otro_si_refe_pago.id_otro_si')
+            ->where('otro_si.id_proyecto', $this->id)
+            ->sum('otro_si_refe_pago.valor');
+    }
+
+    public function getFirstTotalRefeOtroSiAttribute()
+    {
+        return OtrosiRefe::query()
+            ->join('otro_si', 'otro_si.id', '=', 'otro_si_refe_pago.id_otro_si')
+            ->where('otro_si.id_proyecto', $this->id)
+            ->where('otro_si_refe_pago.referencia', 1)
+            ->sum('otro_si_refe_pago.valor');
+    }
+
 }

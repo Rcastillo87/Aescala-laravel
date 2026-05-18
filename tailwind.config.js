@@ -57,7 +57,7 @@ export default {
         'bg-pink-200', 'bg-pink-400', 'bg-pink-500',
         'bg-teal-200', 'bg-teal-400', 'bg-teal-500',
         'bg-orange-200', 'bg-orange-400', 'bg-orange-500',
-        'bg-cyan-200', 'bg-cyan-400', 'bg-cyan-500', 'bg-cyan-600', 'bg-cyan-700', 'bg-cyan-800',
+        'bg-cyan-200', 'bg-cyan-300', 'bg-cyan-400', 'bg-cyan-500', 'bg-cyan-600', 'bg-cyan-700', 'bg-cyan-800',
         'bg-lime-200', 'bg-lime-400', 'bg-lime-500',
         'bg-amber-200', 'bg-amber-400', 'bg-amber-500',
         'bg-emerald-200', 'bg-emerald-400', 'bg-emerald-500',
