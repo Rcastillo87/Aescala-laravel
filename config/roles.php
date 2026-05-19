@@ -16,6 +16,7 @@
  *  isContratista  → Contratista    (id_rol: 7)
  *  isTecnico      → Tecnico        (id_rol: 8)
  *  isAlmacenista  → Almacenista    (id_rol: 9)
+ *  isDiseno       → Diseñador    (id_rol: 10)
  * ============================================================
  */
 
