@@ -52,7 +52,7 @@
                        rounded-xl shadow-sm hover:shadow-md hover:border-blue-300
                        transition-all duration-200 px-3 py-2.5'>
 
-                <p class='text-sm font-semibold text-gray-800 truncate mb-1.5'>$proy->nombre_proyecto</p>
+                <p class='text-sm font-semibold text-gray-800 mb-1.5'>$proy->nombre_proyecto</p>
 
                 <div class='grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 mb-2'>
                     <span class='text-[11px] text-gray-400'>Cliente</span>
@@ -99,7 +99,7 @@
                        rounded-xl shadow-sm hover:shadow-md hover:border-blue-300
                        transition-all duration-200 px-3 py-2.5'>
 
-                <p class='text-sm font-semibold text-gray-800 truncate mb-1.5'>".$item->proyecto->nombre_proyecto."</p>
+                <p class='text-sm font-semibold text-gray-800 mb-1.5'>".$item->proyecto->nombre_proyecto."</p>
 
                 <div class='grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 mb-2'>
                     <span class='text-[11px] text-gray-400'>Cliente</span>
