@@ -164,7 +164,7 @@ class ComercialController extends Controller
                 'telefono_cliente' => 'required|string|max:15',
                 'cedula_cliente' => 'required|digits_between:6,15',
                 'tipo_doc_cliente' => ['required', 'integer', Rule::in(array_keys(Proyecto::$tipoDocumento))],
-                'dias_trabajo' => 'required|integer|min:1',
+                'dias_contrato' => 'required|integer|min:1',
                 'area_privada' => 'nullable|integer|min:0',
                 'descuento' => 'nullable|integer|min:0',
 
@@ -213,7 +213,7 @@ class ComercialController extends Controller
             }
 
             $data['id_user_comercial'] = Auth::user()->id;
-            $data['dias_contrato'] = $req->dias_trabajo;
+            $data['dias_contrato'] = $req->dias_contrato;
 
             DB::beginTransaction();
             $datosProyecto = collect($data)

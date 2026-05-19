@@ -132,10 +132,10 @@
                 <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
-                <x-input-label for="dias_trabajo" :value="__('Días Duración del Proyecto *')" />
-                <x-text-input id="dias_trabajo" class="block w-full" type="number"
-                                name="dias_trabajo" value="{{ old('dias_trabajo', $proyecto?->dias_trabajo ?? 1) }}"/>
-                <x-input-error :messages="$errors->get('dias_trabajo')" class="mt-2" />
+                <x-input-label for="dias_contrato" :value="__('Días Duración del Proyecto *')" />
+                <x-text-input id="dias_contrato" class="block w-full" type="number"
+                                name="dias_contrato" value="{{ old('dias_trabajo', $proyecto?->dias_contrato ?? 1) }}"/>
+                <x-input-error :messages="$errors->get('dias_contrato')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="area_privada" :value="__('Area Privada(mts cuadrados) *')" />

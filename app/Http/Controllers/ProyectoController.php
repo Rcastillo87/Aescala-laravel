@@ -288,7 +288,6 @@ class ProyectoController extends Controller
             'id_user_obra_blanca'    => 'contratista de obra blanca',
             'id_user_carpinteria'    => 'contratista de carpintería',
             'id_user_diseno'         => 'diseñador encargado',
-            'dias_trabajo_begin'     => 'días de duración del proyecto',
             'conFechaFin_b'          => 'con fecha fin',
             'fec_inicio_begin'       => 'fecha de inicio del proyecto',
             'fec_fin_estimado_b'     => 'fecha fin estimada del proyecto',
