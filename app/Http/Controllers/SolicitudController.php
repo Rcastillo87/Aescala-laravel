@@ -103,58 +103,62 @@ class SolicitudController extends Controller
     public function create( )
     {
         Gate::authorize('solicitud.create');
-        $title = 'Crear Solicitud de Material';
-        $proyectos = Proyecto::wherein('id_estado', [1, 5, 3])
-            ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico || Auth::user()->isAlmacenista), function ($query) {
-                $query->where('id_user', Auth::user()->id)
-                    ->orWhere('id_user_obra_blanca', Auth::user()->id);
-            })
-            ->select([
-                'id',
-                DB::raw("
-                    CONCAT(
-                        nombre_proyecto,
-                        ' -- Estado: ',
-                        CASE id_estado
-                            WHEN 1 THEN 'En Desarrollo'
-                            WHEN 3 THEN 'Entregado'
-                            WHEN 5 THEN 'Posventas'
-                        END
-                    ) as nombre_proyecto
-                ")
-            ])
-            ->get()
-            ->toArray();
+        try {
+            $title = 'Crear Solicitud de Material';
+            $proyectos = Proyecto::whereIn('id_estado', [1, 5, 3])
+                ->when(!(Auth::user()->isAdmin || Auth::user()->isTecnico || Auth::user()->isAlmacenista), function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('id_user', Auth::user()->id)->orWhere('id_user_obra_blanca', Auth::user()->id);
+                    });
+                })
+                ->select([
+                    'id',
+                    DB::raw("
+                        CONCAT(
+                            nombre_proyecto,
+                            ' -- Estado: ',
+                            CASE id_estado
+                                WHEN 1 THEN 'En Desarrollo'
+                                WHEN 3 THEN 'Entregado'
+                                WHEN 5 THEN 'Posventas'
+                            END
+                        ) as nombre_proyecto
+                    ")
+                ])
+                ->get()
+                ->toArray();
 
-        $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
+            $materiales = InventarioMaterial::where('activo', 1)->get()->toArray();
 
-        if(Auth::user()->isContratista){
-            $arr = [1,2];
-        } else if(Auth::user()->isTecnico){
-            $arr = [4,5];
-        } else {
-            $arr = [3];
+            if(Auth::user()->isContratista){
+                $arr = [1,2];
+            } else if(Auth::user()->isTecnico){
+                $arr = [4,5];
+            } else {
+                $arr = [3];
+            }
+
+            $fasesDB = InventarioMaterial::whereIn('fase', $arr)
+                ->get(['id', 'fase'])
+                ->groupBy('fase');
+
+            $fases = collect($arr)->map(function ($fase) use ($fasesDB) {
+                return [
+                    'id'         => $fase,
+                    'name_fase'  => InventarioMaterial::$fases[$fase],
+                    'materiales' => isset($fasesDB[$fase])
+                        ? $fasesDB[$fase]
+                            ->pluck('id')
+                            ->map(fn($id) => (string) $id)
+                            ->values()
+                            ->toArray()
+                        : [],
+                ];
+            })->toArray();
+            return view('solicitud.create', compact('title', 'materiales', 'proyectos', 'fases'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
-
-        $fasesDB = InventarioMaterial::whereIn('fase', $arr)
-            ->get(['id', 'fase'])
-            ->groupBy('fase');
-
-        $fases = collect($arr)->map(function ($fase) use ($fasesDB) {
-            return [
-                'id'         => $fase,
-                'name_fase'  => InventarioMaterial::$fases[$fase],
-                'materiales' => isset($fasesDB[$fase])
-                    ? $fasesDB[$fase]
-                        ->pluck('id')
-                        ->map(fn($id) => (string) $id)
-                        ->values()
-                        ->toArray()
-                    : [],
-            ];
-        })->toArray();
-
-        return view('solicitud.create', compact('title', 'materiales', 'proyectos', 'fases'));
     }
 
     public function save(Request $request)
