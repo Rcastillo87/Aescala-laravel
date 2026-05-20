@@ -70,50 +70,54 @@ class OtrosiController extends Controller
 
     public function form($id = null)
     {
-        $item = $id ? Otrosi::with(['proyecto', 'area_entregable.area'])->find($id) : null;
-        $colaUsers = User::where('id_rol', 3)
-            ->where('activo', 1)
-            ->get(['id', 'nombre_completo'])
-            ->toArray();
+        try {
+            $item = $id ? Otrosi::with(['proyecto', 'area_entregable.area'])->find($id) : null;
+            $colaUsers = User::where('id_rol', 3)
+                ->where('activo', 1)
+                ->get(['id', 'nombre_completo'])
+                ->toArray();
 
-        $title = $id ? 'Editar Otrosí' : 'Crear Otrosí';
+            $title = $id ? 'Editar Otrosí' : 'Crear Otrosí';
 
-        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5, 2])
-            ->when(!Auth::user()->isAdmin, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('id_user', Auth::user()->id)
-                    ->orWhere('id_user_obra_blanca', Auth::user()->id)
-                    ->orWhere('id_user_diseno', Auth::user()->id);
-                });
-            })
-            ->whereNotNull('cedula_cliente')
-            ->whereNotNull('tipo_doc_cliente')
-            ->orderBy('nombre_proyecto', 'ASC')
-            ->get(['id', 'nombre_proyecto'])
-            ->toArray();
+            $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5, 2])
+                ->when(!Auth::user()->isAdmin, function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('id_user', Auth::user()->id)
+                        ->orWhere('id_user_obra_blanca', Auth::user()->id)
+                        ->orWhere('id_user_diseno', Auth::user()->id);
+                    });
+                })
+                ->whereNotNull('cedula_cliente')
+                ->whereNotNull('tipo_doc_cliente')
+                ->orderBy('nombre_proyecto', 'ASC')
+                ->get(['id', 'nombre_proyecto'])
+                ->toArray();
 
-        $areas = Area::get(['id', 'nombre_area'])->toArray();
+            $areas = Area::get(['id', 'nombre_area'])->toArray();
 
-        $entregables = [];
-        if ($item) {
-            $entregables = $item->area_entregable
-                ->groupBy('id_area')
-                ->map(function ($group) {
-                    return [
-                        'id_area' => $group->first()->id_area,
-                        'areaText' => $group->first()->area->nombre_area,
-                        'items' => $group->map(function ($item) {
-                            return [
-                                'material' => $item->descripccion,
-                                'cantidad' => $item->cantidad,
-                                'valor_unitario' => $item->valor,
-                            ];
-                        })->values()
-                    ];
-                })->values();
+            $entregables = [];
+            if ($item) {
+                $entregables = $item->area_entregable
+                    ->groupBy('id_area')
+                    ->map(function ($group) {
+                        return [
+                            'id_area' => $group->first()->id_area,
+                            'areaText' => $group->first()->area->nombre_area,
+                            'items' => $group->map(function ($item) {
+                                return [
+                                    'material' => $item->descripccion,
+                                    'cantidad' => $item->cantidad,
+                                    'valor_unitario' => $item->valor,
+                                ];
+                            })->values()
+                        ];
+                    })->values();
+            }
+
+            return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'areas', 'entregables'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
-
-        return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'areas', 'entregables'));
     }
 
     public function save(Request $request)
@@ -322,7 +326,6 @@ class OtrosiController extends Controller
                 'message' => 'Pago registrado correctamente.',
             ]);
         } catch (\Throwable $e) {
-            dd($e->getMessage());
             DB::rollBack();
             return response()->json([
                 'status'  => false,
