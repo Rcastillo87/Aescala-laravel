@@ -33,7 +33,6 @@ class Proyecto extends Model
         'id_estado',
         'id_user',
         'id_user_obra_blanca',
-        'id_user_carpinteria',
         'id_user_comercial',
         'id_user_diseno',
         'area_privada',
@@ -54,7 +53,8 @@ class Proyecto extends Model
         'paz_salvo',
         'acepta_trata_datos',
         'fecha_firma',
-        'fecha_comision'
+        'fecha_comision',
+        'user_carpinteria'
     ];
 
     protected $casts = [
@@ -307,11 +307,6 @@ class Proyecto extends Model
     public function userOB()
     {
         return $this->belongsTo(User::class, 'id_user_obra_blanca');
-    }
-
-    public function userCarpi()
-    {
-        return $this->belongsTo(User::class, 'id_user_carpinteria');
     }
 
     public function userDiseno()

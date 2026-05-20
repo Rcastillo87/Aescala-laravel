@@ -86,3 +86,9 @@ ALTER TABLE otro_si DROP COLUMN paz_salvo;
 ALTER TABLE tarea_tipos DROP COLUMN createdAt;
 ALTER TABLE tarea_tipos DROP COLUMN updatedAt;
 ALTER TABLE tarea_tipos ADD porcentage INT UNSIGNED DEFAULT 0 NULL;
+
+
+ALTER TABLE aescala.proyectos DROP FOREIGN KEY FK1_id_user_carpinteria;
+ALTER TABLE aescala.proyectos DROP COLUMN id_user_carpinteria;
+ALTER TABLE aescala.proyectos ADD user_carpinteria varchar(100) NULL;
+

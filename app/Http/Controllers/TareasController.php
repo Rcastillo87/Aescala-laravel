@@ -9,6 +9,7 @@ use App\Models\Proyecto;
 use App\Models\User;
 use App\Models\Festivos;
 use App\Models\Avance;
+use App\Models\DiasNoLaboralos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -153,15 +154,15 @@ class TareasController extends Controller
                 ->first();
             if($tareaOld){
                 $tarea['fec_inicio'] = $tareaOld->fec_fin;
-                $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($tareaOld->fec_fin, 10);
+                $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, $tareaOld->fec_fin, 10);//(new Festivos)->calcularFechaFin($tareaOld->fec_fin, 10);
             } else {
                 $tarea['fec_inicio'] = now();
-                $tarea['fec_fin'] = (new Festivos)->calcularFechaFin(now(), 10);
+                $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, now(), 10);//(new Festivos)->calcularFechaFin(now(), 10);
             }
 
         } else {
             $tarea['fec_inicio'] = $pro->fec_inicio;
-            $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
+            $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, $pro->fec_inicio, 10);//(new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
         }
 
         DB::beginTransaction();
@@ -392,4 +393,28 @@ class TareasController extends Controller
             ], 500);
         }
     }
+
+    private function recalcularFechaFin($id, $fec_inicio, $dias_contrato): Carbon
+    {
+        $inicio       = Carbon::parse($fec_inicio)->startOfDay();
+        $diasObjetivo = (float) $dias_contrato;
+        $festivos = Festivos::where('date', '>=', $inicio->toDateString())->pluck('date')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
+        $noLabs = DiasNoLaboralos::where('id_proyecto', $id)->pluck('dia')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
+
+        $cursor = $inicio->copy();
+        $contados = 0.0;
+
+        while (true) {
+            $dow  = $cursor->dayOfWeek;
+            $date = $cursor->toDateString();
+            if ($dow !== Carbon::SUNDAY && !in_array($date, $festivos) && !in_array($date, $noLabs)) {
+                $contados += $dow === Carbon::SATURDAY ? 0.5 : 1.0;
+            }
+            if ($contados >= $diasObjetivo) break;
+            $cursor->addDay();
+        }
+        return $cursor;
+    }
+
+
 }

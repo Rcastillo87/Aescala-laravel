@@ -76,7 +76,7 @@ class ProyectoController extends Controller
                 return $query->where('id_user', $id_user);
             })
             ->when($contra, function ($query, $contra) {
-                return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_carpinteria', $contra)->orwhere('id_user_diseno', $contra);
+                return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_diseno', $contra);
             })
             ->whereNotNull('id_estado')
             ->orderBy('fec_inicio', 'desc')
@@ -203,11 +203,6 @@ class ProyectoController extends Controller
                 'nullable',
                 'integer',
                 Rule::exists('users', 'id'),
-            ],
-            'id_user_carpinteria' => [
-                'nullable',
-                'integer',
-                Rule::exists('users', 'id'),
             ]
         ];
 
@@ -257,41 +252,24 @@ class ProyectoController extends Controller
                 'integer',
                 Rule::exists('users', 'id'),
             ],
-            'id_user_carpinteria' => [
-                'nullable',
-                'integer',
-                Rule::exists('users', 'id'),
-            ],
             'id_user_diseno' => [
                 'nullable',
                 'integer',
                 Rule::exists('users', 'id'),
             ],
-            'conFechaFin_b' => 'required|integer|in:0,1',
             'observacion' => 'nullable|string',
             'fec_inicio_begin' => ['required', 'date', 'date_format:Y-m-d'],
-            'fec_fin_estimado_b' => [
-                'nullable',
-                'date',
-                'required_if:conFechaFin_b,1',
-                'date_format:Y-m-d',
-                'after_or_equal:fec_inicio_begin'
-            ],
-            'fec_ini_dise' => ['nullable', 'date', 'date_format:Y-m-d'],
             'conFechaDise' => 'required|integer|in:0,1',
             'ubicacion' => ['required', 'integer', Rule::in(array_keys(Proyecto::$ubicacion))],
+            'user_carpinteria' => ['nullable', 'string']
         ];
 
         $arrayAttributes = [
             'id_proyecto_begin'      => 'proyecto',
             'id_user_proy'           => 'Residente',
             'id_user_obra_blanca'    => 'contratista de obra blanca',
-            'id_user_carpinteria'    => 'contratista de carpintería',
             'id_user_diseno'         => 'diseñador encargado',
-            'conFechaFin_b'          => 'con fecha fin',
             'fec_inicio_begin'       => 'fecha de inicio del proyecto',
-            'fec_fin_estimado_b'     => 'fecha fin estimada del proyecto',
-            'fec_ini_dise'           => 'fecha de inicio de diseño',
             'conFechaDise'           => 'con fecha de diseño',
             'observacion'            => 'observación',
             'ubicacion'            => 'ubicación',
@@ -301,16 +279,14 @@ class ProyectoController extends Controller
 
         $pro = Proyecto::find($data['id_proyecto_begin']);
 
-        if ($data['conFechaFin_b'] == 0) {
-            $data['fec_fin_estimado'] = (new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $pro->dias_contrato);
+        if($data['conFechaDise'] == 0){
+            $data['fec_fin_estimado'] = $this->recalcularFechaFin($data['id_proyecto_begin'], $data['fec_inicio_begin'], $pro->dias_contrato);
+            $data['fecha_comision'] = $this->recalcularFechaFin($data['id_proyecto_begin'], $data['fec_inicio_begin'], ($pro->dias_contrato - 10));
+            //(new Festivos)->calcularFechaFin($data['fec_inicio_begin'], $pro->dias_contrato); //  viejo calculo
             $data['dias_trabajo'] = $pro->dias_contrato;
-        } else {
-            $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
-            $data['dias_trabajo'] = ceil((new Festivos)->contarDiasHabiles($data['fec_inicio_begin'], $data['fec_fin_estimado_b'], $festivos));
-            $data['fec_fin_estimado'] = $data['fec_fin_estimado_b'];
+            $data['fec_inicio'] = $data['fec_inicio_begin'];
         }
 
-        $data['fec_inicio'] = $data['fec_inicio_begin'];
         $data['id_user'] = $data['id_user_proy'];
 
         if (($pro->id_estado == 2) && ($data['conFechaDise'] == 0)) {
@@ -324,8 +300,9 @@ class ProyectoController extends Controller
         try {
             if(($data['conFechaDise'] == 1) && ($pro->id_estado == 2)) {
                 $tarea =  new Tarea;
-                $tarea['fec_inicio'] = $data['fec_ini_dise'];
-                $tarea['fec_fin'] = (new Festivos)->calcularFechaFin($data['fec_ini_dise'], 10);
+                $tarea['fec_inicio'] = $data['fec_inicio_begin'];
+                $tarea['fec_fin'] = $this->recalcularFechaFin($data['id_proyecto_begin'], $data['fec_inicio_begin'], 10);
+                //(new Festivos)->calcularFechaFin($data['fec_inicio_begin'], 10);
                 $tarea['id_proyecto'] = $data['id_proyecto_begin'];
                 $tarea['id_user'] = $data['id_user'];
                 $tarea['id_tarea_estado'] = 2;
@@ -1228,8 +1205,8 @@ class ProyectoController extends Controller
             'detalle'     => $request->detalle,
         ]);
 
-        $nuevaFin = $this->recalcularFechaFin($proyecto, true);
-        $nuevaComi = $this->recalcularFechaFin($proyecto, false);
+        $nuevaFin = $this->recalcularFechaFin($proyecto->id, $proyecto->fec_inicio, $proyecto->dias_contrato);//$this->recalcularFechaFin($proyecto, true);
+        $nuevaComi = $this->recalcularFechaFin($proyecto->id, $proyecto->fec_inicio, ($proyecto->dias_contrato -10));//$this->recalcularFechaFin($proyecto, false);
         $proyecto->fec_fin_estimado = $nuevaFin;
         $proyecto->fecha_comision = $nuevaComi;
         $proyecto->save();
@@ -1241,19 +1218,16 @@ class ProyectoController extends Controller
     }
 
     // ─── Recalcular fecha fin ──────────────────────────────────────────
-    private function recalcularFechaFin(Proyecto $proyecto, $ban): Carbon
+    private function recalcularFechaFin($id, $fec_inicio, $dias_contrato): Carbon
     {
-        $inicio       = Carbon::parse($proyecto->fec_inicio)->startOfDay();
-        if($ban){
-            $diasObjetivo = (float) $proyecto->dias_trabajo;
-        } else {
-            $diasObjetivo = (float) $proyecto->dias_trabajo - 10;
-        }
+        $inicio       = Carbon::parse($fec_inicio)->startOfDay();
+
+        $diasObjetivo = (float) $dias_contrato;
 
         $festivos = Festivos::where('date', '>=', $inicio->toDateString())
             ->pluck('date')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
 
-        $noLabs = DiasNoLaboralos::where('id_proyecto', $proyecto->id)
+        $noLabs = DiasNoLaboralos::where('id_proyecto', $id)
             ->pluck('dia')->map(fn($d) => Carbon::parse($d)->toDateString())->toArray();
 
         $cursor = $inicio->copy();

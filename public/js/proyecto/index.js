@@ -186,63 +186,22 @@ async function deleteTarea(id) {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
-    const conFechaFin = document.getElementById('checkboxFecha');
-    const fechaFinContainer = document.getElementById('fechaFinBegin');
-    const fechaFinInput = document.getElementById('fec_fin_estimado_b');
-    const conFechaFinInput = document.getElementById('conFechaFin_b');
-
     const conFechaDiseInput = document.getElementById('conFechaDise');
     const checkboxFechaDise = document.getElementById('checkboxFechaDise');
-    const fechaDiseDiv = document.getElementById('fechaDiseDiv');
-    const fechaDiseInput = document.getElementById('fec_ini_dise');
-
-    // Función para alternar visibilidad
-    function toggleFields() {
-        if (conFechaFin.checked) {
-            conFechaFinInput.value = 1;
-            fechaFinContainer.classList.remove('hidden');
-            fechaFinInput.required = true;
-        } else {
-            conFechaFinInput.value = 0;
-            fechaFinContainer.classList.add('hidden');
-            fechaFinInput.required = false;
-        }
-    }
 
     function toggleFields2() {
         if (checkboxFechaDise.checked) {
             conFechaDiseInput.value = 1;
-            fechaDiseDiv.classList.remove('hidden');
-            fechaDiseInput.required = true;
-            fechaDiseInput.disabled = false;
         } else {
             conFechaDiseInput.value = 0;
-            fechaDiseDiv.classList.add('hidden');
-            fechaDiseInput.required = false;
-            fechaDiseInput.disabled = true;
         }
     }
 
     // Event listener para el checkbox
-    conFechaFin.addEventListener('change', toggleFields);
     checkboxFechaDise.addEventListener('change', toggleFields2);
 
-
     // Inicializar el estado
-    toggleFields();
     toggleFields2();
-
-    // Inicializar el datepicker de Flowbite
-    if (typeof window.Datepicker !== 'undefined') {
-        new Datepicker(fechaFinInput, {
-            format: 'yyyy-mm-dd',
-            autohide: true
-        });
-        new Datepicker(fechaDiseInput, {
-            format: 'yyyy-mm-dd',
-            autohide: true
-        });
-    }
 });
 
 async function openAvance(page = 1, id) {
@@ -701,17 +660,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("id_user_proy").value = proyecto.id_user;
             document.getElementById("id_user_obra_blanca").value = proyecto.id_user_obra_blanca;
-            document.getElementById("id_user_carpinteria").value = proyecto.id_user_carpinteria;
             document.getElementById("id_user_diseno").value = proyecto.id_user_diseno;
 
             document.getElementById("observacion").textContent = proyecto.observacion ?? '';
             document.getElementById("ubicacion").value = proyecto.ubicacion ?? '';
 
             document.getElementById("fec_inicio_begin").value = proyecto.fec_inicio?.split('T')[0] ?? '';
-            document.getElementById("fec_fin_estimado_b").value = proyecto.fec_fin_estimado?.split('T')[0] ?? '';
 
             // 🔹 Campos ocultos obligatorios
             document.getElementById("id_proyecto_begin").value = proyecto.id ?? '';
+            document.getElementById("conFechaDise").value = 0;
+            document.getElementById("checkboxFechaDise").checked = false;
+            document.getElementById("user_carpinteria").checked = proyecto.user_carpinteria;
         });
     });
 

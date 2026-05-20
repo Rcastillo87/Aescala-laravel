@@ -161,10 +161,10 @@
                         </div>
                     @endif
 
-                    @if($item->userCarpi)
+                    @if($item->user_carpinteria)
                         <div class="min-w-0">
                             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Cont. Carpintería</p>
-                            <p class="text-sm text-gray-700 leading-snug">{{ $item->userCarpi['nombre_completo'] }}</p>
+                            <p class="text-sm text-gray-700 leading-snug">{{ $item->user_carpinteria }}</p>
                         </div>
                     @endif
 

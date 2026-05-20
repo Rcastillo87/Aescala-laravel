@@ -104,6 +104,7 @@ class CarteraController extends Controller
             $lineDeveTTOtroSi = [0, 0, 0, 0, 0, 0];
             $lineDeveOtrosi = Otrosi::with('otrosi_refe')
                 ->where('id_proyecto', $id)
+                ->where('estado', 1)
                 ->orderBy('numero', 'asc')
                 ->get()
                 ->map(function ($item) use (&$lineDeveTTOtroSi) {

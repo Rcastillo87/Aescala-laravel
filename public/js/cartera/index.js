@@ -408,8 +408,8 @@ async function loadCartera(id) {
                                             </span> \${label}\`;
                                         \$dispatch('open-modal', 'modalOtroSiRefe');"
                                     data-tooltip-target="tooltip-hover-abono-${index}-${index0}" data-tooltip-trigger="hover"
-                                    class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-700 hover:bg-white hover:text-cyan-800 border-2 border-cyan-800 focus:ring-4
-                                      focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
+                                    class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-600 hover:bg-cyan-800 border-2 border-cyan-800 focus:ring-4
+                                      focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm">
                                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6"/>
                                     </svg>

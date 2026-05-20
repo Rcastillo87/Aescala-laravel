@@ -164,7 +164,7 @@ class User extends Authenticatable
         return Proyecto::when(Auth::user()->isColab, function ($query) {
                 $query->where('id_user', Auth::user()->id);
             })->when(Auth::user()->isContratista, function ($query) {
-                return $query->where('id_user_obra_blanca', Auth::user()->id)->orwhere('id_user_carpinteria', Auth::user()->id);
+                return $query->where('id_user_obra_blanca', Auth::user()->id);
             })
         ->where('id_estado', 2)->count();
     }

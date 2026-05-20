@@ -83,7 +83,6 @@ class OtrosiController extends Controller
                 $query->where(function ($q) {
                     $q->where('id_user', Auth::user()->id)
                     ->orWhere('id_user_obra_blanca', Auth::user()->id)
-                    ->orWhere('id_user_carpinteria', Auth::user()->id)
                     ->orWhere('id_user_diseno', Auth::user()->id);
                 });
             })

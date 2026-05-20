@@ -199,8 +199,8 @@
                 @if ($proyecto->userOB)
                     <div class="info-box"><strong>Cont. Obra Blanca:</strong> {{ $proyecto->userOB['nombre_completo'] }}</div>
                 @endif
-                @if ($proyecto->userCarpi)
-                    <div class="info-box"><strong>Cont. Carpinteria:</strong> {{ $proyecto->userCarpi['nombre_completo'] }}</div>
+                @if ($proyecto->user_carpinteria)
+                    <div class="info-box"><strong>Cont. Carpinteria:</strong> {{ $proyecto->user_carpinteria }}</div>
                 @endif
             </td>
         </tr>
