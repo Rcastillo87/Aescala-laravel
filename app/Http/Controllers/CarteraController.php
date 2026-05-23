@@ -319,30 +319,16 @@ class CarteraController extends Controller
         Gate::authorize('cartera.reciboPDF');
 
         // 1. Usamos get() para obtener una colección y poder mapear después
-        $pagosQuery = Pagos::with('pago_refe.reference')->find($id);
+        $pagosQuery = Pagos::with('proyecto')->find($id);
 
         if (!$pagosQuery) {
             abort(404, 'El pago no existe');
         }
 
         $proyecto = $pagosQuery->proyecto;
-        $totalPago = $pagosQuery->valorTotal;
+        $totalPago = $pagosQuery->valor;
 
-        $descripcion = $pagosQuery->pago_refe
-            ->map(function ($ref) {
-                $data = $ref->reference?->data_select;
-                if (!$data) {
-                    return null;
-                }
-                if (is_array($data) && isset($data[$ref->concepto])) {
-                    return $data[$ref->concepto]['msg'];
-                }
-                return $data['msg'] ?? null;
-            })
-            ->filter()
-            ->implode(', ');
-
-        $pagosQuery->descripcion = $descripcion;
+        $pagosQuery->descripcion = 'Abono del Proyecto';
 
         // Carga de Geografía
         $pathJson = storage_path('json/jsonCityColombia.json');
