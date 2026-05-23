@@ -290,7 +290,7 @@
                     </td>
 
                     <td class="text-right">
-                        $ {{ number_format($item->valorTotal, 0, ',', '.') }}
+                        $ {{ number_format($item->valor, 0, ',', '.') }}
                     </td>
 
                 </tr>
