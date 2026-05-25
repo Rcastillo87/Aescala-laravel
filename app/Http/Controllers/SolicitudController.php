@@ -361,7 +361,8 @@ class SolicitudController extends Controller
                     'cantidad_solicitada' => $cantidad_solicitada - $pendiente,
                     'pendiente' => $pendiente,
                     'estado' => $item->estado,
-                    'estadoSpan' => $item->estadoSpan
+                    'estadoSpan' => $item->estadoSpan,
+                    'fase' => $item->material?->fase??'',
                 ];
             })->toArray();
 

@@ -89,7 +89,7 @@
                                             name="materiales[{{$key}}][cobro]"
                                             value="1"
                                             class="w-4 h-4 text-blue-600"
-                                            checked
+                                            {{ $m['fase'] == 3 ? '' : 'checked' }}
                                         >
                                         <label for="materiales_{{$key}}_cobro" class="ml-2 text-sm font-medium">Se Cobra</label>
                                     </div>
