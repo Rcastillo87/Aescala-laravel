@@ -919,15 +919,36 @@ function _cpCrearCelda(d) {
     }
 
     // Botón marcar no laborado (pasado o hoy, editable, no ya marcado)
-    if (d.editable && !d.noLaborado) {
+    if (d.editable) {
+
         const btn = document.createElement('button');
-        btn.type        = 'button';
-        btn.className   = 'cp-btn-marcar';
-        btn.textContent = '＋ No laborado';
-        btn.onclick     = (e) => {
-            e.stopPropagation();
-            _cpConfirmarNoLaborado(d.date, d.dayName);
-        };
+        btn.type = 'button';
+
+        if (d.noLaborado) {
+
+            btn.className = 'cp-btn-marcar text-red-600';
+            btn.textContent = '🗑 Quitar';
+
+            btn.onclick = (e) => {
+
+                e.stopPropagation();
+
+                _cpEliminarNoLaborado(d.date);
+            };
+
+        } else {
+
+            btn.className = 'cp-btn-marcar';
+            btn.textContent = '＋ No laborado';
+
+            btn.onclick = (e) => {
+
+                e.stopPropagation();
+
+                _cpConfirmarNoLaborado(d.date, d.dayName);
+            };
+        }
+
         cell.appendChild(btn);
     }
 
@@ -949,79 +970,230 @@ function _cpActualizarResumen(c) {
 }
 
 // ─── Confirmar y guardar día no laborado ──────────────────────────────
-function _cpConfirmarNoLaborado(fecha, nombreDia) {
+function _cpConfirmarNoLaborado(fechaInicial, nombreDia) {
+
     Swal.fire({
-        title: 'Día no laborado',
+
+        title: 'Registrar rango no laborado',
+
         html: `
-            <p style="margin-bottom:10px;font-size:.9rem;color:#4b5563;">
-                <b>${_cpFechaLegible(fecha)}</b> (${nombreDia})<br>
-                <span style="font-size:.8rem;color:#6b7280;">¿Por qué no se trabajó este día?</span>
-            </p>
-            <textarea
-                id="cp-swal-detalle"
-                maxlength="500"
-                autocomplete="off"
-                placeholder="Describe el motivo (obligatorio)"
-                style="width:100%;min-height:110px;padding:10px 12px;border:1px solid #d1d5db;
-                       border-radius:8px;font-size:.9rem;resize:vertical;outline:none;
-                       box-sizing:border-box;font-family:inherit;transition:border-color .15s;"
-                onfocus="this.style.borderColor='#d97706'"
-                onblur="this.style.borderColor='#d1d5db'"
-            ></textarea>
-            <p style="text-align:right;font-size:.72rem;color:#9ca3af;margin-top:4px;">
-                <span id="cp-char-count">0</span>/500
-            </p>
-            <script>
-                document.getElementById('cp-swal-detalle')
-                    .addEventListener('input', function() {
-                        document.getElementById('cp-char-count').textContent = this.value.length;
-                    });
-            <\/script>
+
+            <div style="text-align:left;font-size:.9rem;">
+
+                <label style="font-weight:600;">Fecha inicio</label>
+
+                <input
+                    type="date"
+                    id="cp-fecha-inicio"
+                    value="${fechaInicial}"
+                    style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;margin-bottom:10px;"
+                >
+
+                <label style="font-weight:600;">Fecha fin</label>
+
+                <input
+                    type="date"
+                    id="cp-fecha-fin"
+                    value="${fechaInicial}"
+                    style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;margin-bottom:12px;"
+                >
+
+                <label style="font-weight:600;">Motivo</label>
+
+                <textarea
+                    id="cp-swal-detalle"
+                    maxlength="500"
+                    placeholder="Describe el motivo"
+                    style="width:100%;min-height:100px;padding:10px;border:1px solid #d1d5db;border-radius:8px;"
+                ></textarea>
+
+            </div>
+
         `,
+
         icon: 'question',
+
         showCancelButton: true,
+
         confirmButtonText: 'Guardar',
+
         cancelButtonText: 'Cancelar',
+
         confirmButtonColor: '#d97706',
-        cancelButtonColor: '#9ca3af',
-        focusConfirm: false,
+
         preConfirm: () => {
-            const detalle = document.getElementById('cp-swal-detalle').value.trim();
-            if (!detalle) {
-                Swal.showValidationMessage('El motivo es obligatorio.');
+
+            const fechaInicio = document.getElementById('cp-fecha-inicio').value;
+            const fechaFin    = document.getElementById('cp-fecha-fin').value;
+            const detalle     = document.getElementById('cp-swal-detalle').value.trim();
+
+            if (!fechaInicio || !fechaFin) {
+
+                Swal.showValidationMessage('Debe seleccionar el rango.');
+
                 return false;
             }
-            return detalle;
-        },
+
+            if (fechaFin < fechaInicio) {
+
+                Swal.showValidationMessage('La fecha fin no puede ser menor.');
+
+                return false;
+            }
+
+            if (!detalle) {
+
+                Swal.showValidationMessage('El motivo es obligatorio.');
+
+                return false;
+            }
+
+            return {
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin,
+                detalle
+            };
+        }
+
     }).then(result => {
+
         if (!result.isConfirmed) return;
 
-        Swal.fire({ title: 'Guardando...', allowOutsideClick: false, allowEscapeKey: false, didOpen: () => Swal.showLoading() });
+        Swal.fire({
+            title: 'Guardando...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => Swal.showLoading()
+        });
 
         fetch('saveDiaNoLaborado', {
+
             method: 'POST',
+
             headers: {
-                'Content-Type':     'application/json',
-                'X-CSRF-TOKEN':     document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: JSON.stringify({ id_proyecto: _cpIdProy, dia: fecha, detalle: result.value }),
+
+            body: JSON.stringify({
+                id_proyecto: _cpIdProy,
+                fecha_inicio: result.value.fecha_inicio,
+                fecha_fin: result.value.fecha_fin,
+                detalle: result.value.detalle
+            }),
+
         })
         .then(async r => {
+
             const json = await r.json();
-            if (!r.ok) throw new Error(json.error || 'Error al guardar.');
+
+            if (!r.ok) {
+                throw new Error(json.error || 'Error al guardar.');
+            }
+
             return json;
         })
         .then(json => {
+
             Swal.fire({
                 icon: 'success',
                 title: '¡Guardado!',
-                html: `Día registrado.<br><small>Nueva fecha fin estimada: <b>${_cpFechaLegible(json.nueva_fecha_fin)}</b></small>`,
-                timer: 2500,
+                html: `
+                    ${json.dias_guardados} días registrados.<br>
+                    <small>Nueva fecha fin: <b>${_cpFechaLegible(json.nueva_fecha_fin)}</b></small>
+                `,
+                timer: 3000,
                 showConfirmButton: false,
-            }).then(() => window.location.reload());
+            }).then(() => {
+                window.location.reload();
+            });
+
         })
-        .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+        .catch(err => {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message
+            });
+
+        });
+
+    });
+}
+
+// ─── borra dia no laborado  ───────────────────────────────────────────────────────────
+function _cpEliminarNoLaborado(fecha) {
+
+    Swal.fire({
+
+        title: '¿Quitar día no laborado?',
+
+        text: _cpFechaLegible(fecha),
+
+        icon: 'warning',
+
+        showCancelButton: true,
+
+        confirmButtonText: 'Sí, quitar',
+
+        cancelButtonText: 'Cancelar',
+
+        confirmButtonColor: '#dc2626',
+
+    }).then(result => {
+
+        if (!result.isConfirmed) return;
+
+        fetch('deleteDiaNoLaborado', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+
+            body: JSON.stringify({
+                id_proyecto: _cpIdProy,
+                dia: fecha
+            })
+
+        })
+        .then(async r => {
+
+            const json = await r.json();
+
+            if (!r.ok) {
+                throw new Error(json.error || 'Error');
+            }
+
+            return json;
+        })
+        .then(() => {
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                timer: 1800,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload();
+            });
+
+        })
+        .catch(err => {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message
+            });
+
+        });
+
     });
 }
 

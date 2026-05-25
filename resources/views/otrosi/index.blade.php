@@ -4,7 +4,7 @@
     @include('otrosi.filter')
     <div class="flex justify-end text-center mb-3">
         <x-secondary-button class="ms-4" href="{{ route('otro_si.create')}}">
-            Crear Otrosí
+            Crear Otrosi
         </x-secondary-button>
     </div>
     <div class="relative overflow-x-auto rounded-lg border border-gray-200">

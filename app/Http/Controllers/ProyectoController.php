@@ -1177,42 +1177,160 @@ class ProyectoController extends Controller
     public function saveDiaNoLaborado(Request $request)
     {
         Gate::authorize('proyecto.saveDiaNoLaborado');
+
         $request->validate([
-            'id_proyecto' => 'required|integer',
-            'dia'         => 'required|date',
-            'detalle'     => 'required|string|max:500',
+            'id_proyecto'  => 'required|integer',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
+            'detalle'      => 'required|string|max:500',
         ]);
 
         $proyecto = Proyecto::findOrFail($request->id_proyecto);
-        $fecha    = Carbon::parse($request->dia);
-        $hoy      = Carbon::today();
 
-        if ($fecha->gt($hoy))
-            return response()->json(['error' => 'Solo se pueden registrar días pasados o hoy.'], 422);
+        $inicio = Carbon::parse($request->fecha_inicio)->startOfDay();
+        $fin    = Carbon::parse($request->fecha_fin)->startOfDay();
+        $hoy    = Carbon::today();
 
-        if ($fecha->dayOfWeek === Carbon::SUNDAY)
-            return response()->json(['error' => 'Los domingos no aplican.'], 422);
+        // No permitir fechas futuras
+        if ($inicio->gt($hoy) || $fin->gt($hoy)) {
 
-        if (Festivos::where('date', $fecha->toDateString())->exists())
-            return response()->json(['error' => 'Este día ya es festivo o no laboral global.'], 422);
+            return response()->json([
+                'error' => 'Solo se permiten fechas pasadas o actuales.'
+            ], 422);
+        }
 
-        if (DiasNoLaboralos::where('id_proyecto', $proyecto->id)->where('dia', $fecha->toDateString())->exists())
-            return response()->json(['error' => 'Este día ya está registrado como no laborado.'], 422);
+        // Festivos/globales
+        $festivos = Festivos::whereBetween('date', [
+                $inicio->toDateString(),
+                $fin->toDateString()
+            ])
+            ->get()
+            ->keyBy(fn($f) => Carbon::parse($f->date)->toDateString());
 
-        DiasNoLaboralos::create([
-            'id_proyecto' => $proyecto->id,
-            'dia'         => $fecha->toDateString(),
-            'detalle'     => $request->detalle,
-        ]);
+        // Días ya registrados
+        $diasExistentes = DiasNoLaboralos::where('id_proyecto', $proyecto->id)
+            ->whereBetween('dia', [
+                $inicio->toDateString(),
+                $fin->toDateString()
+            ])
+            ->pluck('dia')
+            ->map(fn($d) => Carbon::parse($d)->toDateString())
+            ->toArray();
 
-        $nuevaFin = $this->recalcularFechaFin($proyecto->id, $proyecto->fec_inicio, $proyecto->dias_contrato);//$this->recalcularFechaFin($proyecto, true);
-        $nuevaComi = $this->recalcularFechaFin($proyecto->id, $proyecto->fec_inicio, ($proyecto->dias_contrato -10));//$this->recalcularFechaFin($proyecto, false);
+        $diasGuardar = [];
+
+        $cursor = $inicio->copy();
+
+        while ($cursor->lte($fin)) {
+
+            $fecha = $cursor->toDateString();
+
+            // Ya existe → ERROR
+            if (in_array($fecha, $diasExistentes)) {
+
+                return response()->json([
+                    'error' => "El día {$fecha} ya fue marcado como no laborado."
+                ], 422);
+            }
+
+            $esDomingo = $cursor->dayOfWeek === Carbon::SUNDAY;
+
+            $esFestivo = isset($festivos[$fecha]);
+
+            // Domingos y festivos/globales se IGNORAN
+            if (!$esDomingo && !$esFestivo) {
+
+                $diasGuardar[] = $fecha;
+            }
+
+            $cursor->addDay();
+        }
+
+        // No hubo días válidos
+        if (empty($diasGuardar)) {
+
+            return response()->json([
+                'error' => 'No hay días válidos para registrar en el rango seleccionado.'
+            ], 422);
+        }
+
+        // Guardar
+        foreach ($diasGuardar as $fecha) {
+
+            DiasNoLaboralos::create([
+                'id_proyecto' => $proyecto->id,
+                'dia'         => $fecha,
+                'detalle'     => $request->detalle,
+            ]);
+        }
+
+        // Recalcular fechas
+        $nuevaFin = $this->recalcularFechaFin(
+            $proyecto->id,
+            $proyecto->fec_inicio,
+            $proyecto->dias_contrato
+        );
+
+        $nuevaComi = $this->recalcularFechaFin(
+            $proyecto->id,
+            $proyecto->fec_inicio,
+            ($proyecto->dias_contrato - 10)
+        );
+
         $proyecto->fec_fin_estimado = $nuevaFin;
-        $proyecto->fecha_comision = $nuevaComi;
+        $proyecto->fecha_comision   = $nuevaComi;
         $proyecto->save();
 
         return response()->json([
-            'message'         => 'Día registrado correctamente.',
+            'message'          => 'Días registrados correctamente.',
+            'dias_guardados'   => count($diasGuardar),
+            'nueva_fecha_fin'  => $nuevaFin->toDateString(),
+        ]);
+    }
+
+    public function deleteDiaNoLaborado(Request $request)
+    {
+        Gate::authorize('proyecto.saveDiaNoLaborado');
+
+        $request->validate([
+            'id_proyecto' => 'required|integer',
+            'dia'         => 'required|date',
+        ]);
+
+        $proyecto = Proyecto::findOrFail($request->id_proyecto);
+
+        $deleted = DiasNoLaboralos::where('id_proyecto', $proyecto->id)
+            ->where('dia', $request->dia)
+            ->delete();
+
+        if (!$deleted) {
+
+            return response()->json([
+                'error' => 'El día no existe.'
+            ], 422);
+        }
+
+        // Recalcular fecha final
+        $nuevaFin = $this->recalcularFechaFin(
+            $proyecto->id,
+            $proyecto->fec_inicio,
+            $proyecto->dias_contrato
+        );
+
+        // Recalcular comisión
+        $nuevaComi = $this->recalcularFechaFin(
+            $proyecto->id,
+            $proyecto->fec_inicio,
+            ($proyecto->dias_contrato - 10)
+        );
+
+        $proyecto->fec_fin_estimado = $nuevaFin;
+        $proyecto->fecha_comision   = $nuevaComi;
+
+        $proyecto->save();
+
+        return response()->json([
+            'message' => 'Día removido correctamente.',
             'nueva_fecha_fin' => $nuevaFin->toDateString(),
         ]);
     }

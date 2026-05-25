@@ -77,7 +77,7 @@ class OtrosiController extends Controller
                 ->get(['id', 'nombre_completo'])
                 ->toArray();
 
-            $title = $id ? 'Editar Otrosí' : 'Crear Otrosí';
+            $title = $id ? 'Editar Otrosi' : 'Crear Otrosi';
 
             $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5, 2])
                 ->when(!Auth::user()->isAdmin, function ($query) {

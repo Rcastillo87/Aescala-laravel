@@ -160,6 +160,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/calendarioProyecto', [ProyectoController::class, 'calendarioProyecto'])->name('calendarioProyecto');
         Route::post('/saveDiaNoLaborado', [ProyectoController::class, 'saveDiaNoLaborado'])->name('saveDiaNoLaborado');
+        Route::post('/deleteDiaNoLaborado', [ProyectoController::class, 'deleteDiaNoLaborado'])->name('deleteDiaNoLaborado');
 
     });
 
