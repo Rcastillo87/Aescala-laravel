@@ -48,7 +48,7 @@ class MaterialController extends Controller
                 fn ($q) => $q->where('aprobar', request('aprobar'))
             )
             ->when($tipo && !($tipo == 3),
-                fn ($q, $tipo) => $q->where('tipo', $tipo)
+                fn ($q) => $q->where('tipo', $tipo)
             )
             ->when(request('zona'), fn ($q, $zona) =>
                 $q->where('zona', $zona)
