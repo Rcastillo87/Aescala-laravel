@@ -73,7 +73,7 @@
                     @php
                         $depts = json_decode($departamentos, true)
                     @endphp
-                    <div class="p-2 shrink-0 w-[40]">
+                    <div class="p-2 shrink-0 w-[40] hidden">
                         <x-input-label for="departamento" :value="__('Departamento')" />
                         <x-select-input
                             name="departamento"
@@ -84,7 +84,7 @@
                             class="block mt-1 w-full"
                         />
                     </div>
-                    <div class="p-2 shrink-0 w-[40]">
+                    <div class="p-2 shrink-0 w-[40] hidden">
                         <x-input-label for="ciudad" :value="__('Ciudad')" />
                         <x-select-input
                             name="ciudad"

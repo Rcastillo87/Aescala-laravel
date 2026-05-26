@@ -68,6 +68,39 @@
                         <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="Request('nombre_cliente')"
                          autofocus />
                     </div>
+
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="id_estado" :value="__('Mes de Entrega')" />
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                </svg>
+                            </div>
+                            <x-text-input
+                                id="mes_pro"
+                                name="mes_pro"
+                                :value="Request('mes_pro')"
+                                type="text"
+                                class="block mt-1 w-full ps-10"
+                                placeholder="Elegir Mes y Año"
+                                readonly />
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const monthPickerEl = document.getElementById('mes_pro');
+                            if (monthPickerEl) {
+                                new Datepicker(monthPickerEl, {
+                                    pickLevel: 1,      // Activa solo la selección de meses
+                                    format: 'yyyy-mm', // Formato de salida
+                                    autohide: true
+                                });
+                            }
+                        });
+                    </script>
+
+
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
                              text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"

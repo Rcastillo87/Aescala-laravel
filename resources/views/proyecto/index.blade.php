@@ -68,7 +68,7 @@
         $porcenTarea = 0;
         if($item->maxTarea){
             foreach ($tareatipo as $key => $value) {
-                if($item->maxTarea <= $value['orden']){
+                if($item->maxTarea >= $value['orden']){
                     $porcenTarea += $value['porcentage'];
                 }
             }

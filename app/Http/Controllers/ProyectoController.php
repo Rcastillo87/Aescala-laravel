@@ -45,7 +45,12 @@ class ProyectoController extends Controller
                         ->get(['id', 'orden', 'porcentage'])
                         ->toArray();
 
-        if (Request('id_userSerch') || Request('nombre_proyecto') || Request('nombre_cliente') || request('id_estado')) {
+        $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
+        $hoy = Carbon::today();
+        $title = 'Lista de Proyectos';
+        $estado = Proyecto::$estado;
+
+        if (request('id_userSerch') || request('nombre_proyecto') || request('nombre_cliente') || request('id_estado')) {
             if (request('id_estado')) {
                 $est = [request('id_estado')];
             } else {
@@ -55,28 +60,30 @@ class ProyectoController extends Controller
             $est = [1, 5];
         }
 
-        $cola = Auth::user()->isnotColab? Request('id_userSerch') : Auth::user()->id;
+        $cola = Auth::user()->isnotColab ? request('id_userSerch') : Auth::user()->id;
+        $contra = Auth::user()->isContratista ? Auth::user()->id : request('id_contratista');
 
-        $contra = Auth::user()->isContratista? Auth::user()->id : Request('id_contratista');
-
-        $festivos = Festivos::pluck('date')->map(fn($date) => Carbon::parse($date)->toDateString())->toArray();
-        $hoy = Carbon::today();
-        $title = 'Lista de Proyectos';
-        $estado = Proyecto::$estado;
-        $items = Proyecto::with(['tareas', 'finanzas', 'entreProyecto', 'otro_si'])->when(Request('nombre_proyecto'), function ($query, $nombre_proyecto) {
-            return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
-        })
-            ->when(Request('nombre_cliente'), function ($query, $nombre_cliente) {
+        $items = Proyecto::with(['tareas', 'finanzas', 'entreProyecto', 'otro_si'])
+            ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
+                return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
+            })
+            ->when(request('nombre_cliente'), function ($query, $nombre_cliente) {
                 return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
             })
             ->when(!empty($est), function ($query) use ($est) {
-                $query->whereIn('id_estado', $est);
+                return $query->whereIn('id_estado', $est);
             })
-            ->when($cola, function ($query, $id_user) {
-                return $query->where('id_user', $id_user);
+            ->when($cola, function ($query, $cola) {
+                return $query->where('id_user', $cola);
             })
             ->when($contra, function ($query, $contra) {
-                return $query->where('id_user_obra_blanca', $contra)->orwhere('id_user_diseno', $contra);
+                return $query->where(function ($subQuery) use ($contra) {
+                    $subQuery->where('id_user_obra_blanca', $contra)
+                            ->orWhere('id_user_diseno', $contra);
+                });
+            })
+            ->when(request('mes_pro'), function ($query, $mesPro) {
+                return $query->where('fec_fin_real', 'LIKE', "{$mesPro}%");
             })
             ->whereNotNull('id_estado')
             ->orderBy('fec_inicio', 'desc')
