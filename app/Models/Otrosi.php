@@ -39,6 +39,13 @@ class Otrosi extends Model
         2 => 'span-red'
     ];
 
+    public static $unidades = [
+        1 => 'Unid',
+        2 => 'Global',
+        3 => 'm2',
+        4 => 'mL'
+    ];
+
     public function getSpanEstadoAttribute()
     {
         return '<span class="'.(self::$ClassEstado[$this->estado] ?? 'default-class').'">'
@@ -76,12 +83,7 @@ class Otrosi extends Model
         $ciudad_dpt = $dptArray[$this->proyecto->departamento]['departamento'] . ', ' .
                     $dptArray[$this->proyecto->departamento]['ciudades'][$this->proyecto->ciudad];
 
-        // Calcular totales
-        $subtotal = $this->area_entregable()
-                    ->selectRaw('SUM(valor * cantidad) as subtotal')
-                    ->value('subtotal');
-        $valorTotal = $subtotal; // acá podrías sumar IVA si aplica
-        $txTotal = $this->numeroATexto($valorTotal);
+        $valorTotal = 0;
 
         // Preparar adicionales
         $adicionales = $this->area_entregable;
@@ -96,14 +98,21 @@ class Otrosi extends Model
                     "subtotal"      => 0
                 ];
             }
+
+            $val = ($item->unidad == 1) ? ($item->valor * $item->cantidad) : $item->valor;
             $arr[$area]["items"][] = [
                 "descripcion"   => $item->descripccion,
                 "cantidad"      => $item->cantidad,
                 "valor_unitario"=> number_format($item->valor, 0, ',', '.'),
-                "valor_total"   => number_format($item->valor * $item->cantidad, 0, ',', '.'),
+                "valor_total"   => number_format($val, 0, ',', '.'),
+                "unidad"      => $item->unidad,
             ];
-            $arr[$area]["subtotal"] += $item->valor * $item->cantidad;
+            $arr[$area]["subtotal"] += $val;
+            $valorTotal += $val;
         }
+
+        $subtotal = $valorTotal;
+        $txTotal = $this->numeroATexto($valorTotal);
 
         //$carbon = Carbon::now()->locale('es');
         $carbon = Carbon::parse($this->fecha_firma);
@@ -134,6 +143,7 @@ class Otrosi extends Model
             "imgRepre"          => $base64,
             "nombre_proyecto" => $this->proyecto->nombre_proyecto,
             "img_firma"         => $this->img_firma,
+            "unidades"          => self::$unidades
         ];
     }
 

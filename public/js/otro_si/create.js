@@ -103,8 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const cantidad = group.querySelector('[name="cantidad"]').value;
             const valor = group.querySelector('[name="valor"]').value;
             const material = group.querySelector("textarea").value;
+            const unidad = group.querySelector('[name="unidad"]').value;
 
-            if (!cantidad || !valor || !material) {
+            if (!cantidad || !valor || !material || !unidad) {
                 Swal.fire("Error", "Todos los campos son obligatorios", "error");
                 return null;
             }
@@ -112,7 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
             items.push({
                 cantidad: Number(cantidad),
                 valor_unitario: Number(valor),
-                material
+                material,
+                unidad: Number(unidad)
             });
         });
 
@@ -169,7 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             area.items.forEach(item => {
 
-                const sub = item.cantidad * item.valor_unitario;
+                let sub = '';
+                if(item.unidad == 1){
+                    sub = item.cantidad * item.valor_unitario;
+                } else {
+                    sub = item.valor_unitario;
+                }
+
                 subtotal += sub;
 
                 itemsHtml += `
@@ -182,7 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <!-- CANTIDAD + VALOR -->
                         <div class="text-right text-sm whitespace-nowrap">
-
+                            <div>
+                                <span class="text-gray-500">Unidad:</span>
+                                <span class="font-semibold">${unidades[item.unidad]}</span>
+                            </div>
                             <div>
                                 <span class="text-gray-500">Cant:</span>
                                 <span class="font-semibold">${item.cantidad}</span>
@@ -292,6 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <input type="hidden" name="entregables[${i}][items][${j}][material]" value="${item.material}">
                 <input type="hidden" name="entregables[${i}][items][${j}][cantidad]" value="${item.cantidad}">
                 <input type="hidden" name="entregables[${i}][items][${j}][valor_unitario]" value="${item.valor_unitario}">
+                <input type="hidden" name="entregables[${i}][items][${j}][unidad]" value="${item.unidad}">
                 `;
             });
         });
@@ -324,6 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clone.querySelector('[name="cantidad"]').value = item.cantidad;
                 clone.querySelector('[name="valor"]').value = item.valor_unitario;
                 clone.querySelector("textarea").value = item.material;
+                clone.querySelector('[name="unidad"]').value =  item.unidad;
 
                 itemsContainer.appendChild(clone);
             });

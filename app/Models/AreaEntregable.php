@@ -19,7 +19,8 @@ class AreaEntregable extends Model
         'id_otro_si',
         'descripccion',
         'cantidad',
-        'valor'
+        'valor',
+        'unidad'
     ];
 
     public function area()

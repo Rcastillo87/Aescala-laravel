@@ -153,6 +153,7 @@ class MaterialController extends Controller
                         <th>Estado Item</th>
                         <th>Requiere Aprobación</th>
                         <th>Zonas</th>
+                        <th>Fase</th>
                         <th>Descripción</th>
                     </tr>
                 </thead>
@@ -172,6 +173,7 @@ class MaterialController extends Controller
                     <td>".e($item->estado)."</td>
                     <td>".($item->aprobar ? 'SI' : 'NO')."</td>
                     <td>".e($item->txZona)."</td>
+                    <td>".e($item->txFase)."</td>
                     <td>".e($item->descripccion)."</td>
                 </tr>";
             }

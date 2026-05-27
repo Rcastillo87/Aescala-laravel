@@ -92,3 +92,7 @@ ALTER TABLE aescala.proyectos DROP FOREIGN KEY FK1_id_user_carpinteria;
 ALTER TABLE aescala.proyectos DROP COLUMN id_user_carpinteria;
 ALTER TABLE aescala.proyectos ADD user_carpinteria varchar(100) NULL;
 
+
+ALTER TABLE area_entregables MODIFY COLUMN cantidad DOUBLE UNSIGNED NOT NULL;
+ALTER TABLE area_entregables ADD unidad DOUBLE UNSIGNED DEFAULT 1 NULL;
+ALTER TABLE area_entregables CHANGE unidad unidad INT UNSIGNED DEFAULT 1 NULL AFTER descripccion;

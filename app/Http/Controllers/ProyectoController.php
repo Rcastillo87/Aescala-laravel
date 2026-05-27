@@ -83,7 +83,7 @@ class ProyectoController extends Controller
                 });
             })
             ->when(request('mes_pro'), function ($query, $mesPro) {
-                return $query->where('fec_fin_real', 'LIKE', "{$mesPro}%");
+                return $query->where('fec_fin_estimado', 'LIKE', "{$mesPro}%");
             })
             ->whereNotNull('id_estado')
             ->orderBy('fec_inicio', 'desc')

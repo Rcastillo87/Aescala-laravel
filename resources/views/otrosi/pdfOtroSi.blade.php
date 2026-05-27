@@ -191,9 +191,10 @@
             <tr>
                 <th style="width: 40px;">ITEM</th>
                 <th>MATERIAL / ACTIVIDAD</th>
-                <th style="width: 60px;">CANT</th>
-                <th style="width: 120px;">VALOR UNITARIO</th>
-                <th style="width: 120px;">VALOR TOTAL</th>
+                <th style="width: 50px;">UNID</th>
+                <th style="width: 50px;">CANT</th>
+                <th style="width: 105px;">VALOR UNITARIO</th>
+                <th style="width: 105px;">VALOR TOTAL</th>
             </tr>
         </thead>
         <tbody>
@@ -206,18 +207,19 @@
                 <tr>
                     <td>{{ $globalIndex++ }}</td>
                     <td>{{ $item['descripcion'] }}</td>
+                    <td style="text-align: center;">{{ $unidades[$item['unidad']] }}</td>
                     <td style="text-align: center;">{{ $item['cantidad'] }}</td>
                     <td class="right">$ {{ $item['valor_unitario'] }}</td>
                     <td class="right">$ {{ $item['valor_total'] }}</td>
                 </tr>
                 @endforeach
                 <tr class="subtotal">
-                    <td colspan="4" class="right">SUB TOTAL</td>
+                    <td colspan="5" class="right">SUB TOTAL</td>
                     <td class="right">$ {{ number_format($datos['subtotal'], 0, ',', '.') }}</td>
                 </tr>
             @endforeach
             <tr class="total">
-                <td colspan="4" class="right">TOTAL A PAGAR</td>
+                <td colspan="5" class="right">TOTAL A PAGAR</td>
                 <td class="right">$ {{ $valor_total }}</td>
             </tr>
         </tbody>
@@ -246,7 +248,8 @@
                 @endif
                 <div class="datos-firma">
                     {{ $nombre_cliente }}<br>
-                    {{ $tipo_doc_cliente_acro }} N.º {{ $documento_cliente }}
+                    {{ $tipo_doc_cliente_acro }} N.º {{ $documento_cliente }}<br>
+                    {{ $fecha_otro_si }}
                 </div>
             </td>
             <td>

@@ -54,18 +54,33 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
 
                         <div class="md:col-span-1 flex flex-col gap-2">
-                            <div>
-                                <x-input-label for="cantidad" :value="__('Cantidad *')" />
-                                <x-text-input
-                                    id="cantidad"
-                                    name="cantidad"
-                                    type="number"
-                                    min="1"
-                                    class="block mt-1 w-full"
-                                    required
-                                />
+                            <div class="flex-1">
+                                <div class="">
+                                    <x-input-label for="unidad" :value="__('Unidades *')" />
+                                    <x-select-input
+                                        name="unidad"
+                                        id="unidad"
+                                        :datax="true"
+                                        :options="$unidades"
+                                        class="block mt-1 w-full"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <x-input-label for="cantidad" :value="__('Cantidad *')" />
+                                    <x-text-input
+                                        id="cantidad"
+                                        name="cantidad"
+                                        type="number"
+                                        step="any"
+                                        step="0.01"
+                                        class="block mt-1 w-full"
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div>
+
+                            <div class="relative">
                                 <x-input-label for="valor" :value="__('Valor Unidad *')" />
                                 <x-text-input
                                     id="valor"

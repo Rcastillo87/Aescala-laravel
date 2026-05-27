@@ -74,6 +74,7 @@
 
 @section('scripts')
     <script>
+        const unidades = @json($unidades);
         const entregablesFromDB = @json($entregables);
     </script>
     <script src="{{ asset('js/otro_si/create.js') }}?v={{ filemtime(public_path('js/otro_si/create.js')) }}"></script>

@@ -94,6 +94,7 @@ class OtrosiController extends Controller
                 ->toArray();
 
             $areas = Area::get(['id', 'nombre_area'])->toArray();
+            $unidades = Otrosi::$unidades;
 
             $entregables = [];
             if ($item) {
@@ -108,13 +109,14 @@ class OtrosiController extends Controller
                                     'material' => $item->descripccion,
                                     'cantidad' => $item->cantidad,
                                     'valor_unitario' => $item->valor,
+                                    'unidad' => $item->unidad,
                                 ];
                             })->values()
                         ];
                     })->values();
             }
 
-            return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'areas', 'entregables'));
+            return view('otrosi.create', compact('title', 'proyectos', 'colaUsers', 'item', 'areas', 'entregables', 'unidades'));
         } catch (\Exception $e) {
             return back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
@@ -131,8 +133,9 @@ class OtrosiController extends Controller
             'entregables.*.id_area' => 'required|exists:areas,id',
             'entregables.*.items' => 'required|array|min:1',
             'entregables.*.items.*.material' => 'required|string',
-            'entregables.*.items.*.cantidad' => 'required|integer|min:1',
-            'entregables.*.items.*.valor_unitario' => 'required|integer|min:0'
+            'entregables.*.items.*.cantidad' => 'required|numeric|min:0',
+            'entregables.*.items.*.valor_unitario' => 'required|integer|min:0',
+            'entregables.*.items.*.unidad' => ['required','integer', Rule::in(array_keys(Otrosi::$unidades))],
         ]);
 
         DB::beginTransaction();
@@ -168,8 +171,9 @@ class OtrosiController extends Controller
                         'id_area' => $idArea,
                         'id_otro_si' => $otroSi->id,
                         'descripccion' => $item['material'],
-                        'cantidad' => (int) $item['cantidad'],
-                        'valor' => (int) $item['valor_unitario']
+                        'cantidad' => (double) $item['cantidad'],
+                        'valor' => (int) $item['valor_unitario'],
+                        'unidad' => (int) $item['unidad']
                     ];
                 }
             }
