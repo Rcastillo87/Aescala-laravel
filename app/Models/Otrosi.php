@@ -99,7 +99,8 @@ class Otrosi extends Model
                 ];
             }
 
-            $val = ($item->unidad == 1) ? ($item->valor * $item->cantidad) : $item->valor;
+            $val = $item->valor * $item->cantidad;
+            
             $arr[$area]["items"][] = [
                 "descripcion"   => $item->descripccion,
                 "cantidad"      => $item->cantidad,
@@ -156,15 +157,8 @@ class Otrosi extends Model
     public function getTotalDeveAttribute()
     {
         return $this->area_entregable()
-            ->selectRaw("
-                SUM(
-                    CASE
-                        WHEN unidad_id <> 1 THEN (valor * cantidad)
-                        ELSE valor
-                    END
-                ) as subtotal
-            ")
-            ->value('subtotal') ?? 0;
+                    ->selectRaw('SUM(valor * cantidad) as subtotal')
+                    ->value('subtotal');
     }
 
     public function otrosi_refe(){

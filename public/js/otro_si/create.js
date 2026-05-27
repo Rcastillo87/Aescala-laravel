@@ -171,13 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             area.items.forEach(item => {
 
-                let sub = '';
-                if(item.unidad == 1){
-                    sub = item.cantidad * item.valor_unitario;
-                } else {
-                    sub = item.valor_unitario;
-                }
-
+                let sub = item.cantidad * item.valor_unitario;
                 subtotal += sub;
 
                 itemsHtml += `
