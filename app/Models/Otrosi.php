@@ -153,12 +153,18 @@ class Otrosi extends Model
         return $formatter->format($numero);
     }
 
-
     public function getTotalDeveAttribute()
     {
         return $this->area_entregable()
-                    ->selectRaw('SUM(valor * cantidad) as subtotal')
-                    ->value('subtotal');
+            ->selectRaw("
+                SUM(
+                    CASE
+                        WHEN unidad_id <> 1 THEN (valor * cantidad)
+                        ELSE valor
+                    END
+                ) as subtotal
+            ")
+            ->value('subtotal') ?? 0;
     }
 
     public function otrosi_refe(){
