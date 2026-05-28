@@ -1220,49 +1220,34 @@ function _cpFechaLegible(dateStr) {
 }
 
 function exportarModalAPdf() {
-    // 1. Clonamos el panel para no romper el HTML original de la pantalla
-    const elementoOriginal = document.getElementById('cal-proy-panel');
-    const clon = elementoOriginal.cloneNode(true);
-
-    // 2. Limpieza: Eliminamos los botones que no tienen sentido en un PDF impreso
-    clon.querySelectorAll('button, .animate-spin').forEach(el => el.remove());
-
-    // 3. Creamos un contenedor flotante temporal fuera de la vista de la pantalla
-    const contenedorTemporal = document.createElement('div');
-    contenedorTemporal.style.position = 'absolute';
-    contenedorTemporal.style.left = '-9999px';
-    contenedorTemporal.style.top = '0';
-    contenedorTemporal.style.width = '1000px'; // Forzamos un ancho fijo óptimo para el PDF
+    const elemento = document.getElementById('cal-proy-panel');
     
-    // 🔥 EL TRUCO: Rompemos los scrolls del contenedor para que muestre TODO el contenido hacia abajo
-    clon.style.height = 'auto';
-    clon.style.overflow = 'visible';
-    
-    const contenedorMeses = clon.querySelector('#cp-meses-contenedor');
-    if (contenedorMeses) {
-        contenedorMeses.style.height = 'auto';
-        contenedorMeses.style.overflow = 'visible';
-    }
+    // 1. Agregamos una clase temporal al contenedor para indicarle al CSS que imprima todo
+    elemento.classList.add('imprimiendo-pdf');
 
-    contenedorTemporal.appendChild(clon);
-    document.body.appendChild(contenedorTemporal);
-
-    // 4. Configuración avanzada para html2pdf.js
+    // 2. Configuración optimizada para html2pdf
     const opciones = {
-        margin:       [10, 10, 10, 10], // Margen en milímetros
-        filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText || 'Proyecto'}.pdf`,
+        margin:       [12, 12, 12, 12], // Margen en milímetros (Superior, Izquierda, Inferior, Derecha)
+        filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText.trim() || 'Proyecto'}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { 
-            scale: 2,           // Mayor resolución para que las letras no se vean borrosas
-            useCORS: true,      // Evita problemas con recursos externos
+            scale: 2,               // Alta definición para textos limpios
+            useCORS: true,          // Evita imágenes rotas o fuentes bloqueadas
             logging: false,
-            windowWidth: 1000   // Sincronizado con el ancho del contenedor temporal
+            scrollY: 0,             // Evita que el scroll de la pantalla mueva la captura
+            scrollX: 0
         },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Formato A4 vertical
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // 5. Ejecutamos la exportación y al finalizar limpiamos el DOM
-    html2pdf().set(opciones).from(contenedorTemporal).save().then(() => {
-        document.body.removeChild(contenedorTemporal);
+    // 3. Generamos el PDF directamente desde el elemento real
+    html2pdf().set(opciones).from(elemento).toPdf().get('pdf').then(function (pdf) {
+        // Aquí puedes hacer manipulaciones extra si lo requieres en el futuro
+    }).save().then(() => {
+        // 4. Una vez guardado el archivo, removemos la clase temporal para volver a la normalidad
+        elemento.classList.remove('imprimiendo-pdf');
+    }).catch((err) => {
+        console.error('Error generando PDF:', err);
+        elemento.classList.remove('imprimiendo-pdf');
     });
 }
