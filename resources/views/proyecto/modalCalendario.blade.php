@@ -226,23 +226,39 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
+}
 
-    /* Forzamos la expansión del contenedor solo en la impresión */
-    #cal-proy-panel, 
-    .cp-mes-wrapper, 
-    #cp-meses-contenedor {
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-        display: block !important;
-    }
+/* ── Estilos aplicados dinámicamente durante la exportación ─────── */
+.imprimiendo-pdf {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+}
 
-    /* Evita que un mes se parta a la mitad entre dos páginas */
-    .cp-mes-wrapper {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-        margin-bottom: 30px !important;
-    }
+.imprimiendo-pdf #cp-meses-contenedor {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important; /* Rompe el scroll vertical y lo vuelve plano */
+    padding-right: 0 !important;
+}
+
+.imprimiendo-pdf .cp-mes-wrapper {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    page-break-inside: avoid !important; /* Evita que un mes se corte a la mitad entre páginas */
+    break-inside: avoid !important;
+    margin-bottom: 40px !important;
+}
+
+/* Ocultar botones e interactivos en el documento final */
+.imprimiendo-pdf button,
+.imprimiendo-pdf svg.animate-spin,
+.imprimiendo-pdf .cp-btn-marcar {
+    display: none !important;
+    visibility: hidden !important;
 }
 
 </style>

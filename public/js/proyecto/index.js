@@ -1222,32 +1222,34 @@ function _cpFechaLegible(dateStr) {
 function exportarModalAPdf() {
     const elemento = document.getElementById('cal-proy-panel');
     
-    // 1. Agregamos una clase temporal al contenedor para indicarle al CSS que imprima todo
+    // 1. Agregamos la clase que expande todo el contenido oculto
     elemento.classList.add('imprimiendo-pdf');
 
-    // 2. Configuración optimizada para html2pdf
-    const opciones = {
-        margin:       [12, 12, 12, 12], // Margen en milímetros (Superior, Izquierda, Inferior, Derecha)
-        filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText.trim() || 'Proyecto'}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-            scale: 2,               // Alta definición para textos limpios
-            useCORS: true,          // Evita imágenes rotas o fuentes bloqueadas
-            logging: false,
-            scrollY: 0,             // Evita que el scroll de la pantalla mueva la captura
-            scrollX: 0
-        },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    // 2. Esperamos 350ms para que el navegador recalcule las alturas reales y cargue estilos
+    setTimeout(() => {
+        const opciones = {
+            margin:       [12, 12, 12, 12],
+            filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText.trim() || 'Proyecto'}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                letterRendering: true, // Mejora el renderizado de letras individuales
+                scrollY: 0,
+                scrollX: 0
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
 
-    // 3. Generamos el PDF directamente desde el elemento real
-    html2pdf().set(opciones).from(elemento).toPdf().get('pdf').then(function (pdf) {
-        // Aquí puedes hacer manipulaciones extra si lo requieres en el futuro
-    }).save().then(() => {
-        // 4. Una vez guardado el archivo, removemos la clase temporal para volver a la normalidad
-        elemento.classList.remove('imprimiendo-pdf');
-    }).catch((err) => {
-        console.error('Error generando PDF:', err);
-        elemento.classList.remove('imprimiendo-pdf');
-    });
+        // 3. Generamos el PDF garantizando que el contenedor ya mide el 100% de su tamaño real
+        html2pdf().set(opciones).from(elemento).save().then(() => {
+            // 4. Quitamos la clase para regresar el scroll normal al modal de la pantalla
+            elemento.classList.remove('imprimiendo-pdf');
+        }).catch((err) => {
+            console.error('Error generando PDF:', err);
+            elemento.classList.remove('imprimiendo-pdf');
+        });
+
+    }, 350); // Este pequeño retraso es el secreto para que no salga cortado ni en blanco
 }
