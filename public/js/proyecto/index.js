@@ -1220,18 +1220,49 @@ function _cpFechaLegible(dateStr) {
 }
 
 function exportarModalAPdf() {
-    // 1. Seleccionamos el contenedor del modal
-    const elemento = document.getElementById('cal-proy-panel');
+    // 1. Clonamos el panel para no romper el HTML original de la pantalla
+    const elementoOriginal = document.getElementById('cal-proy-panel');
+    const clon = elementoOriginal.cloneNode(true);
+
+    // 2. Limpieza: Eliminamos los botones que no tienen sentido en un PDF impreso
+    clon.querySelectorAll('button, .animate-spin').forEach(el => el.remove());
+
+    // 3. Creamos un contenedor flotante temporal fuera de la vista de la pantalla
+    const contenedorTemporal = document.createElement('div');
+    contenedorTemporal.style.position = 'absolute';
+    contenedorTemporal.style.left = '-9999px';
+    contenedorTemporal.style.top = '0';
+    contenedorTemporal.style.width = '1000px'; // Forzamos un ancho fijo óptimo para el PDF
     
-    // 2. Configuramos las opciones del PDF
+    // 🔥 EL TRUCO: Rompemos los scrolls del contenedor para que muestre TODO el contenido hacia abajo
+    clon.style.height = 'auto';
+    clon.style.overflow = 'visible';
+    
+    const contenedorMeses = clon.querySelector('#cp-meses-contenedor');
+    if (contenedorMeses) {
+        contenedorMeses.style.height = 'auto';
+        contenedorMeses.style.overflow = 'visible';
+    }
+
+    contenedorTemporal.appendChild(clon);
+    document.body.appendChild(contenedorTemporal);
+
+    // 4. Configuración avanzada para html2pdf.js
     const opciones = {
-        margin:       10,
-        filename:     'reporte-modal.pdf',
+        margin:       [10, 10, 10, 10], // Margen en milímetros
+        filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText || 'Proyecto'}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true }, // Escala 2 para mejor resolución de letra
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas:  { 
+            scale: 2,           // Mayor resolución para que las letras no se vean borrosas
+            useCORS: true,      // Evita problemas con recursos externos
+            logging: false,
+            windowWidth: 1000   // Sincronizado con el ancho del contenedor temporal
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Formato A4 vertical
     };
 
-    // 3. Ejecutamos la conversión y descarga
-    html2pdf().set(opciones).from(elemento).save();
+    // 5. Ejecutamos la exportación y al finalizar limpiamos el DOM
+    html2pdf().set(opciones).from(contenedorTemporal).save().then(() => {
+        document.body.removeChild(contenedorTemporal);
+    });
 }

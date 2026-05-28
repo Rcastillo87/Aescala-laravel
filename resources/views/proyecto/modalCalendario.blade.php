@@ -219,6 +219,29 @@
 }
 #cp-meses-contenedor::-webkit-scrollbar      { width: 5px; }
 #cp-meses-contenedor::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+@media print {
+    /* Fuerza al navegador a renderizar los colores de fondo en el PDF */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* Asegura que los contenedores clonados no limiten su altura */
+#cal-proy-panel, .cp-mes-wrapper, #cp-meses-contenedor {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Si usas Grid o Flex nativo en tus meses, esto evita que se corten a la mitad en los saltos de página */
+.cp-mes-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 20px;
+}
+
 </style>
 
 {{-- ══════════════════════════════════════════════════════════════════
