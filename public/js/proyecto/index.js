@@ -1218,3 +1218,20 @@ function _cpFechaLegible(dateStr) {
     const [y, m, d] = dateStr.split('-').map(Number);
     return `${d} de ${_MESES_CP[m]} de ${y}`;
 }
+
+function exportarModalAPdf() {
+    // 1. Seleccionamos el contenedor del modal
+    const elemento = document.getElementById('cal-proy-panel');
+    
+    // 2. Configuramos las opciones del PDF
+    const opciones = {
+        margin:       10,
+        filename:     'reporte-modal.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true }, // Escala 2 para mejor resolución de letra
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // 3. Ejecutamos la conversión y descarga
+    html2pdf().set(opciones).from(elemento).save();
+}

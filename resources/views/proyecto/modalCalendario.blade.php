@@ -235,10 +235,15 @@
                     Cargando...
                 </h3>
                 <p id="cp-cliente-proy" class="text-xs text-gray-500 dark:text-gray-400 mb-2"></p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="cp-info-chip">📅 Inicio: <b id="cp-fec-inicio">—</b></span>
-                    <span class="cp-info-chip">🏁 Fin est.: <b id="cp-fec-fin-est">—</b></span>
-                    <span class="cp-info-chip">⏱ Días: <b id="cp-dias-trabajo">—</b></span>
+                <div class="flex flex-wrap justify-between gap-2">
+                    <div>
+                        <span class="cp-info-chip">📅 Inicio: <b id="cp-fec-inicio">—</b></span>
+                        <span class="cp-info-chip">🏁 Fin est.: <b id="cp-fec-fin-est">—</b></span>
+                        <span class="cp-info-chip">⏱ Días: <b id="cp-dias-trabajo">—</b></span>
+                    </div>
+                    <button type="button" onclick="exportarModalAPdf()" class="btn btn-primary">
+                        Exportar a PDF
+                    </button>
                 </div>
             </div>
             <button type="button"
