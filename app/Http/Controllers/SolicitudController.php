@@ -553,7 +553,7 @@ class SolicitudController extends Controller
 
     public function solicitarCotizacion($id)
     {
-        Gate::authorize('otro_si.solicitarCotizacion');
+        Gate::authorize('solicitud.solicitarCotizacion');
         $inicio  = microtime(true);
         $request = request();
 
