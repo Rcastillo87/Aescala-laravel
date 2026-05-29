@@ -55,7 +55,7 @@ return [
         // ── Solo Admin ─────────────────────────────────────────
         'configuracion' => ['isAdmin'],
         'user'          => ['isAdmin'],
-        'cotizacion'    => ['isAdmin', 'isUser', 'isAnalista'],
+        'cotizacion'    => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
     ],
 
     // ==========================================================
