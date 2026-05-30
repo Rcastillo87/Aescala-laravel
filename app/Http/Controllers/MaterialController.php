@@ -271,7 +271,7 @@ class MaterialController extends Controller
                 $data
             );
             DB::commit();
-            return redirect(session('solicitud_anterior_url', route('material.index')))->with('success', $msg);
+            return redirect(session('solicitud_anterior_url'))->with('success', $msg);
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             return back()->with('error', 'Error en la base de datos: ' . $e->getMessage());

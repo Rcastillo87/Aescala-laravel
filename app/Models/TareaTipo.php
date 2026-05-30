@@ -15,7 +15,8 @@ class TareaTipo extends Model
     protected $fillable = [
         'nombre_tarea',
         'porcentage',
-        'orden'
+        'orden',
+        'dias_default'
     ];
 
     // Relación con el modelo Tarea

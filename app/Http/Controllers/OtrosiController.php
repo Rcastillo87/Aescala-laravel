@@ -44,6 +44,7 @@ class OtrosiController extends Controller
             ->when(!$usuario->isAdmin, function ($query) use ($usuario) {
                 $query->where('id_user_encargado', $usuario->id);
             })
+            ->orderBy('fecha_creacion', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 
@@ -134,7 +135,7 @@ class OtrosiController extends Controller
             'entregables.*.items' => 'required|array|min:1',
             'entregables.*.items.*.material' => 'required|string',
             'entregables.*.items.*.cantidad' => 'required|numeric|min:0',
-            'entregables.*.items.*.valor_unitario' => 'required|integer|min:0',
+            'entregables.*.items.*.valor_unitario' => 'required|integer',
             'entregables.*.items.*.unidad' => ['required','integer', Rule::in(array_keys(Otrosi::$unidades))],
         ]);
 

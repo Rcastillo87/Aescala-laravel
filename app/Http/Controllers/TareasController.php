@@ -31,7 +31,7 @@ class TareasController extends Controller
             $cola = Auth::user()->id;
         }
 
-        $title = 'Lista de Teras';
+        $title = 'Lista de Tareas';
         $items = Tarea::with(['proyecto', 'tareaTipo', 'user'])
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
@@ -49,7 +49,7 @@ class TareasController extends Controller
 
         $tareaTipo = TareaTipo::where('orden', '<>', 0)
             ->orderBy('orden', 'asc')
-            ->get(['id', 'nombre_tarea'])
+            ->get(['id', 'nombre_tarea', 'porcentage'])
             ->toArray();
 
 
@@ -147,6 +147,8 @@ class TareasController extends Controller
             ], 404);
         }
 
+        $dias = $tipo->dias_default?? 0;
+
         $tarea =  new Tarea;
         if($query->exists()){
             $tareaOld = Tarea::where('id_proyecto', $req->proyecto_id)
@@ -154,15 +156,15 @@ class TareasController extends Controller
                 ->first();
             if($tareaOld){
                 $tarea['fec_inicio'] = $tareaOld->fec_fin;
-                $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, $tareaOld->fec_fin, 10);//(new Festivos)->calcularFechaFin($tareaOld->fec_fin, 10);
+                $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, $tareaOld->fec_fin, $dias);//(new Festivos)->calcularFechaFin($tareaOld->fec_fin, 10);
             } else {
                 $tarea['fec_inicio'] = now();
-                $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, now(), 10);//(new Festivos)->calcularFechaFin(now(), 10);
+                $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, now(), $dias);//(new Festivos)->calcularFechaFin(now(), 10);
             }
 
         } else {
             $tarea['fec_inicio'] = $pro->fec_inicio;
-            $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, $pro->fec_inicio, 10);//(new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
+            $tarea['fec_fin'] = $this->recalcularFechaFin($req->proyecto_id, $pro->fec_inicio, $dias);//(new Festivos)->calcularFechaFin($pro->fec_inicio, 10);
         }
 
         DB::beginTransaction();
@@ -180,7 +182,7 @@ class TareasController extends Controller
             $tarea['id_tarea_estado'] = 2;
             $tarea['descripccion'] = null;
             $tarea['id_tarea_tipo'] = $req->tarea_tipo_id;
-            $tarea['dias_trabajo'] = 10;
+            $tarea['dias_trabajo'] = $dias;
             $tarea['save'] = $idEstado;
 
             $tarea->save();
@@ -286,7 +288,7 @@ class TareasController extends Controller
             <div class='rounded-lg ".$progBg." px-3 py-2 mb-2'>
                 <div class='flex justify-between items-baseline mb-1.5'>
                     <span class='text-[11px] font-medium ".$progFracColor."'>".$diasTrascurridosTarea." / ".$diasTarea." días</span>
-                    <span class='text-lg font-bold leading-none ".$progPctColor."'>".$porcenTarea."%</span>
+                    <span class='text-lg font-bold leading-none ".$progPctColor."'>".$barWidth."%</span>
                 </div>
                 <div class='w-full h-1.5 rounded-full ".$progBarBg." mb-1.5 overflow-hidden'>
                     <div class='h-1.5 rounded-full ".$progBarFill."' style='width:".$barWidth."%'></div>

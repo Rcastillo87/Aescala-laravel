@@ -123,7 +123,7 @@
                 <div class='rounded-lg ".$progBg." px-3 py-2 mb-2'>
                     <div class='flex justify-between items-baseline mb-1.5'>
                         <span class='text-[11px] font-medium ".$progFracColor."'>".$diasTrascurridosTarea." / ".$diasTarea." días</span>
-                        <span class='text-lg font-bold leading-none ".$progPctColor."'>".$porcenTarea."%</span>
+                        <span class='text-lg font-bold leading-none ".$progPctColor."'>".$barWidth."%</span>
                     </div>
                     <div class='w-full h-1.5 rounded-full ".$progBarBg." mb-1.5 overflow-hidden'>
                         <div class='h-1.5 rounded-full ".$progBarFill."' style='width:".$barWidth."%'></div>
@@ -222,7 +222,7 @@
             @php $col = $colPalette[$idx % count($colPalette)]; @endphp
             <div class="flex flex-col flex-shrink-0 w-[272px] {{ $col['bg'] }} border {{ $col['border'] }} rounded-xl overflow-hidden">
                 <div class="flex items-center justify-between px-3 py-2.5 border-b {{ $col['border'] }} {{ $col['head'] }}">
-                    <h3 class="text-xs font-semibold {{ $col['title'] }} tracking-wide truncate">{{ $tarea['nombre_tarea'] }}</h3>
+                    <h3 class="text-xs font-semibold {{ $col['title'] }} tracking-wide truncate">{{ $tarea['nombre_tarea'] }} ({{$tarea['porcentage']}}%) </h3>
                     <span class="ml-2 flex-shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $col['badge'] }}">
                         {{ $cntTareas[$tarea['id']] ?? 0 }}
                     </span>

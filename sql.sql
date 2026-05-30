@@ -96,3 +96,11 @@ ALTER TABLE aescala.proyectos ADD user_carpinteria varchar(100) NULL;
 ALTER TABLE area_entregables MODIFY COLUMN cantidad DOUBLE UNSIGNED NOT NULL;
 ALTER TABLE area_entregables ADD unidad DOUBLE UNSIGNED DEFAULT 1 NULL;
 ALTER TABLE area_entregables CHANGE unidad unidad INT UNSIGNED DEFAULT 1 NULL AFTER descripccion;
+
+
+INSERT INTO areas
+(id, nombre_area)
+VALUES(33, 'Descuentos');
+
+ALTER TABLE aescala.tarea_tipos ADD dias_default INT UNSIGNED DEFAULT 0 NULL;
+

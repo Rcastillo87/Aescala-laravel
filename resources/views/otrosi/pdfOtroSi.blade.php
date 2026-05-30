@@ -84,7 +84,6 @@
 
         /* Secciones de área */
         .section-title td {
-            background: #f9f9f9;
             font-weight: bold;
             text-transform: uppercase;
             color: #333;
@@ -201,7 +200,7 @@
             @php $globalIndex = 1; @endphp
             @foreach($adicionales as $area => $datos)
                 <tr class="section-title">
-                    <td colspan="5">{{ $datos['espacio'] }}</td>
+                    <td colspan="6" {!! $datos['espacio'] == 'Descuentos'? 'style="color: #FF0000;"' : '' !!}>{{ $datos['espacio'] }}</td>
                 </tr>
                 @foreach($datos['items'] as $item)
                 <tr>
@@ -209,8 +208,8 @@
                     <td>{{ $item['descripcion'] }}</td>
                     <td style="text-align: center;">{{ $unidades[$item['unidad']] }}</td>
                     <td style="text-align: center;">{{ $item['cantidad'] }}</td>
-                    <td class="right">$ {{ $item['valor_unitario'] }}</td>
-                    <td class="right">$ {{ $item['valor_total'] }}</td>
+                    <td class="right">{!! $item['valor_unitario'] == 0?'<b style="color: #FF0000;">Obsequio</b>' : '$ ' . $item['valor_unitario'] !!}</td>
+                    <td class="right">{!! $item['valor_total'] == 0?'<b style="color: #FF0000;">Obsequio</b>' : '$ ' . $item['valor_total'] !!}</td>
                 </tr>
                 @endforeach
                 <tr class="subtotal">

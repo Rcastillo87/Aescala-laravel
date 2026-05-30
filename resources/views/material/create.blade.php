@@ -132,7 +132,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <x-secondary-button class="ms-4" href="{{ route('material.index') }}">
+            <x-secondary-button class="ms-4" href="{{ session('solicitud_anterior_url') }}">
                 Atras
             </x-secondary-button>
             <x-primary-button class="ms-4">

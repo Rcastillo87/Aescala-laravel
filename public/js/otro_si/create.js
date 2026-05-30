@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const id_area = selectArea.value;
         const areaText = selectArea.options[selectArea.selectedIndex].text;
+        const texto = selectArea.options[selectArea.selectedIndex].text;
 
         if (!id_area) {
             Swal.fire("Error", "Seleccione un área", "error");
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".item-group").forEach(group => {
 
             const cantidad = group.querySelector('[name="cantidad"]').value;
-            const valor = group.querySelector('[name="valor"]').value;
+            const valor = group.querySelector('[name="valor"]').value * (texto == 'Descuentos'? -1 : 1);
             const material = group.querySelector("textarea").value;
             const unidad = group.querySelector('[name="unidad"]').value;
 

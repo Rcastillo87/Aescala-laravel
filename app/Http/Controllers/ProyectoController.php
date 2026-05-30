@@ -465,9 +465,14 @@ class ProyectoController extends Controller
         Gate::authorize('proyecto.listAvances');
         try {
             $id = Tarea::find(Request('id'));
-            $listAvance = Tarea::with(['avance', 'tareaTipo'])
+            $listAvance = Tarea::with([
+                    'tareaTipo',
+                    'avance' => function ($query) {
+                        $query->orderBy('fec_avance', 'desc');
+                    }
+                ])
                 ->where('id_proyecto', $id->id_proyecto)
-                ->orderBy('fec_inicio', 'desc')
+                ->orderBy('createdAt', 'desc')
                 ->get()
                 ->map(function ($data) {
                     return [
