@@ -55,7 +55,7 @@ return [
         // ── Solo Admin ─────────────────────────────────────────
         'configuracion' => ['isAdmin'],
         'user'          => ['isAdmin'],
-        'cotizacion'    => ['isAdmin', 'isUser', 'isAnalista'],
+        'cotizacion'    => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
     ],
 
     // ==========================================================
@@ -220,8 +220,8 @@ return [
         'tracking.asination'        => ['isAdmin', 'isUser'],
 
         // ── cotizacion.* ───────────────────────────────────────
-        'cotizacion.index'          => ['isAdmin', 'isUser', 'isAnalista'],
-        'cotizacion.create'         => ['isAdmin', 'isUser', 'isAnalista'],
+        'cotizacion.index'          => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'cotizacion.create'         => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
 
         // ── descargar.db ───────────────────────────────────────
         'descargar.db'              => ['isAdmin'],

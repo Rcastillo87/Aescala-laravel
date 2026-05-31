@@ -1218,3 +1218,38 @@ function _cpFechaLegible(dateStr) {
     const [y, m, d] = dateStr.split('-').map(Number);
     return `${d} de ${_MESES_CP[m]} de ${y}`;
 }
+
+function exportarModalAPdf() {
+    const elemento = document.getElementById('cal-proy-panel');
+    
+    // 1. Agregamos la clase que expande todo el contenido oculto
+    elemento.classList.add('imprimiendo-pdf');
+
+    // 2. Esperamos 350ms para que el navegador recalcule las alturas reales y cargue estilos
+    setTimeout(() => {
+        const opciones = {
+            margin:       [12, 12, 12, 12],
+            filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText.trim() || 'Proyecto'}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                letterRendering: true, // Mejora el renderizado de letras individuales
+                scrollY: 0,
+                scrollX: 0
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // 3. Generamos el PDF garantizando que el contenedor ya mide el 100% de su tamaño real
+        html2pdf().set(opciones).from(elemento).save().then(() => {
+            // 4. Quitamos la clase para regresar el scroll normal al modal de la pantalla
+            elemento.classList.remove('imprimiendo-pdf');
+        }).catch((err) => {
+            console.error('Error generando PDF:', err);
+            elemento.classList.remove('imprimiendo-pdf');
+        });
+
+    }, 350); // Este pequeño retraso es el secreto para que no salga cortado ni en blanco
+}
