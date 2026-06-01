@@ -227,6 +227,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('cartera')->name('cartera.')->middleware('role:cartera')->group(function () {
         Route::get('/index/{id}', [CarteraController::class, 'index'])->name('index');
+        Route::get('/indexEmpy', [CarteraController::class, 'indexEmpy'])->name('indexEmpy');
         Route::get('/pagosProyecto/{id}', [CarteraController::class, 'pagosProyecto'])->name('pagosProyecto');
         Route::post('/save', [CarteraController::class, 'save'])->name('save');
         Route::get('/reciboPDF/{id}', [CarteraController::class, 'reciboPDF'])->name('reciboPDF');

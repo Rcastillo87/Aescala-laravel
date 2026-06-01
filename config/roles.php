@@ -163,6 +163,7 @@ return [
 
         // ── cartera.* ──────────────────────────────────────────
         'cartera.index'             => ['isAdmin', 'iscartera'],
+        'cartera.indexEmpy'         => ['isAdmin', 'iscartera'],
         'cartera.pagosProyecto'     => ['isAdmin', 'iscartera'],
         'cartera.save'              => ['isAdmin', 'iscartera'],
         'cartera.reciboPDF'         => ['isAdmin', 'iscartera'],

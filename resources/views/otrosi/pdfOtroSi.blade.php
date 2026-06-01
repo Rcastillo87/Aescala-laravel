@@ -163,6 +163,7 @@
     </header>
 
     <h1 class="titulo">OTROSÍ N.º {{ $num_otro_si }}</h1>
+    <p style="text-align: center;">Fecha de creación {{ $txFechaCrea }}</p>
     <h2 class="subtitulo">Al Contrato de Remodelación de Vivienda</h2>
 
     <p>
@@ -248,7 +249,7 @@
                 <div class="datos-firma">
                     {{ $nombre_cliente }}<br>
                     {{ $tipo_doc_cliente_acro }} N.º {{ $documento_cliente }}<br>
-                    {{ $fecha_otro_si }}
+                    Fecha de firma: {{ $fecha_otro_si }}
                 </div>
             </td>
             <td>

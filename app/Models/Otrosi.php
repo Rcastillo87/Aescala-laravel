@@ -100,7 +100,7 @@ class Otrosi extends Model
             }
 
             $val = $item->valor * $item->cantidad;
-            
+
             $arr[$area]["items"][] = [
                 "descripcion"   => $item->descripccion,
                 "cantidad"      => $item->cantidad,
@@ -119,6 +119,10 @@ class Otrosi extends Model
         $carbon = Carbon::parse($this->fecha_firma);
         $carbon->locale('es');
         $fechaOtroSi = $carbon->translatedFormat('d \d\e F \d\e Y');
+
+        $carbon = Carbon::parse($this->fecha_creacion);
+        $carbon->locale('es');
+        $txFechaCrea = $carbon->translatedFormat('d \d\e F \d\e Y');
 
         $path = public_path('img/firmaRepre.png');
         $base64 = null;
@@ -144,7 +148,8 @@ class Otrosi extends Model
             "imgRepre"          => $base64,
             "nombre_proyecto" => $this->proyecto->nombre_proyecto,
             "img_firma"         => $this->img_firma,
-            "unidades"          => self::$unidades
+            "unidades"          => self::$unidades,
+            "txFechaCrea"       => $txFechaCrea
         ];
     }
 

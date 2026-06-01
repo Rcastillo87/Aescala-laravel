@@ -542,6 +542,18 @@
         window.estadosProyecto = @json($estado);
         window.departamentos   = @json($departamentos);
     </script>
+
+    <script>
+        window.AESCALA_CONFIG = {
+            logo:    "{{ asset('img/logo.png') }}",
+            razon:   "{{ env('RAZON') }}",
+            nit:     "{{ env('NIT') }}",
+            tel:     "{{ env('TEL') }}",
+            direccion: "{{ env('DIREC') }}",
+            ciudad:  "{{ env('CIU_DPT_EMPRE') }}",
+        };
+    </script>
+
     <script src="{{ asset('js/proyecto/index.js') }}?v={{ filemtime(public_path('js/proyecto/index.js')) }}"></script>
     <script src="{{ asset('js/pedidos/create.js') }}?v={{ filemtime(public_path('js/pedidos/create.js')) }}"></script>
 @endsection

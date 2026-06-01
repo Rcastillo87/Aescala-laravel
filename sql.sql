@@ -102,5 +102,9 @@ INSERT INTO areas
 (id, nombre_area)
 VALUES(33, 'Descuentos');
 
-ALTER TABLE aescala.tarea_tipos ADD dias_default INT UNSIGNED DEFAULT 0 NULL;
+INSERT INTO entregables
+(id, nombre_estregable)
+VALUES(58, 'Puerta Principal');
+
+ALTER TABLE tarea_tipos ADD dias_default INT UNSIGNED DEFAULT 0 NULL;
 

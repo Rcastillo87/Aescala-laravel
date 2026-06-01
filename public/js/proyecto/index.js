@@ -1220,36 +1220,49 @@ function _cpFechaLegible(dateStr) {
 }
 
 function exportarModalAPdf() {
-    const elemento = document.getElementById('cal-proy-panel');
-    
-    // 1. Agregamos la clase que expande todo el contenido oculto
-    elemento.classList.add('imprimiendo-pdf');
+    const nombreProyecto = document.getElementById('cp-nombre-proy')?.innerText.trim() || 'Proyecto';
+    const fecInicio      = document.getElementById('cp-fec-inicio')?.innerText.trim()  || '—';
+    const fecFinEst      = document.getElementById('cp-fec-fin-est')?.innerText.trim() || '—';
+    const diasTrabajo    = document.getElementById('cp-dias-trabajo')?.innerText.trim()|| '—';
+    const fechaExport    = new Date().toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
 
-    // 2. Esperamos 350ms para que el navegador recalcule las alturas reales y cargue estilos
-    setTimeout(() => {
-        const opciones = {
-            margin:       [12, 12, 12, 12],
-            filename:     `Calendario_${document.getElementById('cp-nombre-proy')?.innerText.trim() || 'Proyecto'}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                letterRendering: true, // Mejora el renderizado de letras individuales
-                scrollY: 0,
-                scrollX: 0
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+    // Crear wrapper temporal que el @media print va a mostrar
+    const wrapper = document.createElement('div');
+    wrapper.id = 'pdf-print-wrapper';
+    wrapper.style.display = 'none'; // oculto en pantalla, visible solo al imprimir
 
-        // 3. Generamos el PDF garantizando que el contenedor ya mide el 100% de su tamaño real
-        html2pdf().set(opciones).from(elemento).save().then(() => {
-            // 4. Quitamos la clase para regresar el scroll normal al modal de la pantalla
-            elemento.classList.remove('imprimiendo-pdf');
-        }).catch((err) => {
-            console.error('Error generando PDF:', err);
-            elemento.classList.remove('imprimiendo-pdf');
-        });
+    const cfg = window.AESCALA_CONFIG || {};
 
-    }, 350); // Este pequeño retraso es el secreto para que no salga cortado ni en blanco
+    // En el header del PDF:
+    wrapper.innerHTML = `
+        <div id="pdf-print-header">
+            <img src="${cfg.logo || '/img/logo.png'}" alt="${cfg.razon || 'AESCALA'}">
+            <div id="pdf-print-header-info">
+                <strong>${cfg.razon }</strong>
+                NIT: ${cfg.nit || '—'} &nbsp;|&nbsp; ${cfg.tel || ''}<br>
+                ${cfg.direccion || ''} &nbsp;|&nbsp; ${cfg.ciudad || ''}<br>
+                Proyecto: <b style="color:#E8450A;">${nombreProyecto}</b> &nbsp;|&nbsp; ${fechaExport}
+            </div>
+        </div>
+    `;
+
+    // Mover el panel del modal al wrapper (temporalmente)
+    const panel = document.getElementById('cal-proy-panel');
+    const panelParent = panel.parentNode;
+    const panelNextSibling = panel.nextSibling;
+
+    wrapper.appendChild(panel);
+    document.body.appendChild(wrapper);
+
+    // Imprimir
+    window.print();
+
+    // Restaurar el panel a su lugar original después de imprimir
+    const afterPrint = () => {
+        panelParent.insertBefore(panel, panelNextSibling);
+        document.body.removeChild(wrapper);
+        window.removeEventListener('afterprint', afterPrint);
+    };
+
+    window.addEventListener('afterprint', afterPrint);
 }

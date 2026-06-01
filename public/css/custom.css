@@ -37,12 +37,12 @@
     transition: opacity 0.3s ease;
     z-index: 30; /* Asegúrate que esté detrás del sidebar pero sobre el contenido */
   }
-  
+
   [drawer-backdrop].hidden {
     opacity: 0;
     pointer-events: none;
   }
-  
+
   #logo-sidebar {
     transition: transform 0.3s ease;
     z-index: 40; /* Mayor que el backdrop */
@@ -52,7 +52,7 @@
     position: relative;
     display: inline-block;
   }
-  
+
   .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
@@ -61,12 +61,12 @@
     text-align: center;
     border-radius: 6px;
     padding: 5px 0;
-  
+
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
   }
-  
+
   .tooltip:hover .tooltiptext {
     visibility: visible;
   }

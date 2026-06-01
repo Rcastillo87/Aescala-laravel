@@ -1,5 +1,27 @@
+document.addEventListener("DOMContentLoaded", function(event) {
+    new TomSelect("#id_proyecto",{
+        create: true,
+        dropdownParent: 'body',
+        sortField: {
+            field: "text",
+            direction: "asc"
+        },
+        onInitialize: function() {
+            this.wrapper.classList.add("tom-select-custom");
+        },
+        onChange: function(value) {
+            if(value) {
+                window.location.href = "/cartera/index/" + value;
+            }
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
     const id = document.getElementById('id_proyecto').value;
+    if(!id){
+        return;
+    }
     await loadCartera(id);
 });
 

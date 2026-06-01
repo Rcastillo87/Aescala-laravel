@@ -248,6 +248,44 @@
                 </li>
             @endcanany
 
+
+            @canany(['modulo.cartera'])
+                <li>
+                    <button type="button"
+                        class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group dark:hover:bg-gray-700"
+                        aria-controls="dropdown-cartera" data-collapse-toggle="dropdown-cartera">
+                        <svg class="w-6 h-6 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h8v-8m-9 4v-4m0 4h9m-9-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v4M3 11h11m6.25 5c0 1.2426-1.0073 2.25-2.25 2.25M20.25 16c0-1.2426-1.0073-2.25-2.25-2.25M20.25 16H21m-3 2.25c-1.2426 0-2.25-1.0074-2.25-2.25M18 18.25V19m-2.25-3c0-1.2426 1.0074-2.25 2.25-2.25M15.75 16H15m3-2.25V13m-1.591 1.409-.5303-.5303m4.2426 4.2426-.5303-.5303m-3.182 0-.5303.5303m4.2426-4.2426-.5303.5303"/>
+                        </svg>
+                        <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">
+                            Cartera
+                        </span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                        </svg>
+                    </button>
+
+                    <ul id="dropdown-cartera" class="hidden py-2 space-y-1">
+
+                        {{-- Inventario Materiales: isAdmin | isUser | isAlmacenista --}}
+                        @can('modulo.cartera')
+                            <li>
+                                <a href="{{ route('cartera.indexEmpy') }}"
+                                    class="flex items-center p-2 font-normal text-white text-sm hover:text-orange-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h8v-8m-9 4v-4m0 4h9m-9-4V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v4M3 11h11m6.25 5c0 1.2426-1.0073 2.25-2.25 2.25M20.25 16c0-1.2426-1.0073-2.25-2.25-2.25M20.25 16H21m-3 2.25c-1.2426 0-2.25-1.0074-2.25-2.25M18 18.25V19m-2.25-3c0-1.2426 1.0074-2.25 2.25-2.25M15.75 16H15m3-2.25V13m-1.591 1.409-.5303-.5303m4.2426 4.2426-.5303-.5303m-3.182 0-.5303.5303m4.2426-4.2426-.5303.5303"/>
+                                    </svg>
+                                    <span class="ms-3">Cartera</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                    </ul>
+                </li>
+            @endcanany
+
+
             {{-- ==================================================
                  GRUPO: CONFIGURACIÓN — Solo isAdmin
                  ================================================== --}}

@@ -261,6 +261,62 @@
     visibility: hidden !important;
 }
 
+@media print {
+    /* Ocultar TODO excepto el wrapper */
+    body > *:not(#pdf-print-wrapper) { display: none !important; }
+
+    #pdf-print-wrapper {
+        display: block !important;
+        position: static !important;  /* ← clave, no fixed */
+        width: 100%;
+        background: white;
+        padding: 16px;
+    }
+
+    /* Expandir el scroll del contenedor de meses */
+    #cp-meses-contenedor {
+        max-height: none !important;
+        overflow: visible !important;
+        height: auto !important;
+        display: block !important;
+    }
+
+    /* Cada mes en su propia sección sin cortes */
+    .cp-mes-wrapper {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-bottom: 24px;
+    }
+
+    /* Ocultar botones e interactivos */
+    button, .cp-btn-marcar, svg.animate-spin {
+        display: none !important;
+    }
+
+    /* Mostrar leyenda y resumen */
+    #cp-leyenda  { display: block !important; }
+    #cp-resumen  { display: block !important; }
+
+    /* Colores exactos */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Header solo primera página */
+    #pdf-print-header {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #E8450A;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+    }
+    #pdf-print-header img { height: 36px; width: auto; }
+    #pdf-print-header-info { font-size: 10px; color: #374151; text-align: right; line-height: 1.6; }
+    #pdf-print-header-info strong { display: block; font-size: 12px; color: #111827; }
+}
+
 </style>
 
 {{-- ══════════════════════════════════════════════════════════════════
@@ -283,7 +339,7 @@
                         <span class="cp-info-chip">🏁 Fin est.: <b id="cp-fec-fin-est">—</b></span>
                         <span class="cp-info-chip">⏱ Días: <b id="cp-dias-trabajo">—</b></span>
                     </div>
-                    <button type="button" onclick="exportarModalAPdf()" 
+                    <button type="button" onclick="exportarModalAPdf()"
                             class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-[#ee416d] border border-transparent rounded-xl shadow-md hover:bg-white hover:text-[#ee416d] hover:border-[#ee416d] transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200">
                         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />

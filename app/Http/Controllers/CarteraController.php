@@ -26,6 +26,22 @@ class CarteraController extends Controller
         return view('cartera.index', compact( 'title', 'id_proyecto', 'proyecto'));
     }
 
+    public function indexEmpy()
+    {
+        Gate::authorize('cartera.indexEmpy');
+        $title = 'Lista de Cartera';
+        $id_proyecto = '';
+
+        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5])
+            ->whereNotNull('cedula_cliente')
+            ->whereNotNull('tipo_doc_cliente')
+            ->orderBy('nombre_proyecto', 'ASC')
+            ->get(['id', 'nombre_proyecto'])
+            ->toArray();
+
+        return view('cartera.index', compact( 'title', 'proyectos', 'id_proyecto'));
+    }
+
     public function pagosProyecto($id)
     {
         Gate::authorize('cartera.pagosProyecto');
