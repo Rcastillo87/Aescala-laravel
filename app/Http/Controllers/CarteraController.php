@@ -118,12 +118,13 @@ class CarteraController extends Controller
             ];
 
             $lineDeveTTOtroSi = [0, 0, 0, 0, 0, 0];
+            $flag = 1;
             $lineDeveOtrosi = Otrosi::with('otrosi_refe')
                 ->where('id_proyecto', $id)
                 ->where('estado', 1)
                 ->orderBy('numero', 'asc')
                 ->get()
-                ->map(function ($item) use (&$lineDeveTTOtroSi) {
+                ->map(function ($item) use (&$lineDeveTTOtroSi, &$flag) {
                     $b = $item->totalDeve;
                     $a = $item->totalRefeOtroSi;
                     $c = $b - $a;
@@ -131,6 +132,7 @@ class CarteraController extends Controller
                         $line = [0, 0, 0, 0, 0, 0];
                     } else {
                         $line = [0, -$c, -$c, -$c, -$c, -$c];
+                        $flag = 0;
                     }
 
                     $refe = $item->otrosi_refe()->get();
@@ -157,24 +159,34 @@ class CarteraController extends Controller
             $lineTTResta = [];
             $acumulado = $valTotalPagado;
             $ban = 0;
+            $lineCobro = ['x', 'x', 'x', 'x', 'x', 'x'];
             foreach ($lineTTDeve as $key => $valor) {
                 if($ban == 1){
                     $lineTTResta[$key] = $valor;
+                    if($flag == 1){
+                        $lineCobro[$key] = $valor;
+                    }
                     continue ;
                 }
                 $acumulado = $acumulado - $valor;
                 if($acumulado > 0){
                     $lineTTResta[$key] = 0;
+                    if($flag == 1){
+                        $lineCobro[$key] = 0;
+                    }
                 } else {
                     $lineTTResta[$key] = abs($acumulado);
                     $ban = 1;
+                    if($flag == 1){
+                        $lineCobro[$key] = abs($acumulado);
+                    }
                 }
             }
 
             if(empty($lineDeveOtrosi)){
-                $valance = array_merge([$lineDeveProy], [$lineTTDeve], [$lineTTResta]);
+                $valance = array_merge([$lineDeveProy], [$lineTTDeve], [$lineTTResta], [$lineCobro]);
             } else {
-                $valance = array_merge([$lineDeveProy], $lineDeveOtrosi, [$lineTTDeve], [$lineTTResta]);
+                $valance = array_merge([$lineDeveProy], $lineDeveOtrosi, [$lineTTDeve], [$lineTTResta], [$lineCobro]);
             }
 
             return response()->json([

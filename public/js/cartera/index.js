@@ -387,20 +387,23 @@ async function loadCartera(id) {
 
         if (Array.isArray(data.valance_pro) && data.valance_pro.length > 0) {
             const cantidad = data.valance_pro.length - 1;
-            const txPro = ['Costo del Proyecto', 'Costo del Total', 'Saldo Pendiente'];
+            const txPro = ['Costo del Proyecto', 'Costo del Total', 'Saldo Pendiente', 'Saldo a Cobrar'];
             data.valance_pro.forEach((item, index0) => {
                 let color = '';
                 let tx = '';
                 const val = cantidad - index0;
                 if (index0 === 0) {
                     tx = txPro[0];
-                } else if (val === 1) {
+                } else if (val === 2) {
                     color = 'text-green-700 font-bold bg-green-50';
                     tx = txPro[1];
-                } else if (val === 0) {
+                } else if (val === 1) {
                     color = 'text-red-700 font-bold bg-red-50';
                     tx = txPro[2];
-                } else if (val > 1) {
+                } else if (val === 0) {
+                    color = 'text-blue-700 font-bold bg-blue-50';
+                    tx = txPro[3];
+                } else if (val > 2) {
                     tx = 'Costo del Otrosi N ' + index0;
                 }
 

@@ -108,3 +108,17 @@ VALUES(58, 'Puerta Principal');
 
 ALTER TABLE tarea_tipos ADD dias_default INT UNSIGNED DEFAULT 0 NULL;
 
+
+CREATE TABLE `cobro_refe` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_proyecto` bigint NOT NULL,
+  `id_user` bigint NOT NULL,
+  `referencia` int unsigned NOT NULL,
+  `valor_pendiente` bigint unsigned NOT NULL,
+  `fecha_notificacion` date DEFAULT NULL,
+  `fecha_acuerdo_pago` date DEFAULT NULL,
+  `fecha_pago_cli` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
