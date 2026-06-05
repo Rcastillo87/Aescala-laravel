@@ -87,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 📦 Obtener data modal
     // =========================
     function getModalData() {
-
         const id_area = selectArea.value;
         const areaText = selectArea.options[selectArea.selectedIndex].text;
         const texto = selectArea.options[selectArea.selectedIndex].text;
@@ -98,26 +97,35 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const items = [];
+        let hasError = false;
 
         document.querySelectorAll(".item-group").forEach(group => {
+            if (hasError) return;
 
-            const cantidad = group.querySelector('[name="cantidad"]').value;
-            const valor = group.querySelector('[name="valor"]').value * (texto == 'Descuentos'? -1 : 1);
-            const material = group.querySelector("textarea").value;
-            const unidad = group.querySelector('[name="unidad"]').value;
+            const cantidad = group.querySelector('[name="cantidad"]').value.trim();
+            const valorRaw = group.querySelector('[name="valor"]').value.trim();
+            const material = group.querySelector("textarea").value.trim();
+            const unidad = group.querySelector('[name="unidad"]').value.trim();
 
-            if (!cantidad || !valor || !material || !unidad) {
+            if (cantidad === "" || valorRaw === "" || material === "" || unidad === "") {
                 Swal.fire("Error", "Todos los campos son obligatorios", "error");
-                return null;
+                hasError = true;
+                return;
             }
+
+            const valor = Number(valorRaw) * (texto == 'Descuentos' ? -1 : 1);
 
             items.push({
                 cantidad: Number(cantidad),
-                valor_unitario: Number(valor),
+                valor_unitario: valor,
                 material,
                 unidad: Number(unidad)
             });
         });
+
+        if (hasError) {
+            return null;
+        }
 
         return { id_area, areaText, items };
     }
