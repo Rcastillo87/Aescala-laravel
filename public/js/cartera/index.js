@@ -409,6 +409,47 @@ async function loadCartera(id) {
 
                 relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${tx}</td>`;
                 item.forEach((valor, index) => {
+
+                    if (val == 0) {
+                        if(isNaN(valor)){
+                            relacionHTML += `<td class="p-3">${valor}</td>`;
+                            return;
+                        } else if (valor == 0){
+                            relacionHTML += `<td class="p-3">$ 0</td>`;
+                        } else if (valor < 0) {
+                            let valorNumerico = parseFloat(valor) || 0;
+                            relacionHTML += `<td class="p-3">${formatCurrency(valorNumerico)}</td>`;
+                        } else {
+                            relacionHTML += `<td class="p-3">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <button
+                                        @click="confirmarCobro(${index}, ${valor}, ${id});"
+                                        data-tooltip-target="tooltip-hover-cobro-${index}-${index0}" data-tooltip-trigger="hover"
+                                        class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-600 hover:bg-cyan-800 border-2 border-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm">
+                                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6"/>
+                                        </svg>
+                                    </button>
+                                    <div id="tooltip-hover-cobro-${index}-${index0}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="inset: auto auto 0px 0px; transform: translate(556.25px, -117.5px); position: absolute; margin: 0px;" data-popper-placement="top">
+                                        Añadir Cobro
+                                        <div class="tooltip-arrow" data-popper-arrow="" style="left: 0px; transform: translate(51.25px, 0px); position: absolute;"></div>
+                                    </div>
+                                </div>
+                            </td>`;
+                        }
+                        return;
+                    }
+                    
+                    if (val == 1 || val == 2) {
+                        if(isNaN(valor)){
+                            relacionHTML += `<td class="p-3">${valor}</td>`;
+                        } else {
+                            let valorNumerico = parseFloat(valor) || 0;
+                            relacionHTML += `<td class="p-3">${formatCurrency(valorNumerico)}</td>`;
+                        }
+                        return;
+                    }
+
                     if ( valor >= 0 ) {
                         let valorNumerico = parseFloat(valor) || 0;
                         relacionHTML += `<td class="p-3">${formatCurrency(valorNumerico)}</td>`;
@@ -446,6 +487,7 @@ async function loadCartera(id) {
                             </div>
                         </td>`;
                     }
+
                 });
                 relacionHTML += `</tr>`;
             });
@@ -603,3 +645,68 @@ document.getElementById('formOtrosiRefe').addEventListener('submit', async funct
         console.error(error);
     }
 });
+
+function confirmarCobro(index, valor, id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Deseas crear un referencia de cobro con el valor de ${formatCurrency(valor)}.?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#0891b2', // Color cyan-600
+        cancelButtonColor: '#ef4444', // Color rojo
+        confirmButtonText: 'Sí, Crear',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Mostramos un loader mientras se procesa en el servidor
+            Swal.fire({
+                title: 'Enviando...',
+                text: 'Por favor espera un momento.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Enviamos los datos a Laravel usando Fetch API
+            fetch('/cartera/selectCobro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    referencia: index,
+                    valor: valor,
+                    id_proyecto: id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        '¡Enviado!',
+                        'El cobro se ha registrado correctamente.',
+                        'success'
+                    ).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error',
+                        data.message || 'Hubo un problema al procesar el cobro.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error de red',
+                    'No se pudo conectar con el servidor.',
+                    'error'
+                );
+            });
+        }
+    });
+}

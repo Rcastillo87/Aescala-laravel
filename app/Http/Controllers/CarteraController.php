@@ -9,6 +9,7 @@ use App\Models\Proyecto;
 use App\Models\Pagos;
 use App\Models\Documento;
 use App\Models\Festivos;
+use App\Models\CobroRefe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -151,34 +152,41 @@ class CarteraController extends Controller
                 })
                 ->toArray();
 
-            $lineTTDeve = [];
-            foreach ($lineDeveProy as $key => $valor) {
-                $lineTTDeve[$key] = $valor + (is_numeric($lineDeveTTOtroSi[$key]) ? $lineDeveTTOtroSi[$key] : 0);
+            $lineTTDeve = ['--', '--', '--', '--', '--', '--'];
+            if($flag == 1){
+                foreach ($lineDeveProy as $key => $valor) {
+                    $lineTTDeve[$key] = $valor + (is_numeric($lineDeveTTOtroSi[$key]) ? $lineDeveTTOtroSi[$key] : 0);
+                }
             }
 
-            $lineTTResta = [];
+            $lineTTResta = ['--', '--', '--', '--', '--', '--'];
             $acumulado = $valTotalPagado;
             $ban = 0;
-            $lineCobro = ['x', 'x', 'x', 'x', 'x', 'x'];
-            foreach ($lineTTDeve as $key => $valor) {
-                if($ban == 1){
-                    $lineTTResta[$key] = $valor;
-                    if($flag == 1){
-                        $lineCobro[$key] = $valor;
+            $lineCobro = ['--', '--', '--', '--', '--', '--'];
+            if($flag == 1){
+                foreach ($lineTTDeve as $key => $valor) {
+                    $refe = CobroRefe::where('id_proyecto', $id)
+                        ->where('referencia', $key)
+                        ->first();
+                    if($ban == 1){
+                        if($flag == 1){
+                            $lineTTResta[$key] = $valor;
+                            $lineCobro[$key] = $refe ? -1 * $valor : $valor;
+                        }
+                        continue ;
                     }
-                    continue ;
-                }
-                $acumulado = $acumulado - $valor;
-                if($acumulado > 0){
-                    $lineTTResta[$key] = 0;
-                    if($flag == 1){
-                        $lineCobro[$key] = 0;
-                    }
-                } else {
-                    $lineTTResta[$key] = abs($acumulado);
-                    $ban = 1;
-                    if($flag == 1){
-                        $lineCobro[$key] = abs($acumulado);
+                    $acumulado = $acumulado - $valor;
+                    if($acumulado > 0){
+                        if($flag == 1){
+                            $lineTTResta[$key] = 0;
+                            $lineCobro[$key] = 0;
+                        }
+                    } else {
+                        $ban = 1;
+                        if($flag == 1){
+                            $lineTTResta[$key] = abs($acumulado);
+                            $lineCobro[$key] = $refe ? -1 * abs($acumulado) : abs($acumulado);
+                        }
                     }
                 }
             }
@@ -434,6 +442,45 @@ class CarteraController extends Controller
         $pago->update(['rc' => $request->rc]);
         $pago->save();
         return redirect()->back()->with('success', 'Actualizacion exitosa');
+    }
+
+    public function selectCobro(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'id_proyecto' => 'required',
+            'valor'       => 'required|numeric',
+            'referencia'  => 'required' 
+        ]);
+
+        // Si la validación falla, respondemos con 422 JSON (No causará un 302)
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación.',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $cobro = new CobroRefe();
+            $cobro->id_proyecto    = $request->input('id_proyecto');
+            $cobro->referencia     = $request->input('referencia'); 
+            $cobro->valor_pendiente= $request->input('valor');
+            $cobro->id_user        = Auth::id(); 
+            $cobro->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'El cobro con referencia se ha guardado exitosamente.',
+                'data'    => $cobro
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hubo un error al guardar el cobro: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }
