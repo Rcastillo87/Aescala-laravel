@@ -388,6 +388,7 @@ async function loadCartera(id) {
         if (Array.isArray(data.valance_pro) && data.valance_pro.length > 0) {
             const cantidad = data.valance_pro.length - 1;
             const txPro = ['Costo del Proyecto', 'Costo del Total', 'Saldo Pendiente', 'Saldo a Cobrar'];
+            let flag = 0;
             data.valance_pro.forEach((item, index0) => {
                 let color = '';
                 let tx = '';
@@ -410,6 +411,20 @@ async function loadCartera(id) {
                 relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${tx}</td>`;
                 item.forEach((valor, index) => {
 
+                    if (flag == 1) {
+                        relacionHTML += `<td class="p-3">
+                            <div class="flex items-center justify-center space-x-2">
+                                <a class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-red-600 hover:bg-red-800 border-2 border-red-800 
+                                    focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm">
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.757 12h8.486M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>`;
+                        return;
+                    }
+
                     if (val == 0) {
                         if(isNaN(valor)){
                             relacionHTML += `<td class="p-3">${valor}</td>`;
@@ -417,8 +432,17 @@ async function loadCartera(id) {
                         } else if (valor == 0){
                             relacionHTML += `<td class="p-3">$ 0</td>`;
                         } else if (valor < 0) {
-                            let valorNumerico = parseFloat(valor) || 0;
-                            relacionHTML += `<td class="p-3">${formatCurrency(valorNumerico)}</td>`;
+                            relacionHTML += `<td class="p-3">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <a class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-green-600 hover:bg-green-800 border-2 border-green-800 
+                                        focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm">
+                                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>`;
+                            flag = 1;
                         } else {
                             relacionHTML += `<td class="p-3">
                                 <div class="flex items-center justify-center space-x-2">
@@ -427,7 +451,7 @@ async function loadCartera(id) {
                                         data-tooltip-target="tooltip-hover-cobro-${index}-${index0}" data-tooltip-trigger="hover"
                                         class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-cyan-600 hover:bg-cyan-800 border-2 border-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-full text-sm">
                                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6"/>
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7.757v8.486M7.757 12h8.486M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                         </svg>
                                     </button>
                                     <div id="tooltip-hover-cobro-${index}-${index0}" role="tooltip" class="absolute z-10 inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0 invisible" style="inset: auto auto 0px 0px; transform: translate(556.25px, -117.5px); position: absolute; margin: 0px;" data-popper-placement="top">
@@ -436,6 +460,7 @@ async function loadCartera(id) {
                                     </div>
                                 </div>
                             </td>`;
+                            flag = 1;
                         }
                         return;
                     }

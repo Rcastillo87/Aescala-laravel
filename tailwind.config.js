@@ -190,6 +190,7 @@ export default {
         'outline-none',
         'hover:bg-red-600',
         'hover:text-red-700',
+        'hover:text-orange-800',
         'cursor-pointer',
         'remove-entregable',
 

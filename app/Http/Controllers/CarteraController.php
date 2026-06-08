@@ -256,6 +256,20 @@ class CarteraController extends Controller
                 'id_user'      => Auth::id(),
             ]);
 
+            $cobro = CobroRefe::where('id_proyecto', $request->id_proyecto)
+                ->where('estado', 1)
+                ->where('valor_pendiente', '>', 0)
+                ->first();
+
+            if($cobro){
+                $cobro->valor_pendiente = max(0, $cobro->valor_pendiente - $request->valor);
+                if($cobro->valor_pendiente == 0){
+                    $cobro->estado = 2;
+                }
+                $cobro->fecha_pago_cli = $request->fecha_pago;
+                $cobro->save();
+            }
+
             $pro = Proyecto::findOrFail($request->id_proyecto);
             $valOtroSiRefe      = (float) $pro->allTotalRefeOtroSi;
             $valOtrosis         = (float) ($pro->totalOtroSi ?? 0);
@@ -389,34 +403,29 @@ class CarteraController extends Controller
     {
         Gate::authorize('cartera.deletePago');
 
-        $pago = Pagos::findOrFail($id);
-        $tipo_pago = $pago->tipo_pago;
-        $id_tipo = $pago->id_tipo; // El ID del Proyecto o del OtroSí
-        $id_proyecto = $pago->id_proyecto; // El ID del Proyecto o del OtroSí
         DB::beginTransaction();
         try {
+            $pago = Pagos::findOrFail($id);
             $pago->delete();
-            if ($tipo_pago == 1) {
-                $proy = Proyecto::find($id_tipo);
-                if ($proy) {
-                    $pazYSalvo = $proy->valance ? 1 : 0;
-                    $proy->update(['paz_salvo' => $pazYSalvo]);
-                }
-            }
 
-            if ($tipo_pago == 2) {
-                $otroSi = Otrosi::find($id_tipo);
-                if ($otroSi) {
-                    $pazYSalvo = $otroSi->valanceOtroSi ? 1 : 0;
-                    $otroSi->update(['paz_salvo' => $pazYSalvo]);
-                }
+            $pro = Proyecto::findOrFail($pago->id_proyecto);
+            $valProyecto        = (float) $pro->total;
+            $valOtrosis         = (float) ($pro->totalOtroSi ?? 0);
+
+            $valAbonado = (float) Pagos::where('id_proyecto', $pro->id)->sum('valor');
+
+            if(($valProyecto + $valOtrosis) <= $valAbonado){
+                $pro->paz_salvo = 1;
+            } else{
+                $pro->paz_salvo = 0;
             }
+            $pro->save();
 
             DB::commit();
             return response()->json([
                 'status'  => true,
                 'message' => 'Pago eliminado correctamente.',
-                'url' => route('cartera.index', $id_proyecto),
+                'url' => route('cartera.index', $pago->id_proyecto),
             ]);
 
         } catch (\Throwable $e) {

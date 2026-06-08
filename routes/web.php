@@ -22,6 +22,8 @@ use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\AlmacenController;
 use App\Http\Controllers\InsumosController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\CobroController;
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -236,6 +238,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/viewDocumento/{id}', [CarteraController::class, 'viewDocumento'])->name('viewDocumento');
         Route::post('/sendRC', [CarteraController::class, 'sendRC'])->name('sendRC');
         Route::post('/selectCobro', [CarteraController::class, 'selectCobro'])->name('selectCobro');
+    });
+
+    Route::prefix('cobro')->name('cobro.')->middleware('role:cobro')->group(function () {
+        Route::get('/index', [CobroController::class, 'index'])->name('index');
+        Route::post('/sendAcuerdoPago', [CobroController::class, 'sendAcuerdoPago'])->name('sendAcuerdoPago');
+        Route::post('/sendNotificacion', [CobroController::class, 'sendNotificacion'])->name('sendNotificacion');
+        Route::delete('/deleteCobro/{id}', [CobroController::class, 'deleteCobro'])->name('deleteCobro');
     });
 
     Route::prefix('solicitud')->name('solicitud.')->middleware('role:solicitud')->group(function () {

@@ -56,6 +56,7 @@ return [
         'configuracion' => ['isAdmin'],
         'user'          => ['isAdmin'],
         'cotizacion'    => ['isAdmin', 'isUser', 'isAnalista', 'isAlmacenista'],
+        'cobro'         => ['isAdmin', 'isUser', 'iscartera'],
     ],
 
     // ==========================================================
@@ -168,6 +169,12 @@ return [
         'cartera.save'              => ['isAdmin', 'iscartera'],
         'cartera.reciboPDF'         => ['isAdmin', 'iscartera'],
         'cartera.deletePago'        => ['isAdmin', 'iscartera'],
+
+        // ── cobro.* ──────────────────────────────────────────
+        'cobro.index'               => ['isAdmin', 'isUser', 'iscartera'],
+        'cobro.deleteCobro'         => ['isAdmin', 'isUser', 'iscartera'],
+        'cobro.sendAcuerdoPago'     => ['isAdmin', 'isUser', 'iscartera'],
+        'cobro.sendNotificacion'    => ['isAdmin', 'isUser', 'iscartera'],
 
         // ── solicitud.* ────────────────────────────────────────
         'solicitud.index'                   => ['isAdmin', 'isUser', 'isColab', 'isAnalista', 'isContratista', 'isTecnico', 'isAlmacenista'],
