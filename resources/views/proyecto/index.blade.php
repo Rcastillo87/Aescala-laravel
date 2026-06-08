@@ -118,6 +118,44 @@
                     <div class="flex flex-wrap items-center gap-2 mt-1">
                         {!! $item->span_estado !!}
                     </div>
+                    <div class="mt-1 h-12 w-full hidden xl:block">
+                        <svg class="h-full" viewBox="0 0 680 48" xmlns="http://www.w3.org/2000/svg" role="img">
+                            <title>Línea de tiempo</title>
+                            <desc>Barra de tiempo compacta con 6 etapas en flecha</desc>
+                            <defs>
+                                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#5A52E0"/></linearGradient>
+                                <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E8450A"/><stop offset="100%" stop-color="#FF6B35"/></linearGradient>
+                                <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0F9E8A"/><stop offset="100%" stop-color="#1DC9AF"/></linearGradient>
+                                <linearGradient id="g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
+                                <linearGradient id="g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D946EF"/><stop offset="100%" stop-color="#E879F9"/></linearGradient>
+                                <linearGradient id="g6" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
+                            </defs>
+
+                            <polygon points="4,4 106,4 124,24 106,44 4,44" fill="url(#g1)"/>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días</text>
+                            <text font-family="sans-serif" font-size="8.5" x="58" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
+
+                            <polygon points="112,4 214,4 232,24 214,44 112,44" fill="url(#g2)"/>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días</text>
+                            <text font-family="sans-serif" font-size="8.5" x="166" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
+
+                            <polygon points="220,4 322,4 340,24 322,44 220,44" fill="url(#g3)"/>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días</text>
+                            <text font-family="sans-serif" font-size="8.5" x="274" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
+
+                            <polygon points="328,4 430,4 448,24 430,44 328,44" fill="url(#g4)"/>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días</text>
+                            <text font-family="sans-serif" font-size="8.5" x="382" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
+
+                            <polygon points="436,4 538,4 556,24 538,44 436,44" fill="url(#g5)"/>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días</text>
+                            <text font-family="sans-serif" font-size="8.5" x="490" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
+
+                            <polygon points="544,4 658,4 676,24 658,44 544,44" fill="url(#g6)"/>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="606" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">75 Días</text>
+                            <text font-family="sans-serif" font-size="8.5" x="606" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
+                        </svg>
+                    </div>
                 </div>
 
                 {{-- Grid de datos --}}

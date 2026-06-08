@@ -63,7 +63,7 @@ class ProyectoController extends Controller
         $cola = Auth::user()->isnotColab ? request('id_userSerch') : Auth::user()->id;
         $contra = Auth::user()->isContratista ? Auth::user()->id : request('id_contratista');
 
-        $items = Proyecto::with(['tareas', 'finanzas', 'entreProyecto', 'otro_si'])
+        $query = Proyecto::with(['tareas', 'finanzas', 'entreProyecto', 'otro_si'])
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 return $query->whereRaw('LOWER(nombre_proyecto) LIKE LOWER(?)', ["%$nombre_proyecto%"]);
             })
@@ -86,9 +86,13 @@ class ProyectoController extends Controller
                 return $query->where('fec_fin_estimado', 'LIKE', "{$mesPro}%");
             })
             ->whereNotNull('id_estado')
-            ->orderBy('fec_inicio', 'desc')
-            ->paginate($perPage)
-            ->appends(request()->query());
+            ->orderBy('fec_inicio', 'desc');
+
+        if (request('export') == 1) {
+            return $this->exportExcel($query->get());
+        }
+
+        $items = $query->paginate($perPage)->appends(request()->query());
 
         $estadoTarea = Tarea::$estado;
         $tareaTipo = TareaTipo::get(['id', 'nombre_tarea'])->toArray();
@@ -148,6 +152,49 @@ class ProyectoController extends Controller
             'ubicacion',
             'tareatipo'
         ));
+    }
+
+    private function exportExcel($items)
+    {
+        $headers = [
+            "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=proyectos_reporte.xls"
+        ];
+
+        return response()->stream(function () use ($items) {
+            echo "\xEF\xBB\xBF"; // BOM UTF-8
+
+            echo "<table border='1' style='border-collapse:collapse'>
+                    <thead>
+                        <tr style='background:#242e68;color:#fff;font-weight:bold'>
+                            <th>Nombre Proyecto</th>
+                            <th>Cliente</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Estado</th>
+                            <th>Días Contrato</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Entrega</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody>";
+
+            foreach ($items as $item) {
+                echo "<tr>
+                        <td>".e($item->nombre_proyecto)."</td>
+                        <td>".e($item->nombre_cliente)."</td>
+                        <td>".e($item->telefono_cliente)."</td>
+                        <td>".e($item->direccion)."</td>
+                        <td>".e($item->id_estado)."</td> 
+                        <td>{$item->dias_contrato}</td>
+                        <td>".e($item->fec_inicio)."</td>
+                        <td>".e($item->fec_fin_real ?? 'N/A')."</td>
+                        <td>".e($item->observacion)."</td>
+                    </tr>";
+            }
+            echo "</tbody></table>";
+        }, 200, $headers);
     }
 
     public function create()
