@@ -143,9 +143,9 @@ class Proyecto extends Model
         $ciudad_dpt = $dptArray[$this->departamento]['departamento'] . ', ' .
                     $dptArray[$this->departamento]['ciudades'][$this->ciudad];
 
-        $meses   = ceil($this->dias_trabajo / 24);
+        $meses   = ceil($this->dias_contrato / 24);
 
-        $txDia = $this->numeroATexto( $this->dias_trabajo );
+        $txDia = $this->numeroATexto( $this->dias_contrato );
 
         $txMeses = $this->numeroATexto($meses);
         $total   = $this->entreProyecto()

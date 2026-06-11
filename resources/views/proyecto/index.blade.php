@@ -132,23 +132,23 @@
                             </defs>
 
                             <polygon points="4,4 106,4 124,24 106,44 4,44" fill="url(#g1)"/>
-                            <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días</text>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días - 50%</text>
                             <text font-family="sans-serif" font-size="8.5" x="58" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
 
                             <polygon points="112,4 214,4 232,24 214,44 112,44" fill="url(#g2)"/>
-                            <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días</text>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días - 80%</text>
                             <text font-family="sans-serif" font-size="8.5" x="166" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
 
                             <polygon points="220,4 322,4 340,24 322,44 220,44" fill="url(#g3)"/>
-                            <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días</text>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días - 95%</text>
                             <text font-family="sans-serif" font-size="8.5" x="274" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
 
                             <polygon points="328,4 430,4 448,24 430,44 328,44" fill="url(#g4)"/>
-                            <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días</text>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días - 98%</text>
                             <text font-family="sans-serif" font-size="8.5" x="382" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
 
                             <polygon points="436,4 538,4 556,24 538,44 436,44" fill="url(#g5)"/>
-                            <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días</text>
+                            <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días - 100%</text>
                             <text font-family="sans-serif" font-size="8.5" x="490" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
 
                             <polygon points="544,4 658,4 676,24 658,44 544,44" fill="url(#g6)"/>
