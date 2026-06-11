@@ -354,6 +354,11 @@ class Proyecto extends Model
         return $this->hasMany(NotasProyecto::class, 'id_proyecto', 'id');
     }
 
+    public function proyec_tx_refe()
+    {
+        return $this->hasMany(ProyecTXRefe::class, 'id_proyecto', 'id');
+    }
+
     public function getTotalAttribute()
     {
         return $this->entreProyecto()
