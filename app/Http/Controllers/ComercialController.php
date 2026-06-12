@@ -19,6 +19,7 @@ use App\Models\EntregableProye;
 use App\Models\Entregables;
 use App\Models\Festivos;
 use App\Models\NotasProyecto;
+use App\Models\ProyecTXRefe;
 
 class ComercialController extends Controller
 {
@@ -80,13 +81,16 @@ class ComercialController extends Controller
             ->get(['id', 'nombre_completo'])
             ->toArray();
 
+
         if(!$id){
             $entregableProye = '';
             $valor = 0;
             $title = 'Crear Proyecto';
             $suma = 0;
             $notas = [];
+            $proyecTxRefe = [];
         } else {
+            $proyecTxRefe = ProyecTXRefe::where('id_proyecto', $id)->get();
             $entre = EntregableProye::with('entregable')->where('id_proyecto', $id)->get();
             $suma = $proyecto->aprov_diseno_por + $proyecto->ini_carpinteria_por + $proyecto->ini_enchape_por + $proyecto->ini_griferia_por + $proyecto->entrega_obra_por;
             $entregableProye = '';
@@ -147,7 +151,7 @@ class ComercialController extends Controller
         $ubicacion = Proyecto::$ubicacion;
 
         return view('comercial.create', compact('title', 'proyecto', 'colaUsers', 'departamentos', 'ciudades', 'tipoDocs',
-            'entregables', 'entregableProye', 'valor', 'suma', 'ubicacion', 'notas'));
+            'entregables', 'entregableProye', 'valor', 'suma', 'ubicacion', 'notas', 'proyecTxRefe'));
     }
 
     public function save(Request $req)
@@ -174,6 +178,13 @@ class ComercialController extends Controller
                 "termino_4_por" => 'required|integer|min:0|max:100',
                 "termino_5_por" => 'required|integer|min:0|max:100',
                 "termino_6_por" => 'required|integer|min:0|max:100',
+
+                "termino_1_desc" => 'nullable|string|max:255',
+                "termino_2_desc" => 'nullable|string|max:255',
+                "termino_3_desc" => 'nullable|string|max:255',
+                "termino_4_desc" => 'nullable|string|max:255',
+                "termino_5_desc" => 'nullable|string|max:255',
+                "termino_6_desc" => 'nullable|string|max:255',
 
                 'opcion' => ['nullable', 'integer', Rule::in([0, 1])],
                 'acepta_trata_datos' => ['required', 'integer', Rule::in([1])],
@@ -247,6 +258,20 @@ class ComercialController extends Controller
                         'id_proyecto' => $pro->id,
                         'nota'       => $nota,
                     ]);
+                }
+            }
+
+            for ($i = 1; $i <= 6; $i++) {
+                $descripcion = $data['termino_' . $i . '_desc'] ?? null;
+                if (!empty($descripcion)) {
+                    ProyecTXRefe::updateOrCreate(
+                        ['id_proyecto' => $pro->id, 'referencia' => $i],
+                        ['tx_descripcion' => $descripcion]
+                    );
+                } else {
+                    ProyecTXRefe::where('id_proyecto', $pro->id)
+                                ->where('referencia', $i)
+                                ->delete();
                 }
             }
 

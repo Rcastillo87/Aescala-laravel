@@ -214,29 +214,42 @@
   <strong>CUARTA. FORMA DE PAGO: </strong>EL CONTRATANTE pagara de la siguiente manera:
 </p>
 <ul>
+    @php
+        // 1. Convertimos el dato del arreglo a una colección para poder usar firstWhere de forma segura
+        $coleccionRefe = collect($proyec_tx_refe ?? []);
+
+        // 2. Buscamos las descripciones de manera correcta
+        $txRefe_1 = $coleccionRefe->firstWhere('referencia', 1)?->tx_descripcion ?? 'para dar inicio a la etapa de diseño';
+        $txRefe_2 = $coleccionRefe->firstWhere('referencia', 2)?->tx_descripcion ?? 'al momento de aprobado diseño para dar inicio a la obra';
+        $txRefe_3 = $coleccionRefe->firstWhere('referencia', 3)?->tx_descripcion ?? 'previo a enviar a corte la carpintería';
+        $txRefe_4 = $coleccionRefe->firstWhere('referencia', 4)?->tx_descripcion ?? 'previo a iniciar la instalacion de la carpintería';
+        $txRefe_5 = $coleccionRefe->firstWhere('referencia', 5)?->tx_descripcion ?? 'previo a iniciar el corte e instalacion del mesón, griferia y accesorios';
+        $txRefe_6 = $coleccionRefe->firstWhere('referencia', 6)?->tx_descripcion ?? 'al momento que EL CONTRATISTA informe a EL CONTRATANTE que hara entrega de la obra';
+    @endphp
+
     @if($por_term_1!=0)
-        <li>({{ $por_term_1 }}%) correspondiente a (${{ $val_term_1 }}) para dar inicio a la etapa de diseño.</li>
+        <li>({{ $por_term_1 }}%) correspondiente a (${{ $val_term_1 }}) {{ $txRefe_1 }}.</li>
     @endif
     @if($por_term_2!=0)
-        <li>({{ $por_term_2 }}%) correspondiente a (${{ $val_term_2 }}) al momento de aprobado diseño para dar inicio a la obra.</li>
+        <li>({{ $por_term_2 }}%) correspondiente a (${{ $val_term_2 }}) {{ $txRefe_2 }}.</li>
     @endif
     @if($por_term_3 != 0)
         <li>
-            ({{ $por_term_3 }}%) correspondiente a (${{ $val_term_3 }}) previo a enviar a corte la carpintería.
+            ({{ $por_term_3 }}%) correspondiente a (${{ $val_term_3 }}) {{ $txRefe_3 }}.
         </li>
     @endif
     @if($por_term_4 != 0)
         <li>
-            ({{ $por_term_4 }}%) correspondiente a (${{ $val_term_4 }}) previo a iniciar la instalacion de la carpintería.
+            ({{ $por_term_4 }}%) correspondiente a (${{ $val_term_4 }}) {{ $txRefe_4 }}.
         </li>
     @endif
     @if($por_term_5 != 0)
         <li>
-            ({{ $por_term_5 }}%) correspondiente a (${{ $val_term_5 }}) previo a iniciar el corte e instalacion del mesón, griferia y accesorios.
+            ({{ $por_term_5 }}%) correspondiente a (${{ $val_term_5 }}) {{ $txRefe_5 }}.
         </li>
     @endif
     @if($por_term_6!=0)
-        <li>({{ $por_term_6 }}%) correspondiente a (${{ $val_term_6 }}) al momento que EL CONTRATISTA informe a EL CONTRATANTE que hara entrega de la obra.</li>
+        <li>({{ $por_term_6 }}%) correspondiente a (${{ $val_term_6 }}) {{ $txRefe_6 }}.</li>
     @endif
 </ul>
 

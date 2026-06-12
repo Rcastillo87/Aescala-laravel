@@ -636,3 +636,44 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarTarjeta(notasGuardadas);
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // Escuchamos los clics en todo el documento
+    document.addEventListener("click", (e) => {
+        
+        // 1. SI SE PRESIONA EL BOTÓN "+ DESCRIPCIÓN"
+        if (e.target && e.target.classList.contains("btn-toggle-desc")) {
+            const container = e.target.closest(".input-dinamico-container");
+            if (container) {
+                const wrapperTextarea = container.querySelector(".wrapper-textarea");
+                
+                // Mostramos el textarea y ocultamos el botón de "+"
+                wrapperTextarea.classList.remove("hidden");
+                e.target.classList.add("hidden");
+                
+                // Auto-enfocar el textarea para comodidad del usuario
+                wrapperTextarea.querySelector("textarea").focus();
+            }
+        }
+
+        // 2. SI SE PRESIONA EL BOTÓN "QUITAR"
+        if (e.target && e.target.classList.contains("btn-remove-desc")) {
+            const container = e.target.closest(".input-dinamico-container");
+            if (container) {
+                const wrapperTextarea = container.querySelector(".wrapper-textarea");
+                const btnToggle = container.querySelector(".btn-toggle-desc");
+                const textarea = wrapperTextarea.querySelector("textarea");
+
+                // Ocultamos el contenedor del textarea
+                wrapperTextarea.classList.add("hidden");
+                
+                // Volvemos a mostrar el botón de "+"
+                btnToggle.classList.remove("hidden");
+                
+                // Opcional: Limpiamos el texto si deciden quitarlo para que no se envíe basura al backend
+                textarea.value = ""; 
+            }
+        }
+    });
+});

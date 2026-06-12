@@ -14,7 +14,7 @@ class ProyecTXRefe extends Model
 
     protected $fillable = [
         'tx_descripcion',
-        'referencia'
+        'referencia',
         'id_proyecto'
     ];
 }
