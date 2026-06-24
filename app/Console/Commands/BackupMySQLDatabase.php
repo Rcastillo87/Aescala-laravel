@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
+use App\Models\Georreferencia;
 
 class BackupMySQLDatabase extends Command
 {
@@ -75,6 +76,14 @@ class BackupMySQLDatabase extends Command
             File::put($backupPath, $process->getOutput());
             $this->info("Copia de seguridad creada exitosamente: {$backupPath}");
             Log::info("Backup creado: {$backupPath}");
+
+            $eliminados = Georreferencia::where(
+                'created_at',
+                '<',
+                now()->subMonth()
+            )->delete();
+            Log::info("Georreferencias eliminadas: {$eliminados}");
+
             return 0;
         } else {
             $this->error('Error al crear la copia de seguridad.');

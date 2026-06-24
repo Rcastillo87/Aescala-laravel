@@ -61,15 +61,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('/descargar-db', function () {
-        $backupDir = storage_path('backups');
+        //$backupDir = '/home/user/backups/databases/aescala';
+        $backupDir = env('BACKUP_PATH');
+
+        \Log::info('BackupDir: '.$backupDir);
+        \Log::info('Existe: '.(File::exists($backupDir) ? 'SI' : 'NO'));
+        \Log::info('Cantidad archivos: '.count(File::files($backupDir)));
+
         if (!File::exists($backupDir)) {
             return response()->json([
                 'error' => 'La carpeta de backups no existe'
             ], 404);
         }
-
-        // ✅ CORRECCIÓN: ordenar por nombre descendente (el timestamp en el nombre
-        //    es más confiable que getMTime() que puede variar según el filesystem)
         $files = collect(File::files($backupDir))
             ->filter(fn($file) =>
                 str_contains($file->getFilename(), 'db_backup_') &&
@@ -78,22 +81,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     str_ends_with($file->getFilename(), '.sql.gz')
                 )
             )
-            ->sortByDesc(fn($file) => $file->getFilename()); // Y-m-d_H-i-s ordena lexicográficamente bien
+            ->sortByDesc(fn($file) => $file->getFilename());
 
         if ($files->isEmpty()) {
             return response()->json([
-                'error' => 'No hay backups disponibles todavía'
+                'error' => 'No hay backups disponibles'
             ], 404);
         }
 
         $latest = $files->first();
-
         return response()->download(
             $latest->getRealPath(),
             $latest->getFilename()
         );
     })->name('descargar.db');
-
 
     Route::prefix('documento')->name('documento.')->group(function () {
         Route::post('/save', [DocumentoController::class, 'save'])->name('save');
