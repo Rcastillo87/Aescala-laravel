@@ -97,7 +97,7 @@
                             <div class="bg-white rounded-full h-1.5 transition-all duration-500"
                                  style="width:{{ min($porcen, 100) }}%"></div>
                         </div>
-                        <div class="mt-2 text-[10px] opacity-80 space-y-0.5 w-full hidden xl:block">
+                        <div class="mt-2 text-[10px] opacity-80 space-y-0.5 w-full block">
                             <div class="flex justify-between"><span>Inicio:</span><span>{{ $item->fecIni ?? '--' }}</span></div>
                             <div class="flex justify-between"><span>Fin:</span><span>{{ $item->fec_fin_est ?? '--' }}</span></div>
                             <div class="flex justify-between"><span>Comis:</span><span>{{ $item->fecha_comision ?? '--' }}</span></div>
@@ -121,7 +121,7 @@
                     <div class="flex flex-wrap items-center gap-2 mt-1">
                         {!! $item->span_estado !!}
                     </div>
-                    <div class="mt-1 h-12 w-full {{ !$tieneAvance ? 'hidden' : 'relative' }}">
+                    <div class="mt-1 h-10 w-full {{ !$tieneAvance ? 'hidden' : 'relative' }}">
                         <svg class="h-full" viewBox="0 0 680 48" xmlns="http://www.w3.org/2000/svg" role="img">
                             <title>Línea de tiempo</title>
                             <desc>Barra de tiempo compacta con 6 etapas en flecha</desc>
@@ -136,37 +136,37 @@
                             <g class="@if(!$avance[0]) hidden @endif">
                                 <polygon points="4,4 106,4 124,24 106,44 4,44" fill="url(#g1)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días - 50%</text>
-                                <text font-family="sans-serif" font-size="8.5" x="58" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
+                                <text font-family="sans-serif" font-size="11" x="58" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
                             </g>
 
                             <g class="@if($avance[1] == false) hidden @endif">
                                 <polygon points="112,4 214,4 232,24 214,44 112,44" fill="url(#g2)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días - 80%</text>
-                                <text font-family="sans-serif" font-size="8.5" x="166" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
+                                <text font-family="sans-serif" font-size="11" x="166" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
                             </g>
 
                             <g class="@if($avance[2] == false) hidden @endif">
                                 <polygon points="220,4 322,4 340,24 322,44 220,44" fill="url(#g3)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días - 95%</text>
-                                <text font-family="sans-serif" font-size="8.5" x="274" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
+                                <text font-family="sans-serif" font-size="11" x="274" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
                             </g>
 
                             <g class="@if($avance[3] == false) hidden @endif">
                                 <polygon points="328,4 430,4 448,24 430,44 328,44" fill="url(#g4)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días - 98%</text>
-                                <text font-family="sans-serif" font-size="8.5" x="382" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
+                                <text font-family="sans-serif" font-size="11" x="382" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
                             </g>
 
                             <g class="@if($avance[4] == false) hidden @endif">
                                 <polygon points="436,4 538,4 556,24 538,44 436,44" fill="url(#g5)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días - 100%</text>
-                                <text font-family="sans-serif" font-size="8.5" x="490" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
+                                <text font-family="sans-serif" font-size="11" x="490" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
                             </g>
 
                             <g class="@if($avance[5] == false) hidden @endif">
                                 <polygon points="544,4 658,4 676,24 658,44 544,44" fill="url(#g6)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="606" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">75 Días</text>
-                                <text font-family="sans-serif" font-size="8.5" x="606" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
+                                <text font-family="sans-serif" font-size="11" x="606" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
                             </g>
                         </svg>
                     </div>

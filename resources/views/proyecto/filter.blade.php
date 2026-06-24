@@ -70,6 +70,17 @@
                     </div>
 
                     <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="ubicacion" :value="__('Ubicacion')" />
+                        <x-select-input
+                            name="ubicacion"
+                            :options="$ubicacion"
+                            id="ubicacion"
+                            :selected="Request('ubicacion', '')"
+                            class="block mt-1 w-full"
+                        />
+                    </div>
+
+                    <div class="p-2 shrink-0 w-[40]">
                         <x-input-label for="id_estado" :value="__('Mes de Entrega')" />
                         <div class="relative">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">

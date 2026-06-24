@@ -85,11 +85,14 @@ class ProyectoController extends Controller
             ->when(request('mes_pro'), function ($query, $mesPro) {
                 return $query->where('fec_fin_estimado', 'LIKE', "{$mesPro}%");
             })
+            ->when(request('ubicacion') !== null, function ($query) {
+                $query->where('ubicacion', request('ubicacion'));
+            })
             ->whereNotNull('id_estado')
             ->orderBy('fec_inicio', 'desc');
 
         if (request('export') == 1) {
-            return $this->exportExcel($query->get());
+            return $this->exportExcel($query->get(), $estado);
         }
 
         $items = $query->paginate($perPage)->appends(request()->query());
@@ -128,6 +131,8 @@ class ProyectoController extends Controller
             ->get(['id', 'nombre_completo'])
             ->toArray();
 
+        $ubicacion = Proyecto::$ubicacion;
+
         return view('proyecto.index', compact(
             'title',
             'items',
@@ -150,18 +155,19 @@ class ProyectoController extends Controller
             'proyecto',
             'contraUsers',
             'ubicacion',
-            'tareatipo'
+            'tareatipo',
+            'ubicacion'
         ));
     }
 
-    private function exportExcel($items)
+    private function exportExcel($items, $estado)
     {
         $headers = [
             "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=proyectos_reporte.xls"
         ];
 
-        return response()->stream(function () use ($items) {
+        return response()->stream(function () use ($items, $estado) {
             echo "\xEF\xBB\xBF"; // BOM UTF-8
 
             echo "<table border='1' style='border-collapse:collapse'>
@@ -174,7 +180,10 @@ class ProyectoController extends Controller
                             <th>Estado</th>
                             <th>Días Contrato</th>
                             <th>Fecha Inicio</th>
-                            <th>Fecha Entrega</th>
+                            <th>Fecha Entrega Estimada</th>
+                            <th>Residente</th>
+                            <th>Diseñador</th>
+                            <th>Cont. Obra Blanca</th>
                             <th>Observación</th>
                         </tr>
                     </thead>
@@ -186,10 +195,14 @@ class ProyectoController extends Controller
                         <td>".e($item->nombre_cliente)."</td>
                         <td>".e($item->telefono_cliente)."</td>
                         <td>".e($item->direccion)."</td>
-                        <td>".e($item->id_estado)."</td> 
+                        <td>".e($estado[$item->id_estado])."</td> 
                         <td>{$item->dias_contrato}</td>
                         <td>".e($item->fec_inicio)."</td>
-                        <td>".e($item->fec_fin_real ?? 'N/A')."</td>
+                        <td>".e($item->fec_fin_estimado ?? 'N/A')."</td>
+
+                        <td>".e($item->user?->nombre_completo ?? '--')."</td>
+                        <td>".e($item->userDiseno?->nombre_completo ?? '--')."</td>
+                        <td>".e($item->userOB?->nombre_completo ?? '--')."</td>
                         <td>".e($item->observacion)."</td>
                     </tr>";
             }
