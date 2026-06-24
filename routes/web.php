@@ -61,18 +61,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('/descargar-db', function () {
-        //$backupDir = '/home/user/backups/databases/aescala';
-        $backupDir = env('BACKUP_PATH');
-
-        \Log::info('BackupDir: '.$backupDir);
-        \Log::info('Existe: '.(File::exists($backupDir) ? 'SI' : 'NO'));
-        \Log::info('Cantidad archivos: '.count(File::files($backupDir)));
+        // Apunta exactamente a storage/app/backups igual que el comando
+        $backupDir = storage_path('app/backups');
 
         if (!File::exists($backupDir)) {
             return response()->json([
                 'error' => 'La carpeta de backups no existe'
             ], 404);
         }
+
         $files = collect(File::files($backupDir))
             ->filter(fn($file) =>
                 str_contains($file->getFilename(), 'db_backup_') &&

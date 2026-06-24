@@ -31,7 +31,8 @@ class BackupMySQLDatabase extends Command
             return 1;
         }
 
-        $backupDir = storage_path('backups');
+        //$backupDir = storage_path('backups');
+        $backupDir = storage_path('app/backups');
 
         if (!File::exists($backupDir)) {
             File::makeDirectory($backupDir, 0755, true);
