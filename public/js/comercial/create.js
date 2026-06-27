@@ -382,91 +382,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("formComercial");
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        document.querySelectorAll(".input-error").forEach(el => el.textContent = "");
-        const formData = new FormData(form);
-
-        const result = await Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Se guardarán los cambios en el proyecto.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, guardar",
-            cancelButtonText: "Cancelar",
-        });
-
-        if (result.isConfirmed) {
-            try {
-                const response = await fetch(saveUrl, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
-                        "Accept": "application/json"
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    let mensajesGlobales = [];
-
-                    if (data.errors) {
-                        for (const [field, messages] of Object.entries(data.errors)) {
-                            const input = document.querySelector(`[name="${field}"]`);
-                            mensajesGlobales.push(...messages);
-
-                            if (input) {
-                                let errorContainer = input.parentNode.querySelector("x-input-error");
-
-                                if (errorContainer) {
-                                    errorContainer.innerHTML = messages.join(", ");
-                                } else {
-                                    errorContainer = document.createElement("p");
-                                    errorContainer.classList.add("input-error", "text-red-600", "text-sm", "mt-2");
-                                    errorContainer.textContent = messages.join(", ");
-                                    input.insertAdjacentElement("afterend", errorContainer);
-                                }
-                            }
-                        }
-
-                        // Mostrar también en Swal
-                        if (mensajesGlobales.length > 0) {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Errores de validación",
-                                html: `<ul class="text-left">
-                                        ${mensajesGlobales.map(m => `<li>• ${m}</li>`).join("")}
-                                       </ul>`
-                            });
-                        }
-                    } else if (data.error) {
-                        Swal.fire("Error", data.error, "error");
-                    }
-                    return;
-                }
-
-                if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: data.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        window.location.href = data.redirect;
-                    });
-                }
-            } catch (error) {
-                Swal.fire("Error", "Ocurrió un error inesperado", "error");
-                console.error(error);
-            }
-        }
-    });
-});
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -674,6 +589,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Opcional: Limpiamos el texto si deciden quitarlo para que no se envíe basura al backend
                 textarea.value = ""; 
             }
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    FormManager.init("#formComercial", {
+        confirmText: "Se guardarán los cambios en el proyecto.",
+        acepAlertText: "Sí, guardar",
+        loadingText: "Guardando proyecto...",
+        autoRedirect: false,
+        onSuccess: async (data) => {
+            await Swal.fire({
+                icon: "success",
+                title: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            window.location.href = data.redirect;
+        },
+        onError: (errors) => {
+            console.log("Errores de validación:", errors);
         }
     });
 });

@@ -12,7 +12,6 @@
                 <x-input-label for="nombre_cliente" :value="__('Nombre Cliente *')" />
                 <x-text-input id="nombre_cliente" class="block mt-1 w-full" type="text" name="nombre_cliente" :value="old('nombre_cliente', $proyecto?$proyecto->nombre_cliente:'')"
                 required autofocus />
-                <x-input-error :messages="$errors->get('nombre_cliente')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="tipo_doc_cliente" :value="__('Tipo Doc Cliente *')" />
@@ -24,17 +23,14 @@
                             {{$value[1]}}</option>
                     @endforeach
                 </select>
-                <x-input-error :messages="$errors->get('tipo_doc_cliente')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="cedula_cliente" :value="__('Cedula Cliente *')" />
                 <x-text-input id="cedula_cliente" class="block mt-1 w-full" type="number" name="cedula_cliente" :value="old('cedula_cliente', $proyecto?$proyecto->cedula_cliente:'')" required/>
-                <x-input-error :messages="$errors->get('cedula_cliente')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="telefono_cliente" :value="__('Telefono Cliente *')" />
                 <x-text-input id="telefono_cliente" class="block mt-1 w-full" type="text" name="telefono_cliente" :value="old('telefono_cliente', $proyecto?$proyecto->telefono_cliente:'')" required/>
-                <x-input-error :messages="$errors->get('telefono_cliente')" class="mt-2" />
             </div>
 
             <!-- Campo de firma -->
@@ -67,7 +63,6 @@
                 <input type="hidden" name="img_firma" id="img_firma"
                     value="{{ old('img_firma', $proyecto ? $proyecto->img_firma : '') }}">
 
-                <x-input-error :messages="$errors->get('img_firma')" class="mt-2" />
             </div>
 
             <hr class="w-full my-2">
@@ -80,7 +75,6 @@
                 <x-text-input id="nombre_proyecto" class="block mt-1 w-full" type="text" name="nombre_proyecto"
                 :value="old('nombre_proyecto', $proyecto?$proyecto->nombre_proyecto:'')"
                 required autofocus />
-                <x-input-error :messages="$errors->get('nombre_proyecto')" class="mt-2" />
             </div>
 
             @php
@@ -98,7 +92,6 @@
                     class="block mt-1 w-full"
                     required
                 />
-                <x-input-error :messages="$errors->get('id_user')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="ciudad" :value="__('Ciudad *')" />
@@ -110,7 +103,6 @@
                     class="block mt-1 w-full"
                     required
                 />
-                <x-input-error :messages="$errors->get('ciudad')" class="mt-2" />
             </div>
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
@@ -122,33 +114,28 @@
                     class="block mt-1 w-full"
                     required
                 />
-                <x-input-error :messages="$errors->get('ubicacion')" class="mt-2" />
             </div>
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="direccion" :value="__('Dirección *')" />
                 <x-text-input id="direccion" class="block mt-1 w-full" type="text" name="direccion" :value="old('direccion', $proyecto?$proyecto->direccion:'')"
                 required autofocus />
-                <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="dias_contrato" :value="__('Días Duración del Proyecto *')" />
                 <x-text-input id="dias_contrato" class="block w-full" type="number"
                                 name="dias_contrato" value="{{ old('dias_trabajo', $proyecto?->dias_contrato ?? 1) }}"/>
-                <x-input-error :messages="$errors->get('dias_contrato')" class="mt-2" />
             </div>
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="area_privada" :value="__('Area Privada(mts cuadrados) *')" />
                 <x-text-input id="area_privada" class="block w-full" type="number"
                     min="0" step="any" name="area_privada" value="{{ old('area_privada', $proyecto?->area_privada) }}"/>
-                <x-input-error :messages="$errors->get('area_privada')" class="mt-2" />
             </div>
 
             <div class="w-full max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-3/12 md:flex-0">
                 <x-input-label for="descuento" :value="__('Descuento Aceptado por Gerencia')" />
                 <x-text-input id="descuento" class="block w-full moneda-cop" type="number"
                     min="0" step="any" name="descuento" value="{{ old('descuento', $proyecto?->descuento ?? 0) }}"/>
-                <x-input-error :messages="$errors->get('descuento')" class="mt-2" />
             </div>
 
             <div
@@ -184,157 +171,153 @@
                 <h2 class="text-xl font-bold text-[#242e68]">Porcentajes </h2>
             </div>
 
-            <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
-                <div class="flex justify-between items-center mb-1">
-                    <x-input-label for="termino_1_por" :value="__('Inicio de Diseño(%) *')" />
-                    <button type="button" 
-                        class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
-                        + Descripción
-                    </button>
-                </div>
-                <x-text-input id="termino_1_por" class="block w-full" type="number"
-                    min="0" step="any" name="termino_1_por" value="{{ old('termino_1_por', $proyecto?->termino_1_por ?? 30) }}"/>
-                <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 1)) hidden @endif mt-2">
+            <div class="flex flex-wrap w-full">
+                <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-500">Edición de Descripción:</span>
-                        <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
-                            Quitar
+                        <x-input-label for="termino_1_por" :value="__('Inicio de Diseño(%) *')" />
+                        <button type="button" 
+                            class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
+                            + Descripción
                         </button>
                     </div>
-                    <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
-                            rows="2" 
-                            maxlength="255"
-                            name="termino_1_desc" 
-                            placeholder="Escribe los detalles aquí...">{{ old('termino_1_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 1), 'tx_descripcion', '')) }}</textarea>
+                    <x-text-input id="termino_1_por" class="block w-full" type="number"
+                        min="0" step="any" name="termino_1_por" value="{{ old('termino_1_por', $proyecto?->termino_1_por ?? 30) }}"/>
+                    <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 1)) hidden @endif mt-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-500">Edición de Descripción:</span>
+                            <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
+                                Quitar
+                            </button>
+                        </div>
+                        <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
+                                rows="2" 
+                                maxlength="255"
+                                name="termino_1_desc" 
+                                placeholder="Escribe los detalles aquí...">{{ old('termino_1_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 1), 'tx_descripcion', '')) }}</textarea>
+                    </div>
                 </div>
-                <x-input-error :messages="$errors->get('termino_1_por')" class="mt-2" />
-            </div>
 
-            <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
-                <div class="flex justify-between items-center mb-1">
-                    <x-input-label for="termino_2_por" :value="__('Inicio de Obra-Blanca(%) *')" />
-                    <button type="button" 
-                        class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
-                        + Descripción
-                    </button>
-                </div>
-                <x-text-input id="termino_2_por" class="block w-full" type="number"
-                    min="0" step="any" name="termino_2_por" value="{{ old('termino_2_por', $proyecto?->termino_2_por ?? 20) }}"/>
-                <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 2)) hidden @endif mt-2">
+                <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-500">Edición de Descripción:</span>
-                        <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
-                            Quitar
+                        <x-input-label for="termino_2_por" :value="__('Inicio de Obra-Blanca(%) *')" />
+                        <button type="button" 
+                            class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
+                            + Descripción
                         </button>
                     </div>
-                    <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
-                            rows="2" 
-                            maxlength="255"
-                            name="termino_2_desc" 
-                            placeholder="Escribe los detalles aquí...">{{ old('termino_2_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 2), 'tx_descripcion', '')) }}</textarea>
+                    <x-text-input id="termino_2_por" class="block w-full" type="number"
+                        min="0" step="any" name="termino_2_por" value="{{ old('termino_2_por', $proyecto?->termino_2_por ?? 20) }}"/>
+                    <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 2)) hidden @endif mt-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-500">Edición de Descripción:</span>
+                            <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
+                                Quitar
+                            </button>
+                        </div>
+                        <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
+                                rows="2" 
+                                maxlength="255"
+                                name="termino_2_desc" 
+                                placeholder="Escribe los detalles aquí...">{{ old('termino_2_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 2), 'tx_descripcion', '')) }}</textarea>
+                    </div>
                 </div>
-                <x-input-error :messages="$errors->get('termino_2_por')" class="mt-2" />
-            </div>
 
-            <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
-                <div class="flex justify-between items-center mb-1">
-                    <x-input-label for="termino_3_por" :value="__('Inicio Corte Carpinteria(%) *')" />
-                    <button type="button" 
-                        class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
-                        + Descripción
-                    </button>
-                </div>
-                <x-text-input id="termino_3_por" class="block w-full" type="number"
-                    min="0" step="any" name="termino_3_por" value="{{ old('termino_3_por', $proyecto?->termino_3_por ?? 30) }}"/>
-                <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 3)) hidden @endif mt-2">
+                <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-500">Edición de Descripción:</span>
-                        <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
-                            Quitar
+                        <x-input-label for="termino_3_por" :value="__('Inicio Corte Carpinteria(%) *')" />
+                        <button type="button" 
+                            class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
+                            + Descripción
                         </button>
                     </div>
-                    <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
-                            rows="2" 
-                            name="termino_3_desc" 
-                            placeholder="Escribe los detalles aquí..."
-                            maxlength="255">{{ old('termino_3_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 3), 'tx_descripcion', '')) }}</textarea>
+                    <x-text-input id="termino_3_por" class="block w-full" type="number"
+                        min="0" step="any" name="termino_3_por" value="{{ old('termino_3_por', $proyecto?->termino_3_por ?? 30) }}"/>
+                    <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 3)) hidden @endif mt-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-500">Edición de Descripción:</span>
+                            <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
+                                Quitar
+                            </button>
+                        </div>
+                        <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
+                                rows="2" 
+                                name="termino_3_desc" 
+                                placeholder="Escribe los detalles aquí..."
+                                maxlength="255">{{ old('termino_3_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 3), 'tx_descripcion', '')) }}</textarea>
+                    </div>
                 </div>
-                <x-input-error :messages="$errors->get('termino_3_por')" class="mt-2" />
-            </div>
 
-            <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
-                <div class="flex justify-between items-center mb-1">
-                    <x-input-label for="termino_4_por" :value="__('Instalación Carpinteria(%) *')" />
-                    <button type="button" 
-                        class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
-                        + Descripción
-                    </button>
-                </div>
-                <x-text-input id="termino_4_por" class="block w-full" type="number"
-                    min="0" step="any" name="termino_4_por" value="{{ old('termino_4_por', $proyecto?->termino_4_por ?? 15) }}"/>
-                <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 4)) hidden @endif mt-2">
+                <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-500">Edición de Descripción:</span>
-                        <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
-                            Quitar
+                        <x-input-label for="termino_4_por" :value="__('Instalación Carpinteria(%) *')" />
+                        <button type="button" 
+                            class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
+                            + Descripción
                         </button>
                     </div>
-                    <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
-                            rows="2" maxlength="255"
-                            name="termino_4_desc" 
-                            placeholder="Escribe los detalles aquí...">{{ old('termino_4_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 4), 'tx_descripcion', '')) }}</textarea>
+                    <x-text-input id="termino_4_por" class="block w-full" type="number"
+                        min="0" step="any" name="termino_4_por" value="{{ old('termino_4_por', $proyecto?->termino_4_por ?? 15) }}"/>
+                    <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 4)) hidden @endif mt-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-500">Edición de Descripción:</span>
+                            <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
+                                Quitar
+                            </button>
+                        </div>
+                        <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
+                                rows="2" maxlength="255"
+                                name="termino_4_desc" 
+                                placeholder="Escribe los detalles aquí...">{{ old('termino_4_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 4), 'tx_descripcion', '')) }}</textarea>
+                    </div>
                 </div>
-                <x-input-error :messages="$errors->get('termino_4_por')" class="mt-2" />
-            </div>
 
-            <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
-                <div class="flex justify-between items-center mb-1">
-                    <x-input-label for="termino_5_por" :value="__('Instalación Accesorios(%) *')" />
-                    <button type="button" 
-                        class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
-                        + Descripción
-                    </button>
-                </div>
-                <x-text-input id="termino_5_por" class="block w-full" type="number"
-                    min="0" step="any" name="termino_5_por" value="{{ old('termino_5_por', $proyecto?->termino_5_por ?? 3) }}"/>
-                <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 5)) hidden @endif mt-2">
+                <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-500">Edición de Descripción:</span>
-                        <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
-                            Quitar
+                        <x-input-label for="termino_5_por" :value="__('Instalación Accesorios(%) *')" />
+                        <button type="button" 
+                            class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
+                            + Descripción
                         </button>
                     </div>
-                    <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
-                            rows="2" maxlength="255"
-                            name="termino_5_desc" 
-                            placeholder="Escribe los detalles aquí...">{{ old('termino_5_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 5), 'tx_descripcion', '')) }}</textarea>
+                    <x-text-input id="termino_5_por" class="block w-full" type="number"
+                        min="0" step="any" name="termino_5_por" value="{{ old('termino_5_por', $proyecto?->termino_5_por ?? 3) }}"/>
+                    <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 5)) hidden @endif mt-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-500">Edición de Descripción:</span>
+                            <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
+                                Quitar
+                            </button>
+                        </div>
+                        <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
+                                rows="2" maxlength="255"
+                                name="termino_5_desc" 
+                                placeholder="Escribe los detalles aquí...">{{ old('termino_5_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 5), 'tx_descripcion', '')) }}</textarea>
+                    </div>
                 </div>
-                <x-input-error :messages="$errors->get('termino_5_por')" class="mt-2" />
-            </div>
 
-            <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
-                <div class="flex justify-between items-center mb-1">
-                    <x-input-label for="termino_6_por" :value="__('Instalación Accesorios(%) *')" />
-                    <button type="button" 
-                        class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
-                        + Descripción
-                    </button>
-                </div>
-                <x-text-input id="termino_6_por" class="block w-full" type="number"
-                    min="0" step="any" name="termino_6_por" value="{{ old('termino_6_por', $proyecto?->termino_6_por ?? 2) }}"/>
-                <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 6)) hidden @endif mt-2">
+                <div class="input-dinamico-container w-[50%] max-w-full p-3 shrink-0 md:w-6/12 lg:w-4/12 2xl:w-2/12 md:flex-0">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-500">Edición de Descripción:</span>
-                        <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
-                            Quitar
+                        <x-input-label for="termino_6_por" :value="__('Instalación Accesorios(%) *')" />
+                        <button type="button" 
+                            class="btn-toggle-desc rounded-md bg-gray-200 px-1 border border-gray-300 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium focus:outline-none">
+                            + Descripción
                         </button>
                     </div>
-                    <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
-                            rows="2" maxlength="255"
-                            name="termino_6_desc" 
-                            placeholder="Escribe los detalles aquí...">{{ old('termino_6_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 6), 'tx_descripcion', '')) }}</textarea>
+                    <x-text-input id="termino_6_por" class="block w-full" type="number"
+                        min="0" step="any" name="termino_6_por" value="{{ old('termino_6_por', $proyecto?->termino_6_por ?? 2) }}"/>
+                    <div class="wrapper-textarea @if (!collect($proyecTxRefe)->firstWhere('referencia', 6)) hidden @endif mt-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-500">Edición de Descripción:</span>
+                            <button type="button" class="btn-remove-desc px-1 rounded-md bg-red-500 text-xs text-white hover:bg-red-700 focus:outline-none">
+                                Quitar
+                            </button>
+                        </div>
+                        <textarea class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full text-sm" 
+                                rows="2" maxlength="255"
+                                name="termino_6_desc" 
+                                placeholder="Escribe los detalles aquí...">{{ old('termino_6_desc', data_get(collect($proyecTxRefe)->firstWhere('referencia', 6), 'tx_descripcion', '')) }}</textarea>
+                    </div>
                 </div>
-                <x-input-error :messages="$errors->get('termino_6_por')" class="mt-2" />
             </div>
 
             <div class="flex items-center gap-x-4 w-full max-w-full p-3 shrink-0 md:w-12/12 lg:w-6/12 2xl:w-4/12">
@@ -446,7 +429,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4 p-4 rounded-xl border border-gray-200 bg-white shadow">
+        <div name="total_p_back" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4 p-4 rounded-xl border border-gray-200 bg-white shadow">
 
             <!-- Inicio de Diseño -->
             <div class="p-3 rounded-lg bg-blue-50 border border-blue-100 hover:shadow-md transition">

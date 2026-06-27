@@ -30,6 +30,8 @@
         <link href="{{asset('css/custom.css')}}" rel="stylesheet" />
 
         <!-- Scripts -->
+        <script src="{{ asset('js/FormManager.js') }}"></script>
+        <script src="{{ asset('js/loader.js') }}"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     </head>
@@ -44,7 +46,9 @@
             </main>
             @include('layouts.footer')
         </div>
-
+        
+        <div id="loader-container"></div>
+        
         @if(session('success') || session('error') || session('warning'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {

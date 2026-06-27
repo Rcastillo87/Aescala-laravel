@@ -1170,6 +1170,19 @@ class ProyectoController extends Controller
         }
     }
 
+    public function actaEntregaPdf($idProyecto)
+    {
+        try {
+            $proyecto = Proyecto::with('entreProyecto.entregable')->findOrFail($idProyecto);
+            $data = $proyecto->acta_entrega;
+
+            $pdf = PDF::loadView('proyecto.pdfActaEntrega', $data);
+            return $pdf->stream('acta-entrega-' . $proyecto->id . '.pdf');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
     public function calendarioProyecto(Request $request)
     {
         Gate::authorize('proyecto.calendarioProyecto');

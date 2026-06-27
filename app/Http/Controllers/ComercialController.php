@@ -212,19 +212,25 @@ class ComercialController extends Controller
                 'notas.*' => ['string', 'max:1000'],
             ]);
 
-            $suma = $req->termino_1_por + $req->termino_2_por + $req->termino_3_por + $req->termino_4_por + $req->termino_5_por + $req->termino_6_por;
+            $suma =
+                $data['termino_1_por'] +
+                $data['termino_2_por'] +
+                $data['termino_3_por'] +
+                $data['termino_4_por'] +
+                $data['termino_5_por'] +
+                $data['termino_6_por'];
+
             if ($suma !== 100) {
                 return response()->json([
                     'errors' => ['total_p_back' => ['La suma de los porcentajes debe ser exactamente 100.']]
                 ], 422);
             }
 
-            if (($data['opcion']==1) && $req->img_firma) {
+            if (($data['opcion'] ?? 0) == 1 && !empty($data['img_firma'])) {
                 $data['id_estado'] = 2;
             }
 
-            $data['id_user_comercial'] = Auth::user()->id;
-            $data['dias_contrato'] = $req->dias_contrato;
+            $data['id_user_comercial'] = Auth::id();
 
             DB::beginTransaction();
             $datosProyecto = collect($data)
@@ -237,7 +243,7 @@ class ComercialController extends Controller
             );
 
             if($req->id){
-                EntregableProye::where('id_proyecto', $req->id)->delete();
+                EntregableProye::where('id_proyecto', $pro->id)->delete();
             }
 
             $entregables = $data['entregables'] ?? [];
@@ -277,15 +283,23 @@ class ComercialController extends Controller
 
             DB::commit();
             return response()->json([
-                'success' => true,
-                'message' => ucfirst($req->id ? 'Proyecto editado con éxito' : 'Proyecto creado con éxito'),
-                'redirect' => session('comercial_url')
+                'message' => $data['id'] ?? null
+                    ? 'Proyecto editado con éxito.'
+                    : 'Proyecto creado con éxito.',
+                'redirect' => session('comercial_url'),
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error inesperado: ' . $e->getMessage()], 500);
+            return response()->json([
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            report($e);
+            return response()->json([
+                'message' => 'Ocurrió un error inesperado. Intente nuevamente.'
+            ], 500);
         }
     }
 

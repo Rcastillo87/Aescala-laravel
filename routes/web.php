@@ -157,6 +157,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/excelDespachoProyecto/{id}', [ProyectoController::class, 'excelDespachoProyecto'])->name('excelDespachoProyecto');
         Route::get('/excelDespachosGeneral', [ProyectoController::class, 'excelDespachosGeneral'])->name('excelDespachosGeneral');
         Route::get('/trataDatosPDF/{id}', [ProyectoController::class, 'trataDatosPDF'])->name('trataDatosPDF');
+        Route::get('/actaEntregaPdf/{id}', [ProyectoController::class, 'actaEntregaPdf'])->name('actaEntregaPdf');
 
         Route::get('/calendarioProyecto', [ProyectoController::class, 'calendarioProyecto'])->name('calendarioProyecto');
         Route::post('/saveDiaNoLaborado', [ProyectoController::class, 'saveDiaNoLaborado'])->name('saveDiaNoLaborado');

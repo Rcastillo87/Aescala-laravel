@@ -250,6 +250,45 @@ class Proyecto extends Model
         ];
     }
 
+    public function getActaEntregaAttribute()
+    {
+        // Reutilizamos la lógica de ubicación
+        $dptArray = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
+        $ciudad_dpt = $dptArray[$this->departamento]['departamento'] . ', ' . $dptArray[$this->departamento]['ciudades'][$this->ciudad];
+
+        // Formatear fecha actual para el encabezado (Santiago de Cali, a los días...)
+        $ahora = now();
+        
+        // Entregables detallados (como se ve en la segunda imagen)
+        $entregables = $this->entreProyecto->map(function($e) {
+            return [
+                "titulo" => $e->entregable->nombre_estregable,
+                "items"  => explode("||", $e->tx_entregable),
+                "valor"  => number_format($e->valor_total * $e->cantidad, 0, ',', '.')
+            ];
+        });
+
+        // Firma base64 (reutilizada)
+        $path = public_path('img/firmaRepre.png');
+        $base64 = (file_exists($path)) ? 'data:image/png;base64,' . base64_encode(file_get_contents($path)) : null;
+
+        return [
+            "id_proyecto"      => $this->id,
+            "nombre_proyecto"  => $this->nombre_proyecto ?? 'MUCURA 307 T4', // Ajustar según tu campo
+            "direccion"        => $this->direccion,
+            "ciudad_completa"  => $ciudad_dpt,
+            "propietario"      => Str::title($this->nombre_cliente),
+            "area"             => $this->area_privada,
+            "dia"              => $ahora->format('d'),
+            "mes"              => $ahora->translatedFormat('F'),
+            "anio"             => $ahora->format('Y'),
+            "entregables"      => $entregables,
+            "imgRepre"         => $base64,
+            "representante"    => env('NOMBRE_REPRESENTANTE'),
+            "total_obra"       => number_format($this->entreProyecto()->selectRaw('SUM(valor_total * cantidad) as total')->value('total'), 0, ',', '.')
+        ];
+    }
+
     public function numeroATexto($numero)
     {
         $formatter = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);

@@ -10,6 +10,7 @@ export default {
         './resources/**/*.js',
         './resources/**/*.vue',
         './node_modules/flowbite/**/*.js', // Asegura que Flowbite sea procesado
+        "./public/js/**/*.js",
     ],
 
     theme: {
@@ -29,6 +30,8 @@ export default {
         'bg-brand-softer',
         'rounded-base',
         'sm:items-center',
+        'focus:border-red-500',
+        'focus:ring-red-500',
 
         // Clases de colores y fondos
         'bg-orange-600',
