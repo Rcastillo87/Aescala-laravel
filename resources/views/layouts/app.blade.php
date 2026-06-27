@@ -30,8 +30,11 @@
         <link href="{{asset('css/custom.css')}}" rel="stylesheet" />
 
         <!-- Scripts -->
-        <script src="{{ asset('js/FormManager.js') }}"></script>
+        <script>
+            window.ROUTE = "{{ env('APP_URL') }}";
+        </script>
         <script src="{{ asset('js/loader.js') }}"></script>
+        <script src="{{ asset('js/FormManager.js') }}"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     </head>
