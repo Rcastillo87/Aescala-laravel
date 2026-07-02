@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="balance-modal" maxWidth="6xl">
+<x-modal name="balance-modal" maxWidth="6xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4">Balance General</h2>
         <div id="project-balance" class="space-y-4 mb-2">

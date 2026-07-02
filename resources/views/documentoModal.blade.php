@@ -1,4 +1,4 @@
-<x-modal name="modal-soporte" focusable maxWidth="3xl">
+<x-modal name="modal-soporte" focusable maxWidth="3xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-2xl" x-data="{
         pagoId: null,
         tieneArchivo: false,

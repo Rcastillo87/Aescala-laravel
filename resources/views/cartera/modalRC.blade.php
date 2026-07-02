@@ -1,4 +1,4 @@
-<x-modal name="modalRC" maxWidth="md">
+<x-modal name="modalRC" maxWidth="md" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
 
         <!-- Header -->

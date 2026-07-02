@@ -1,4 +1,4 @@
-<x-modal name="modalRechazoOtrosi-modal" maxWidth="2xl">
+<x-modal name="modalRechazoOtrosi-modal" maxWidth="2xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6 space-y-6">
         @php
             $hidden = Request::is('*otro_si*')? 'hidden' : '';

@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="modalItemsArea-modal" maxWidth="6xl">
+<x-modal name="modalItemsArea-modal" maxWidth="6xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6 space-y-6">
 
         {{-- Header --}}

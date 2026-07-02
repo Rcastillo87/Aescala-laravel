@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="despachos-modal" maxWidth="6xl">
+<x-modal name="despachos-modal" maxWidth="6xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4">Despachos</h2>
         <div id="listaDespachos" class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2"></div>

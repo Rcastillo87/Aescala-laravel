@@ -1,4 +1,4 @@
-<x-modal name="modalEntregaInsumo-modal" maxWidth="6xl">
+<x-modal name="modalEntregaInsumo-modal" maxWidth="6xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6 space-y-6">
         <!-- Título -->
         <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">

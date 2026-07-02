@@ -206,7 +206,7 @@ class ComercialController extends Controller
                 'entregables.*.cantidad' => ['required', 'integer', 'min:1'],
                 'entregables.*.valor' => ['required', 'integer', 'min:0'],
                 'entregables.*.items' => ['required', 'array'],
-                'entregables.*.items.*' => ['string', 'max:255'],
+                'entregables.*.items.*' => ['string', 'max:1000'],
                 'ubicacion' => ['required', 'integer', Rule::in(array_keys(Proyecto::$ubicacion))],
                 'notas'   => ['nullable', 'array'],
                 'notas.*' => ['string', 'max:1000'],

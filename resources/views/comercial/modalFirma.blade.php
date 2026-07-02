@@ -1,4 +1,4 @@
-<x-modal name="firma-modal" maxWidth="2xl">
+<x-modal name="firma-modal" maxWidth="2xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4 text-gray-700">Añade tu Firma</h2>
 

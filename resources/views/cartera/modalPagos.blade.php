@@ -1,4 +1,4 @@
-<x-modal name="modalPagos-modal" maxWidth="2xl">
+<x-modal name="modalPagos-modal" maxWidth="2xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6" x-data>
 
         <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">Crear abonos</h2>

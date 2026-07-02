@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="beginProyec-modal" maxWidth="4xl">
+<x-modal name="beginProyec-modal" maxWidth="4xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <h2 class="mb-3 text-xl font-semibold">Datos del Proyecto</h2>
 

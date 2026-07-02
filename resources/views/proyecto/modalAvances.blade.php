@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="avance-modal" maxWidth="4xl">
+<x-modal name="avance-modal" maxWidth="4xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
             <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="avance-default-styled-tab" 

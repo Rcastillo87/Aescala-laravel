@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="entregable-modal" maxWidth="4xl">
+<x-modal name="entregable-modal" maxWidth="4xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4">Anadir Entregables</h2>
         <div class="w-full px-2">

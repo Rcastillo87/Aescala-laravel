@@ -1,4 +1,4 @@
-<x-modal name="modalSolicitudLista-modal" maxWidth="7xl">
+<x-modal name="modalSolicitudLista-modal" maxWidth="7xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6 overflow-x-auto">
         <h2 class="text-xl font-semibold mb-4 text-gray-700">Lista items solicitados</h2>
         <!-- TABLA DE ITEMS -->

@@ -1,5 +1,5 @@
 <!-- Modal -->
-<x-modal name="compartivo-modal" maxWidth="6xl">
+<x-modal name="compartivo-modal" maxWidth="6xl" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6">
         <h2 class="text-xl font-semibold mb-4">Comparativo Despacho vs Cotizacion</h2>
 

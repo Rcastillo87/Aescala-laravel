@@ -1,4 +1,4 @@
-<x-modal name="modalOtroSiRefe" maxWidth="lg">
+<x-modal name="modalOtroSiRefe" maxWidth="lg" :closeOnOutsideClick="false" :closeOnEscape="false">
     <div class="p-6" x-data>
 
         <h2 id="txTitlePagoRefe" class="text-2xl font-bold mb-4 text-gray-800 text-center">Crear Referecia de Pago </h2>
