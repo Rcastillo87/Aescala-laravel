@@ -66,7 +66,7 @@ class DespachoController extends Controller
                     }
                 }
             ],
-            'materiales.*.valor_unidad' => ['required','integer'],
+            'materiales.*.valor_unidad' => ['required','integer', 'min:0'],
             'materiales.*.valor_inventario' => ['required','integer'],
             'materiales.*.cobro' => ['required','integer','in:0,1'],
             'materiales.*.id_ref_devolucion' => ['nullable','integer', Rule::exists('inventario_solicituds', 'id')],

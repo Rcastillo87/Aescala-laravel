@@ -218,7 +218,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                     <div class="flex-2 max-w-[200px]">
                         <label class="text-xs text-gray-500 dark:text-gray-400">Cantidad</label>
-                        <input type="number"
+                        <input step="any"
+                            onkeydown="if(['e','E','+','-'].includes(event.key)) event.preventDefault();"
                             value="1" min="1"
                             name="materiales[${materialIndex}][cantidad]"
                             placeholder="Cantidad"

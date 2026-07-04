@@ -34,7 +34,7 @@ class SolicitudController extends Controller
         $estadosItems = SolicitudItems::$estados;
 
         $title = 'Lista de Solicitud de Material';
-        $items = SolicitudMaterial::with(['proyecto', 'usuario', 'cotizacion'])
+        $query = SolicitudMaterial::with(['proyecto', 'usuario', 'cotizacion'])
             ->when(request('nombre_proyecto'), function ($query, $nombre_proyecto) {
                 $query->whereHas('proyecto', function ($q) use ($nombre_proyecto) {
                     $q->whereRaw('LOWER(nombre_proyecto) LIKE ?', ['%' . strtolower($nombre_proyecto) . '%']);
@@ -73,12 +73,17 @@ class SolicitudController extends Controller
                     $q->where('ubicacion', request('ubicacion'));
                 });
             })
-            /*->when(!(Auth::user()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista), function ($query) {
-                $query->where('id_user', Auth::User()->id);
-            })*/
-            ->orderBy('id', 'desc')
-            ->paginate(10)
-            ->appends(request()->query());
+            ->orderBy('id', 'desc');
+
+
+        $ubicacion = Proyecto::$ubicacion;
+        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
+
+        if (request('export') == 1) {
+            return $this->exportExcel($query->get(), $ubicacion, $departamentos);
+        }
+
+        $items = $query->paginate(10)->appends(request()->query());
 
         $proyecto = Proyecto::with('tareas')
             ->when($cola, function ($query, $id_user) {
@@ -90,14 +95,75 @@ class SolicitudController extends Controller
         $estados = SolicitudMaterial::$estados;
         $userColab = User::whereIn('id_rol', [3, 9, 7])->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
-        $ubicacion = Proyecto::$ubicacion;
-        $departamentos = file_get_contents(storage_path('json/jsonCityColombia.json'));
 
         $headers = ['Nombre del Proyecto', 'Ubicación', 'Quien Solicito', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado Solicitud', 'Estado Items', 'Opciones'];
         if(!(Auth::User()->isAdmin || Auth::user()->isAnalista || Auth::user()->isAlmacenista)) {
             $headers = ['Nombre del Proyecto', 'Ubicación', 'Fecha de solicitud', 'Entregados y Faltantes', 'Estado', 'Observacion', 'Opciones'];
         }
         return view('solicitud.index', compact('title', 'items', 'headers', 'proyecto', 'estados', 'estadosItems', 'userColab', 'ubicacion', 'departamentos'));
+    }
+
+    private function exportExcel($items, $ubicacion, $departamentos)
+    {
+        $headers = [
+            "Content-Type" => "application/vnd.ms-excel; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=reporte_solicitudes.xls"
+        ];
+
+        $depts = json_decode($departamentos, true);
+
+        return response()->stream(function () use ($items, $ubicacion, $depts) {
+            echo "\xEF\xBB\xBF"; // BOM UTF-8 para mantener tildes
+
+            echo "<table border='1' style='border-collapse:collapse'>
+                    <thead>
+                        <tr style='background:#242e68;color:#fff;font-weight:bold'>
+                            <th>Nombre del Proyecto</th>
+                            <th>Ubicación</th>
+                            <th>Quien Solicitó</th>
+                            <th>Fecha de solicitud</th>
+                            <th>Entregados y Faltantes</th>
+                            <th>Estado Solicitud</th>
+                        </tr>
+                    </thead>
+                    <tbody>";
+
+            foreach ($items as $item) {
+                // 2. CORRECCIÓN: Armamos la ubicación de forma segura idéntica a tu vista
+                $nombreDept = 'N/A';
+                $nombreCiudad = 'N/A';
+                
+                if ($item->proyecto) {
+                    $idDept = intval($item->proyecto->departamento);
+                    $idCiudad = intval($item->proyecto->ciudad);
+                    
+                    $nombreDept = $depts[$idDept]['departamento'] ?? 'N/A';
+                    $nombreCiudad = $depts[$idDept]['ciudades'][$idCiudad] ?? 'N/A';
+                }
+                
+                $nombreUbicacion = $item->proyecto?->ubicacion !== null 
+                    ? ($ubicacion[$item->proyecto->ubicacion] ?? 'N/A') 
+                    : 'N/A';
+
+                // Concatenamos limpiamente usando interpolación de variables
+                $ubicacionCompleta = "{$nombreDept} - {$nombreCiudad} - {$nombreUbicacion}";
+
+                // Extraemos los datos calculados según tu modelo
+                $entregados = $item->total_items_entregado ?? 0;
+                $faltantes = $item->total_items_solicitud ?? 0; 
+                $estadoTxt = SolicitudMaterial::$estados[$item->estado] ?? 'Desconocido';
+
+                echo "<tr>
+                        <td>".e($item->proyecto?->nombre_proyecto ?? 'N/A')."</td>
+                        <td>".e($ubicacionCompleta)."</td>
+                        <td>".e($item->usuario?->nombre_completo ?? 'N/A')."</td>
+                        <td>".e($item->fecha_solicitud)."</td>
+                        <td style='text-align:center;'>Entregados: {$entregados} / Pendientes: {$faltantes}</td>
+                        <td>".e($estadoTxt)."</td>
+                    </tr>";
+            }
+            echo "</tbody></table>";
+        }, 200, $headers);
     }
 
     public function create( )

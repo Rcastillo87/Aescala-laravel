@@ -1266,35 +1266,3 @@ function exportarModalAPdf() {
 
     window.addEventListener('afterprint', afterPrint);
 }
-
-document.getElementById('download-search-excel').addEventListener('click', function () {
-
-    Swal.fire({
-        title: 'Generando Excel',
-        text: 'Por favor espere...',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading()
-        }
-    });
-
-    // Tomar los filtros actuales de la URL
-    const params = new URLSearchParams(window.location.search);
-    params.set('export', 1);
-
-    //const url = `index?${params.toString()}`;
-    const url = `${window.location.pathname}?${params.toString()}`;
-
-    // Crear descarga sin recargar la página
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'inventario_materiales.xls';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Cerrar spinner luego de un momento
-    setTimeout(() => {
-        Swal.close();
-    }, 1500);
-});

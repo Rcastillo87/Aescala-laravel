@@ -140,6 +140,22 @@
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     </div>
+
+                    <div class="p-2 shrink-0">
+                        <button id="download-search-excel" class="inline-flex items-center px-3 py-2 text-sm font-medium
+                            text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"
+                                data-tooltip-target="tooltip-search-download" data-tooltip-style="light">
+                            <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01"/>
+                            </svg>
+                        </button>
+                        <div id="tooltip-search-download" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900
+                            bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip ">
+                            Descargar Excel de solicitudes
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </div>
+
                 </div>
             </form>
         </div>

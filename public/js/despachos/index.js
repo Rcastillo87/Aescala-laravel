@@ -75,7 +75,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 <div class="flex items-center justify-center text-[12px] text-center font-bold rounded h-8 w-[120px] text-white bg-gradient-to-tr from-red-600 to-red-400">
                     ${material.unidades}: ${material.cantidad}
                 </div>
-                <input type="number" 
+                <input step="any"
+                       onkeydown="if(['e','E','+','-'].includes(event.key)) event.preventDefault();"
                        value="1"
                        max="${material.cantidad}"
                        min="1"
@@ -276,7 +277,8 @@ async function addMaterialDevolucion(data) {
                 <div class="flex items-center justify-center text-[12px] text-center font-bold rounded h-8 w-[120px] text-white bg-gradient-to-tr from-red-600 to-red-400">
                     ${item.unidades}: ${item.cantidad}
                 </div>
-                <input type="number" 
+                <input step="any"
+                       onkeydown="if(['e','E','+','-'].includes(event.key)) event.preventDefault();"
                        value="1"
                        max="${item.cantidad}"
                        min="1"

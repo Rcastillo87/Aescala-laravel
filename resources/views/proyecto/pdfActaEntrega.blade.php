@@ -306,6 +306,10 @@
         <div class="linea"></div>
         <div class="linea"></div>
         <div class="linea"></div>
+        <div class="linea"></div>
+        <div class="linea"></div>
+        <div class="linea"></div>
+        <div class="linea"></div>
     </div>
 
     <p style="margin-top: 10px;">
