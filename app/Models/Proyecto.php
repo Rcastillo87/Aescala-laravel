@@ -264,9 +264,52 @@ class Proyecto extends Model
             return [
                 "titulo" => $e->entregable->nombre_estregable,
                 "items"  => explode("||", $e->tx_entregable),
-                "valor"  => number_format($e->valor_total * $e->cantidad, 0, ',', '.')
+                "valor"  => number_format($e->valor_total * $e->cantidad, 0, ',', '.'),
+                "cantidad" => $e->cantidad
             ];
         });
+
+        // otrosi adicionales (como se ve en la segunda imagen)
+        $otrosi = [];
+        $dataOtroSi = Otrosi::where('id_proyecto', $this->id)
+            ->with('area_entregable.area')
+            ->get();
+
+        foreach ($dataOtroSi as $otroSi) {
+            $adicionales = $otroSi->area_entregable;
+            $areasArr = []; // Cambiamos el nombre para mayor claridad
+            $valorTotal = 0;
+            
+            foreach ($adicionales as $item) {
+                $area = $item->area->nombre_area;
+                if (!isset($areasArr[$area])) {
+                    $areasArr[$area] = [
+                        "espacio"       => $area,
+                        "items"         => [],
+                        "subtotal"      => 0
+                    ];
+                }
+
+                $val = $item->valor * $item->cantidad;
+
+                $areasArr[$area]["items"][] = [
+                    "descripcion"   => $item->descripccion, // Ojo: verifica si en tu DB es con doble 'c'
+                    "cantidad"      => $item->cantidad,
+                    "valor_unitario"=> number_format($item->valor, 0, ',', '.'),
+                    "valor_total"   => number_format($val, 0, ',', '.'),
+                    "unidad"        => $item->unidad,
+                ];
+                $areasArr[$area]["subtotal"] += $val;
+                $valorTotal += $val;
+            }
+            
+            // AQUÍ EL CAMBIO: Creamos un array con dos llaves independientes
+            $otrosi[] = [
+                "areas"       => $areasArr,
+                "valor_total" => number_format($valorTotal, 0, ',', '.'),
+                "numero"      => $otroSi->numero,
+            ];
+        }
 
         // Firma base64 (reutilizada)
         $path = public_path('img/firmaRepre.png');
@@ -275,7 +318,7 @@ class Proyecto extends Model
         return [
             "id_proyecto"      => $this->id,
             "nombre_proyecto"  => $this->nombre_proyecto ?? 'MUCURA 307 T4', // Ajustar según tu campo
-            "direccion"        => $this->direccion,
+            "direccion"        => $ciudad_dpt . ', ' . $this->direccion,
             "ciudad_completa"  => $ciudad_dpt,
             "propietario"      => Str::title($this->nombre_cliente),
             "area"             => $this->area_privada,
@@ -285,7 +328,10 @@ class Proyecto extends Model
             "entregables"      => $entregables,
             "imgRepre"         => $base64,
             "representante"    => env('NOMBRE_REPRESENTANTE'),
-            "total_obra"       => number_format($this->entreProyecto()->selectRaw('SUM(valor_total * cantidad) as total')->value('total'), 0, ',', '.')
+            "total_obra"       => $this->entreProyecto()->selectRaw('SUM(valor_total * cantidad) as total')->value('total'),
+            "descuento"        => $this->descuento ?? 0,
+            "otrosi"           => $otrosi,
+            "unidades"         => Otrosi::$unidades,
         ];
     }
 

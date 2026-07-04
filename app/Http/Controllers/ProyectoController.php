@@ -184,6 +184,7 @@ class ProyectoController extends Controller
                             <th>Residente</th>
                             <th>Diseñador</th>
                             <th>Cont. Obra Blanca</th>
+                            <th>Cont. Carpintería</th>
                             <th>Observación</th>
                         </tr>
                     </thead>
@@ -203,6 +204,7 @@ class ProyectoController extends Controller
                         <td>".e($item->user?->nombre_completo ?? '--')."</td>
                         <td>".e($item->userDiseno?->nombre_completo ?? '--')."</td>
                         <td>".e($item->userOB?->nombre_completo ?? '--')."</td>
+                        <td>".e($item->user_carpinteria ?? '--')."</td>
                         <td>".e($item->observacion)."</td>
                     </tr>";
             }
