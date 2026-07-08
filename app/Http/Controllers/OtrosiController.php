@@ -41,7 +41,7 @@ class OtrosiController extends Controller
                     $query->where('id', request('id_userSerch'));
                 }
             })
-            ->when(!$usuario->isAdmin, function ($query) use ($usuario) {
+            ->when(!($usuario->isAdmin || $usuario->isUser), function ($query) use ($usuario) {
                 $query->where('id_user_encargado', $usuario->id);
             })
             ->orderBy('fecha_creacion', 'desc')

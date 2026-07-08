@@ -3,9 +3,11 @@
 
     @include('otrosi.filter')
     <div class="flex justify-end text-center mb-3">
-        <x-secondary-button class="ms-4" href="{{ route('otro_si.create')}}">
-            Crear Otrosi
-        </x-secondary-button>
+        @if (!Auth::user()->isUser)
+            <x-secondary-button class="ms-4" href="{{ route('otro_si.create')}}">
+                Crear Otrosi
+            </x-secondary-button>
+        @endif
     </div>
     <div class="relative overflow-x-auto rounded-lg border border-gray-200">
         <table class="w-full text-left text-sm text-gray-500">
@@ -51,7 +53,7 @@
                                     <div class="tooltip-arrow" data-popper-arrow></div>
                                 </div>
 
-                                @if (!$item->img_firma)
+                                @if (!$item->img_firma && !Auth::user()->isUser)
                                     <a tabindex="0" data-tooltip-target="tooltip-hover-edit-{{$item->id}}" data-tooltip-trigger="hover"
                                     href="{{ route('otro_si.edit', ['id' => $item->id]) }}"
                                     class="beginProyec flex items-center justify-center w-10 h-10 text-white bg-green-700 hover:bg-white hover:text-green-800 border-2 border-green-800 focus:ring-4
@@ -67,20 +69,22 @@
                                 @endif
 
                                 <!-- Botón link Firma -->
-                                <a tabindex="0" data-tooltip-target="tooltip-hover-encrip-{{$item->id}}" data-tooltip-trigger="hover" data-id="{{ $item->id }}"
-                                    data-link="{{ $item->tokenEncrip }}" x-on:click="$dispatch('open-modal', 'sendLink-modal')" x-data="" onclick="setModalData(this)"
-                                    class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4
-                                        focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"/>
-                                    </svg>
-                                </a>
-                                <div id="tooltip-hover-encrip-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                                    Link Firma
-                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                </div>
+                                @if (!Auth::user()->isUser)
+                                    <a tabindex="0" data-tooltip-target="tooltip-hover-encrip-{{$item->id}}" data-tooltip-trigger="hover" data-id="{{ $item->id }}"
+                                        data-link="{{ $item->tokenEncrip }}" x-on:click="$dispatch('open-modal', 'sendLink-modal')" x-data="" onclick="setModalData(this)"
+                                        class="flex items-center justify-center w-10 h-10 text-white bg-blue-700 hover:bg-white hover:text-blue-800 border-2 border-blue-800 focus:ring-4
+                                            focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"/>
+                                        </svg>
+                                    </a>
+                                    <div id="tooltip-hover-encrip-{{$item->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                        Link Firma
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div>
+                                @endif
 
-                                @if ($item->estado == 2)
+                                @if ($item->estado == 2 && !Auth::user()->isUser)
                                     <!-- Botón link Firma -->
                                     <a tabindex="0"
                                         data-tooltip-target="tooltip-hover-recahzo-{{$item->id}}" data-tooltip-trigger="hover"
