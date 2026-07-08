@@ -29,7 +29,7 @@ class MaterialController extends Controller
             if(!$tipo){
                 return back()->with('error', 'No tienes un almacen acargo, para continuar el administrador debe asignarte un almacen.');
             }
-        } else if(Auth::user()->isAdmin || Auth::user()->isUser){
+        } else if(Auth::user()->isAdmin){
             $tipo  = request('tipo');
         } else {
             return back()->with('error', 'No posees el perfil para entrar en este  modulo.');
@@ -212,7 +212,7 @@ class MaterialController extends Controller
             if(!$tipo){
                 return back()->with('error', 'No tienes un almacen acargo, para continuar el administrador debe asignarte un almacen.');
             }
-        } else if(Auth::user()->isAdmin || Auth::user()->isUser){
+        } else if(Auth::user()->isAdmin){
             $tipo  = '';
         } else {
             return back()->with('error', 'No posees el perfil para entrar en este  modulo.');

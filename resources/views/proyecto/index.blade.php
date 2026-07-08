@@ -76,6 +76,7 @@
         }
 
         $tieneAvance = in_array(true, $avance, true);
+        $uid = 'svg_'.$item->id;
 
     @endphp
 
@@ -109,51 +110,51 @@
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
 
-                    <div class="lg:hidden w-full max-w-[128px] mx-auto">
+                    <div class="xl:hidden w-full max-w-[128px] mx-auto">
                         <svg class="w-full h-auto" viewBox="0 0 160 384" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid meet">
                             <title>Línea de tiempo</title>
                             <desc>Barra de tiempo vertical con 6 etapas</desc>
                             <defs>
-                                <linearGradient id="gv1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#5A52E0"/></linearGradient>
-                                <linearGradient id="gv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8450A"/><stop offset="100%" stop-color="#FF6B35"/></linearGradient>
-                                <linearGradient id="gv3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0F9E8A"/><stop offset="100%" stop-color="#1DC9AF"/></linearGradient>
-                                <linearGradient id="gv4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
-                                <linearGradient id="gv5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D946EF"/><stop offset="100%" stop-color="#E879F9"/></linearGradient>
-                                <linearGradient id="gv6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
+                                <linearGradient id="{{ $uid }}_gv1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#5A52E0"/></linearGradient>
+                                <linearGradient id="{{ $uid }}_gv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8450A"/><stop offset="100%" stop-color="#FF6B35"/></linearGradient>
+                                <linearGradient id="{{ $uid }}_gv3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0F9E8A"/><stop offset="100%" stop-color="#1DC9AF"/></linearGradient>
+                                <linearGradient id="{{ $uid }}_gv4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
+                                <linearGradient id="{{ $uid }}_gv5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D946EF"/><stop offset="100%" stop-color="#E879F9"/></linearGradient>
+                                <linearGradient id="{{ $uid }}_gv6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
                             </defs>
 
                             <g class="@if(!$avance[0]) hidden @endif">
-                                <polygon points="4,4 156,4 156,52 80,68 4,52" fill="url(#gv1)"/>
+                                <polygon points="4,4 156,4 156,52 80,68 4,52" fill="url(#{{ $uid }}_gv1)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="24" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días - 50%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="42" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
                             </g>
 
                             <g class="@if(!$avance[1]) hidden @endif">
-                                <polygon points="4,68 156,68 156,116 80,132 4,116" fill="url(#gv2)"/>
+                                <polygon points="4,68 156,68 156,116 80,132 4,116" fill="url(#{{ $uid }}_gv2)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="88" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días - 80%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="106" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
                             </g>
 
                             <g class="@if(!$avance[2]) hidden @endif">
-                                <polygon points="4,132 156,132 156,180 80,196 4,180" fill="url(#gv3)"/>
+                                <polygon points="4,132 156,132 156,180 80,196 4,180" fill="url(#{{ $uid }}_gv3)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="152" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días - 95%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="170" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
                             </g>
 
                             <g class="@if(!$avance[3]) hidden @endif">
-                                <polygon points="4,196 156,196 156,244 80,260 4,244" fill="url(#gv4)"/>
+                                <polygon points="4,196 156,196 156,244 80,260 4,244" fill="url(#{{ $uid }}_gv4)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="216" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días - 98%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="234" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
                             </g>
 
                             <g class="@if(!$avance[4]) hidden @endif">
-                                <polygon points="4,260 156,260 156,308 80,324 4,308" fill="url(#gv5)"/>
+                                <polygon points="4,260 156,260 156,308 80,324 4,308" fill="url(#{{ $uid }}_gv5)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="280" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días - 100%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="298" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
                             </g>
 
                             <g class="@if(!$avance[5]) hidden @endif">
-                                <polygon points="4,324 156,324 156,372 80,380 4,372" fill="url(#gv6)"/>
+                                <polygon points="4,324 156,324 156,372 80,380 4,372" fill="url(#{{ $uid }}_gv6)"/>
                                 <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="344" text-anchor="middle" dominant-baseline="central" fill="#fff">75 Días</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="360" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
                             </g>
@@ -173,51 +174,51 @@
                     <div class="flex flex-wrap items-center gap-2 mt-1">
                         {!! $item->span_estado !!}
                     </div>
-                    <div class="mt-1 h-10 w-full mx-auto {{ !$tieneAvance ? 'hidden' : 'relative' }}">
-                        <div class="hidden lg:block h-10 w-full">
+                    <div class="mt-1 w-full mx-auto {{ !$tieneAvance ? 'hidden' : 'relative' }}">
+                        <div class="hidden xl:block h-10 w-full">
                             <svg class="h-full" viewBox="0 0 680 48" xmlns="http://www.w3.org/2000/svg" role="img">
                                 <title>Línea de tiempo</title>
                                 <desc>Barra de tiempo compacta con 6 etapas en flecha</desc>
                                 <defs>
-                                    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#5A52E0"/></linearGradient>
-                                    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E8450A"/><stop offset="100%" stop-color="#FF6B35"/></linearGradient>
-                                    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0F9E8A"/><stop offset="100%" stop-color="#1DC9AF"/></linearGradient>
-                                    <linearGradient id="g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
-                                    <linearGradient id="g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D946EF"/><stop offset="100%" stop-color="#E879F9"/></linearGradient>
-                                    <linearGradient id="g6" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
+                                    <linearGradient id="{{ $uid }}_g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#5A52E0"/></linearGradient>
+                                    <linearGradient id="{{ $uid }}_g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E8450A"/><stop offset="100%" stop-color="#FF6B35"/></linearGradient>
+                                    <linearGradient id="{{ $uid }}_g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0F9E8A"/><stop offset="100%" stop-color="#1DC9AF"/></linearGradient>
+                                    <linearGradient id="{{ $uid }}_g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
+                                    <linearGradient id="{{ $uid }}_g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D946EF"/><stop offset="100%" stop-color="#E879F9"/></linearGradient>
+                                    <linearGradient id="{{ $uid }}_g6" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
                                 </defs>
                                 <g class="@if(!$avance[0]) hidden @endif">
-                                    <polygon points="4,4 106,4 124,24 106,44 4,44" fill="url(#g1)"/>
+                                    <polygon points="4,4 106,4 124,24 106,44 4,44" fill="url(#{{ $uid }}_g1)"/>
                                     <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días - 50%</text>
                                     <text font-family="sans-serif" font-size="11" x="58" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
                                 </g>
 
                                 <g class="@if($avance[1] == false) hidden @endif">
-                                    <polygon points="112,4 214,4 232,24 214,44 112,44" fill="url(#g2)"/>
+                                    <polygon points="112,4 214,4 232,24 214,44 112,44" fill="url(#{{ $uid }}_g2)"/>
                                     <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días - 80%</text>
                                     <text font-family="sans-serif" font-size="11" x="166" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
                                 </g>
 
                                 <g class="@if($avance[2] == false) hidden @endif">
-                                    <polygon points="220,4 322,4 340,24 322,44 220,44" fill="url(#g3)"/>
+                                    <polygon points="220,4 322,4 340,24 322,44 220,44" fill="url(#{{ $uid }}_g3)"/>
                                     <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días - 95%</text>
                                     <text font-family="sans-serif" font-size="11" x="274" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
                                 </g>
 
                                 <g class="@if($avance[3] == false) hidden @endif">
-                                    <polygon points="328,4 430,4 448,24 430,44 328,44" fill="url(#g4)"/>
+                                    <polygon points="328,4 430,4 448,24 430,44 328,44" fill="url(#{{ $uid }}_g4)"/>
                                     <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días - 98%</text>
                                     <text font-family="sans-serif" font-size="11" x="382" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
                                 </g>
 
                                 <g class="@if($avance[4] == false) hidden @endif">
-                                    <polygon points="436,4 538,4 556,24 538,44 436,44" fill="url(#g5)"/>
+                                    <polygon points="436,4 538,4 556,24 538,44 436,44" fill="url(#{{ $uid }}_g5)"/>
                                     <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días - 100%</text>
                                     <text font-family="sans-serif" font-size="11" x="490" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
                                 </g>
 
                                 <g class="@if($avance[5] == false) hidden @endif">
-                                    <polygon points="544,4 658,4 676,24 658,44 544,44" fill="url(#g6)"/>
+                                    <polygon points="544,4 658,4 676,24 658,44 544,44" fill="url(#{{ $uid }}_g6)"/>
                                     <text font-family="sans-serif" font-size="11" font-weight="700" x="606" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">75 Días</text>
                                     <text font-family="sans-serif" font-size="11" x="606" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
                                 </g>
@@ -320,7 +321,7 @@
                 </p>
 
                 {{-- Editar --}}
-                <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
+                <div class="relative @if(!(Auth::user()->isAdmin)) hidden @endif">
                     <a tabindex="0"
                        data-tooltip-target="tooltip-hover-edit-{{$item->id}}"
                        data-tooltip-trigger="hover"
@@ -381,7 +382,7 @@
                 </div>
 
                 {{-- Cambio de Estado --}}
-                <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser || Auth::user()->isComer || Auth::user()->isAlmacenista)) hidden @endif">
+                <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isComer || Auth::user()->isAlmacenista)) hidden @endif">
                     <a tabindex="0"
                        data-tooltip-target="tooltip-hover-{{$item->id}}"
                        data-tooltip-trigger="hover"
@@ -399,7 +400,7 @@
                 </div>
 
                 {{-- Cartera --}}
-                <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || ($item->entreProyecto->count() === 0)) hidden @endif">
+                <div class="relative @if(!(Auth::user()->isAdmin) || ($item->entreProyecto->count() === 0)) hidden @endif">
                     <a tabindex="0"
                        data-tooltip-target="tooltip-hover-cartera-{{$item->id}}"
                        data-tooltip-trigger="hover"
@@ -417,7 +418,7 @@
                 </div>
 
                 {{-- Calendario --}}
-                <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isUser) || !$item->fec_inicio) hidden @endif">
+                <div class="relative @if(!(Auth::user()->isAdmin) || !$item->fec_inicio) hidden @endif">
                     <a tabindex="0"
                        data-tooltip-target="tooltip-hover-calendario-{{$item->id}}"
                        data-tooltip-trigger="hover"
@@ -548,7 +549,7 @@
                                 </p>
                                 <div class="flex flex-wrap items-center gap-2">
                                     <a class="text-xs text-blue-600 hover:text-blue-400 cursor-pointer font-medium
-                                              @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif"
+                                              @if(!(Auth::user()->isAdmin)) hidden @endif"
                                        data-tooltip-target="tooltip-hover-avance-{{$tarea->id}}"
                                        onclick="openAvance(0,{{$tarea->id}})"
                                        x-data=""
@@ -562,7 +563,7 @@
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
                                     <a class="text-xs text-blue-600 hover:text-blue-400 cursor-pointer font-medium
-                                              @if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif"
+                                              @if(!(Auth::user()->isAdmin)) hidden @endif"
                                        onclick="editTarea({{$tarea->id}})"
                                        x-data
                                        data-tooltip-target="tooltip-hover-tarea-{{$tarea->id}}"

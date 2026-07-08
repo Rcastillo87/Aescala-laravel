@@ -139,8 +139,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('proyecto')->name('proyecto.')->middleware('role:proyecto')->group(function () {
         Route::get('/index', [ProyectoController::class, 'index'])->name('index');
-        Route::get('/create', [ProyectoController::class, 'create'])->name('create');
-        Route::post('/save', [ProyectoController::class, 'save'])->name('save');
         Route::post('/begin', [ProyectoController::class, 'begin'])->name('begin');
         Route::post('/editStatus/{id}', [ProyectoController::class, 'editStatus'])->name('editStatus');
         Route::post('/saveTarea', [ProyectoController::class, 'saveTarea'])->name('saveTarea');
@@ -167,7 +165,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('tareas')->name('tareas.')->middleware('role:tareas')->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');
-        Route::post('/save', [TareasController::class, 'save'])->name('save');
         Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
         Route::delete('/deleteTarea', [TareasController::class, 'deleteTarea'])->name('deleteTarea');
         Route::post('/moverTarea', [TareasController::class, 'moverTarea'])->name('moverTarea');

@@ -188,7 +188,7 @@ class User extends Authenticatable
 
     public static $roles = [
         1 => 'Administrador',
-        2 => 'Usuario',
+        2 => 'Coordinador',
         3 => 'Residente',
         4 => 'Comercial',
         5 => 'Cartera',
