@@ -3,21 +3,7 @@
 @include('proyecto.filter')
 
 {{-- ===== LEYENDA + BOTÓN EXCEL ===== --}}
-<div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 border border-gray-200 bg-white rounded-xl px-4 py-3 mb-4 shadow-sm">
-    <div class="flex flex-wrap gap-x-5 gap-y-2">
-        <span class="flex items-center gap-2 text-sm text-gray-600 font-medium">
-            <span class="inline-block w-4 h-4 rounded-full bg-green-500 shadow-sm"></span>
-            Normal (&lt;=80%)
-        </span>
-        <span class="flex items-center gap-2 text-sm text-gray-600 font-medium">
-            <span class="inline-block w-4 h-4 rounded-full bg-orange-400 shadow-sm"></span>
-            Próximos a vencer (80–100%)
-        </span>
-        <span class="flex items-center gap-2 text-sm text-gray-600 font-medium">
-            <span class="inline-block w-4 h-4 rounded-full bg-red-500 shadow-sm"></span>
-            Atrasados (&gt;=100%)
-        </span>
-    </div>
+<div class="flex flex-wrap sm:flex-nowrap items-center justify-end gap-3 border border-gray-200 bg-white rounded-xl px-4 py-3 mb-4 shadow-sm">
 
     <div class="@if(!(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif shrink-0">
         <button
@@ -53,52 +39,46 @@
             $porcen = intval(($diasTrascuridos * 100) / $diasProyec);
         }
 
-        $bg = match (true) {
-            $porcen <= 80  => 'bg-green-500',
-            $porcen < 100  => 'bg-orange-400',
-            default        => 'bg-red-500',
-        };
-
-        $bgLight = match (true) {
-            $porcen <= 80  => 'bg-green-50 border-green-200',
-            $porcen < 100  => 'bg-orange-50 border-orange-200',
-            default        => 'bg-red-50 border-red-200',
-        };
-
         $porcenTarea = 0;
         $avance = [];
-        $maxTarea = '';
+        $poSVG = '';
         switch ($diasTrascuridos) {
-            case $diasTrascuridos < 20:
-                $maxTarea = 1;
+            case $diasTrascuridos <= 20:
+                $poSVG = 1;
                 break;
-            case $diasTrascuridos < 30:
-                $maxTarea = 2;
+            case $diasTrascuridos <= 30:
+                $poSVG = 2;
                 break;
-            case $diasTrascuridos < 42:
-                $maxTarea = 3;
+            case $diasTrascuridos <= 42:
+                $poSVG = 3;
                 break;
-            case $diasTrascuridos < 47:
-                $maxTarea = 4;
+            case $diasTrascuridos <= 47:
+                $poSVG = 4;
                 break;
-            case $diasTrascuridos < 59:
-                $maxTarea = 5;
+            case $diasTrascuridos <= 59:
+                $poSVG = 5;
                 break;
             case $diasTrascuridos <= 75:
-                $maxTarea = 6;
+                $poSVG = 6;
                 break;
             default:
-                $maxTarea = 6;
+                $poSVG = 6;
                 break;
         }
 
+        $posTarea = '';
         foreach ($tareatipo as $value) {
             $completada = $item->maxTarea && $item->maxTarea >= $value['orden'];
+            $posTarea = $item->maxTarea; 
             $avance[] = $completada;
             if ($completada) {
                 $porcenTarea += $value['porcentage'];
             }
         }
+
+        $bg = ($posTarea == $poSVG) ? 'bg-blue-500' : 'bg-red-500';
+
+        $bgLight = ($posTarea == $poSVG) ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
 
         $tieneAvance = in_array(true, $avance, true);
         $uid = 'svg_'.$item->id;
@@ -150,60 +130,60 @@
 
                             <g>
                                 <polygon points="4,4 156,4 156,52 80,68 4,52" fill="url(#{{ $uid }}_gv1)"/>
-                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="24" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días - 50%</text>
+                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="24" text-anchor="middle" dominant-baseline="central" fill="#fff">0 - 20 Días - 50%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="42" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
                             </g>
-                            <g class="@if($maxTarea <> 1) hidden @endif">
+                            <g class="@if($poSVG <> 1) hidden @endif">
                                 <rect x="140" y="15" width="28" height="28" rx="14" ry="14" fill="#fff" stroke="#D1D5DB" stroke-width="1.8"/>
                                 <image x="145" y="20" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                             </g>
 
                             <g>
                                 <polygon points="4,68 156,68 156,116 80,132 4,116" fill="url(#{{ $uid }}_gv2)"/>
-                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="88" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días - 80%</text>
+                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="88" text-anchor="middle" dominant-baseline="central" fill="#fff">20.5 - 30 Días - 80%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="106" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
                             </g>
-                            <g class="@if($maxTarea <> 2) hidden @endif">
+                            <g class="@if($poSVG <> 2) hidden @endif">
                                 <rect x="140" y="78" width="28" height="28" rx="14" ry="14" fill="#fff" stroke="#D1D5DB" stroke-width="1.8"/>
                                 <image x="145" y="80" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                             </g>
 
                             <g>
                                 <polygon points="4,132 156,132 156,180 80,196 4,180" fill="url(#{{ $uid }}_gv3)"/>
-                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="152" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días - 95%</text>
+                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="152" text-anchor="middle" dominant-baseline="central" fill="#fff">30.5 - 42 Días - 95%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="170" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
                             </g>
-                            <g class="@if($maxTarea <> 3) hidden @endif">
+                            <g class="@if($poSVG <> 3) hidden @endif">
                                 <rect x="140" y="141" width="28" height="28" rx="14" ry="14" fill="#fff" stroke="#D1D5DB" stroke-width="1.8"/>
                                 <image x="145" y="146" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                             </g>
 
                             <g>
                                 <polygon points="4,196 156,196 156,244 80,260 4,244" fill="url(#{{ $uid }}_gv4)"/>
-                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="216" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días - 98%</text>
+                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="216" text-anchor="middle" dominant-baseline="central" fill="#6b3300">42.5 - 47 Días - 98%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="234" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
                             </g>
-                            <g class="@if($maxTarea <> 4) hidden @endif">
+                            <g class="@if($poSVG <> 4) hidden @endif">
                                 <rect x="140" y="206" width="28" height="28" rx="14" ry="14" fill="#fff" stroke="#D1D5DB" stroke-width="1.8"/>
                                 <image x="145" y="211" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                             </g>
 
                             <g>
                                 <polygon points="4,260 156,260 156,308 80,324 4,308" fill="url(#{{ $uid }}_gv5)"/>
-                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="280" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días - 100%</text>
+                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="280" text-anchor="middle" dominant-baseline="central" fill="#fff">47.5 - 59 Días - 100%</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="298" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
                             </g>
-                            <g class="@if($maxTarea <> 5) hidden @endif">
+                            <g class="@if($poSVG <> 5) hidden @endif">
                                 <rect x="140" y="269" width="28" height="28" rx="14" ry="14" fill="#fff" stroke="#D1D5DB" stroke-width="1.8"/>
                                 <image x="145" y="274" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                             </g>
 
                             <g>
                                 <polygon points="4,324 156,324 156,372 80,380 4,372" fill="url(#{{ $uid }}_gv6)"/>
-                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="344" text-anchor="middle" dominant-baseline="central" fill="#fff">75 Días</text>
+                                <text font-family="sans-serif" font-size="11" font-weight="700" x="80" y="344" text-anchor="middle" dominant-baseline="central" fill="#fff">59.5 - 75 Días</text>
                                 <text font-family="sans-serif" font-size="10" x="80" y="360" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
                             </g>
-                            <g class="@if($maxTarea <> 6) hidden @endif">
+                            <g class="@if($poSVG <> 6) hidden @endif">
                                 <rect x="140" y="334" width="28" height="28" rx="14" ry="14" fill="#fff" stroke="#D1D5DB" stroke-width="1.8"/>
                                 <image x="145" y="338" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                             </g>
@@ -223,7 +203,7 @@
                     <div class="flex flex-wrap items-center gap-2 mt-1">
                         {!! $item->span_estado !!}
                     </div>
-                    <div class="mt-1 w-full mx-auto {{ !$tieneAvance ? 'hidden' : 'relative' }}">
+                    <div class="mt-1 w-full mx-auto relative">
                         <div class="hidden xl:block h-10 w-full">
                             <svg class="h-full mt-3" viewBox="0 -18 680 66" xmlns="http://www.w3.org/2000/svg" role="img">
                                 <title>Línea de tiempo</title>
@@ -238,60 +218,60 @@
                                 </defs>
                                 <g>
                                     <polygon points="4,4 106,4 124,24 106,44 4,44" fill="url(#{{ $uid }}_g1)"/>
-                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20 Días - 50%</text>
+                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="58" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">0 - 20 Días - 50%</text>
                                     <text font-family="sans-serif" font-size="11" x="58" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Obra blanca</text>
                                 </g>
-                                <g class="@if($maxTarea <> 1) hidden @endif">
+                                <g class="@if($poSVG <> 1) hidden @endif">
                                     <rect x="42" y="-18" width="28" height="28" rx="14" ry="14" fill="#ffffff" stroke="#D1D5DB" stroke-width="1.8"/>
                                     <image x="47" y="-13" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                                 </g>
 
                                 <g>
                                     <polygon points="112,4 214,4 232,24 214,44 112,44" fill="url(#{{ $uid }}_g2)"/>
-                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30 Días - 80%</text>
+                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="166" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">20.5 - 30 Días - 80%</text>
                                     <text font-family="sans-serif" font-size="11" x="166" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Corte carpintería</text>
                                 </g>
-                                <g class="@if($maxTarea <> 2) hidden @endif">
+                                <g class="@if($poSVG <> 2) hidden @endif">
                                     <rect x="{{ 42 + 105 }}" y="-18" width="28" height="28" rx="14" ry="14" fill="#ffffff" stroke="#D1D5DB" stroke-width="1.8"/>
                                     <image x="{{ 47 + 105 }}" y="-13" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                                 </g>
 
                                 <g>
                                     <polygon points="220,4 322,4 340,24 322,44 220,44" fill="url(#{{ $uid }}_g3)"/>
-                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">42 Días - 95%</text>
+                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="274" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">30.5 - 42 Días - 95%</text>
                                     <text font-family="sans-serif" font-size="11" x="274" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Inst. carpintería</text>
                                 </g>
-                                <g class="@if($maxTarea <> 3) hidden @endif">
+                                <g class="@if($poSVG <> 3) hidden @endif">
                                     <rect x="{{ 42 + 210 }}" y="-18" width="28" height="28" rx="14" ry="14" fill="#ffffff" stroke="#D1D5DB" stroke-width="1.8"/>
                                     <image x="{{ 47 + 210 }}" y="-13" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                                 </g>
 
                                 <g>
                                     <polygon points="328,4 430,4 448,24 430,44 328,44" fill="url(#{{ $uid }}_g4)"/>
-                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">47 Días - 98%</text>
+                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="382" y="16" text-anchor="middle" dominant-baseline="central" fill="#6b3300">42.5 - 47 Días - 98%</text>
                                     <text font-family="sans-serif" font-size="11" x="382" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(80,38,0,0.88)">Inst. mesón</text>
                                 </g>
-                                <g class="@if($maxTarea <> 4) hidden @endif">
+                                <g class="@if($poSVG <> 4) hidden @endif">
                                     <rect x="{{ 42 + 322 }}" y="-18" width="28" height="28" rx="14" ry="14" fill="#ffffff" stroke="#D1D5DB" stroke-width="1.8"/>
                                     <image x="{{ 47 + 322 }}" y="-13" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                                 </g>
 
                                 <g>
                                     <polygon points="436,4 538,4 556,24 538,44 436,44" fill="url(#{{ $uid }}_g5)"/>
-                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59 Días - 100%</text>
+                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="490" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">47.5 - 59 Días - 100%</text>
                                     <text font-family="sans-serif" font-size="11" x="490" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Acabados</text>
                                 </g>
-                                <g class="@if($maxTarea <> 5) hidden @endif">
+                                <g class="@if($poSVG <> 5) hidden @endif">
                                     <rect x="{{ 42 + 430 }}" y="-18" width="28" height="28" rx="14" ry="14" fill="#ffffff" stroke="#D1D5DB" stroke-width="1.8"/>
                                     <image x="{{ 47 + 430 }}" y="-13" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                                 </g>
 
                                 <g>
                                     <polygon points="544,4 658,4 676,24 658,44 544,44" fill="url(#{{ $uid }}_g6)"/>
-                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="606" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">75 Días</text>
+                                    <text font-family="sans-serif" font-size="11" font-weight="700" x="606" y="16" text-anchor="middle" dominant-baseline="central" fill="#fff">59.5 - 75 Días</text>
                                     <text font-family="sans-serif" font-size="11" x="606" y="32" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.88)">Detalles finales</text>
                                 </g>
-                                <g class="@if($maxTarea <> 6) hidden @endif">
+                                <g class="@if($poSVG <> 6) hidden @endif">
                                     <rect x="{{ 42 + 540 }}" y="-18" width="28" height="28" rx="14" ry="14" fill="#ffffff" stroke="#D1D5DB" stroke-width="1.8"/>
                                     <image x="{{ 47 + 540 }}" y="-13" width="18" height="18" href="{{ asset('img/favicon.svg') }}"/>
                                 </g>
