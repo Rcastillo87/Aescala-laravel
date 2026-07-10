@@ -68,9 +68,32 @@
         $porcenTarea = 0;
         $avance = [];
         $maxTarea = '';
+        switch ($diasTrascuridos) {
+            case $diasTrascuridos < 20:
+                $maxTarea = 1;
+                break;
+            case $diasTrascuridos < 30:
+                $maxTarea = 2;
+                break;
+            case $diasTrascuridos < 42:
+                $maxTarea = 3;
+                break;
+            case $diasTrascuridos < 47:
+                $maxTarea = 4;
+                break;
+            case $diasTrascuridos < 59:
+                $maxTarea = 5;
+                break;
+            case $diasTrascuridos <= 75:
+                $maxTarea = 6;
+                break;
+            default:
+                $maxTarea = 6;
+                break;
+        }
+
         foreach ($tareatipo as $value) {
             $completada = $item->maxTarea && $item->maxTarea >= $value['orden'];
-            $maxTarea = $item->maxTarea; 
             $avance[] = $completada;
             if ($completada) {
                 $porcenTarea += $value['porcentage'];

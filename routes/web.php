@@ -61,8 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('/descargar-db', function () {
-        // Apunta exactamente a storage/app/backups igual que el comando
-        $backupDir = storage_path('app/backups');
+        $backupDir = env('BACKUP_PATH', storage_path('app/backups'));
 
         if (!File::exists($backupDir)) {
             return response()->json([
@@ -70,15 +69,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ], 404);
         }
 
-        $files = collect(File::files($backupDir))
+        // Busca recursivamente porque los backups están organizados en subcarpetas por fecha
+        $files = collect(File::allFiles($backupDir))
             ->filter(fn($file) =>
-                str_contains($file->getFilename(), 'db_backup_') &&
-                (
-                    str_ends_with($file->getFilename(), '.sql') ||
-                    str_ends_with($file->getFilename(), '.sql.gz')
-                )
+                str_ends_with($file->getFilename(), '.sql') ||
+                str_ends_with($file->getFilename(), '.sql.gz')
             )
-            ->sortByDesc(fn($file) => $file->getFilename());
+            ->sortByDesc(fn($file) => $file->getMTime());
 
         if ($files->isEmpty()) {
             return response()->json([
