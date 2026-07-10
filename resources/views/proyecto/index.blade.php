@@ -66,17 +66,40 @@
                 break;
         }
 
-        $posTarea = '';
         foreach ($tareatipo as $value) {
             $completada = $item->maxTarea && $item->maxTarea >= $value['orden'];
-            $posTarea = $item->maxTarea; 
             $avance[] = $completada;
             if ($completada) {
                 $porcenTarea += $value['porcentage'];
             }
         }
 
-        $bg = ($posTarea == $poSVG) ? 'bg-blue-500' : 'bg-red-500';
+        $posTarea = '';
+        switch ($porcenTarea) {
+            case $porcenTarea <= 50:
+                $posTarea = 1;
+                break;
+            case $porcenTarea <= 80:
+                $posTarea = 2;
+                break;
+            case $porcenTarea <= 95:
+                $posTarea = 3;
+                break;
+            case $porcenTarea <= 98:
+                $posTarea = 4;
+                break;
+            case $porcenTarea <= 100:
+                $posTarea = 5;
+                break;
+            case $porcenTarea == 100:
+                $posTarea = 6;
+                break;
+            default:
+                $posTarea = 6;
+                break;
+        }
+
+        $bg = ($posTarea == $poSVG) ? 'bg-green-500' : 'bg-red-500';
 
         $bgLight = ($posTarea == $poSVG) ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
 
