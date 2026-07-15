@@ -123,6 +123,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/edit/{id}', [ComercialController::class, 'edit'])->name('edit');
         Route::post('/save', [ComercialController::class, 'save'])->name('save');
         Route::post('/sendLinkByEmail', [ComercialController::class, 'sendLinkByEmail'])->name('sendLinkByEmail');
+        Route::post('/configEntre', [ComercialController::class, 'configEntre'])->name('configEntre');
     });
 
     Route::prefix('herramienta')->name('herramienta.')->middleware('role:herramienta')->group(function () {

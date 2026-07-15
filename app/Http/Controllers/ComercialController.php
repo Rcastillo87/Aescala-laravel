@@ -17,6 +17,7 @@ use App\Models\Proyecto;
 use App\Models\User;
 use App\Models\EntregableProye;
 use App\Models\Entregables;
+use App\Models\EntregablesDefault;
 use App\Models\Festivos;
 use App\Models\NotasProyecto;
 use App\Models\ProyecTXRefe;
@@ -53,8 +54,10 @@ class ComercialController extends Controller
         ->paginate($perPage)
         ->appends(request()->query());
 
+        $entregables = Entregables::with('defaults')->orderBy('nombre_estregable', 'asc')->get()->toArray();
+
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
-        return view('comercial.index', compact('title', 'items', 'festivos', 'departamentos'));
+        return view('comercial.index', compact('title', 'items', 'festivos', 'departamentos', 'entregables'));
     }
 
     public function create()
@@ -368,6 +371,43 @@ class ComercialController extends Controller
                 'message' => 'Error al enviar el enlace: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function configEntre(Request $request)
+    {
+
+        $request->validate([
+            'id_entregable' => 'required|exists:entregables,id',
+            'items' => 'required|array|min:1',
+            'items.*' => 'required|string',
+            'item_ids' => 'array'
+        ]);
+
+        DB::transaction(function () use ($request) {
+            $ids = collect($request->item_ids)
+                ->filter()
+                ->map(fn($id) => (int)$id);
+
+            EntregablesDefault::where('id_estregable', $request->id_entregable)
+                ->whereNotIn('id', $ids)
+                ->delete();
+
+            foreach ($request->items as $i => $descripcion) {
+                EntregablesDefault::updateOrCreate(
+                    [
+                        'id' => $request->item_ids[$i] ?: null
+                    ],
+                    [
+                        'id_estregable' => $request->id_entregable,
+                        'descripccion' => $descripcion
+                    ]
+                );
+            }
+
+        });
+        return response()->json([
+            'message' => 'Configuración actualizada correctamente.'
+        ]);
     }
 
 }
