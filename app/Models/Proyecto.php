@@ -321,6 +321,7 @@ class Proyecto extends Model
             "direccion"        => $ciudad_dpt . ', ' . $this->direccion,
             "ciudad_completa"  => $ciudad_dpt,
             "propietario"      => Str::title($this->nombre_cliente),
+            "residente"        => Str::title($this->user?->nombre_completo ?? '--'),
             "area"             => $this->area_privada,
             "dia"              => $ahora->format('d'),
             "mes"              => $ahora->translatedFormat('F'),

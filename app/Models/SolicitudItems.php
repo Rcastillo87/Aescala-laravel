@@ -56,7 +56,7 @@ class SolicitudItems extends Model
         $span = [];
 
         if ($this->aprobado == 0) {
-            $span[] = '<span class="span-black">Require Aprobacion</span>';
+            $span[] = '<span class="span-black">Requiere Aprobacion</span>';
         }
 
         if ($this->id_user_aprueba && $this->aprobado == 1) {

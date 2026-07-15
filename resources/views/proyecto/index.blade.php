@@ -99,9 +99,9 @@
                 break;
         }
 
-        $bg = ($posTarea == $poSVG) ? 'bg-green-500' : 'bg-red-500';
+        $bg = ($posTarea >= $poSVG) ? 'bg-green-500' : 'bg-red-500';
 
-        $bgLight = ($posTarea == $poSVG) ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+        $bgLight = ($posTarea >= $poSVG) ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
 
         $tieneAvance = in_array(true, $avance, true);
         $uid = 'svg_'.$item->id;
@@ -550,8 +550,8 @@
                 </div>
 
                 {{-- Acta de entrega --}}
-                @if ($porcenTarea >= 80)
-                    <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isDiseno)) hidden @endif">
+                @if ($porcenTarea >= 95)
+                    <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isDiseno || Auth::user()->isUser)) hidden @endif">
                         <a tabindex="0"
                         data-tooltip-target="tooltip-hover-acta-{{$item->id}}"
                         data-tooltip-trigger="hover"

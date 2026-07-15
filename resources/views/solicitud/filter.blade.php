@@ -55,7 +55,7 @@
                             //1 => "Despacho Parcial",
                             2 => "Despachado",
                             3 => "Cancelado",
-                            4 => "Require Aprobacion",
+                            4 => "Requiere Aprobacion",
                             5 => "Aprobado",
                         ];
                         //$arr = array_merge($estadosItems, $arr);

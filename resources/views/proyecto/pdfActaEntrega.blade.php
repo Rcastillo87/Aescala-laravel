@@ -320,9 +320,26 @@
     <table class="firmas">
         <tr>
             <td>
-                <div class="titulo-firma">Quien entrega</div>
+                <div class="espacio-firma"></div>
+                <div class="linea-firma"></div>
+                <div class="datos-firma">
+                    <strong>{{ $residente }}</strong><br>
+                    Firma del Residente
+                </div>
+            </td>
+
+            <td>
+                <div class="espacio-firma"></div>
+                <div class="linea-firma"></div>
+                <div class="datos-firma">
+                    <strong>{{ $propietario }}</strong><br>
+                    Propietario / Cliente
+                </div>
+            </td>
+
+            <td>
                 @if(!empty($imgRepre))
-                    <img src="{{ $imgRepre }}" alt="Firma representante">
+                    <img src="{{ $imgRepre }}" alt="Firma Representante">
                 @else
                     <div class="espacio-firma"></div>
                 @endif
@@ -332,15 +349,7 @@
                     Representante Aescala
                 </div>
             </td>
-            <td>
-                <div class="titulo-firma">Quien recibe</div>
-                <div class="espacio-firma"></div>
-                <div class="linea-firma"></div>
-                <div class="datos-firma">
-                    <strong>{{ $propietario }}</strong><br>
-                    Propietario / Cliente
-                </div>
-            </td>
+
         </tr>
     </table>
 
