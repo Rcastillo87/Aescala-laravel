@@ -253,7 +253,10 @@
     @endif
 </ul>
 
-<p><strong>Paragrafo primero:</strong> EL CONTRATISTA no iniciara la obra hasta que EL CONTRATANTE no demuestre que ha realizado el primer pago correspondiente al CINCUENTA POR CIENTO (50%) de la obra.</p>
+<p>
+    <strong>Paragrafo primero:</strong>
+    EL CONTRATISTA no iniciara la obra hasta que EL CONTRATANTE no demuestre que ha realizado el primer (30%) y segundo pago (20%) correspondiente al CINCUENTA POR CIENTO (50%) de la obra.
+</p>
 
 <p><strong>Paragrafo segundo:</strong> EL CONTRATISTA podra suspender la obra si EL CONTRATANTE no realiza los pagos al momento de ser notificado para hacerlo conforme lo estipulado en esta clausula.</p>
 
@@ -282,7 +285,9 @@
 </p>
 
 <p>
-<strong>OCTAVA. GARANTIA: </strong>EL CONTRATISTA manifiesta que la obra realizada por aquel y la cual es objeto de este contrato tiene UN (01) AÑO de garantia desde la entrega de la obra a EL CONTRATANTE. Sin embargo, EL CONTRATANTE reconoce que no existira responsabilidad de EL CONTRATISTA cuando existan daños en la obra por manipulacion indebida de EL CONTRATANTE o sus dependientes y de terceras personas.
+    <strong>OCTAVA. GARANTIA: </strong>
+    EL CONTRATISTA manifiesta que la obra realizada por aquel y la cual es objeto de este contrato tiene UN (01) AÑO de garantía desde la entrega de la obra a EL CONTRATANTE. Sin embargo, EL CONTRATANTE reconoce que no existirá responsabilidad de EL CONTRATISTA cuando existan daños en la obra por manipulación indebida de EL CONTRATANTE o sus dependientes y de terceras personas. 
+    <strong>Parágrafo. GARANTIAS DE CUMPLIMIENTO: </strong>Para garantizar el cumplimiento de las obligaciones dispuestas por el CONTRATISTA en la cláusula primera de este contrato, este deberá constituir las siguientes garantías expedidas por una compañía de seguros legalmente establecida en el país: A) Garantía de cumplimientos, por una suma equivalente al VEINTE (20%) del valor del contrato con una vigencia igual al contrato y tres (03) meses más; B) calidad del servicio, por un equivalente al TREINTA POR CIENTO (30%) del valor del contrato con una vigencia igual a la del contrato y tres (03) meses más; C) garantía de salarios y prestaciones sociales, por una suma equivalente al DIEZ POR CIENTO (10%) del contrato y con una vigencia igual a la duración del contrato y hasta un (01) mes más o dejarla en la duración del contrato; D) Buen manejo del anticipo, por el CIEN POR CIENTO (100%) del valor del anticipo por el tiempo que dure el contrato y un (01) mes más.
 </p>
 
 <p>
