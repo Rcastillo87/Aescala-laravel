@@ -57,6 +57,7 @@ return [
         'user'          => ['isAdmin'],
         'cotizacion'    => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'cobro'         => ['isAdmin', 'iscartera'],
+        'planilla'      => ['isAdmin'],
     ],
 
     // ==========================================================
@@ -110,6 +111,9 @@ return [
         'proyecto.trataDatosPDF'        => ['isAdmin', 'isUser'],
         'proyecto.calendarioProyecto'   => ['isAdmin'],
         'proyecto.saveDiaNoLaborado'    => ['isAdmin'],
+
+        // ── planilla.* ───────────────────────────────────────────
+        'planilla.index'              => ['isAdmin'],
 
         // ── tareas.* ───────────────────────────────────────────
         'tareas.index'              => ['isAdmin'],
@@ -192,8 +196,12 @@ return [
         'configuracion.listConfigYearModel' => ['isAdmin'],
         'configuracion.indexPorcentajes'    => ['isAdmin'],
         'configuracion.savePorcentajes'     => ['isAdmin'],
-        'configuracion.indexAdicionales'    => ['isAdmin'],
-        'configuracion.saveAdicionales'     => ['isAdmin'],
+
+        'configuracion.indexValorAreaEnchape'      => ['isAdmin'],
+        'configuracion.saveValorAreaEnchape'       => ['isAdmin'],
+
+        //'configuracion.indexAdicionales'    => ['isAdmin'],
+        //'configuracion.saveAdicionales'     => ['isAdmin'],
 
         // ── calendario.* ───────────────────────────────────────
         'calendario.index'              => ['isAdmin'],

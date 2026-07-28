@@ -23,6 +23,7 @@ use App\Http\Controllers\AlmacenController;
 use App\Http\Controllers\InsumosController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\CobroController;
+use App\Http\Controllers\PlanillaController;
 
 
 Route::get('/', function () {
@@ -161,6 +162,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     });
 
+    Route::prefix('planilla')->name('planilla.')->middleware('role:planilla')->group(function () {
+        Route::get('/index/{id}', [PlanillaController::class, 'index'])->name('index');
+
+    });
+
     Route::prefix('tareas')->name('tareas.')->middleware('role:tareas')->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');
         Route::get('/editTarea/{id}', [TareasController::class, 'editTarea'])->name('editTarea');
@@ -262,8 +268,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listConfigYearModel/{type}/{año}', [ConfiguracionController::class, 'listConfigYearModel'])->name('listConfigYearModel');
         Route::get('/indexPorcentajes/{año}', [ConfiguracionController::class, 'indexPorcentajes'])->name('indexPorcentajes');
         Route::post('/savePorcentajes', [ConfiguracionController::class, 'savePorcentajes'])->name('savePorcentajes');
-        Route::get('/indexAdicionales/{año}', [ConfiguracionController::class, 'indexAdicionales'])->name('indexAdicionales');
-        Route::post('/saveAdicionales', [ConfiguracionController::class, 'saveAdicionales'])->name('saveAdicionales');
+        //Route::get('/indexAdicionales/{año}', [ConfiguracionController::class, 'indexAdicionales'])->name('indexAdicionales');
+        //Route::post('/saveAdicionales', [ConfiguracionController::class, 'saveAdicionales'])->name('saveAdicionales');
+    
+        Route::get('/indexValorAreaEnchape/{año}', [ConfiguracionController::class, 'indexValorAreaEnchape'])->name('indexValorAreaEnchape');
+        Route::post('/saveValorAreaEnchape', [ConfiguracionController::class, 'saveValorAreaEnchape'])->name('saveValorAreaEnchape');
+    
     });
 
     Route::prefix('calendario')->name('calendario.')->middleware('role:calendario')->group(function () {

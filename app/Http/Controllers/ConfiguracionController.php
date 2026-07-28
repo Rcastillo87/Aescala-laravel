@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfigAdicionales;
+use App\Http\Requests\AdicionalesRequest;
+
 use App\Models\ConfigPorcentajes;
 use App\Models\ValorArea;
+use App\Models\ValorAreaEnchape;
+
 use App\Http\Requests\ValorAreaRequest;
+use App\Http\Requests\ValorAreaEnchapeRequest;
 use App\Http\Requests\PorcentajesRequest;
-use App\Http\Requests\AdicionalesRequest;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -16,9 +21,10 @@ use Illuminate\Support\Facades\Gate;
 class ConfiguracionController extends Controller
 {
     private const MODELS = [
-        'adicionales' => ConfigAdicionales::class,
+        //'adicionales' => ConfigAdicionales::class,
         'porcentajes' => ConfigPorcentajes::class,
         'valor-area'  => ValorArea::class,
+        'valor-area-enchape' => ValorAreaEnchape::class,
     ];
 
     private function resolveModel(string $type): string
@@ -70,7 +76,7 @@ class ConfiguracionController extends Controller
     public function indexValorArea($año)
     {
         Gate::authorize('configuracion.indexValorArea');
-        $title = 'Configuración: Valor por Área del año ' . $año;
+        $title = 'Configuración: Presupuesto por areas del año ' . $año;
         $items = ValorArea::where('año', $año)->get()->toArray();
         $añoActual = Carbon::now()->year;
         $años0 = ValorArea::select('año')->distinct()->orderByDesc('año')->pluck('año');
@@ -80,10 +86,23 @@ class ConfiguracionController extends Controller
         return view('configuracion.indexValorArea', compact('title', 'items', 'años', 'años0'));
     }
 
+    public function indexValorAreaEnchape($año)
+    {
+        //Gate::authorize('configuracion.indexValorAreaEnchape');
+        $title = 'Configuración: Presupuesto echape por areas del año ' . $año;
+        $items = ValorAreaEnchape::where('año', $año)->get()->toArray();
+        $añoActual = Carbon::now()->year;
+        $años0 = ValorAreaEnchape::select('año')->distinct()->orderByDesc('año')->pluck('año');
+        $años = $años0->contains($añoActual)
+            ? $años0
+            : (clone $años0)->prepend($añoActual);
+        return view('configuracion.indexValorAreaEnchape', compact('title', 'items', 'años', 'años0'));
+    }
+
     public function indexPorcentajes($año)
     {
         Gate::authorize('configuracion.indexPorcentajes');
-        $title = 'Configuración: Porcentajes del año ' . $año;
+        $title = 'Configuración: Porcentajes de Planilla Base del Año ' . $año;
         $items = ConfigPorcentajes::where('año', $año)->get()->toArray();
         $añoActual = Carbon::now()->year;
         $años0 = ConfigPorcentajes::select('año')->distinct()->orderByDesc('año')->pluck('año');
@@ -113,7 +132,12 @@ class ConfiguracionController extends Controller
         return $this->save('porcentajes', $request->validated());
     }
 
-    public function indexAdicionales($año){
+    public function saveValorAreaEnchape(ValorAreaEnchapeRequest $request)
+    {
+        return $this->save('valor-area-enchape', $request->validated());
+    }
+
+    /*public function indexAdicionales($año){
         Gate::authorize('configuracion.indexValorArea');
         $title = 'Configuración: Porcentajes del año ' . $año;
         $items = ConfigAdicionales::where('año', $año)->get();
@@ -130,6 +154,6 @@ class ConfiguracionController extends Controller
     public function saveAdicionales(AdicionalesRequest $request)
     {
         return $this->save('adicionales', $request->validated());
-    }
+    }*/
 
 }
