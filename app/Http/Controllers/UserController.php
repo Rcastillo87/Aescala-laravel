@@ -10,6 +10,10 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Gate;
 
 use App\Models\User;
+use App\Models\Area;
+use App\Models\Proyecto;
+use App\Models\Otrosi;
+
 
 class UserController extends Controller
 {
@@ -187,4 +191,38 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function selectUser()
+    {
+        $users = User::where('activo', 1)->whereIn('id_rol', [10, 1])
+            ->select('id', 'nombre_completo')
+            ->get();
+
+        return response()->json($users, 200);
+    }
+
+    public function selectData($id)
+    {
+        $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5, 2])
+            ->where(function ($q) use ($id) {
+                $q->where('id_user', $id)
+                ->orWhere('id_user_obra_blanca', $id)
+                ->orWhere('id_user_diseno', $id);
+            })
+            ->whereNotNull('cedula_cliente')
+            ->whereNotNull('tipo_doc_cliente')
+            ->orderBy('nombre_proyecto', 'ASC')
+            ->get(['id', 'nombre_proyecto'])
+            ->toArray();
+
+        $areas = Area::get(['id', 'nombre_area'])->toArray();
+        $unidades = Otrosi::$unidades;
+
+        return response()->json([
+            'areas' => $areas,
+            'proyectos' => $proyectos,
+            'unidades' => $unidades
+        ], 200);
+    }
+    
 }

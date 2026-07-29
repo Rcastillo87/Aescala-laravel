@@ -38,6 +38,10 @@ Route::get('firmarOtroSi/{id}', [OtrosiController::class, 'firmarOtroSi'])->name
 Route::post('guardarFirmaOtroSi', [OtrosiController::class, 'guardarFirmaOtroSi'])->name('guardarFirmaOtroSi');
 Route::get('otroSiPdfPublic/{id}', [OtrosiController::class, 'otroSiPdfPublic'])->name('otroSiPdfPublic');
 
+Route::get('selectUser', [UserController::class, 'selectUser'])->name('selectUser');
+Route::get('selectData/{id}', [UserController::class, 'selectData'])->name('selectUserData');
+
+
 // routes/web.php
 Route::get('/sw.js', function () {
     return response()->view('sw')
