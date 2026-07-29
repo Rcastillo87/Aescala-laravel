@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\QueryException;
 
 use App\Models\User;
 use App\Models\Area;
 use App\Models\Proyecto;
 use App\Models\Otrosi;
-
 
 class UserController extends Controller
 {
@@ -198,10 +198,13 @@ class UserController extends Controller
             ->select('id', 'nombre_completo')
             ->get();
 
-        return response()->json($users, 200);
+        $areas = Area::get(['id', 'nombre_area'])->toArray();
+        $unidades = Otrosi::$unidades;
+
+        return response()->json([ 'users' => $users, 'areas' => $areas, 'unidades' => $unidades ], 200);
     }
 
-    public function selectData($id)
+    public function selectProyecto($id)
     {
         $proyectos = Proyecto::whereIn('id_estado', [1, 3, 5, 2])
             ->where(function ($q) use ($id) {
@@ -215,14 +218,84 @@ class UserController extends Controller
             ->get(['id', 'nombre_proyecto'])
             ->toArray();
 
-        $areas = Area::get(['id', 'nombre_area'])->toArray();
-        $unidades = Otrosi::$unidades;
+        return response()->json($proyectos, 200);
+    }
 
-        return response()->json([
-            'areas' => $areas,
-            'proyectos' => $proyectos,
-            'unidades' => $unidades
-        ], 200);
+    public function saveOtrosi(Request $request)
+    {
+        $validated = $request->validate([
+            'id_user' => 'nullable|integer|exists:users,id',
+            'id_proyecto' => 'required|exists:proyectos,id',
+            'entregables' => 'required|array|min:1',
+            'entregables.*.id_area' => 'required|exists:areas,id',
+            'entregables.*.items' => 'required|array|min:1',
+            'entregables.*.items.*.material' => 'required|string',
+            'entregables.*.items.*.cantidad' => 'required|numeric|min:0',
+            'entregables.*.items.*.valor_unitario' => 'required|integer',
+            'entregables.*.items.*.unidad' => [
+                'required',
+                'integer',
+                Rule::in(array_keys(Otrosi::$unidades))
+            ],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $otroSi = new Otrosi();
+            $ultimoNumero = Otrosi::where('id_proyecto', $validated['id_proyecto'])->max('numero');
+            $otroSi->numero = $ultimoNumero ? $ultimoNumero + 1 : 1;
+            $otroSi->fecha_creacion = now();
+            $otroSi->id_user_encargado = $validated['id_user'] ?? null;
+            $otroSi->id_proyecto = $validated['id_proyecto'];
+            $otroSi->save();
+            $itemsInsert = [];
+            foreach ($validated['entregables'] as $entregable) {
+                foreach ($entregable['items'] as $item) {
+                    $itemsInsert[] = [
+                        'id_area'       => $entregable['id_area'],
+                        'id_otro_si'    => $otroSi->id,
+                        'descripccion'  => $item['material'],
+                        'cantidad'      => (float) $item['cantidad'],
+                        'valor'         => (int) $item['valor_unitario'],
+                        'unidad'        => (int) $item['unidad'],
+                    ];
+                }
+            }
+
+            if (!empty($itemsInsert)) {
+                DB::table('area_entregables')->insert($itemsInsert);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Otro Sí creado correctamente.',
+                'data' => [
+                    'id' => $otroSi->id,
+                    'numero' => $otroSi->numero,
+                    'id_proyecto' => $otroSi->id_proyecto,
+                ]
+            ], 201);
+            
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error en la base de datos.',
+                'error' => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error inesperado.',
+                'error' => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        }
     }
     
 }

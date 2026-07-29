@@ -39,7 +39,8 @@ Route::post('guardarFirmaOtroSi', [OtrosiController::class, 'guardarFirmaOtroSi'
 Route::get('otroSiPdfPublic/{id}', [OtrosiController::class, 'otroSiPdfPublic'])->name('otroSiPdfPublic');
 
 Route::get('selectUser', [UserController::class, 'selectUser'])->name('selectUser');
-Route::get('selectData/{id}', [UserController::class, 'selectData'])->name('selectUserData');
+Route::get('selectProyecto/{id}', [UserController::class, 'selectProyecto'])->name('selectProyecto');
+Route::post('saveOtrosi', [UserController::class, 'saveOtrosi'])->name('saveOtrosi');
 
 
 // routes/web.php
