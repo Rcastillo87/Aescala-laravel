@@ -1,9 +1,22 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-full px-2">
+
+    @php
+        $url = (config('app.stage') !== 'prod') ? asset('plantilla_dev.xlsm') : asset('plantilla.xlsm');
+    @endphp
+
+    <div class="flex justify-end text-center mb-3">
+        <a href="{{ $url }}"
+        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md"
+        download>
+            Descargar Plantilla Macro
+        </a>
+    </div>
+
     <form method="POST" action="{{ route('otro_si.save') }}" id="formOtroSi">
         @csrf
-        <div class="flex flex-wrap -mx-3">
+        <div class="flex flex-wrap">
 
             <input type="hidden" name="id_user_encargado" id="id_user_encargado" value="{{ old('id_user_encargado', Auth::user()->id) }}">
             <input type="hidden" name="id" id="id" value="{{ old('id', $item->id ?? null) }}">

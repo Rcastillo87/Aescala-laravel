@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('content')
 
-    @include('otrosi.filter')
     <div class="flex justify-end text-center mb-3">
         @if (!Auth::user()->isUser)
             <x-secondary-button class="ms-4" href="{{ route('otro_si.create')}}">
@@ -9,6 +8,9 @@
             </x-secondary-button>
         @endif
     </div>
+
+    @include('otrosi.filter')
+
     <div class="relative overflow-x-auto rounded-lg border border-gray-200">
         <table class="w-full text-left text-sm text-gray-500">
             <x-table-header :headers="$headers" />
