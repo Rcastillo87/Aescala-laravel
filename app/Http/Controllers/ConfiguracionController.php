@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ConfigAdicionales;
-use App\Http\Requests\AdicionalesRequest;
 
 use App\Models\ConfigPorcentajes;
 use App\Models\ValorArea;
@@ -21,7 +19,6 @@ use Illuminate\Support\Facades\Gate;
 class ConfiguracionController extends Controller
 {
     private const MODELS = [
-        //'adicionales' => ConfigAdicionales::class,
         'porcentajes' => ConfigPorcentajes::class,
         'valor-area'  => ValorArea::class,
         'valor-area-enchape' => ValorAreaEnchape::class,
@@ -136,24 +133,5 @@ class ConfiguracionController extends Controller
     {
         return $this->save('valor-area-enchape', $request->validated());
     }
-
-    /*public function indexAdicionales($año){
-        Gate::authorize('configuracion.indexValorArea');
-        $title = 'Configuración: Porcentajes del año ' . $año;
-        $items = ConfigAdicionales::where('año', $año)->get();
-        $añoActual = Carbon::now()->year;
-        $años0 = ConfigAdicionales::select('año')->distinct()->orderByDesc('año')->pluck('año');
-        $años = $años0->contains($añoActual)
-            ? $años0
-            : (clone $años0)->prepend($añoActual);
-
-        $arrayTipos = ConfigAdicionales::$txTipo;
-        return view('configuracion.indexAdicionales', compact('title', 'items', 'años', 'años0', 'arrayTipos'));
-    }
-
-    public function saveAdicionales(AdicionalesRequest $request)
-    {
-        return $this->save('adicionales', $request->validated());
-    }*/
 
 }

@@ -455,7 +455,10 @@ class Proyecto extends Model
 
     public function getTotalOtroSiAttribute()
     {
-        return $this->otro_si->sum('total_deve');
+        return $this->otro_si()
+            ->where('estado', 1)
+            ->get()
+            ->sum('total_deve');
     }
 
     public function getMaxTareaAttribute()
