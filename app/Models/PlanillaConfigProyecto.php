@@ -5,38 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PlanillaEntregables extends Model
+class PlanillaConfigProyecto extends Model
 {
     use HasFactory;
 
-    protected $table = 'planilla_entregables';
+    protected $table = 'planilla_confi_proyecto';
     public $timestamps = true;
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
     protected $fillable = [
+        'valor_config',
         'tipo',
-        'unidad',
-        'cantidad',
-        'valor_uni',
-        'descripccion',
-        'id_proyecto',
         'id_user',
+        'id_proyecto'
     ];
 
-    public static $ClassSpanTipo= [
+    public static $ClassSpanTipo = [
         1 => 'span-blue',
         2 => 'span-red',
         3 => 'span-green',
-        4 => 'span-orange'
     ];
 
     public static $txTipo = [
-        1 => 'Adicionales contrato',
-        2 => 'adicionales obra',
-        3 => 'adicionales de carpintería',
-        4 => 'Adicional mesónes'
+        1 => 'Valor área Proyecto',
+        2 => 'Valor área Enchape',
+        3 => 'Porcentajes del Proyecto',
     ];
 
     public function getSpanTipoAttribute()
@@ -45,13 +40,13 @@ class PlanillaEntregables extends Model
              . (self::$txTipo[$this->tipo]) . '</span>';
     }
 
-    // Devuelve el valor ya "listo para usar": número para tipo 1/2, array para tipo 3
+    // 👇 ESTE es el que probablemente falta
     public function getValorAttribute()
     {
         if ((int) $this->tipo === 3) {
-            return json_decode($this->valor_config, true) ?? [];
+            $decoded = json_decode($this->valor_config, true);
+            return is_array($decoded) ? $decoded : [];
         }
         return (float) $this->valor_config;
     }
-
 }

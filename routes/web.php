@@ -170,8 +170,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('planilla')->name('planilla.')->middleware('role:planilla')->group(function () {
         Route::get('/index/{id}', [PlanillaController::class, 'index'])->name('index');
         Route::post('/savePlantilla', [PlanillaController::class, 'savePlantilla'])->name('savePlantilla');
-
-    });
+        Route::post('/saveConfigPlantilla', [PlanillaController::class, 'saveConfigPlantilla'])->name('saveConfigPlantilla');
+        Route::delete('/deleteConfigPlantilla/{idProyecto}/{tipo}', [PlanillaController::class, 'deleteConfigPlantilla'])->name('deleteConfigPlantilla');
+});
 
     Route::prefix('tareas')->name('tareas.')->middleware('role:tareas')->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');

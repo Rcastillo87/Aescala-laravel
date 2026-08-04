@@ -89,6 +89,11 @@
                     </div>
                 @endif
 
+                <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Area Privada</p>
+                    <p class="text-sm text-gray-700 leading-snug font-medium">{{ $proyecto->area_privada }} mt²</p>
+                </div>
+
                 @if($proyecto->observacion)
                     <div class="min-w-0 xs:col-span-2 md:col-span-3 xl:col-span-4">
                         <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Observación</p>
@@ -112,7 +117,7 @@
             </x-secondary-button>
         </div>
 
-        <div class="py-2 justify-start w-full space-y-2 @if(empty($planillaEntregables)) hidden @else  @endif">
+        <div id="entregables-container" class="py-2 justify-start w-full space-y-2 @if(empty($planillaEntregables)) hidden @else  @endif">
             <h2 class="text-xl font-bold text-[#242e68]">Entregables Agregados</h2>
             <form id="savePlantilla" action="{{ route('planilla.savePlantilla') }}" method="POST" class="w-full items-center">
                 <input type="hidden" name="id_proyecto" value="{{ $proyecto->id }}">
@@ -121,6 +126,226 @@
                     Guardar Entregables 
                 </button>
             </form>
+        </div>
+
+        <hr class="my-2 border-gray-200">
+
+        <div class="">
+
+            <div class="flex items-center gap-2 mb-4">
+                <h2 class="text-xl font-bold text-[#242e68]">Configuración del Proyecto</h2>
+                <button type="button" data-tooltip-target="tooltip-config-general"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zM9 8a1 1 0 112 0v5a1 1 0 11-2 0V8zm1-4a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <div id="tooltip-config-general" role="tooltip"
+                    class="absolute z-10 invisible inline-block w-72 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
+                    Estos valores se usan para calcular automáticamente el costo del proyecto según su área.
+                    Se sugieren según el área registrada, pero puedes aceptarlos o eliminarlos cuando quieras.
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                {{-- ============================= --}}
+                {{-- TIPO 1: Valor área Proyecto --}}
+                {{-- ============================= --}}
+                <div class="config-block bg-white border rounded-2xl shadow-md p-5"
+                    data-tipo="1" data-id-proyecto="{{ $proyecto->id }}" data-kind="simple">
+
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-md font-semibold text-[#242e68]">Valor Área Proyecto</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            Tipo 1
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Costo por m² calculado según el área privada del proyecto ({{ $areaProyecto ?? $proyecto->area_privada }} m²).
+                    </p>
+
+                    {{-- ESTADO: GUARDADO --}}
+                    <div class="state-saved {{ $configProyecto->has(1) ? '' : 'hidden' }}">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-green-700 font-medium block">Configuración aceptada</span>
+                                <span class="saved-value text-lg font-bold text-green-800">
+                                    {{ $configProyecto->has(1) ? '$ ' . number_format($configProyecto[1]->valor, 0, ',', '.') : '' }}
+                                </span>
+                            </div>
+                            <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-2 rounded-lg" data-tipo="1">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- ESTADO: SUGERIDO --}}
+                    <div class="state-suggested {{ $configProyecto->has(1) ? 'hidden' : '' }}">
+                        @if($dataValorArea)
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <span class="text-xs text-yellow-700 font-medium block mb-1">Valor sugerido</span>
+                                <span class="suggested-value text-lg font-bold text-yellow-800 block mb-2">
+                                    $ {{ number_format($dataValorArea->valor_intervalo, 0, ',', '.') }}
+                                </span>
+                                <p class="text-xs text-gray-500 mb-2">
+                                    Rango: {{ $dataValorArea->area_min }} m² - {{ $dataValorArea->area_max }} m² (año {{ $dataValorArea->año }})
+                                </p>
+                                <button type="button"
+                                    class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
+                                    data-tipo="1" data-value="{{ $dataValorArea->valor_intervalo }}">
+                                    Aceptar configuración
+                                </button>
+                            </div>
+                        @else
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                                <span class="text-sm text-gray-500">No hay valor configurado para esta área.</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- ============================= --}}
+                {{-- TIPO 2: Valor área Enchape --}}
+                {{-- ============================= --}}
+                <div class="config-block bg-white border rounded-2xl shadow-md p-5"
+                    data-tipo="2" data-id-proyecto="{{ $proyecto->id }}" data-kind="simple">
+
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-md font-semibold text-[#242e68]">Valor Área Enchape</h3>
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            Tipo 2
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Costo por m² de enchape según el área privada del proyecto.
+                    </p>
+
+                    <div class="state-saved {{ $configProyecto->has(2) ? '' : 'hidden' }}">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-green-700 font-medium block">Configuración aceptada</span>
+                                <span class="saved-value text-lg font-bold text-green-800">
+                                    {{ $configProyecto->has(2) ? '$ ' . number_format($configProyecto[2]->valor, 0, ',', '.') : '' }}
+                                </span>
+                            </div>
+                            <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-2 rounded-lg" data-tipo="2">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="state-suggested {{ $configProyecto->has(2) ? 'hidden' : '' }}">
+                        @if($dataValorAreaEnchape)
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <span class="text-xs text-yellow-700 font-medium block mb-1">Valor sugerido</span>
+                                <span class="suggested-value text-lg font-bold text-yellow-800 block mb-2">
+                                    $ {{ number_format($dataValorAreaEnchape->valor_intervalo, 0, ',', '.') }}
+                                </span>
+                                <p class="text-xs text-gray-500 mb-2">
+                                    Rango: {{ $dataValorAreaEnchape->area_min }} m² - {{ $dataValorAreaEnchape->area_max }} m² (año {{ $dataValorAreaEnchape->año }})
+                                </p>
+                                <button type="button"
+                                    class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
+                                    data-tipo="2" data-value="{{ $dataValorAreaEnchape->valor_intervalo }}">
+                                    Aceptar configuración
+                                </button>
+                            </div>
+                        @else
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                                <span class="text-sm text-gray-500">No hay valor configurado para esta área.</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- ================================== --}}
+                {{-- TIPO 3: Porcentajes del Proyecto --}}
+                {{-- ================================== --}}
+                <div class="config-block bg-white border rounded-2xl shadow-md p-5"
+                    data-tipo="3" data-id-proyecto="{{ $proyecto->id }}" data-kind="multi">
+
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-md font-semibold text-[#242e68]">Porcentajes del Proyecto</h3>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            Tipo 3
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Porcentajes aplicados sobre el proyecto (administración, imprevistos, utilidad, etc.).
+                    </p>
+
+                    {{-- ESTADO: GUARDADO --}}
+                    <div class="state-saved {{ $configProyecto->has(3) ? '' : 'hidden' }}">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <span class="text-xs text-green-700 font-medium block mb-2">Configuración aceptada</span>
+                            <ul class="saved-list space-y-1 mb-2">
+                                @if($configProyecto->has(3))
+                                    @foreach($configProyecto[3]->valor as $item)
+                                        <li class="flex justify-between text-sm">
+                                            <span class="text-gray-700">{{ $item['concepto'] }}</span>
+                                            <span class="font-semibold text-green-800">{{ $item['porcentage'] }}%</span>
+                                        </li>
+                                    @endforeach
+                                @endif
+                            </ul>
+                            <button type="button" class="btn-delete-config w-full text-red-600 hover:bg-red-100 text-sm font-medium rounded-lg px-3 py-2 border border-red-200" data-tipo="3">
+                                🗑️ Eliminar configuración
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- ESTADO: SUGERIDO --}}
+                    <div class="state-suggested {{ $configProyecto->has(3) ? 'hidden' : '' }}">
+                        @if($dataConfigPorcentajes && $dataConfigPorcentajes->count())
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <span class="text-xs text-yellow-700 font-medium block mb-2">Porcentajes sugeridos ({{ $dataConfigPorcentajes->first()->año }})</span>
+                                <ul class="space-y-1 mb-3">
+                                    @foreach($dataConfigPorcentajes as $c)
+                                        <li class="flex justify-between text-sm">
+                                            <span class="text-gray-700">{{ $c->concepto }}</span>
+                                            <span class="font-semibold text-yellow-800">{{ $c->porcentage }}%</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <button type="button"
+                                    class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
+                                    data-tipo="3"
+                                    data-conceptos="{{ $dataConfigPorcentajes->map(fn($c) => ['concepto' => $c->concepto, 'porcentage' => $c->porcentage])->toJson() }}">
+                                    Aceptar configuración
+                                </button>
+                            </div>
+                        @else
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                                <span class="text-sm text-gray-500">No hay porcentajes configurados.</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Form oculto para ACEPTAR configuración --}}
+            <form id="formAcceptConfig" action="{{ route('planilla.saveConfigPlantilla') }}" method="POST" class="hidden">
+                @csrf
+                <input type="hidden" name="id_proyecto" value="{{ $proyecto->id }}">
+                <input type="hidden" name="tipo" id="accept-tipo">
+                <input type="hidden" name="valor_config" id="accept-valor">
+                <input type="hidden" name="conceptos" id="accept-conceptos">
+                <button type="submit"></button>
+            </form>
+
+            {{-- Form oculto para ELIMINAR configuración --}}
+            <form id="formDeleteConfig"
+                action="#"
+                data-base-url="{{ url('/planilla/deleteConfigPlantilla/' . $proyecto->id) }}"
+                method="POST"
+                class="hidden">
+                @csrf
+                @method('DELETE')
+                <button type="submit"></button>
+            </form>
+
         </div>
 
         <hr class="my-4 border-gray-200">

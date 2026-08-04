@@ -113,8 +113,10 @@ return [
         'proyecto.saveDiaNoLaborado'    => ['isAdmin'],
 
         // ── planilla.* ───────────────────────────────────────────
-        'planilla.index'              => ['isAdmin'],
-        'planilla.savePlantilla'      => ['isAdmin'],
+        'planilla.index'                    => ['isAdmin'],
+        'planilla.savePlantilla'            => ['isAdmin'],
+        'planilla.saveConfigPlantilla'      => ['isAdmin'],
+        'planilla.deleteConfigPlantilla'    => ['isAdmin'],
 
         // ── tareas.* ───────────────────────────────────────────
         'tareas.index'              => ['isAdmin'],

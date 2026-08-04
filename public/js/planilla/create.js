@@ -162,6 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTable();
         resetModal();
 
+        document.getElementById('entregables-container').classList.remove('hidden');
+
         window.dispatchEvent(new CustomEvent('close-modal', { detail: modal }));
     });
 
@@ -359,4 +361,75 @@ document.addEventListener("DOMContentLoaded", () => {
         loadingText: "Guardando...",
         autoRedirect: true
     });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const formAccept = document.getElementById("formAcceptConfig");
+    const formDelete = document.getElementById("formDeleteConfig");
+
+    // Textos descriptivos por tipo, para el Swal de confirmación
+    const nombresTipo = {
+        1: "Valor Área Proyecto",
+        2: "Valor Área Enchape",
+        3: "Porcentajes del Proyecto",
+    };
+
+    // =========================
+    // ✅ Aceptar configuración
+    // =========================
+    FormManager.init(formAccept, {
+        confirmText: (form) => form.dataset.confirmMsg ?? "Se guardará esta configuración.",
+        acepAlertText: "Sí, aceptar",
+        loadingText: "Guardando configuración...",
+        autoRedirect: true, // recarga la página al terminar
+    });
+
+    document.querySelectorAll(".btn-accept-config").forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            const block = btn.closest(".config-block");
+            const tipo = block.dataset.tipo;
+            const kind = block.dataset.kind;
+
+            document.getElementById("accept-tipo").value = tipo;
+
+            if (kind === "simple") {
+                document.getElementById("accept-valor").value = btn.dataset.value;
+                document.getElementById("accept-conceptos").value = "";
+            } else {
+                document.getElementById("accept-valor").value = "";
+                document.getElementById("accept-conceptos").value = btn.dataset.conceptos;
+            }
+
+            formAccept.dataset.confirmMsg = `Se guardará la configuración de "${nombresTipo[tipo]}".`;
+
+            formAccept.requestSubmit();
+        });
+    });
+
+    // =========================
+    // 🗑️ Eliminar configuración
+    // =========================
+    FormManager.init(formDelete, {
+        confirmText: (form) => form.dataset.confirmMsg ?? "Se eliminará esta configuración.",
+        acepAlertText: "Sí, eliminar",
+        cancelColor: "#fa376c",
+        loadingText: "Eliminando configuración...",
+        autoRedirect: true,
+    });
+
+    document.querySelectorAll(".btn-delete-config").forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            const block = btn.closest(".config-block");
+            const tipo = block.dataset.tipo;
+
+            formDelete.action = `${formDelete.dataset.baseUrl}/${tipo}`;
+            formDelete.dataset.confirmMsg = `Se eliminará la configuración de "${nombresTipo[tipo]}" y volverá a mostrarse el valor sugerido.`;
+
+            formDelete.requestSubmit();
+        });
+    });
+
 });
