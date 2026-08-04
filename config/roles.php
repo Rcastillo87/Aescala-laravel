@@ -114,6 +114,7 @@ return [
 
         // ── planilla.* ───────────────────────────────────────────
         'planilla.index'              => ['isAdmin'],
+        'planilla.savePlantilla'      => ['isAdmin'],
 
         // ── tareas.* ───────────────────────────────────────────
         'tareas.index'              => ['isAdmin'],

@@ -169,6 +169,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('planilla')->name('planilla.')->middleware('role:planilla')->group(function () {
         Route::get('/index/{id}', [PlanillaController::class, 'index'])->name('index');
+        Route::post('/savePlantilla', [PlanillaController::class, 'savePlantilla'])->name('savePlantilla');
 
     });
 
