@@ -66,15 +66,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
                     </svg>
                 </button>
-                <input step="any"
-                       onkeydown="if(['e','E','+','-'].includes(event.key)) event.preventDefault();"
-                       value="1"
-                       min="1"
-                       name="materiales[${materialIndex}][cantidad]"
-                       placeholder="Cantidad"
-                       class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
-                       focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                       onchange="calculateTotal(this)">
+                <input type="number" step="0.1" min="0" value="1"
+                    onkeydown="if(['e','E','+','-'].includes(event.key)) event.preventDefault();"
+                    oninput="if(this.value.includes('.')) { let parts = this.value.split('.'); if(parts[1].length > 1) { this.value = parts[0] + '.' + parts[1].substring(0, 1); } }"
+                    name="materiales[${materialIndex}][cantidad]"
+                    placeholder="Cantidad"
+                    class="text-sm py-1 px-4 border outline-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
+                    focus:border-indigo-500 dark:focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                    onchange="calculateTotal(this)">
             </div>
             <div class="flex justify-start">
                 <p class="text-md font-bold text-left  text-gray-500">Observación: <small class="ml-2 text-black">${material.descripccion??''}</small></p>
@@ -95,8 +94,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         const container = inputCantidad.closest('div'); // contenedor del input cantidad
 
         // Asegura que el valor esté dentro del rango
-        if (inputCantidad.value < 1) {
-            inputCantidad.value = 1;
+        if (inputCantidad.value < 0.1) {
+            inputCantidad.value = 0.1;
         }
 
         const cantidad = inputCantidad.value;

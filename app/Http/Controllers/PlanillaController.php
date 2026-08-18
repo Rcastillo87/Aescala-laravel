@@ -17,6 +17,7 @@ use App\Http\Requests\SaveConfigPlantillaRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class PlanillaController extends Controller
@@ -54,6 +55,8 @@ class PlanillaController extends Controller
 
         $otroSi = $proyecto->otro_si()->where('estado', 1)->get();
 
+        $valOtrosis = $proyecto->TotalOtroSi?? 0;
+
         $tipos = PlanillaEntregables::$txTipo;
         $unidades = OtroSi::$unidades;
 
@@ -62,23 +65,25 @@ class PlanillaController extends Controller
         $añoMax = ConfigPorcentajes::max('año');
         $dataConfigPorcentajes = ConfigPorcentajes::where('año', $añoMax)->get();
 
-        $dataValorArea = ValorArea::where('area_min', '<', $areaProyecto)
+        $dataValorArea = ValorArea::where('area_min', '<=', $areaProyecto)
             ->where('area_max', '>=', $areaProyecto)
             ->latest('año')
             ->first();
 
-        $dataValorAreaEnchape = ValorAreaEnchape::where('area_min', '<', $areaProyecto)
+        $dataValorAreaEnchape = ValorAreaEnchape::where('area_min', '<=', $areaProyecto)
             ->where('area_max', '>=', $areaProyecto)
             ->latest('año')
             ->first();
 
-        $configProyecto = PlanillaConfigProyecto::where('id_proyecto', $id)->get()->keyBy('tipo');;
+        //dd($dataConfigPorcentajes->toArray(), $dataValorArea, $dataValorAreaEnchape);
+
+        $configProyecto = PlanillaConfigProyecto::where('id_proyecto', $id)->get()->keyBy('tipo');
 
         $title = 'Planilla del Proyecto';
 
         return view('planilla.planillaProyecto', 
             compact('proyecto', 'departamentos', 'title', 'planillaEntregables', 'otroSi', 'tipos', 'unidades', 
-            'configProyecto', 'dataValorArea', 'dataValorAreaEnchape', 'dataConfigPorcentajes'));
+            'configProyecto', 'dataValorArea', 'dataValorAreaEnchape', 'dataConfigPorcentajes', 'valOtrosis'));
     }
 
     public function savePlantilla(SavePlantillaRequest $request)
@@ -202,6 +207,52 @@ class PlanillaController extends Controller
                 'error'   => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function pdfConfigPlanilla($tipo, $idProyecto)
+    {
+        $proyecto = Proyecto::findOrFail($idProyecto);
+        $configProyecto = PlanillaConfigProyecto::where('id_proyecto', $idProyecto)->get()->keyBy('tipo');
+
+        // 1. Obtener el valor base del Tipo 1 o Tipo 2
+        $valorBase = 0;
+        if ($tipo == 1 && isset($configProyecto[1])) {
+            $valorBase = $configProyecto[1]->valor;
+        } elseif ($tipo == 2 && isset($configProyecto[2])) {
+            $valorBase = $configProyecto[2]->valor;
+        }
+
+        // 2. Calcular los porcentajes del Tipo 3 aplicados al valor base
+        $porcentajes = [];
+        $totalDesglose = 0;
+        
+        $txTipo = PlanillaConfigProyecto::$txTipo[$tipo] ?? 'Configuración General';
+
+        if (isset($configProyecto[3])) {
+            $itemsPorcentaje = is_string($configProyecto[3]->valor) 
+                ? json_decode($configProyecto[3]->valor, true) 
+                : $configProyecto[3]->valor;
+
+            foreach ($itemsPorcentaje as $item) {
+                $porcentaje = (float)($item['porcentage'] ?? 0);
+                $montoCalculado = $valorBase * ($porcentaje / 100);
+                
+                $porcentajes[] = [
+                    'concepto' => $item['concepto'] ?? 'Sin concepto',
+                    'porcentaje' => $porcentaje,
+                    'monto' => $montoCalculado
+                ];
+
+                $totalDesglose += $montoCalculado;
+            }
+        }
+
+        // 3. Cargar la vista y generar el PDF
+        $pdf = Pdf::loadView('planilla.pdfPlanillaConfig', compact('proyecto', 'valorBase', 'porcentajes', 'totalDesglose', 'tipo', 'txTipo'));
+
+        // Opcional: usar ->download('nombre.pdf') si prefieres descarga directa en lugar de visualización en pestaña (`->stream()`)
+        return $pdf->stream('configuracion-planilla-proyecto-' . $proyecto->id . '.pdf');
     }
 
 }

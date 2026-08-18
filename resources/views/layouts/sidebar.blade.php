@@ -13,7 +13,7 @@
                  GRUPO: PROYECTOS
                  modulos: comercial | cartera | proyecto | otro_si | tareas
                  ================================================== --}}
-            @canany(['modulo.comercial', 'modulo.cartera', 'modulo.proyecto', 'modulo.otro_si', 'modulo.tareas'])
+            @canany(['modulo.comercial', 'modulo.cartera', 'modulo.proyecto', 'modulo.otro_si', 'modulo.tareas', 'modulo.notificaciones'])
                 <li>
                     <button type="button"
                         class="flex items-center w-full p-2 text-base font-semibold text-white hover:text-orange-500 hover:bg-gray-100 transition duration-75 rounded-lg group dark:hover:bg-gray-700"
@@ -123,6 +123,24 @@
                                             d="M10 3v4a1 1 0 0 1-1 1H5m4 6 2 2 4-4m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z" />
                                     </svg>
                                     <span class="ms-3">Cotizaciones</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        {{-- Cotizaciones: isAdmin | isUser | isAnalista (oculto visualmente) --}}
+                        @can('modulo.novedades')
+                            <li>
+                                <a href="{{ route('novedades.index') }}"
+                                    class="flex items-center p-2 font-normal text-white text-sm hover:text-orange-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group transition duration-75 pl-6">
+                                    <svg class="w-5 h-5 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
+                                    </svg>
+                                    <span class="ms-3">Novedades</span>
+                                    @if (Auth::user()->newNovedades != 0)
+                                        <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
+                                            {{ Auth::user()->newNovedades }}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
                         @endcan

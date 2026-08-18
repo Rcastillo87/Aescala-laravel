@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         html += `
-            <div class="bg-[#f7f9ff] border-2 border-[#242e68] rounded-xl p-4 text-right text-lg font-bold text-[#242e68]">
+            <div class="col-span-1 md:col-span-2 bg-[#f7f9ff] border-2 border-[#242e68] rounded-xl p-4 text-right text-lg font-bold text-[#242e68]">
                 Total General: ${money(totalGeneral)}
             </div>
         `;
@@ -373,6 +373,9 @@ document.addEventListener("DOMContentLoaded", () => {
         1: "Valor Área Proyecto",
         2: "Valor Área Enchape",
         3: "Porcentajes del Proyecto",
+        4: "Obra Blanca",
+        5: "Carpintería",
+        6: "Excedente Enchape",
     };
 
     // =========================
@@ -395,16 +398,94 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("accept-tipo").value = tipo;
 
             if (kind === "simple") {
-                document.getElementById("accept-valor").value = btn.dataset.value;
+
+                const input = block.querySelector(".suggested-value-input");
+                const valor = input ? input.value.trim() : "";
+
+                if (valor === "" || isNaN(Number(valor))) {
+                    Swal.fire("Error", "Ingrese un valor numérico válido", "error");
+                    return;
+                }
+
+                document.getElementById("accept-valor").value = valor;
                 document.getElementById("accept-conceptos").value = "";
+
             } else {
+
+                const conceptos = [];
+                let hasError = false;
+
+                block.querySelectorAll(".suggested-item").forEach(li => {
+                    const concepto = li.dataset.concepto;
+                    const input = li.querySelector(".suggested-porcentage-input");
+                    const porcentage = input.value.trim();
+
+                    if (porcentage === "" || isNaN(Number(porcentage))) {
+                        hasError = true;
+                        return;
+                    }
+
+                    conceptos.push({ concepto, porcentage: Number(porcentage) });
+                });
+
+                if (hasError) {
+                    Swal.fire("Error", "Todos los porcentajes deben ser válidos", "error");
+                    return;
+                }
+
+                if (conceptos.length === 0) {
+                    Swal.fire("Error", "Debe existir al menos un concepto", "warning");
+                    return;
+                }
+
                 document.getElementById("accept-valor").value = "";
-                document.getElementById("accept-conceptos").value = btn.dataset.conceptos;
+                document.getElementById("accept-conceptos").value = JSON.stringify(conceptos);
             }
 
             formAccept.dataset.confirmMsg = `Se guardará la configuración de "${nombresTipo[tipo]}".`;
 
             formAccept.requestSubmit();
+        });
+    });
+
+    // =========================
+    // 🔢 Total en vivo + ✕ eliminar item (tipo 3, antes de aceptar)
+    // =========================
+    function updateSuggestedTotal(list) {
+        const totalEl = list.closest(".config-block").querySelector(".suggested-total");
+        if (!totalEl) return;
+
+        let total = 0;
+        list.querySelectorAll(".suggested-porcentage-input").forEach(input => {
+            const val = Number(input.value);
+            if (!isNaN(val)) total += val;
+        });
+
+        totalEl.innerText = `${total}%`;
+    }
+
+    document.querySelectorAll('.config-block[data-kind="multi"] .suggested-list').forEach(list => {
+
+        // Recalcular al editar un porcentaje
+        list.addEventListener("input", e => {
+            if (e.target.classList.contains("suggested-porcentage-input")) {
+                updateSuggestedTotal(list);
+            }
+        });
+
+        // Eliminar item y recalcular
+        list.addEventListener("click", e => {
+            const removeBtn = e.target.closest(".remove-suggested-item");
+            if (!removeBtn) return;
+
+            const items = list.querySelectorAll(".suggested-item");
+            if (items.length === 1) {
+                Swal.fire("Error", "Debe existir al menos un concepto", "warning");
+                return;
+            }
+
+            removeBtn.closest(".suggested-item").remove();
+            updateSuggestedTotal(list);
         });
     });
 

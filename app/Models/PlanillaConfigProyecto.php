@@ -26,12 +26,18 @@ class PlanillaConfigProyecto extends Model
         1 => 'span-blue',
         2 => 'span-red',
         3 => 'span-green',
+        4 => 'span-orange',
+        5 => 'span-gray',
+        6 => 'span-blue'
     ];
 
     public static $txTipo = [
         1 => 'Valor área Proyecto',
         2 => 'Valor área Enchape',
         3 => 'Porcentajes del Proyecto',
+        4 => 'Obra Blanca',
+        5 => 'Carpinteria',
+        6 => 'Excedente Enchape'
     ];
 
     public function getSpanTipoAttribute()

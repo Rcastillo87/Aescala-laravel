@@ -26,6 +26,7 @@
 /* Dropdown estilizado */
 .ts-dropdown {
     @apply border border-gray-300 rounded-md shadow-sm;
+    z-index: 999999 !important;
 }
 
 /* Opciones del dropdown */

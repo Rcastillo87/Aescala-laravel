@@ -260,8 +260,8 @@ class SolicitudController extends Controller
             ],
             'materiales.*.cantidad' => [
                 'required',
-                'integer',
-                'min:1'
+                'numeric',
+                'min:0.1'
             ],
             'observacion' => ['nullable', 'string'],
             'cotizar' => ['integer', 'in:0,1']

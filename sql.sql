@@ -35,3 +35,16 @@ CREATE TABLE IF NOT EXISTS `planilla_confi_proyecto` (
   `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `proyecto_novedades` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `novedades` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `id_proyecto` bigint NOT NULL,
+  `id_user` bigint NOT NULL,
+  `estado` int NOT NULL DEFAULT '1',
+  `comentario` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `fecha_respuesta` date DEFAULT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -186,6 +186,14 @@ class User extends Authenticatable
 
     }
 
+    public function getNewNovedadesAttribute()
+    {
+        return Novedades::when(Auth::user()->isColab || Auth::user()->isContratista, function ($query) {
+                $query->where('id_user', Auth::user()->id);
+            })
+        ->whereIn('estado', [1, 2])->count();
+    }
+
     public static $roles = [
         1 => 'Administrador',
         2 => 'Coordinador',

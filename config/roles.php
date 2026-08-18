@@ -9,7 +9,7 @@
  *  -----------------
  *  isAdmin        → Administrador  (id_rol: 1)
  *  isUser         → Coordinador    (id_rol: 2)
- *  isColab        → Arquitecto     (id_rol: 3)
+ *  isColab        → Residentes     (id_rol: 3)
  *  isComer        → Comercial      (id_rol: 4)
  *  iscartera      → Cartera        (id_rol: 5)
  *  isAnalista     → Analista       (id_rol: 6)
@@ -58,6 +58,7 @@ return [
         'cotizacion'    => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'cobro'         => ['isAdmin', 'iscartera'],
         'planilla'      => ['isAdmin'],
+        'novedades'      => ['isAdmin', 'isColab', 'isContratista'],
     ],
 
     // ==========================================================
@@ -127,6 +128,13 @@ return [
         'tareas.listAvances'        => ['isAdmin', 'isColab', 'isContratista'],
         'tareas.saveAvance'         => ['isAdmin', 'isColab', 'isContratista'],
         'tareas.deleteAvance'       => ['isAdmin'],
+
+        // ── novedades.* ──────────────────────────────────
+        'novedades.index'           => ['isAdmin', 'isColab', 'isContratista'],
+        'novedades.delete'          => ['isAdmin', 'isColab', 'isContratista'],
+        'novedades.notificadoUpd'   => ['isAdmin', 'isColab', 'isContratista'],
+        'novedades.saveNotificado'  => ['isAdmin'],
+        'novedades.saveNovedad'     => ['isAdmin', 'isColab', 'isContratista'],
 
         // ── material.* ─────────────────────────────────────────
         'material.index'            => ['isAdmin', 'isAlmacenista'],

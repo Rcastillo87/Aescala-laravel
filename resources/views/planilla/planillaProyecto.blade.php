@@ -106,6 +106,96 @@
 
         <hr class="my-4 border-gray-200">
 
+        <!-- Contenedor Principal (Grid de 2 columnas idéntico a tu dibujo) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white border-2 border-[#242e68] rounded-2xl p-6 shadow-md">
+
+            <!-- ========================================== -->
+            <!-- COLUMNA IZQUIERDA (SÓLO TEXTO / ETIQUETA EN 0) -->
+            <!-- ========================================== -->
+            <div class="space-y-4 border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-6 flex flex-col justify-center">
+                
+                <!-- P. to Area -->
+                <div class="flex items-center justify-between px-2">
+                    <span class="font-bold text-[#242e68]">P. to Area:</span>
+                    <span class="font-semibold text-gray-700">$ {{ number_format($dataValorArea->valor_intervalo  ?? 0, 0, ',', '.') }}</span>
+                </div>
+
+                <!-- P. to Encha -->
+                <div class="flex items-center justify-between px-2">
+                    <span class="font-bold text-[#242e68]">P. to Encha:</span>
+                    <span class="font-semibold text-gray-700">$ {{ number_format($dataValorAreaEnchape->valor_intervalo  ?? 0, 0, ',', '.') }}</span>
+                </div>
+
+                <!-- P. to Carpin (No definido, muestra 0) -->
+                <div class="flex items-center justify-between px-2">
+                    <span class="font-bold text-[#242e68]">P. to Carpin:</span>
+                    <span class="font-semibold text-gray-700">$ 0</span>
+                </div>
+
+            </div>
+
+            <!-- ========================================== -->
+            <!-- COLUMNA DERECHA (LOS EDITABLES CON INPUT Y BOTONES + ADICIONALES) -->
+            <!-- ========================================== -->
+            <div class="space-y-4">
+                
+                <!-- Obra blanca (Tipo 4 - EDITABLE con input, guardar y borrar) -->
+                <div class="config-block flex items-center justify-between" data-tipo="4" data-kind="simple">
+                    <span class="font-bold text-[#242e68]">Obra blanca:</span>
+                    <div class="flex items-center gap-2 w-2/3">
+                        <input type="number" step="any" 
+                            class="suggested-value-input w-full border rounded-lg px-2 py-1 text-sm" 
+                            value="{{ isset($configProyecto[4]) ? $configProyecto[4]->valor : 0 }}"
+                            placeholder="Editable">
+                        <button type="button" class="btn-accept-config bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs" title="Guardar">💾</button>
+                        @if(isset($configProyecto[4]))
+                            <button type="button" class="btn-delete-config bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Eliminar">🗑️</button>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Carpintería (Tipo 5 - EDITABLE con input, guardar y borrar) -->
+                <div class="config-block flex items-center justify-between" data-tipo="5" data-kind="simple">
+                    <span class="font-bold text-[#242e68]">Carpintería:</span>
+                    <div class="flex items-center gap-2 w-2/3">
+                        <input type="number" step="any" 
+                            class="suggested-value-input w-full border rounded-lg px-2 py-1 text-sm" 
+                            value="{{ isset($configProyecto[5]) ? $configProyecto[5]->valor : 0 }}"
+                            placeholder="Editable">
+                        <button type="button" class="btn-accept-config bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs" title="Guardar">💾</button>
+                        @if(isset($configProyecto[5]))
+                            <button type="button" class="btn-delete-config bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Eliminar">🗑️</button>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Adicionales (Suma de los Otrosí - Sin input ni botones, solo texto con el valor) -->
+                <div class="flex items-center justify-between px-2">
+                    <span class="font-bold text-[#242e68]">Adicionales:</span>
+                    <span class="font-semibold text-gray-700">$ {{ number_format($valOtrosis, 0, ',', '.') }}</span>
+                </div>
+
+                <!-- Excedente Enchap (Tipo 6 - EDITABLE con input, guardar y borrar) -->
+                <div class="config-block flex items-center justify-between" data-tipo="6" data-kind="simple">
+                    <span class="font-bold text-[#242e68]">Excedente Enchap:</span>
+                    <div class="flex items-center gap-2 w-2/3">
+                        <input type="number" step="any" 
+                            class="suggested-value-input w-full border rounded-lg px-2 py-1 text-sm" 
+                            value="{{ isset($configProyecto[6]) ? $configProyecto[6]->valor : 0 }}"
+                            placeholder="Editable">
+                        <button type="button" class="btn-accept-config bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs" title="Guardar">💾</button>
+                        @if(isset($configProyecto[6]))
+                            <button type="button" class="btn-delete-config bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Eliminar">🗑️</button>
+                        @endif
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr class="my-4 border-gray-200">
+
         {{-- Botón --}}
         <div class="flex justify-start w-full">
             <x-secondary-button class="flex items-center gap-2 px-4 py-2 cursor-pointer" id="btn-open-modal"
@@ -121,10 +211,11 @@
             <h2 class="text-xl font-bold text-[#242e68]">Entregables Agregados</h2>
             <form id="savePlantilla" action="{{ route('planilla.savePlantilla') }}" method="POST" class="w-full items-center">
                 <input type="hidden" name="id_proyecto" value="{{ $proyecto->id }}">
-                <div id="area-div" class="mt-2 space-y-2 w-full"></div>
-                <button type="submit" class="mt-2 px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Guardar Entregables 
-                </button>
+                <div id="area-div" class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 w-full [&>div]:w-full">
+                    <button type="submit" class="mt-2 px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Guardar Entregables 
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -150,13 +241,13 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
                 {{-- ============================= --}}
-                {{-- TIPO 1: Valor área Proyecto --}}
+                {{-- TIPO 1: Presupuesto Por Proyecto --}}
                 {{-- ============================= --}}
                 <div class="config-block bg-white border rounded-2xl shadow-md p-5"
                     data-tipo="1" data-id-proyecto="{{ $proyecto->id }}" data-kind="simple">
 
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-md font-semibold text-[#242e68]">Valor Área Proyecto</h3>
+                        <h3 class="text-md font-semibold text-[#242e68]">Presupuesto Por Proyecto</h3>
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                             Tipo 1
                         </span>
@@ -174,10 +265,48 @@
                                     {{ $configProyecto->has(1) ? '$ ' . number_format($configProyecto[1]->valor, 0, ',', '.') : '' }}
                                 </span>
                             </div>
-                            <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-2 rounded-lg" data-tipo="1">
-                                🗑️
-                            </button>
+
+                            <div class="space-x-2">
+
+                                @if($configProyecto->has(1) && $configProyecto->has(3))
+                                    <a href="{{ route('planilla.pdfConfigPlanilla', [1, $proyecto->id]) }}" 
+                                        target="_blank"
+                                        id="btn-pdf-tipo-1"
+                                        class="btn-pdf-config px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                                        title="Ver PDF">
+                                        📄 PDF
+                                    </a>
+                                @endif
+                                
+                                <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded-lg" data-tipo="1">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
+
+                        @if($configProyecto->has(1) && $configProyecto->has(3))
+                            @php $totalDesglose1 = 0; @endphp
+                            <div class="mt-2 bg-green-50/60 border border-green-200 rounded-lg p-3">
+                                <span class="text-xs text-green-700 font-medium block mb-2">Desglose por porcentajes</span>
+                                <ul class="space-y-1 mb-2">
+                                    @foreach($configProyecto[3]->valor as $item)
+                                        @php
+                                            $montoItem = $configProyecto[1]->valor * ((float) $item['porcentage'] / 100);
+                                            $totalDesglose1 += $montoItem;
+                                        @endphp
+                                        <li class="flex justify-between text-sm">
+                                            <span class="text-gray-700">{{ $item['concepto'] }} ({{ $item['porcentage'] }}%)</span>
+                                            <span class="font-semibold text-green-800">$ {{ number_format($montoItem, 0, ',', '.') }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <div class="flex justify-between text-sm font-bold border-t border-green-200 pt-2">
+                                    <span class="text-gray-800">Total</span>
+                                    <span class="text-green-800">$ {{ number_format($totalDesglose1, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
 
                     {{-- ESTADO: SUGERIDO --}}
@@ -185,15 +314,18 @@
                         @if($dataValorArea)
                             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                                 <span class="text-xs text-yellow-700 font-medium block mb-1">Valor sugerido</span>
-                                <span class="suggested-value text-lg font-bold text-yellow-800 block mb-2">
-                                    $ {{ number_format($dataValorArea->valor_intervalo, 0, ',', '.') }}
-                                </span>
+                                <div class="flex items-center gap-1 mb-2">
+                                    <span class="text-yellow-800 font-semibold">$</span>
+                                    <input type="number" min="0" step="1"
+                                        class="suggested-value-input w-full border border-yellow-300 rounded-lg px-2 py-1 text-lg font-bold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                        value="{{ $dataValorArea->valor_intervalo }}">
+                                </div>
                                 <p class="text-xs text-gray-500 mb-2">
                                     Rango: {{ $dataValorArea->area_min }} m² - {{ $dataValorArea->area_max }} m² (año {{ $dataValorArea->año }})
                                 </p>
                                 <button type="button"
                                     class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
-                                    data-tipo="1" data-value="{{ $dataValorArea->valor_intervalo }}">
+                                    data-tipo="1">
                                     Aceptar configuración
                                 </button>
                             </div>
@@ -206,13 +338,13 @@
                 </div>
 
                 {{-- ============================= --}}
-                {{-- TIPO 2: Valor área Enchape --}}
+                {{-- TIPO 2: Presupuesto Enchape Por Area --}}
                 {{-- ============================= --}}
                 <div class="config-block bg-white border rounded-2xl shadow-md p-5"
                     data-tipo="2" data-id-proyecto="{{ $proyecto->id }}" data-kind="simple">
 
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-md font-semibold text-[#242e68]">Valor Área Enchape</h3>
+                        <h3 class="text-md font-semibold text-[#242e68]">Presupuesto Enchape Por Area</h3>
                         <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                             Tipo 2
                         </span>
@@ -229,25 +361,66 @@
                                     {{ $configProyecto->has(2) ? '$ ' . number_format($configProyecto[2]->valor, 0, ',', '.') : '' }}
                                 </span>
                             </div>
-                            <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-2 rounded-lg" data-tipo="2">
-                                🗑️
-                            </button>
+
+                            <div class="space-x-2">
+
+                                @if($configProyecto->has(2) && $configProyecto->has(3))
+                                    <a href="{{ route('planilla.pdfConfigPlanilla', [2, $proyecto->id]) }}" 
+                                        target="_blank"
+                                        id="btn-pdf-tipo-2"
+                                        class="btn-pdf-config px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                                        title="Ver PDF">
+                                        📄 PDF
+                                    </a>
+                                @endif
+                                
+                                <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded-lg" data-tipo="2">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
+
+                        @if($configProyecto->has(2) && $configProyecto->has(3))
+                            @php $totalDesglose2 = 0; @endphp
+                            <div class="mt-2 bg-green-50/60 border border-green-200 rounded-lg p-3">
+                                <span class="text-xs text-green-700 font-medium block mb-2">Desglose por porcentajes</span>
+                                <ul class="space-y-1 mb-2">
+                                    @foreach($configProyecto[3]->valor as $item)
+                                        @php
+                                            $montoItem = $configProyecto[2]->valor * ((float) $item['porcentage'] / 100);
+                                            $totalDesglose2 += $montoItem;
+                                        @endphp
+                                        <li class="flex justify-between text-sm">
+                                            <span class="text-gray-700">{{ $item['concepto'] }} ({{ $item['porcentage'] }}%)</span>
+                                            <span class="font-semibold text-green-800">$ {{ number_format($montoItem, 0, ',', '.') }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <div class="flex justify-between text-sm font-bold border-t border-green-200 pt-2">
+                                    <span class="text-gray-800">Total</span>
+                                    <span class="text-green-800">$ {{ number_format($totalDesglose2, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
 
                     <div class="state-suggested {{ $configProyecto->has(2) ? 'hidden' : '' }}">
                         @if($dataValorAreaEnchape)
                             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                                 <span class="text-xs text-yellow-700 font-medium block mb-1">Valor sugerido</span>
-                                <span class="suggested-value text-lg font-bold text-yellow-800 block mb-2">
-                                    $ {{ number_format($dataValorAreaEnchape->valor_intervalo, 0, ',', '.') }}
-                                </span>
+                                <div class="flex items-center gap-1 mb-2">
+                                    <span class="text-yellow-800 font-semibold">$</span>
+                                    <input type="number" min="0" step="1"
+                                        class="suggested-value-input w-full border border-yellow-300 rounded-lg px-2 py-1 text-lg font-bold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                        value="{{ $dataValorAreaEnchape->valor_intervalo }}">
+                                </div>
                                 <p class="text-xs text-gray-500 mb-2">
                                     Rango: {{ $dataValorAreaEnchape->area_min }} m² - {{ $dataValorAreaEnchape->area_max }} m² (año {{ $dataValorAreaEnchape->año }})
                                 </p>
                                 <button type="button"
                                     class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
-                                    data-tipo="2" data-value="{{ $dataValorAreaEnchape->valor_intervalo }}">
+                                    data-tipo="2">
                                     Aceptar configuración
                                 </button>
                             </div>
@@ -260,13 +433,13 @@
                 </div>
 
                 {{-- ================================== --}}
-                {{-- TIPO 3: Porcentajes del Proyecto --}}
+                {{-- TIPO 3: Porcentajes del Proyecto Planilla Base --}}
                 {{-- ================================== --}}
                 <div class="config-block bg-white border rounded-2xl shadow-md p-5"
                     data-tipo="3" data-id-proyecto="{{ $proyecto->id }}" data-kind="multi">
 
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-md font-semibold text-[#242e68]">Porcentajes del Proyecto</h3>
+                        <h3 class="text-md font-semibold text-[#242e68]">Porcentajes del Proyecto Planilla Base</h3>
                         <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                             Tipo 3
                         </span>
@@ -289,6 +462,16 @@
                                     @endforeach
                                 @endif
                             </ul>
+
+                            @if($configProyecto->has(3))
+                                <div class="flex justify-between text-sm font-bold border-t border-green-200 pt-2 mb-2">
+                                    <span class="text-gray-800">Total</span>
+                                    <span class="text-green-800">
+                                        {{ rtrim(rtrim(number_format(collect($configProyecto[3]->valor)->sum('porcentage'), 2, '.', ''), '0'), '.') }}%
+                                    </span>
+                                </div>
+                            @endif
+
                             <button type="button" class="btn-delete-config w-full text-red-600 hover:bg-red-100 text-sm font-medium rounded-lg px-3 py-2 border border-red-200" data-tipo="3">
                                 🗑️ Eliminar configuración
                             </button>
@@ -300,18 +483,31 @@
                         @if($dataConfigPorcentajes && $dataConfigPorcentajes->count())
                             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                                 <span class="text-xs text-yellow-700 font-medium block mb-2">Porcentajes sugeridos ({{ $dataConfigPorcentajes->first()->año }})</span>
-                                <ul class="space-y-1 mb-3">
+                                <ul class="suggested-list space-y-1 mb-3">
                                     @foreach($dataConfigPorcentajes as $c)
-                                        <li class="flex justify-between text-sm">
-                                            <span class="text-gray-700">{{ $c->concepto }}</span>
-                                            <span class="font-semibold text-yellow-800">{{ $c->porcentage }}%</span>
+                                        <li class="suggested-item flex items-center justify-between gap-2 text-sm" data-concepto="{{ $c->concepto }}">
+                                            <span class="text-gray-700 flex-1">{{ $c->concepto }}</span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" min="0" step="0.01"
+                                                    class="suggested-porcentage-input w-16 text-right border border-yellow-300 rounded px-1 py-0.5 font-semibold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                                    value="{{ $c->porcentage }}">
+                                                <span class="text-gray-500">%</span>
+                                            </div>
+                                            <button type="button" class="remove-suggested-item text-red-500 hover:text-red-700 px-1" title="Eliminar">
+                                                ✕
+                                            </button>
                                         </li>
                                     @endforeach
                                 </ul>
+
+                                <div class="flex justify-between text-sm font-bold border-t border-yellow-300 pt-2 mb-3">
+                                    <span class="text-gray-800">Total</span>
+                                    <span class="suggested-total text-yellow-800">{{ $dataConfigPorcentajes->sum('porcentage') }}%</span>
+                                </div>
+
                                 <button type="button"
                                     class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
-                                    data-tipo="3"
-                                    data-conceptos="{{ $dataConfigPorcentajes->map(fn($c) => ['concepto' => $c->concepto, 'porcentage' => $c->porcentage])->toJson() }}">
+                                    data-tipo="3">
                                     Aceptar configuración
                                 </button>
                             </div>

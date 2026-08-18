@@ -24,6 +24,7 @@ use App\Http\Controllers\InsumosController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\CobroController;
 use App\Http\Controllers\PlanillaController;
+use App\Http\Controllers\NovedadesController;
 
 
 Route::get('/', function () {
@@ -172,7 +173,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/savePlantilla', [PlanillaController::class, 'savePlantilla'])->name('savePlantilla');
         Route::post('/saveConfigPlantilla', [PlanillaController::class, 'saveConfigPlantilla'])->name('saveConfigPlantilla');
         Route::delete('/deleteConfigPlantilla/{idProyecto}/{tipo}', [PlanillaController::class, 'deleteConfigPlantilla'])->name('deleteConfigPlantilla');
-});
+        
+        Route::get('/pdfConfigPlanilla/{proy}/{tipo}', [PlanillaController::class, 'pdfConfigPlanilla'])->name('pdfConfigPlanilla');
+    
+    });
+
+    Route::prefix('novedades')->name('novedades.')->middleware('role:novedades')->group(function () {
+        Route::get('/index', [NovedadesController::class, 'index'])->name('index');
+        Route::delete('/delete/{id}', [NovedadesController::class, 'delete'])->name('delete');
+        Route::put('/notificadoUpd/{id}', [NovedadesController::class, 'notificadoUpd'])->name('notificadoUpd');
+        Route::post('/saveNotificado/{id}', [NovedadesController::class, 'saveNotificado'])->name('saveNotificado');
+        Route::post('/saveNovedad', [NovedadesController::class, 'saveNovedad'])->name('saveNovedad');
+    });
 
     Route::prefix('tareas')->name('tareas.')->middleware('role:tareas')->group(function () {
         Route::get('/index', [TareasController::class, 'index'])->name('index');
