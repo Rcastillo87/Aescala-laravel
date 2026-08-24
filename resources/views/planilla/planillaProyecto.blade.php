@@ -195,9 +195,11 @@
                                             $porcentajeItem = (float) $item['porcentage'];
                                             $montoItem = $configProyecto[1]->valor * ($porcentajeItem / 100);
 
-                                            
-                                            $totalDesglose1 += $item['en_pesos'] == 0 ? $montoItem : $porcentajeItem;
-                                            $totalPorcentaje1 += $item['en_pesos'] == 0 ? $porcentajeItem : 0;
+                                            // Usamos ?? 0 para evitar el error si la clave no existe
+                                            $enPesos = $item['en_pesos'] ?? 0;
+
+                                            $totalDesglose1 += ($enPesos == 1) ? $porcentajeItem : $montoItem;
+                                            $totalPorcentaje1 += ($enPesos == 1) ? 0 : $porcentajeItem;
                                         @endphp
 
                                         <li class="grid grid-cols-[minmax(0,1fr)_55px_95px] sm:grid-cols-[minmax(0,1fr)_70px_110px] md:grid-cols-[minmax(0,1fr)_80px_120px] gap-2 text-sm items-start">
