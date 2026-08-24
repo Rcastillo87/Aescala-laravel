@@ -207,10 +207,10 @@
                                                 {{ $item['concepto'] }}
                                             </span>
                                             <span class="text-right text-gray-700 whitespace-nowrap">
-                                                {{ $item['en_pesos'] == 0 ? $porcentajeItem . '%' : '-' }}
+                                                {{ ($enPesos == 0) ? $porcentajeItem . '%' : '-' }}
                                             </span>
                                             <span class="text-right font-semibold text-green-800 whitespace-nowrap">
-                                                $ {{ number_format( $item['en_pesos'] == 0 ?  $montoItem : $porcentajeItem, 0, ',', '.') }}
+                                                $ {{ number_format((($enPesos == 0) ? $montoItem : $porcentajeItem), 0, ',', '.') }}
                                             </span>
                                         </li>
                                     @endforeach
