@@ -194,6 +194,8 @@
                                         @php
                                             $porcentajeItem = (float) $item['porcentage'];
                                             $montoItem = $configProyecto[1]->valor * ($porcentajeItem / 100);
+
+                                            
                                             $totalDesglose1 += $item['en_pesos'] == 0 ? $montoItem : $porcentajeItem;
                                             $totalPorcentaje1 += $item['en_pesos'] == 0 ? $porcentajeItem : 0;
                                         @endphp
