@@ -48,3 +48,7 @@ CREATE TABLE IF NOT EXISTS `proyecto_novedades` (
   `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+ALTER TABLE config_porcentajes 
+ADD COLUMN en_pesos SMALLINT NOT NULL DEFAULT 0 AFTER descripccion;

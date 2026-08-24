@@ -206,3 +206,28 @@ document.addEventListener('click', function (e) {
         }
     });
 });
+
+document.addEventListener('change', function (e) {
+    if (e.target && e.target.classList.contains('toggle-pesos')) {
+        const checkbox = e.target;
+        
+        // 🛠️ CORRECCIÓN AQUÍ: Subimos hasta la tarjeta principal de la fila (el contenedor padre general)
+        // Buscamos el contenedor que abarca todo el ítem (el div con padding y bordes principal)
+        const cardItem = checkbox.closest('.space-y-3').closest('div') || checkbox.closest('form'); 
+        // O de forma más directa subiendo 3 niveles o buscando el grid principal de la card:
+        const mainCard = checkbox.closest('.border.rounded-xl.p-4'); 
+
+        if (mainCard) {
+            // Buscamos el label de porcentaje dentro de toda esa tarjeta
+            const labelPorcentaje = mainCard.querySelector('.label-porcentaje');
+            
+            if (labelPorcentaje) {
+                if (checkbox.checked) {
+                    labelPorcentaje.textContent = 'Pesos *';
+                } else {
+                    labelPorcentaje.textContent = 'Porcentaje *';
+                }
+            }
+        }
+    }
+});

@@ -19,6 +19,7 @@ class ConfigPorcentajes extends Model
         'concepto',
         'porcentage',
         'año',
-        'descripccion'
+        'descripccion',
+        'en_pesos'
     ];
 }

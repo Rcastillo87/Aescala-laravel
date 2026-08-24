@@ -22,6 +22,7 @@ class PorcentajesRequest extends FormRequest
             'items.*.concepto' => ['required', 'string', 'max:255'],
             'items.*.porcentage' => ['required', 'integer', 'min:0', 'max:100'],
             'items.*.descripccion' => ['nullable', 'string', 'max:500'],
+            'items.*.en_pesos' => ['nullable', 'boolean'],
         ];
     }
 
@@ -34,8 +35,10 @@ class PorcentajesRequest extends FormRequest
             $items = $this->input('items', []);
 
             // Suma total = 100%
-            $suma = collect($items)->sum('porcentage');
-
+            $suma = collect($items)
+                ->filter(fn ($item) => empty($item['en_pesos']))
+                ->sum('porcentage');
+                
             if ($suma !== 100) {
                 $validator->errors()->add(
                     'porcentaje_total',
@@ -66,6 +69,7 @@ class PorcentajesRequest extends FormRequest
             'items.*.concepto' => 'Concepto',
             'items.*.porcentage' => 'Porcentaje',
             'items.*.descripccion' => 'Descripción',
+            'items.*.en_pesos' => 'En Pesos',
         ];
     }
 }

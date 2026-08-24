@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         html += `
-            <div class="col-span-1 md:col-span-2 bg-[#f7f9ff] border-2 border-[#242e68] rounded-xl p-4 text-right text-lg font-bold text-[#242e68]">
+            <div class="col-span-1 md:col-span-4 bg-[#f7f9ff] border-2 border-[#242e68] rounded-xl p-4 text-right text-lg font-bold text-[#242e68]">
                 Total General: ${money(totalGeneral)}
             </div>
         `;
@@ -419,13 +419,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     const concepto = li.dataset.concepto;
                     const input = li.querySelector(".suggested-porcentage-input");
                     const porcentage = input.value.trim();
+                    const enPesosInput = li.querySelector(".suggested-en-pesos");
 
                     if (porcentage === "" || isNaN(Number(porcentage))) {
                         hasError = true;
                         return;
                     }
 
-                    conceptos.push({ concepto, porcentage: Number(porcentage) });
+                    conceptos.push({ concepto, porcentage: Number(porcentage), en_pesos: Number(enPesosInput.value) });
                 });
 
                 if (hasError) {

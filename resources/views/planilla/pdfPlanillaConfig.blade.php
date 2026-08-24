@@ -29,36 +29,45 @@
         }
         .header {
             border-bottom: 2px solid #242e68;
-            padding-bottom: 10px;
-            margin-bottom: 25px; /* Separación asegurada */
+            padding-bottom: 8px;
+            margin-bottom: 15px;
         }
         .header h1 {
             color: #242e68;
             margin: 0;
-            font-size: 22px;
+            font-size: 20px;
         }
         .header p {
-            margin: 5px 0 0;
+            margin: 3px 0 0;
             color: #666;
             font-size: 11px;
         }
+        /* --- INFO BOX COMPACTO --- */
         .info-box {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
-            padding: 12px;
+            padding: 8px 12px;
             border-radius: 6px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        .info-box p {
-            margin: 4px 0;
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
         }
+        .info-table td {
+            padding: 3px 5px;
+            border: none;
+            font-size: 11px;
+            vertical-align: top;
+        }
+        /* ------------------------- */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px; /* Separación del título */
+            margin-top: 5px;
         }
         th, td {
-            padding: 7px;
+            padding: 6px 7px;
             text-align: left;
             border-bottom: 1px solid #cbd5e1;
         }
@@ -88,6 +97,36 @@
             border-top: 1px solid #ccc;
             padding-top: 4px;
         }
+
+        table.adicionales {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 9pt;
+        }
+        table.adicionales caption {
+            background: #243c7a;
+            color: #fff;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 5px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table.adicionales th,
+        table.adicionales td {
+            padding: 5px 5px;
+            border: 1px solid #ddd;
+        }
+        table.adicionales th {
+            line-height: 1.1;
+            background: #f1f3f9;
+            color: #243c7a;
+            text-align: left;
+            font-size: 11px;
+        }
+
     </style>
 </head>
 <body>
@@ -101,12 +140,21 @@
         <p>Tipo de Configuración Aplicada: <strong>{{ $txTipo }}</strong></p>
     </div>
 
+    <!-- Info-box rediseñado en 2 columnas compactas -->
     <div class="info-box">
-        <p><strong>Nombre del Proyecto:</strong> {{ $proyecto->nombre_proyecto ?? 'Sin nombre asignado' }}</p>
-        <p><strong>Valor Base:</strong> $ {{ number_format($valorBase, 0, ',', '.') }}</p>
+        <table class="info-table">
+            <tr>
+                <td style="width: 50%;"><strong>Nombre del Proyecto:</strong> {{ $proyecto->nombre_proyecto ?? 'Sin nombre asignado' }}</td>
+                <td style="width: 50%;"><strong>Área del Proyecto:</strong> {{ $proyecto->area_privada }} m²</td>
+            </tr>
+            <tr>
+                <td><strong>Valor Base:</strong> $ {{ number_format($totalDesglose, 0, ',', '.') }}</td>
+                <td><strong>Residente:</strong> {{ $proyecto->user->nombre_completo ?? 'Sin residente asignado' }}</td>
+            </tr>
+        </table>
     </div>
 
-    <h3>Desglose de Porcentajes</h3>
+    <h3 style="margin: 0 0 5px 0; color: #242e68; font-size: 13px;">Desglose de Porcentajes</h3>
     <table>
         <thead>
             <tr>
@@ -118,10 +166,10 @@
         <tbody>
             @php $totalPorcentaje = 0; @endphp
             @forelse($porcentajes as $item)
-                @php $totalPorcentaje += $item['porcentaje']; @endphp
+                @php $totalPorcentaje += $item['en_pesos'] == 0 ? $item['porcentaje'] : 0; @endphp
                 <tr>
                     <td>{{ $item['concepto'] }}</td>
-                    <td class="text-right">{{ $item['porcentaje'] }}%</td>
+                    <td class="text-right">{{ $item['en_pesos'] == 0 ? $item['porcentaje'] . '%' : '-'}}</td>
                     <td class="text-right">$ {{ number_format($item['monto'], 0, ',', '.') }}</td>
                 </tr>
             @empty
@@ -140,6 +188,48 @@
         </tfoot>
         @endif
     </table>
+
+    <h3 style="margin: 0 0 5px 0; color: #242e68; font-size: 13px;">Entregables</h3>
+
+    <table class="adicionales">
+        <thead>
+            <tr>
+                <th style="width: 40px;">ITEM</th>
+                <th>MATERIAL / ACTIVIDAD</th>
+                <th style="width: 50px;">UNID</th>
+                <th style="width: 50px;">CANT</th>
+                <th style="width: 105px;">VALOR UNITARIO</th>
+                <th style="width: 105px;">SUB VALORES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $globalIndex = 1; @endphp
+            @foreach($adicionales as $area => $datos)
+                <tr class="section-title">
+                    <td colspan="6" {!! $datos['espacio'] == 'Descuentos'? 'style="color: #FF0000;"' : '' !!}>{{ $datos['espacio'] }}</td>
+                </tr>
+                @foreach($datos['items'] as $item)
+                <tr>
+                    <td>{{ $globalIndex++ }}</td>
+                    <td>{{ $item['descripcion'] }}</td>
+                    <td style="text-align: center;">{{ $unidades[$item['unidad']] }}</td>
+                    <td style="text-align: center;">{{ $item['cantidad'] }}</td>
+                    <td class="right">{!! $item['valor_unitario'] == 0?'<b style="color: #FF0000;">Obsequio</b>' : '$ ' . $item['valor_unitario'] !!}</td>
+                    <td class="right">{!! $item['valor_total'] == 0?'<b style="color: #FF0000;">Obsequio</b>' : '$ ' . $item['valor_total'] !!}</td>
+                </tr>
+                @endforeach
+                <tr class="total-row">
+                    <td colspan="5" class="right">SUB TOTAL</td>
+                    <td class="right">$ {{ number_format($datos['subtotal'], 0, ',', '.') }}</td>
+                </tr>
+            @endforeach
+            <tr class="total-row">
+                <td colspan="5" class="right" style="color: #FF0000">TOTAL</td>
+                <td class="right">$ {{ number_format($valorTotal, 0, ',', '.') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
 
     <footer>
         {{ env('RAZON') }} – NIT: {{ env('NIT') }} – {{ env('CIU_DPT_EMPRE') }} <br>

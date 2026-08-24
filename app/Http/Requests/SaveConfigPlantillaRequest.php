@@ -48,6 +48,7 @@ class SaveConfigPlantillaRequest extends FormRequest
             'conceptos' => ['required_if:tipo,3', 'nullable', 'array', 'min:1'], // 👈 agregué nullable
             'conceptos.*.concepto' => ['required_with:conceptos', 'string'],
             'conceptos.*.porcentage' => ['required_with:conceptos', 'numeric', 'min:0'],
+            'conceptos.*.en_pesos' => ['required_with:conceptos', 'boolean'],
         ];
     }
 

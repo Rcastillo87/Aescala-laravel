@@ -75,8 +75,6 @@ class PlanillaController extends Controller
             ->latest('año')
             ->first();
 
-        //dd($dataConfigPorcentajes->toArray(), $dataValorArea, $dataValorAreaEnchape);
-
         $configProyecto = PlanillaConfigProyecto::where('id_proyecto', $id)->get()->keyBy('tipo');
 
         $title = 'Planilla del Proyecto';
@@ -236,20 +234,53 @@ class PlanillaController extends Controller
 
             foreach ($itemsPorcentaje as $item) {
                 $porcentaje = (float)($item['porcentage'] ?? 0);
-                $montoCalculado = $valorBase * ($porcentaje / 100);
+                $montoCalculado = $item['en_pesos'] == 0 ? $valorBase * ($porcentaje / 100) : $porcentaje;
                 
                 $porcentajes[] = [
                     'concepto' => $item['concepto'] ?? 'Sin concepto',
                     'porcentaje' => $porcentaje,
-                    'monto' => $montoCalculado
+                    'monto' => $montoCalculado,
+                    'en_pesos' => $item['en_pesos'] ?? 0,
                 ];
 
                 $totalDesglose += $montoCalculado;
             }
         }
 
+        $dataEntrePlanilla = PlanillaEntregables::where('id_proyecto', $idProyecto)->get();
+        $txTipoEntre = PlanillaEntregables::$txTipo;
+        $arr = [];
+        $valorTotal = 0;
+        foreach ($dataEntrePlanilla as $item) {
+            $area = $txTipoEntre[$item->tipo];
+            if (!isset($arr[$area])) {
+                $arr[$area] = [
+                    "espacio"       => $area,
+                    "items"         => [],
+                    "subtotal"      => 0
+                ];
+            }
+
+            $val = $item->valor_uni * $item->cantidad;
+
+            $arr[$area]["items"][] = [
+                "descripcion"   => $item->descripccion,
+                "cantidad"      => $item->cantidad,
+                "valor_unitario"=> number_format($item->valor_uni, 0, ',', '.'),
+                "valor_total"   => number_format($val, 0, ',', '.'),
+                "unidad"      => $item->unidad,
+            ];
+            $arr[$area]["subtotal"] += $val;
+            $valorTotal += $val;
+        }
+        $adicionales = $arr;
+
+        $unidades = OtroSi::$unidades;
+
         // 3. Cargar la vista y generar el PDF
-        $pdf = Pdf::loadView('planilla.pdfPlanillaConfig', compact('proyecto', 'valorBase', 'porcentajes', 'totalDesglose', 'tipo', 'txTipo'));
+        $pdf = Pdf::loadView('planilla.pdfPlanillaConfig', 
+            compact('proyecto', 'valorBase', 'porcentajes', 'totalDesglose', 'tipo', 'txTipo', 
+            'adicionales', 'txTipoEntre', 'unidades', 'valorTotal'));
 
         // Opcional: usar ->download('nombre.pdf') si prefieres descarga directa en lugar de visualización en pestaña (`->stream()`)
         return $pdf->stream('configuracion-planilla-proyecto-' . $proyecto->id . '.pdf');
