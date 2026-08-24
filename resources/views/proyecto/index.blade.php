@@ -373,6 +373,13 @@
                         </div>
                     @endif
 
+                    @if($item->area_privada)
+                        <div class="min-w-0">
+                            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Area Privada</p>
+                            <p class="text-sm text-gray-700 leading-snug font-medium">{!! $item->area_privada !!} mt²</p>
+                        </div>
+                    @endif
+
                     @if($item->observacion)
                         <div class="min-w-0 xs:col-span-2 md:col-span-3 xl:col-span-4">
                             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Observación</p>
@@ -571,7 +578,7 @@
                 @endif
 
                 {{-- planilla --}}
-                <div class="relative @if(!((Auth::user()->isAdmin) 
+                <div class="relative @if(!((Auth::user()->isAdmin) && $item->area_privada
                     && ($item->id_estado == 1 || $item->id_estado == 2))) hidden @endif">
                     <a tabindex="0"
                        data-tooltip-target="tooltip-hover-planilla-{{$item->id}}"

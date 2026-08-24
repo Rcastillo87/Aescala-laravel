@@ -293,10 +293,10 @@
                                             </span>
                                             <span class="font-semibold text-green-800">
                                                 {{ $item['porcentage'] }}
-                                                @if ($item['en_pesos'] == 0)
-                                                    %
-                                                @else
+                                                @if ( isset($item['en_pesos']) && ($item['en_pesos'] == 1))
                                                     $
+                                                @else
+                                                    %
                                                 @endif
                                             </span>
                                         </li>
