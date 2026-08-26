@@ -22,7 +22,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
 // 1. Ver novedades y cambiar estado SOLO al cerrar el SweetAlert
-function verNovedades(id, estadoActual, textoNovedades) {
+function verNovedades(id, estadoActual, buttonElement) {
+    // Extrae el texto directamente del atributo data del botón presionado de forma segura
+    const textoNovedades = buttonElement.getAttribute('data-novedades') || '';
+
     let listaHtml = textoNovedades.split('***').map(item => `<li class="text-left mb-2">🔹 ${item.trim()}</li>`).join('');
 
     Swal.fire({
@@ -31,7 +34,6 @@ function verNovedades(id, estadoActual, textoNovedades) {
         icon: 'info',
         confirmButtonText: 'Cerrar'
     }).then((result) => {
-        // Se ejecuta cuando el usuario hace clic en "Cerrar" o fuera de la alerta
         if (estadoActual === 1) {
             fetch(`/novedades/notificadoUpd/${id}`, {
                 method: 'PUT',
@@ -44,7 +46,7 @@ function verNovedades(id, estadoActual, textoNovedades) {
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
-                    location.reload(); // Recarga para actualizar el estado visualmente
+                    location.reload();
                 }
             });
         }

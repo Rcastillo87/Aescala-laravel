@@ -2,7 +2,8 @@
 
     <!-- 1. BOTÓN VER NOVEDADES (Cambia estado de 1 a 2 automáticamente) -->
     <button type="button" 
-        onclick="verNovedades({{ $item->id }}, {{ $item->estado }}, '{{ addslashes($item->novedades) }}')"
+        onclick="verNovedades({{ $item->id }}, {{ $item->estado }}, this)"
+        data-novedades="{{ $item->novedades }}"
         class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 text-white border-2 border-blue-800 hover:bg-white hover:text-blue-800"
         title="Ver Novedades">
         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
