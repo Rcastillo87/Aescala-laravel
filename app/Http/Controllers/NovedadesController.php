@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class NovedadesController extends Controller
 {
-    public function index() 
+    public function index(Request $req) 
     {
         Gate::authorize('novedades.index');
 
@@ -33,9 +33,15 @@ class NovedadesController extends Controller
             ->get(['id', 'nombre_proyecto'])
             ->toArray();
 
+        if(Auth::user()->isAdmin){
+            $id_user = $req->id_user;
+        } else {
+            $id_user = Auth::user()->id;
+        }
+
         $items = Novedades::with('proyecto', 'user')
-            ->when(!Auth::user()->isAdmin, function ($query) {
-                $query->where('id_user', Auth::user()->id);
+            ->when($id_user, function ($query) use($id_user) {
+                $query->where('id_user', $id_user);
             })
             ->orderBy('createdAt', 'DESC')
             ->paginate($perPage)
@@ -43,7 +49,9 @@ class NovedadesController extends Controller
 
         $estados = Novedades::$estado;
 
-        return view('novedades.index', compact('title', 'proyectos', 'items', 'estados'));
+        $userColab = User::whereIn('id_rol', [3, 7])->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
+
+        return view('novedades.index', compact('title', 'proyectos', 'items', 'estados', 'userColab'));
     }
 
     public function delete($id)
