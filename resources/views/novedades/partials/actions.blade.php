@@ -25,14 +25,14 @@
 
     <!-- 3. BOTÓN VER COMENTARIO GUARDADO (Solo si existe comentario) -->
     @if(!empty($item->comentario) && Auth::user()->isAdmin)
-    <button type="button" 
-        onclick="verComentario('{{ addslashes($item->comentario) }}', '{{ $estados[$item->estado] ?? '' }}')"
-        class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-600 text-white border-2 border-amber-700 hover:bg-white hover:text-amber-800"
-        title="Ver Comentario">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-        </svg>
-    </button>
+        <button type="button"
+            onclick="verComentario({{ Js::from($item->comentario) }}, {{ Js::from($estados[$item->estado] ?? '') }})"
+            class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-600 text-white border-2 border-amber-700 hover:bg-white hover:text-amber-800"
+            title="Ver Comentario">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+        </button>
     @endif
 
     <!-- 4. BOTÓN DE ELIMINACIÓN (Solo si está en estado 1) -->
