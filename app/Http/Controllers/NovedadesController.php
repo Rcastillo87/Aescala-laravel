@@ -36,7 +36,7 @@ class NovedadesController extends Controller
             ->toArray();
 
         if(Auth::user()->isAdmin){
-            $id_user = $req->id_user;
+            $id_user = $req->input('id_user');
         } else {
             $id_user = Auth::user()->id;
         }
