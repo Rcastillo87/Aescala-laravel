@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Proyecto;
 use App\Models\Novedades;
+use App\Models\User;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
