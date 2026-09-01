@@ -24,9 +24,9 @@
 
                     @if (Auth::user()->isAdmin) 
                         <div class="p-2 shrink-0 w-[40]">
-                            <x-input-label for="$id_user" :value="__('Encargado')" />
+                            <x-input-label for="id_user" :value="__('Encargado')" />
                             <x-select-input 
-                                name="$id_user" 
+                                name="id_user" 
                                 :data="['id', 'nombre_completo']"
                                 :options="$userColab" 
                                 :selected="Request('id_user')"
