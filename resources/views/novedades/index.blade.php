@@ -2,7 +2,7 @@
 @section('content')
 
     @if(Auth::user()->isAdmin)
-        @include(novedades.filter)
+        @include('novedades.filter')
     @endif
 
     <div class="flex justify-end">
