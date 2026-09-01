@@ -29,7 +29,7 @@
                                 name="$id_user" 
                                 :data="['id', 'nombre_completo']"
                                 :options="$userColab" 
-                                :selected="Request('$id_user')" 
+                                :selected="Request('id_user')"
                                 class="block mt-1 w-full" 
                             />
                         </div>
