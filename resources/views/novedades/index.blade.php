@@ -5,7 +5,7 @@
         @include('novedades.filter')
     @endif
 
-    <div class="flex justify-end">
+    <div class="flex justify-end mb-2">
         <button type="button" 
             onclick="abrirModalNuevaNovedad()"
             class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex items-center gap-2">
