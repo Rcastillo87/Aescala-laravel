@@ -37,13 +37,16 @@ class Novedades extends Model
         1 => 'Notificado',
         2 => 'En Revisión',
         3 => 'Aceptado',
-        4 => 'Cancelado'
+        4 => 'Cancelado',
+        5 => 'Parcial'
+
     ];
     public static $ClassEstado = [
         1 => 'span-blue',
         2 => 'span-yellow',
         3 => 'span-green',
-        4 => 'span-red'
+        4 => 'span-red',
+        5 => 'span-orange'
     ];
 
     public function getSpanEstadoAttribute()

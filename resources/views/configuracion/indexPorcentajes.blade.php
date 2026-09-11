@@ -52,7 +52,7 @@
 
         @forelse($items as $item)
             @php
-                if( empty($item['en_pesos'] == 0) ) {
+                if( $item['en_pesos'] == 0 ) {
                     $suma += $item['porcentage'];
                 }
             @endphp

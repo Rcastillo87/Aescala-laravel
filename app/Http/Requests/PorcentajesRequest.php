@@ -20,7 +20,7 @@ class PorcentajesRequest extends FormRequest
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['nullable', 'integer', 'exists:config_porcentajes,id'],
             'items.*.concepto' => ['required', 'string', 'max:255'],
-            'items.*.porcentage' => ['required', 'integer', 'min:0', 'max:100'],
+            'items.*.porcentage' => ['required', 'integer', 'min:0'],
             'items.*.descripccion' => ['nullable', 'string', 'max:500'],
             'items.*.en_pesos' => ['nullable', 'boolean'],
         ];
@@ -36,7 +36,7 @@ class PorcentajesRequest extends FormRequest
 
             // Suma total = 100%
             $suma = collect($items)
-                ->filter(fn ($item) => empty($item['en_pesos']))
+                ->filter(fn ($item) => (!isset($item['en_pesos']) || $item['en_pesos'] == 0))
                 ->sum('porcentage');
                 
             if ($suma !== 100) {

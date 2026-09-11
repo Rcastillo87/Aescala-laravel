@@ -234,7 +234,12 @@ class PlanillaController extends Controller
 
             foreach ($itemsPorcentaje as $item) {
                 $porcentaje = (float)($item['porcentage'] ?? 0);
-                $montoCalculado = $item['en_pesos'] == 0 ? $valorBase * ($porcentaje / 100) : $porcentaje;
+
+                if(isset($item['en_pesos']) && $item['en_pesos'] == 0) {
+                    $montoCalculado = $valorBase * ($porcentaje / 100);
+                } else {
+                    $montoCalculado = $porcentaje;
+                }
                 
                 $porcentajes[] = [
                     'concepto' => $item['concepto'] ?? 'Sin concepto',

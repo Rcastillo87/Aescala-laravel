@@ -15,9 +15,9 @@
                 <select name="estado" id="select_estado_nuevo" required
                     class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 rounded-md shadow-sm">
                     <option value="">Seleccione...</option>
-                    <option value="2">En Revisión</option>
                     <option value="3">Aceptado</option>
                     <option value="4">Rechazado/Cancelado</option>
+                    <option value="5">Parcial</option>
                 </select>
             </div>
 

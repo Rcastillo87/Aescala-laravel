@@ -500,7 +500,7 @@
             </x-secondary-button>
         </div>
 
-        <div class="py-2 justify-start w-full space-y-2 @if(empty($planillaEntregables)) hidden @endif">
+        <div id="entregables-container-padre" class="py-2 justify-start w-full space-y-2 @if(empty($planillaEntregables)) hidden @endif">
             <h2 class="text-xl font-bold text-[#242e68]">Entregables Agregados</h2>
 
             <form id="savePlantilla" action="{{ route('planilla.savePlantilla') }}" method="POST" class="w-full space-y-4">
@@ -510,7 +510,7 @@
                 <div id="area-div" class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full [&>div]:w-full"></div>
 
                 {{-- El botón de guardar se queda fijo aquí, fuera de area-div, para que no lo borre el JS --}}
-                <div id="entregables-container" class="hidden w-full flex justify-end mt-4">
+                <div class="w-full flex justify-end mt-4">
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
                         Guardar Entregables
                     </button>

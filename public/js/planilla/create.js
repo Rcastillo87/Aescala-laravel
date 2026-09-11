@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTable();
         resetModal();
 
-        document.getElementById('entregables-container').classList.remove('hidden');
+        document.getElementById('entregables-container-padre').classList.remove('hidden');
 
         window.dispatchEvent(new CustomEvent('close-modal', { detail: modal }));
     });

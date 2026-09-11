@@ -109,7 +109,7 @@ class NovedadesController extends Controller
         }
 
         $request->validate([
-            'estado' => ['required', 'in:2,3,4'],
+            'estado' => ['required', 'in:3,4, 5'],
             'comentario' => ['required', 'string', 'max:1000']
         ]);
 
