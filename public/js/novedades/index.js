@@ -1,13 +1,26 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     new TomSelect("#id_proyecto",{
         create: true,
-        dropdownParent: 'body',
+        //dropdownParent: 'body',
         sortField: {
             field: "text",
             direction: "asc"
         },
+        /*onInitialize: function() {
+            this.wrapper.classList.add("tom-select-custom");
+        }*/
         onInitialize: function() {
             this.wrapper.classList.add("tom-select-custom");
+            // Fix para móviles/PWA: Forzar z-index en el contenedor desplegable del propio TomSelect
+            if (this.dropdown) {
+                this.dropdown.style.zIndex = "9999";
+            }
+        },
+        onDropdownOpen: function() {
+            // Evita que Alpine.js o el scroll del modal bloqueen la lista desplegable en táctil
+            if (this.dropdown) {
+                this.dropdown.style.zIndex = "9999";
+            }
         }
     });
 
@@ -157,6 +170,11 @@ function eliminarNovedad(id) {
 function abrirModalNuevaNovedad() {
     let form = document.getElementById('formNuevaNovedad');
     form.reset();
+
+    // Resetear TomSelect si ya fue inicializado
+    if (document.getElementById('id_proyecto').tomselect) {
+        document.getElementById('id_proyecto').tomselect.clear();
+    }
     
     // Dejar únicamente el primer textarea por defecto
     let contenedor = document.getElementById('contenedor-novedades');
