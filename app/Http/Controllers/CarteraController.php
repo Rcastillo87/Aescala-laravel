@@ -74,16 +74,17 @@ class CarteraController extends Controller
                 "pazysalvo" => $proyecto->paz_salvo
             ];
             $contraOtrosi = $proyecto->otro_si()
-                ->where('estado', 1)
+                //->where('estado', 1)
                 ->get()
                 ->map(function ($item) use ($id) {
-                    return [
+                    return $item->estado == 1 ? 
+                    [
                         "id_proyecto" => $id,
                         "concepto" => "Otrosí N° " . $item->numero,
                         "valor_total" => $item->total_deve,
                         "urlContrato" => route('otro_si.otroSiPdf', $item->id),
                         "pazysalvo" => $item->paz_salvo
-                    ];
+                    ] : null;
                 })
                 ->toArray();
             $contratos = array_merge([$contraProyec], $contraOtrosi);

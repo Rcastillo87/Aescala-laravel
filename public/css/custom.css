@@ -88,3 +88,14 @@
   opacity: 0.4;
   background: #ccc;
 }
+
+/* Añadir a tu archivo CSS principal */
+.modal-stacking-fix {
+    isolation: isolate;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que el z-index del desplegable de TomSelect supere al modal si usas la biblioteca */
+.ts-dropdown {
+    z-index: 9999 !important;
+}
