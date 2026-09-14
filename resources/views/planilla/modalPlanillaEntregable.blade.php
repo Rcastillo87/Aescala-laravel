@@ -9,6 +9,22 @@
             </h2>
         </div>
 
+        <!-- Banner de advertencia y total acumulado para Tipo 3 -->
+        <div id="divAdvertenciaPorcentaje" class="hidden my-3 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-900 rounded-r-lg shadow-sm">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⚠️</span>
+                    <p class="text-sm font-medium">
+                        La suma de los porcentajes no debe ser mayor a <strong>90%</strong>.
+                    </p>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-amber-700 block uppercase font-bold">Suma Total</span>
+                    <span id="sumaPorcentajeTotal" class="text-lg font-extrabold text-amber-900">0%</span>
+                </div>
+            </div>
+        </div>
+
         <form id="formPlanillaEntregable" class="space-y-4">
 
             {{-- Área + botón --}}
@@ -77,19 +93,36 @@
                                         required
                                     />
                                 </div>
+
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <div class="relative">
+                                        <x-input-label for="valor_uni" :value="__('Valor Unidad *')" />
+                                        <x-text-input
+                                            id="valor_uni"
+                                            name="valor_uni"
+                                            type="number"
+                                            min="0"
+                                            class="block mt-1 w-full moneda-cop"
+                                            required
+                                        />
+                                    </div>
+                                    <div id="divPorcentaje" class="relative hidden">
+                                        <x-input-label for="porcentage" :value="__('Porcentaje')" />
+                                        <x-text-input
+                                            id="porcentage"
+                                            name="porcentage"
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            value="0"
+                                            class="block mt-1 w-full"
+                                        />
+                                    </div>
+                                </div>
+
                             </div>
 
-                            <div class="relative">
-                                <x-input-label for="valor_uni" :value="__('Valor Unidad *')" />
-                                <x-text-input
-                                    id="valor_uni"
-                                    name="valor_uni"
-                                    type="number"
-                                    min="0"
-                                    class="block mt-1 w-full moneda-cop"
-                                    required
-                                />
-                            </div>
                         </div>
 
                         {{-- Columna derecha (textarea ocupa toda la altura) --}}

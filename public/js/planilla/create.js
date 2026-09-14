@@ -17,6 +17,71 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectArea = document.getElementById("id_tipo");
     const itemsContainer = document.getElementById("area-items");
     const addItemBtn = document.getElementById("addItem");
+    
+    // Referencias a la advertencia y totalizador
+    const divAdvertencia = document.getElementById("divAdvertenciaPorcentaje");
+    const sumaPorcentajeEl = document.getElementById("sumaPorcentajeTotal");
+
+    // ==========================================
+    // 🧮 Control de Visibilidad y Suma Porcentajes
+    // ==========================================
+    function calcularSumaPorcentajes() {
+        let suma = 0;
+        document.querySelectorAll("input[name='porcentage'], input[name='porcentage[]']").forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) {
+                suma += val;
+            }
+        });
+
+        if (sumaPorcentajeEl) {
+            sumaPorcentajeEl.innerText = `${suma.toFixed(2).replace(/\.00$/, '')}%`;
+            // Cambiar color a rojo si excede el 90%
+            if (suma > 90) {
+                sumaPorcentajeEl.classList.add("text-red-600");
+                sumaPorcentajeEl.classList.remove("text-amber-900");
+            } else {
+                sumaPorcentajeEl.classList.remove("text-red-600");
+                sumaPorcentajeEl.classList.add("text-amber-900");
+            }
+        }
+
+        return suma;
+    }
+
+    function togglePorcentaje() {
+        const esTipo3 = selectArea.value === "3" || selectArea.value === 3;
+        const contenedoresPorcentaje = document.querySelectorAll("#divPorcentaje, .divPorcentaje");
+        const inputsPorcentaje = document.querySelectorAll("input[name='porcentage'], input[name='porcentage[]']");
+
+        if (esTipo3) {
+            contenedoresPorcentaje.forEach(el => el.classList.remove("hidden"));
+            if (divAdvertencia) divAdvertencia.classList.remove("hidden");
+            calcularSumaPorcentajes();
+        } else {
+            contenedoresPorcentaje.forEach(el => el.classList.add("hidden"));
+            if (divAdvertencia) divAdvertencia.classList.add("hidden");
+            inputsPorcentaje.forEach(input => {
+                input.value = 0;
+            });
+            if (sumaPorcentajeEl) sumaPorcentajeEl.innerText = "0%";
+        }
+    }
+
+    // Escuchar el evento de cambio en el Select
+    if (selectArea) {
+        selectArea.addEventListener("change", togglePorcentaje);
+        if (selectArea.tomselect) {
+            selectArea.tomselect.on("change", togglePorcentaje);
+        }
+    }
+
+    // Recalcular la suma total en tiempo real al escribir en los inputs de porcentaje
+    itemsContainer.addEventListener("input", (e) => {
+        if (e.target.matches("input[name='porcentage'], input[name='porcentage[]']")) {
+            calcularSumaPorcentajes();
+        }
+    });
 
     // =========================
     // 💰 Formato dinero
@@ -36,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
         itemsContainer.appendChild(itemTemplate.cloneNode(true));
 
         reindexItems();
+        togglePorcentaje(); // Re-evalúa visibilidad y resetea el marcador
     }
 
     // =========================
@@ -44,7 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function reindexItems() {
         document.querySelectorAll(".item-group").forEach((el, i) => {
             el.dataset.itemNumber = i + 1;
-            el.querySelector("h3").innerText = `Item ${i + 1}`;
+            const h3 = el.querySelector("h3");
+            if (h3) h3.innerText = `Item ${i + 1}`;
         });
     }
 
@@ -52,10 +119,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // ➕ Agregar item
     // =========================
     addItemBtn.addEventListener("click", () => {
-        const clone = document.querySelector(".item-group").cloneNode(true);
-        clone.querySelectorAll("input, textarea").forEach(e => e.value = "");
+        const clone = itemTemplate.cloneNode(true);
+        clone.querySelectorAll("input, textarea").forEach(e => {
+            if (e.name === 'porcentage' || e.name === 'porcentage[]') {
+                e.value = "0";
+            } else {
+                e.value = "";
+            }
+        });
         itemsContainer.appendChild(clone);
         reindexItems();
+        togglePorcentaje();
     });
 
     // =========================
@@ -78,22 +152,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (res.isConfirmed) {
                     e.target.closest(".item-group").remove();
                     reindexItems();
+                    calcularSumaPorcentajes(); // Actualizar suma tras borrar
                 }
             });
         }
     });
 
     // =========================
-    // 📦 Obtener data modal
+    // 📦 Obtener data modal & Validación
     // =========================
     function getModalData() {
         const id_area = selectArea.value;
         const areaText = selectArea.options[selectArea.selectedIndex].text;
-        const texto = selectArea.options[selectArea.selectedIndex].text;
+        const texto = areaText;
+        const esTipo3 = id_area === "3" || id_area === 3;
 
         if (!id_area) {
             Swal.fire("Error", "Seleccione un tipo", "error");
             return null;
+        }
+
+        // 🛑 VALIDACIÓN DE PORCENTAJE MÁXIMO (90%)
+        if (esTipo3) {
+            const sumaTotal = calcularSumaPorcentajes();
+            if (sumaTotal > 90) {
+                Swal.fire("Suma excedida", `La suma de los porcentajes es ${sumaTotal}%. No debe superar el 90%.`, "error");
+                return null;
+            }
         }
 
         const items = [];
@@ -106,6 +191,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const valorRaw = group.querySelector('[name="valor_uni"]').value.trim();
             const material = group.querySelector("textarea").value.trim();
             const unidad = group.querySelector('[name="unidad"]').value.trim();
+            
+            // Capturar porcentaje si existe
+            const inputPorcentaje = group.querySelector('[name="porcentage"], [name="porcentage[]"]');
+            const porcentajeVal = inputPorcentaje ? Number(inputPorcentaje.value.trim() || 0) : 0;
 
             if (cantidad === "" || valorRaw === "" || material === "" || unidad === "") {
                 Swal.fire("Error", "Todos los campos son obligatorios", "error");
@@ -113,13 +202,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const valor = Number(valorRaw) * (texto == 'Descuentos' ? -1 : 1);
+            const valor = Number(valorRaw) * (texto === 'Descuentos' ? -1 : 1);
 
             items.push({
                 cantidad: Number(cantidad),
                 valor_unitario: valor,
                 material,
-                unidad: Number(unidad)
+                unidad: Number(unidad),
+                porcentage: porcentajeVal
             });
         });
 
@@ -162,7 +252,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTable();
         resetModal();
 
-        document.getElementById('entregables-container-padre').classList.remove('hidden');
+        const containerPadre = document.getElementById('entregables-container-padre');
+        if (containerPadre) containerPadre.classList.remove('hidden');
 
         window.dispatchEvent(new CustomEvent('close-modal', { detail: modal }));
     });
@@ -171,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🧱 Render tabla
     // =========================
     function renderTable() {
-
         let html = "";
         let totalGeneral = 0;
         let globalIndex = 0;
@@ -192,13 +282,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         <!-- DESCRIPCIÓN -->
                         <div class="text-gray-800 flex-1">
                             ${item.material}
+                            ${item.porcentage ? `<span class="block text-xs text-blue-600 font-semibold">Porcentaje: ${item.porcentage}%</span>` : ''}
                         </div>
 
                         <!-- CANTIDAD + VALOR -->
                         <div class="text-right text-sm whitespace-nowrap">
                             <div>
                                 <span class="text-gray-500">Unidad:</span>
-                                <span class="font-semibold">${unidades[item.unidad]}</span>
+                                <span class="font-semibold">${typeof unidades !== 'undefined' ? unidades[item.unidad] : item.unidad}</span>
                             </div>
                             <div>
                                 <span class="text-gray-500">Cant:</span>
@@ -216,6 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <input type="hidden" name="entregables[${globalIndex}][cantidad]" value="${item.cantidad}">
                         <input type="hidden" name="entregables[${globalIndex}][valor_unitario]" value="${item.valor_unitario}">
                         <input type="hidden" name="entregables[${globalIndex}][unidad]" value="${item.unidad}">
+                        <input type="hidden" name="entregables[${globalIndex}][porcentage]" value="${item.porcentage ?? 0}">
 
                     </div>
                 `;
@@ -289,9 +381,9 @@ document.addEventListener("DOMContentLoaded", () => {
         areaDiv.innerHTML = html;
     }
 
-    // =========================
-    // ✏️ Editar / eliminar
-    // =========================
+    // ==========================================
+    // ✏️ Editar área (Carga de datos al modal)
+    // ==========================================
     areaDiv.addEventListener("click", e => {
 
         const editBtn = e.target.closest(".edit-area");
@@ -306,6 +398,10 @@ document.addEventListener("DOMContentLoaded", () => {
             editIndex = index;
 
             selectArea.value = data.id_area;
+            if (selectArea.tomselect) {
+                selectArea.tomselect.setValue(data.id_area);
+            }
+
             itemsContainer.innerHTML = "";
 
             data.items.forEach(item => {
@@ -314,12 +410,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 clone.querySelector('[name="cantidad"]').value = item.cantidad;
                 clone.querySelector('[name="valor_uni"]').value = item.valor_unitario;
                 clone.querySelector("textarea").value = item.material;
-                clone.querySelector('[name="unidad"]').value =  item.unidad;
+                clone.querySelector('[name="unidad"]').value = item.unidad;
+                
+                // Cargar el porcentaje almacenado
+                const inputPorcentaje = clone.querySelector('[name="porcentage"], [name="porcentage[]"]');
+                if (inputPorcentaje) {
+                    inputPorcentaje.value = item.porcentage ?? 0;
+                }
 
                 itemsContainer.appendChild(clone);
             });
 
             reindexItems();
+            togglePorcentaje(); // Mostrar/ocultar y calcular total
 
             window.dispatchEvent(new CustomEvent('open-modal', { detail: modal }));
         }
@@ -348,7 +451,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof entregablesFromDB !== "undefined" && entregablesFromDB.length > 0) {
         entregables = entregablesFromDB;
         editIndex = entregablesFromDB.length;
-        console.log("planillaEntregables", editIndex);
         renderTable();
     }
 

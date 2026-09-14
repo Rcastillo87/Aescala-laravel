@@ -26,6 +26,7 @@ class SavePlantillaRequest extends FormRequest
             'entregables.*.cantidad' => 'required|numeric|min:0',
             'entregables.*.valor_unitario' => 'required|integer',
             'entregables.*.unidad' => ['required','integer', Rule::in(array_keys(Otrosi::$unidades))],
+            'entregables.*.porcentage' => 'nullable|integer|min:0|max:100',
         ];
     }
 
@@ -40,6 +41,7 @@ class SavePlantillaRequest extends FormRequest
             'entregables.*.cantidad' => 'Cantidad',
             'entregables.*.valor_unitario' => 'Valor Unitario',
             'entregables.*.unidad' => 'Unidad',
+            'entregables.*.porcentage' => 'Porcentaje',
         ];
     }
 }

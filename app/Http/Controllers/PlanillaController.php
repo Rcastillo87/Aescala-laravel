@@ -44,6 +44,7 @@ class PlanillaController extends Controller
                             'cantidad'        => (float) $item->cantidad,
                             'valor_unitario'  => (int) $item->valor_uni,
                             'unidad'          => (int) $item->unidad,
+                            'porcentage'      => (int) $item->porcentage
                         ];
 
                     })->values()->toArray(),
@@ -123,6 +124,7 @@ class PlanillaController extends Controller
                         'cantidad'     => $entregable['cantidad'],
                         'valor_uni'    => $entregable['valor_unitario'],
                         'descripccion' => $entregable['material'],
+                        'porcentage'   => $entregable['porcentage'],
                     ]
                 );
             }
@@ -206,7 +208,6 @@ class PlanillaController extends Controller
             ], 500);
         }
     }
-
 
     public function pdfConfigPlanilla($tipo, $idProyecto)
     {

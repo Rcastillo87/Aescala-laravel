@@ -23,6 +23,7 @@ class PlanillaEntregables extends Model
         'descripccion',
         'id_proyecto',
         'id_user',
+        'porcentage'
     ];
 
     public static $ClassSpanTipo= [
