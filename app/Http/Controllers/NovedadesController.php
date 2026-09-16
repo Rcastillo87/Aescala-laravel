@@ -45,6 +45,9 @@ class NovedadesController extends Controller
             ->when($id_user, function ($query) use($id_user) {
                 $query->where('id_user', $id_user);
             })
+            ->when($req->input('estadoSearch'), function ($query) use($req) {
+                $query->where('estado', $req->input('estadoSearch'));
+            })
             ->orderBy('createdAt', 'DESC')
             ->paginate($perPage)
             ->withQueryString();

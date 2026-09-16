@@ -51,8 +51,8 @@ class CarteraController extends Controller
 
     private function datapagosProyecto($id){
         try {
-            //$proyecto = Proyecto::with(['otro_si', 'soporteFact'])->findOrFail($id);
-            $proyecto = Proyecto::with([
+
+           $proyecto = Proyecto::with([
                 'otro_si' => function ($query) {
                     $query->where('estado', 1);
                 },
@@ -79,9 +79,7 @@ class CarteraController extends Controller
                 "urlContrato" => route('proyecto.contratoPdf', $id),
                 "pazysalvo" => $proyecto->paz_salvo
             ];
-            $contraOtrosi = $proyecto->otro_si()
-                //->where('estado', 1)
-                ->get()
+            $contraOtrosi = $proyecto->otro_si
                 ->map(function ($item) use ($id) {
                     return [
                         "id_proyecto" => $id,
@@ -92,7 +90,8 @@ class CarteraController extends Controller
                     ];
                 })
                 ->toArray();
-            $contratos = array_merge([$contraProyec], $contraOtrosi);
+
+                $contratos = array_merge([$contraProyec], $contraOtrosi);
 
             $valTotalPagado = Pagos::where('id_proyecto', $id)->get()->sum('valor');
 

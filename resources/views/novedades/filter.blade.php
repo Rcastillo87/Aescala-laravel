@@ -35,6 +35,17 @@
                         </div>
                     @endif
 
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="estadoSearch" :value="__('Estado')" />
+                        <x-select-input 
+                            name="estadoSearch" 
+                            :options="$estados" 
+                            :selected="Request('estadoSearch')"
+                            class="block mt-1 w-full" 
+                        />
+                    </div>
+
+
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium
                              text-center rounded-lg text-[#242e68] bor-2  border-dolid border-2 border-[#242e68] hover:bg-[#242e68] hover:text-white mt-6"
