@@ -24,7 +24,7 @@
     @endif
 
     <!-- 3. BOTÓN VER COMENTARIO GUARDADO (Solo si existe comentario) -->
-    @if(!empty($item->comentario) && Auth::user()->isAdmin)
+    @if(!empty($item->comentario))
         <button type="button"
             onclick="verComentario({{ Js::from($item->comentario) }}, {{ Js::from($estados[$item->estado] ?? '') }})"
             class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-600 text-white border-2 border-amber-700 hover:bg-white hover:text-amber-800"
