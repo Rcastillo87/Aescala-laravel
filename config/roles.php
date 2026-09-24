@@ -57,7 +57,7 @@ return [
         'user'          => ['isAdmin'],
         'cotizacion'    => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'cobro'         => ['isAdmin', 'iscartera'],
-        'planilla'      => ['isAdmin'],
+        'planilla'      => ['isAdmin', 'isColab', 'isContratista'],
         'novedades'      => ['isAdmin', 'isColab', 'isContratista'],
     ],
 
@@ -114,10 +114,12 @@ return [
         'proyecto.saveDiaNoLaborado'    => ['isAdmin'],
 
         // ── planilla.* ───────────────────────────────────────────
-        'planilla.index'                    => ['isAdmin'],
+        'planilla.index'                    => ['isAdmin', 'isColab', 'isContratista'],
         'planilla.savePlantilla'            => ['isAdmin'],
         'planilla.saveConfigPlantilla'      => ['isAdmin'],
         'planilla.deleteConfigPlantilla'    => ['isAdmin'],
+        'planilla.saveCobros'               => ['isAdmin', 'isColab', 'isContratista'],
+        'planilla.pdfConfigPlanilla'        => ['isAdmin', 'isColab', 'isContratista'],
 
         // ── tareas.* ───────────────────────────────────────────
         'tareas.index'              => ['isAdmin'],

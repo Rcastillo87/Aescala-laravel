@@ -168,12 +168,13 @@
                                         📄 PDF
                                     </a>
                                 @endif
-
-                                <button type="button"
-                                    class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded-lg"
-                                    data-tipo="1">
-                                    🗑️
-                                </button>
+                                @can('planilla.deleteConfigPlantilla')
+                                    <button type="button"
+                                        class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded-lg"
+                                        data-tipo="1">
+                                        🗑️
+                                    </button>
+                                @endcan
                             </div>
                         </div>
 
@@ -227,38 +228,44 @@
                     </div>
 
                     <div class="state-suggested {{ $configProyecto->has(1) ? 'hidden' : '' }}">
-                        @if($dataValorArea)
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                <span class="text-xs text-yellow-700 font-medium block mb-1">
-                                    Valor sugerido
-                                </span>
-                                <div class="flex items-center gap-1 mb-2">
-                                    <span class="text-yellow-800 font-semibold">$</span>
-                                    <input type="number"
-                                        min="0"
-                                        step="1"
-                                        class="moneda-cop suggested-value-input w-full border border-yellow-300 rounded-lg px-2 py-1 text-lg font-bold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                                        value="{{ $dataValorArea->valor_intervalo }}">
-                                </div>
-                                <p class="text-xs text-gray-500 mb-2">
-                                    Rango: {{ $dataValorArea->area_min }} m² -
-                                    {{ $dataValorArea->area_max }} m²
-                                    (año {{ $dataValorArea->año }})
-                                </p>
+                        @can('planilla.saveConfigPlantilla')
+                            @if($dataValorArea)
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <span class="text-xs text-yellow-700 font-medium block mb-1">
+                                        Valor sugerido
+                                    </span>
+                                    <div class="flex items-center gap-1 mb-2">
+                                        <span class="text-yellow-800 font-semibold">$</span>
+                                        <input type="number"
+                                            min="0"
+                                            step="1"
+                                            class="moneda-cop suggested-value-input w-full border border-yellow-300 rounded-lg px-2 py-1 text-lg font-bold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                            value="{{ $dataValorArea->valor_intervalo }}">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mb-2">
+                                        Rango: {{ $dataValorArea->area_min }} m² -
+                                        {{ $dataValorArea->area_max }} m²
+                                        (año {{ $dataValorArea->año }})
+                                    </p>
 
-                                <button type="button"
-                                    class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
-                                    data-tipo="1">
-                                    Aceptar configuración
-                                </button>
-                            </div>
+                                    <button type="button"
+                                        class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
+                                        data-tipo="1">
+                                        Aceptar configuración
+                                    </button>
+                                </div>
+                            @else
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                                    <span class="text-sm text-gray-500">
+                                        No hay valor configurado para esta área.
+                                    </span>
+                                </div>
+                            @endif
                         @else
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
-                                <span class="text-sm text-gray-500">
-                                    No hay valor configurado para esta área.
-                                </span>
+                                <span class="text-sm text-gray-500">Pendiente de configuración por el administrador.</span>
                             </div>
-                        @endif
+                        @endcan
                     </div>
                 </div>
                 </div>
@@ -328,11 +335,14 @@
                                 @endif
                             </ul>
 
-                            <button type="button"
-                                class="btn-delete-config w-full text-red-600 hover:bg-red-100 text-sm font-medium rounded-lg px-3 py-2 border border-red-200"
-                                data-tipo="3">
-                                🗑️ Eliminar configuración
-                            </button>
+                            @can('planilla.deleteConfigPlantilla')
+                                <button type="button"
+                                    class="btn-delete-config w-full text-red-600 hover:bg-red-100 text-sm font-medium rounded-lg px-3 py-2 border border-red-200"
+                                    data-tipo="3">
+                                    🗑️ Eliminar configuración
+                                </button>
+                            @endcan
+
                         </div>
                     </div>
 
@@ -420,30 +430,36 @@
                                     <span class="saved-value text-xs font-bold text-green-800">
                                         {{ isset($configProyecto[$tipo]) ? '$ ' . number_format($configProyecto[$tipo]->valor, 0, ',', '.') : '' }}
                                     </span>
-                                    <button type="button"
-                                        class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded text-xs"
-                                        data-tipo="{{ $tipo }}"
-                                        title="Eliminar">
-                                        🗑️
-                                    </button>
+                                    @can('planilla.deleteConfigPlantilla')
+                                        <button type="button"
+                                            class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded text-xs"
+                                            data-tipo="{{ $tipo }}"
+                                            title="Eliminar">
+                                            🗑️
+                                        </button>
+                                    @endcan
                                 </div>
                             </div>
 
                             {{-- ESTADO: EDITABLE / SUGERIDO --}}
                             <div class="state-suggested {{ isset($configProyecto[$tipo]) ? 'hidden' : '' }}">
-                                <div class="flex gap-1.5">
-                                    <input type="number"
-                                        step="any"
-                                        class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]"
-                                        value="{{ $cfg['suggested'] }}"
-                                        placeholder="Editable">
-                                    <button type="button"
-                                        class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0"
-                                        data-tipo="{{ $tipo }}"
-                                        title="Guardar">
-                                        💾 Guardar
-                                    </button>
-                                </div>
+                                @can('planilla.saveConfigPlantilla')
+                                    <div class="flex gap-1.5"> ...input y botón Guardar... </div>
+                                @else
+                                    <div class="flex gap-1.5">
+                                        <input type="number"
+                                            step="any"
+                                            class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]"
+                                            value="{{ $cfg['suggested'] }}"
+                                            placeholder="Editable">
+                                        <button type="button"
+                                            class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0"
+                                            data-tipo="{{ $tipo }}"
+                                            title="Guardar">
+                                            💾 Guardar
+                                        </button>
+                                    </div>
+                                @endcan
                             </div>
                         </div>
                     @endforeach
@@ -486,19 +502,23 @@
             </form>
         </div>
 
+        @include('planilla.cobros')
+
         <hr class="my-4 border-gray-200">
 
         {{-- ================================================== --}}
         {{-- ENTREGABLES --}}
         {{-- ================================================== --}}
-        <div class="flex justify-start w-full">
-            <x-secondary-button class="flex items-center gap-2 px-4 py-2 cursor-pointer" id="btn-open-modal"
-                x-on:click="$dispatch('open-modal', 'modalPlanillaEntregable-modal')"
-                x-data="">
-                <b>+</b>
-                <span>Agregar Entregable</span>
-            </x-secondary-button>
-        </div>
+        @can('planilla.savePlantilla')
+            <div class="flex justify-start w-full">
+                <x-secondary-button class="flex items-center gap-2 px-4 py-2 cursor-pointer" id="btn-open-modal"
+                    x-on:click="$dispatch('open-modal', 'modalPlanillaEntregable-modal')"
+                    x-data="">
+                    <b>+</b>
+                    <span>Agregar Entregable</span>
+                </x-secondary-button>
+            </div>
+        @endcan
 
         <div id="entregables-container-padre" class="py-2 justify-start w-full space-y-2 @if(empty($planillaEntregables)) hidden @endif">
             <h2 class="text-xl font-bold text-[#242e68]">Entregables Agregados</h2>
@@ -510,11 +530,13 @@
                 <div id="area-div" class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full [&>div]:w-full"></div>
 
                 {{-- El botón de guardar se queda fijo aquí, fuera de area-div, para que no lo borre el JS --}}
-                <div class="w-full flex justify-end mt-4">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
-                        Guardar Entregables
-                    </button>
-                </div>
+                @can('planilla.savePlantilla')
+                    <div class="w-full flex justify-end mt-4">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
+                            Guardar Entregables
+                        </button>
+                    </div>
+                @endcan
             </form>
         </div>
 
@@ -580,6 +602,9 @@
     <script>
         const unidades = @json($unidades);
         const entregablesFromDB = @json($planillaEntregables);
+        const puedeEditarEntregables = @json(auth()->user()->can('planilla.savePlantilla'));
+        window.hayCobros = @json($cobros['hay']);
     </script>
     <script src="{{ asset('js/planilla/create.js') }}?v={{ filemtime(public_path('js/planilla/create.js')) }}"></script>
+    <script src="{{ asset('js/planilla/cobros.js') }}?v={{ filemtime(public_path('js/planilla/cobros.js')) }}"></script>
 @endsection

@@ -327,6 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${area.areaText}
                     </h2>
 
+                    ${puedeEditarEntregables ? `
                     <div class="flex gap-2">
 
                         <button type="button"
@@ -355,7 +356,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             </span>
                         </button>
 
-                    </div>
+                    </div>` : ''}
+
                 </div>
 
                 <!-- ITEMS -->
@@ -444,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.getElementById("btn-open-modal").addEventListener("click", () => {
+    document.getElementById("btn-open-modal")?.addEventListener("click", () => {
         resetModal();
     });
 
@@ -610,8 +612,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const tipo = block.dataset.tipo;
 
             formDelete.action = `${formDelete.dataset.baseUrl}/${tipo}`;
-            formDelete.dataset.confirmMsg = `Se eliminará la configuración de "${nombresTipo[tipo]}" y volverá a mostrarse el valor sugerido.`;
+            const advertencia = (window.hayCobros && ["1", "3"].includes(String(tipo)))
+                ? " Se perderán también los cobros y aprobaciones ya registrados."
+                : "";
 
+            formDelete.action = `${formDelete.dataset.baseUrl}/${tipo}`;
+            formDelete.dataset.confirmMsg = `Se eliminará la configuración de "${nombresTipo[tipo]}" y volverá a mostrarse el valor sugerido.${advertencia}`;
             formDelete.requestSubmit();
         });
     });

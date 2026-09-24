@@ -173,9 +173,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/savePlantilla', [PlanillaController::class, 'savePlantilla'])->name('savePlantilla');
         Route::post('/saveConfigPlantilla', [PlanillaController::class, 'saveConfigPlantilla'])->name('saveConfigPlantilla');
         Route::delete('/deleteConfigPlantilla/{idProyecto}/{tipo}', [PlanillaController::class, 'deleteConfigPlantilla'])->name('deleteConfigPlantilla');
-        
-        Route::get('/pdfConfigPlanilla/{proy}/{tipo}', [PlanillaController::class, 'pdfConfigPlanilla'])->name('pdfConfigPlanilla');
-    
+        Route::post('/saveCobros', [PlanillaController::class, 'saveCobros'])->name('saveCobros');
+        Route::get('/pdfConfigPlanilla/{tipo}/{proy}', [PlanillaController::class, 'pdfConfigPlanilla'])->name('pdfConfigPlanilla');
     });
 
     Route::prefix('novedades')->name('novedades.')->middleware('role:novedades')->group(function () {
