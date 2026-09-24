@@ -671,7 +671,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("id_proyecto_begin").value = proyecto.id ?? '';
             document.getElementById("conFechaDise").value = 0;
             document.getElementById("checkboxFechaDise").checked = false;
-            document.getElementById("user_carpinteria").checked = proyecto.user_carpinteria;
+            document.getElementById("user_carpinteria").value = proyecto.user_carpinteria;
         });
     });
 
