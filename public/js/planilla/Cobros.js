@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, true);
 
     // =========================
-    // 💾 Envío (mismo manejo que el resto de la planilla)
+    // 💾 Envío (mismo manejo que el resto de la planilla) 
     // =========================
     FormManager.init(form, {
         confirmText: "Se guardarán los cobros del proyecto.",
