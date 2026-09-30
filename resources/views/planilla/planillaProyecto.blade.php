@@ -444,14 +444,14 @@
                             {{-- ESTADO: EDITABLE / SUGERIDO --}}
                             <div class="state-suggested {{ isset($configProyecto[$tipo]) ? 'hidden' : '' }}">
                                 @can('planilla.saveConfigPlantilla')
-                                    <div class="flex gap-1.5"> ...input y botón Guardar... </div>
-                                @else
                                     <div class="flex gap-1.5">
-                                        <input type="number"
-                                            step="any"
-                                            class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]"
-                                            value="{{ $cfg['suggested'] }}"
-                                            placeholder="Editable">
+                                        <div class="w-full">
+                                            <input type="number"
+                                                step="any"
+                                                class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]"
+                                                value="{{ $cfg['suggested'] }}"
+                                                placeholder="Editable">
+                                        </div>
                                         <button type="button"
                                             class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0"
                                             data-tipo="{{ $tipo }}"
@@ -459,6 +459,8 @@
                                             💾 Guardar
                                         </button>
                                     </div>
+                                @else
+                                    <div class="flex gap-1.5"> ...input y botón Guardar... </div>
                                 @endcan
                             </div>
                         </div>
