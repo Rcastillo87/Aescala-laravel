@@ -45,6 +45,16 @@
                         />
                     </div>
 
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="id_proyectoSearch" :value="__('Proyectos')" />
+                        <x-select-input 
+                            name="id_proyectoSearch" 
+                            :data="['id', 'nombre_proyecto']"
+                            :options="$proyectosNovedad" 
+                            :selected="Request('id_proyectoSearch')"
+                            class="block mt-1 w-full" 
+                        />
+                    </div>
 
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium

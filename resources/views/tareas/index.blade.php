@@ -57,7 +57,7 @@
                 <div class='grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 mb-2'>
                     <span class='text-[11px] text-gray-400'>Cliente</span>
                     <span class='text-[11px] font-medium text-gray-700 truncate'>$proy->nombre_cliente</span>
-                    <span class='text-[11px] text-gray-400'>Residente</span>
+                    <span class='text-[11px] text-gray-400'>Residt Proyecto</span>
                     <span class='text-[11px] font-medium text-gray-700 truncate'>".strtolower($proy->user->nombre_completo ?? 'Sin asignar')."</span>
                     <span class='text-[11px] text-gray-400'>Estado</span>
                     <span class='text-[11px]'>$proy->spanEstado</span>
@@ -114,7 +114,7 @@
                     <span class='text-[11px] text-gray-400'>Tarea estado</span>
                     <span class='text-[11px]'>".$item->spanEstado."</span>
 
-                    <span class='text-[11px] text-gray-400'>Residente</span>
+                    <span class='text-[11px] text-gray-400'>Residt Proyecto</span>
                     <span class='text-[11px] font-medium text-gray-700 truncate'>".strtolower($item->user->nombre_completo ?? 'Sin asignar')."</span>
                 </div>
 

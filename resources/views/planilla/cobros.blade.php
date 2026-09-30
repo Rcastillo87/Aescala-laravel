@@ -79,7 +79,17 @@
                             <p class="whitespace-nowrap text-sm font-semibold text-gray-700">{{ $fmt($it['tope']) }}</p>
                         </div>
 
-                        {{-- Valor a cobrar --}}
+                        <div class="min-w-0">
+                            <select name="cobros[{{ $it['idx'] }}][valor_cobrar]" id="cobro-valor-{{ $it['idx'] }}"
+                                class="h-10 w-full rounded-lg border border-gray-300 px-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#242e68] 
+                                disabled:bg-gray-100 disabled:text-gray-500">
+                                <option value="0" @selected(($it['valor_cobrar'] == 0) || $it['valor_cobrar'] === null)>0</option>
+                                <option value="{{ $it['tope'] }}" @selected($it['valor_cobrar'] === $it['tope'])>{{ $fmt($it['tope']) }}</option>
+                                <option value="{{ $it['tope'] / 2 }}" @selected($it['valor_cobrar'] === $it['tope'] / 2)>{{ $fmt($it['tope'] / 2) }}</option>
+                            </select>
+                        </div>
+
+                        {{-- Valor a cobrar 
                         <div class="min-w-0">
                             <label class="{{ $labelClase }}" for="cobro-valor-{{ $it['idx'] }}">Valor a cobrar</label>
                             <input type="number"
@@ -98,7 +108,7 @@
                             <p class="aviso-tope mt-0.5 hidden text-xs text-red-600">
                                 No puede superar {{ $fmt($it['tope']) }}
                             </p>
-                        </div>
+                        </div>--}}
 
                         {{-- Aprobación --}}
                         <div class="col-span-2 min-w-0 xl:col-span-1">

@@ -48,15 +48,30 @@ class NovedadesController extends Controller
             ->when($req->input('estadoSearch'), function ($query) use($req) {
                 $query->where('estado', $req->input('estadoSearch'));
             })
+            ->when($req->input('id_proyectoSearch'), function ($query) use($req) {
+                $query->where('id_proyecto', $req->input('id_proyectoSearch'));
+            })
             ->orderBy('createdAt', 'DESC')
             ->paginate($perPage)
             ->withQueryString();
+
+        $arrIdProyectosNovedad = Novedades::select('id_proyecto')
+            ->distinct()
+            ->pluck('id_proyecto')
+            ->toArray();
+
+        $proyectosNovedad = Proyecto::whereIn('id', $arrIdProyectosNovedad)
+            ->whereNotNull('cedula_cliente')
+            ->whereNotNull('tipo_doc_cliente')
+            ->orderBy('nombre_proyecto', 'ASC')
+            ->get(['id', 'nombre_proyecto'])
+            ->toArray();
 
         $estados = Novedades::$estado;
 
         $userColab = User::whereIn('id_rol', [3, 7])->where('activo', 1)->get(['id', 'nombre_completo'])->toArray();
 
-        return view('novedades.index', compact('title', 'proyectos', 'items', 'estados', 'userColab'));
+        return view('novedades.index', compact('title', 'proyectos', 'items', 'estados', 'userColab', 'proyectosNovedad'));
     }
 
     public function delete($id)

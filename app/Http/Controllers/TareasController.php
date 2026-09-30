@@ -279,7 +279,7 @@ class TareasController extends Controller
                 <span class='text-[11px] text-gray-400'>Tarea estado</span>
                 <span class='text-[11px]'>".$item->spanEstado."</span>
 
-                <span class='text-[11px] text-gray-400'>Encargado</span>
+                <span class='text-[11px] text-gray-400'>Residt Proyecto</span>
                 <span class='text-[11px] font-medium text-gray-700 truncate'>".strtolower($item->user->nombre_completo)."</span>
             </div>
 
