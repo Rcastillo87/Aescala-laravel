@@ -58,7 +58,7 @@ return [
         'cotizacion'    => ['isAdmin', 'isAnalista', 'isAlmacenista'],
         'cobro'         => ['isAdmin', 'iscartera'],
         'planilla'      => ['isAdmin', 'isColab', 'isContratista'],
-        'novedades'      => ['isAdmin', 'isColab', 'isContratista'],
+        'novedades'     => ['isAdmin', 'isColab', 'isContratista'],
     ],
 
     // ==========================================================

@@ -578,7 +578,7 @@
                 @endif
 
                 {{-- planilla --}}
-                <div class="relative @if(!((Auth::user()->isAdmin) && $item->area_privada
+                <div class="relative @if(!((Auth::user()->isAdmin || Auth::user()->isColab || Auth::user()->isContratista) && $item->area_privada
                     && ($item->id_estado == 1 || $item->id_estado == 2))) hidden @endif">
                     <a tabindex="0"
                        data-tooltip-target="tooltip-hover-planilla-{{$item->id}}"
