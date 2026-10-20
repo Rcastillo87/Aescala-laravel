@@ -316,7 +316,14 @@ class OtrosiController extends Controller
 
         DB::beginTransaction();
         try {
-            $otrosi = Otrosi::where(['id_proyecto' => $request->id_proyecto, 'numero' => $request->numero])->first();
+            $otrosi = Otrosi::where(['id_proyecto' => $request->id_proyecto, 'numero' => $request->numero, 'estado' => 1])->first();
+            if (!$otrosi) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'No se encontró el otrosí N° ' . $request->numero . ' para este proyecto.',
+                ], 404);
+            }
+            
             OtrosiRefe::create([
                 'id_otro_si'  => $otrosi->id,
                 'valor' => $request->valor_referecia,

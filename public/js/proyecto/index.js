@@ -1266,3 +1266,41 @@ function exportarModalAPdf() {
 
     window.addEventListener('afterprint', afterPrint);
 }
+
+function abrirOtrosiFirmados(otrosiList, nombreProyecto) {
+    const titulo = document.getElementById('otrosiModalTitle');
+    const lista  = document.getElementById('otrosiModalList');
+
+    titulo.textContent = 'Otrosí Firmados — ' + (nombreProyecto || '');
+    lista.innerHTML = '';
+
+    if (!otrosiList || otrosiList.length === 0) {
+        lista.innerHTML = `
+            <div class="text-center py-6 text-gray-400">
+                <p class="text-sm">No hay otrosí firmados.</p>
+            </div>
+        `;
+    } else {
+        otrosiList.forEach(o => {
+            const fecha = o.fecha_firma ? String(o.fecha_firma).split(' ')[0] : '--';
+            const btn = document.createElement('a');
+            btn.href = o.urlPdf;
+            btn.target = '_blank';
+            btn.rel = 'noopener';
+            btn.className = 'flex items-center justify-between gap-3 w-full px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-800 text-white transition-colors shadow-sm';
+            btn.innerHTML = `
+                <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"/>
+                    </svg>
+                    <span class="font-medium">Otrosí N° ${o.numero}</span>
+                </span>
+                <span class="text-xs opacity-90">${fecha}</span>
+            `;
+            lista.appendChild(btn);
+        });
+    }
+
+    window.dispatchEvent(new CustomEvent('open-modal', { detail: 'otrosiFirmados-modal' }));
+}

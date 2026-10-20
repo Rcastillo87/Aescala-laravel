@@ -399,6 +399,7 @@ async function loadCartera(id) {
             data.valance_pro.forEach((item, index0) => {
                 let color = '';
                 let tx = '';
+                let numReal = '';
                 const val = cantidad - index0;
                 if (index0 === 0) {
                     tx = txPro[0];
@@ -412,7 +413,9 @@ async function loadCartera(id) {
                     color = 'text-blue-700 font-bold bg-blue-50';
                     tx = txPro[3];
                 } else if (val > 2) {
-                    tx = 'Costo del Otrosi N ' + index0;
+                    //tx = 'Costo del Otrosi N ' + index0;
+                    numReal = (data.otrosi_numeros ?? [])[index0 - 1];
+                    tx = 'Costo del Otrosi N ' + (numReal ?? index0);
                 }
 
                 relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${tx}</td>`;
@@ -492,7 +495,7 @@ async function loadCartera(id) {
                                     @click="
                                         const max = ${Math.abs(valor)};
                                         const referencia = ${index};
-                                        const numero = ${index0};
+                                        const numero = ${numReal};
                                         document.getElementById('referencia').value = referencia;
                                         document.getElementById('numero').value = numero;
                                         document.getElementById('txTitlePagoRefe').innerHTML = \`Crear Referencia de Pago del Otrosi N \${referencia}\`;

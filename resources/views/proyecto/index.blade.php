@@ -445,6 +445,35 @@
                     </div>
                 </div>
 
+                @php
+                    $otrosiFirmados = $item->otro_si->where('estado', 1)->sortBy('numero')->values();
+                    $otrosiData = $otrosiFirmados->map(fn($o) => [
+                        'numero'      => $o->numero,
+                        'fecha_firma' => $o->fecha_firma,
+                        'urlPdf'      => route('otro_si.otroSiPdf', $o->id),
+                    ])->toArray();
+                @endphp
+
+                @if($otrosiFirmados->count() > 0 && (Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isColab))
+                    <div class="relative">
+                        <a tabindex="0"
+                        data-tooltip-target="tooltip-hover-otrosi-{{$item->id}}"
+                        data-tooltip-trigger="hover"
+                        onclick='abrirOtrosiFirmados(@json($otrosiData), @json($item->nombre_proyecto))'
+                        class="flex items-center justify-center w-9 h-9 rounded-lg text-white bg-teal-600 hover:bg-teal-700 border border-teal-700 focus:ring-2 focus:ring-teal-300 transition-colors duration-150 cursor-pointer shadow-sm">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7v8a2 2 0 0 0 2 2h6M8 7V5a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293l4.414 4.414a1 1 0 0 1 .293.707V15a2 2 0 0 1-2 2h-2M8 7H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2"/>
+                            </svg>
+                        </a>
+                        <div id="tooltip-hover-otrosi-{{$item->id}}" role="tooltip"
+                            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border bg-white text-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
+                            Otrosí Firmados
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Tratamiento de Datos --}}
                 <div class="relative @if($item->acepta_trata_datos == 0 || !(Auth::user()->isAdmin || Auth::user()->isUser)) hidden @endif">
                     <a tabindex="0"
@@ -752,6 +781,7 @@
 @include('proyecto.modalBalance')
 @include('proyecto.modalComparativo')
 @include('proyecto.modalBeginProyec')
+@include('proyecto.modalOtrosiFirmados')
 @endsection
 
 @section('scripts')

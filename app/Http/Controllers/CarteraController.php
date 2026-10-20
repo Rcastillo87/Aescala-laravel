@@ -125,12 +125,14 @@ class CarteraController extends Controller
 
             $lineDeveTTOtroSi = [0, 0, 0, 0, 0, 0];
             $flag = 1;
+            $otrosiNumeros = [];
             $lineDeveOtrosi = Otrosi::with('otrosi_refe')
                 ->where('id_proyecto', $id)
                 ->where('estado', 1)
                 ->orderBy('numero', 'asc')
                 ->get()
-                ->map(function ($item) use (&$lineDeveTTOtroSi, &$flag) {
+                ->map(function ($item) use (&$lineDeveTTOtroSi, &$flag, &$otrosiNumeros) {
+                    $otrosiNumeros[] = $item->numero;
                     $b = $item->totalDeve;
                     $a = $item->totalRefeOtroSi;
                     $c = $b - $a;
@@ -212,7 +214,8 @@ class CarteraController extends Controller
                     "resumen" => $contratos,
                     "porcentajes" => $porcentProyec,
                     "valance_pro" => $valance,
-                    "soporteFact" => $proyecto->soporteFact
+                    "soporteFact" => $proyecto->soporteFact,
+                    'otrosi_numeros'  => $otrosiNumeros,
                 ]
             ], 200);
         } catch (\Throwable $e) {
