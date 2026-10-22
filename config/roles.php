@@ -173,7 +173,7 @@ return [
         'otro_si.create'            => ['isAdmin', 'isDiseno'],
         'otro_si.edit'              => ['isAdmin', 'isDiseno'],
         'otro_si.save'              => ['isAdmin', 'isDiseno'],
-        'otro_si.otroSiPdf'         => ['isAdmin', 'isUser', 'iscartera', 'isDiseno'],
+        'otro_si.otroSiPdf'         => ['isAdmin', 'isUser', 'iscartera', 'isDiseno', 'isContratista'],
         'otro_si.sendLinkByEmail'   => ['isAdmin', 'isDiseno'],
 
         // ── cartera.* ──────────────────────────────────────────
