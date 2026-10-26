@@ -609,7 +609,8 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => {
 
             const block = btn.closest(".config-block");
-            const tipo = block.dataset.tipo;
+            //const tipo = block.dataset.tipo;
+            const tipo = btn.dataset.tipo || block?.dataset.tipo;
 
             formDelete.action = `${formDelete.dataset.baseUrl}/${tipo}`;
             const advertencia = (window.hayCobros && ["1", "3"].includes(String(tipo)))
