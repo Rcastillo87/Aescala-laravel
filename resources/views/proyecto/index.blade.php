@@ -587,7 +587,7 @@
 
                 {{-- Acta de entrega --}}
                 @if ($porcenTarea >= 95)
-                    <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isDiseno || Auth::user()->isUser)) hidden @endif">
+                    <div class="relative @if(!(Auth::user()->isAdmin || Auth::user()->isDiseno || Auth::user()->isUser || Auth::user()->isColab)) hidden @endif">
                         <a tabindex="0"
                         data-tooltip-target="tooltip-hover-acta-{{$item->id}}"
                         data-tooltip-trigger="hover"
