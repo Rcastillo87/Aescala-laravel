@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Proyecto;
 use App\Models\PlanillaEntregables;
 use App\Models\Otrosi;
-
 use App\Models\ConfigPorcentajes;
 use App\Models\ValorArea;
 use App\Models\ValorAreaEnchape;
-use App\Models\PlanillaValorProyecto;   // CAMBIO: reemplaza a PlanillaConfigProyecto
+use App\Models\PlanillaValorProyecto;
 
 use App\Http\Requests\SavePlantillaRequest;
 use App\Http\Requests\SaveConfigPlantillaRequest;
@@ -20,10 +19,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-
 class PlanillaController extends Controller
 {
-
     public function index($id)
     {
         Gate::authorize('planilla.index');
@@ -33,66 +30,43 @@ class PlanillaController extends Controller
         $departamentos = json_decode(file_get_contents(storage_path('json/jsonCityColombia.json')), true);
         $ubicacion = Proyecto::$ubicacion;
 
-        // CAMBIO: ahora una fila por tipo (tipos 1..4), con items JSON dentro.
-        // Se mapea al shape que espera create.js (material / valor_unitario).
-        $planillaEntregables = PlanillaEntregables::where('id_proyecto', $id)
-            ->whereIn('tipo', [1, 2, 3, 4])
-            ->get()
-            ->map(function ($row) {
-                return [
-                    'id_area'  => (int) $row->tipo,
-                    'areaText' => PlanillaEntregables::$txTipo[$row->tipo] ?? '',
-                    'items'    => collect($row->items ?? [])->map(function ($item) {
-                        return [
-                            'id'              => $item['id'] ?? null,
-                            'material'        => $item['descripccion'] ?? '',
-                            'cantidad'        => (float) ($item['cantidad'] ?? 0),
-                            'valor_unitario'  => (int) ($item['valor_uni'] ?? 0),
-                            'unidad'          => (int) ($item['unidad'] ?? 1),
-                            'porcentage'      => (int) ($item['porcentage'] ?? 0),
-                        ];
-                    })->values()->toArray(),
-                ];
-            })
-            ->values()
-            ->toArray();
+        $planillasDb = PlanillaEntregables::where('id_proyecto', $id)->get();
+        
+        $planillaEntregables = $planillasDb->whereIn('tipo', [1,2,3,4])->map(function ($row) {
+            return [
+                'id_area'  => (int) $row->tipo,
+                'areaText' => PlanillaEntregables::$txTipo[$row->tipo] ?? '',
+                'items'    => collect($row->items ?? [])->map(function ($item) {
+                    return [
+                        'id'              => $item['id'] ?? null,
+                        'material'        => $item['descripccion'] ?? '',
+                        'cantidad'        => (float) ($item['cantidad'] ?? 0),
+                        'valor_unitario'  => (int) ($item['valor_uni'] ?? 0),
+                        'unidad'          => (int) ($item['unidad'] ?? 1),
+                        'porcentage'      => (int) ($item['porcentage'] ?? 0),
+                    ];
+                })->values()->toArray(),
+            ];
+        })->values()->toArray();
 
-        // CAMBIO: fila tipo 5 (Porcentajes del Proyecto) — antes vivía en planilla_confi_proyecto.tipo=3
-        $entregableTipo5 = PlanillaEntregables::where('id_proyecto', $id)
-            ->where('tipo', 5)
-            ->first();
-
+        $entregableTipo5 = $planillasDb->where('tipo', 5)->first();
         $otroSi = $proyecto->otro_si()->where('estado', 1)->get();
-
         $valOtrosis = $proyecto->TotalOtroSi ?? 0;
 
-        // CAMBIO: el modal solo muestra tipos 1..4 (excluye el 5)
         $tipos = collect(PlanillaEntregables::$txTipo)->except(5)->toArray();
         $unidades = Otrosi::$unidades;
-
         $areaProyecto = $proyecto->area_privada;
 
         $añoMax = ConfigPorcentajes::max('año');
         $dataConfigPorcentajes = ConfigPorcentajes::where('año', $añoMax)->get();
 
-        $dataValorArea = ValorArea::where('area_min', '<=', $areaProyecto)
-            ->where('area_max', '>=', $areaProyecto)
-            ->latest('año')
-            ->first();
+        $dataValorArea = ValorArea::where('area_min', '<=', $areaProyecto)->where('area_max', '>=', $areaProyecto)->latest('año')->first();
+        $dataValorAreaEnchape = ValorAreaEnchape::where('area_min', '<=', $areaProyecto)->where('area_max', '>=', $areaProyecto)->latest('año')->first();
 
-        $dataValorAreaEnchape = ValorAreaEnchape::where('area_min', '<=', $areaProyecto)
-            ->where('area_max', '>=', $areaProyecto)
-            ->latest('año')
-            ->first();
-
-        // CAMBIO: antes PlanillaConfigProyecto → ahora PlanillaValorProyecto (tipos 1,2,4,5,6)
         $valoresProyecto = PlanillaValorProyecto::where('id_proyecto', $id)->get()->keyBy('tipo');
-
-        // CAMBIO TEMPORAL: alias para no romper el blade actual. Se quita en el Paso 5.
         $configProyecto = $valoresProyecto;
 
-        // CAMBIO: armarCobros recibe ahora las dos fuentes por separado
-        $cobros = $this->armarCobros($valoresProyecto->get(1), $entregableTipo5);
+        $cobros = $this->armarCobros($valoresProyecto->get(1), $planillasDb);
 
         $title = 'Planilla del Proyecto';
 
@@ -112,51 +86,37 @@ class PlanillaController extends Controller
             $userId     = Auth::id();
             $idProyecto = $data['id_proyecto'];
 
-            // CAMBIO: agrupar items por tipo (una fila por tipo, JSON con el array)
             $itemsPorTipo = [];
-            foreach ($data['entregables'] as $entregable) {
-                $tipo = (int) $entregable['id_area'];
-                $itemsPorTipo[$tipo][] = [
-                    'unidad'       => (int) $entregable['unidad'],
-                    'cantidad'     => (float) $entregable['cantidad'],
-                    'valor_uni'    => (int) $entregable['valor_unitario'],
-                    'descripccion' => $entregable['material'],
-                    'porcentage'   => (int) ($entregable['porcentage'] ?? 0),
-                ];
+            if (!empty($data['entregables'])) {
+                foreach ($data['entregables'] as $entregable) {
+                    $tipo = (int) $entregable['id_area'];
+                    $itemsPorTipo[$tipo][] = [
+                        'unidad'       => (int) $entregable['unidad'],
+                        'cantidad'     => (float) $entregable['cantidad'],
+                        'valor_uni'    => (int) $entregable['valor_unitario'],
+                        'descripccion' => $entregable['material'],
+                        'porcentage'   => (int) ($entregable['porcentage'] ?? 0),
+                    ];
+                }
             }
 
-            // CAMBIO: borrar filas 1..4 no recibidas (nunca toca el tipo 5)
             PlanillaEntregables::where('id_proyecto', $idProyecto)
                 ->whereIn('tipo', [1, 2, 3, 4])
                 ->whereNotIn('tipo', array_keys($itemsPorTipo) ?: [0])
                 ->delete();
 
-            // CAMBIO: updateOrCreate por (id_proyecto, tipo) con items = array JSON
             foreach ($itemsPorTipo as $tipo => $items) {
                 PlanillaEntregables::updateOrCreate(
-                    [
-                        'id_proyecto' => $idProyecto,
-                        'tipo'        => $tipo,
-                    ],
-                    [
-                        'id_user' => $userId,
-                        'items'   => $items,
-                    ]
+                    ['id_proyecto' => $idProyecto, 'tipo' => $tipo],
+                    ['id_user' => $userId, 'items' => $items]
                 );
             }
 
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Entregables guardados correctamente.'
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Entregables guardados.']);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar los Entregables.',
-                'error'   => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -169,44 +129,23 @@ class PlanillaController extends Controller
         try {
             $userId = Auth::id();
 
-            // CAMBIO: tipo 3 (front) → PlanillaEntregables.tipo=5 (Porcentajes)
-            //         tipos 1,2,4,5,6 → PlanillaValorProyecto (número)
             if ((int) $data['tipo'] === 3) {
                 PlanillaEntregables::updateOrCreate(
-                    [
-                        'id_proyecto' => $data['id_proyecto'],
-                        'tipo'        => 5,
-                    ],
-                    [
-                        'id_user' => $userId,
-                        'items'   => $data['conceptos'],   // cast array lo serializa
-                    ]
+                    ['id_proyecto' => $data['id_proyecto'], 'tipo' => 5],
+                    ['id_user' => $userId, 'items' => $data['conceptos']]
                 );
             } else {
                 PlanillaValorProyecto::updateOrCreate(
-                    [
-                        'id_proyecto' => $data['id_proyecto'],
-                        'tipo'        => $data['tipo'],
-                    ],
-                    [
-                        'id_user' => $userId,
-                        'valor'   => (int) $data['valor_config'],
-                    ]
+                    ['id_proyecto' => $data['id_proyecto'], 'tipo' => $data['tipo']],
+                    ['id_user' => $userId, 'valor' => (int) $data['valor_config']]
                 );
             }
 
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Configuración guardada correctamente.'
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Configuración guardada.']);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar la configuración.',
-                'error'   => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -216,30 +155,17 @@ class PlanillaController extends Controller
 
         DB::beginTransaction();
         try {
-            // CAMBIO: tipo 3 (front) → borra PlanillaEntregables.tipo=5
-            //         tipos 1,2,4,5,6 → borra PlanillaValorProyecto
             if ((int) $tipo === 3) {
-                PlanillaEntregables::where('id_proyecto', $idProyecto)
-                    ->where('tipo', 5)
-                    ->delete();
+                PlanillaEntregables::where('id_proyecto', $idProyecto)->where('tipo', 5)->delete();
             } else {
-                PlanillaValorProyecto::where('id_proyecto', $idProyecto)
-                    ->where('tipo', $tipo)
-                    ->delete();
+                PlanillaValorProyecto::where('id_proyecto', $idProyecto)->where('tipo', $tipo)->delete();
             }
 
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Configuración eliminada correctamente.'
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Configuración eliminada.']);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al eliminar la configuración.',
-                'error'   => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -258,84 +184,66 @@ class PlanillaController extends Controller
 
         DB::beginTransaction();
         try {
-            // CAMBIO: cfg1 viene de PlanillaValorProyecto, cfg3 de PlanillaEntregables.tipo=5
             $cfg1 = PlanillaValorProyecto::where('id_proyecto', $proyecto->id)->where('tipo', 1)->lockForUpdate()->first();
-            $cfg3 = PlanillaEntregables::where('id_proyecto', $proyecto->id)->where('tipo', 5)->lockForUpdate()->first();
+            // Quitamos la excepción para que no bloquee
+            $valorBase = $cfg1 ? (float) $cfg1->valor : 0; 
 
-            if (!$cfg1 || !$cfg3) {
-                throw new \DomainException('Debe existir la configuración aceptada de Presupuesto por Proyecto y Porcentajes.');
-            }
+            foreach ($data['cobros'] as $tipoFila => $itemsCobros) {
+                $planilla = PlanillaEntregables::where('id_proyecto', $proyecto->id)->where('tipo', $tipoFila)->lockForUpdate()->first();
+                if (!$planilla) continue;
 
-            $valorBase = (float) $cfg1->valor;
-            $items     = $cfg3->items; // cast array: ya es arreglo
+                $itemsGuardados = $planilla->items;
+                $esTipo5 = ((int)$tipoFila === 5);
 
-            foreach ($data['cobros'] as $idx => $in) {
-                $idx = (int) $idx;
+                foreach ($itemsCobros as $idx => $in) {
+                    $idx = (int) $idx;
+                    if (!isset($itemsGuardados[$idx])) continue;
 
-                if (!isset($items[$idx]) || !is_array($items[$idx])) {
-                    throw new \DomainException('Uno de los ítems enviados no existe. Recargue la página e intente de nuevo.');
+                    $itemBase = $itemsGuardados[$idx];
+                    $nombreItem = $esTipo5 ? ($itemBase['concepto'] ?? ($idx + 1)) : ($itemBase['descripccion'] ?? ($idx + 1));
+                    $etq = 'Ítem "' . $nombreItem . '"';
+                    
+                    $tope = $esTipo5 
+                        ? PlanillaEntregables::montoItem($itemBase, $valorBase)
+                        : (int)round(($itemBase['cantidad'] ?? 0) * ($itemBase['valor_uni'] ?? 0));
+
+                    $c = PlanillaEntregables::normalizarCobro($itemBase);
+
+                    $revierte = array_key_exists('aprobacion', $in) && $in['aprobacion'] !== null && (int) $in['aprobacion'] === 0 && $c['aprobacion'] > 0;
+
+                    if ($revierte) {
+                        $this->aplicarAprobacion($c, $in, $etq, $puede['aprob'], $userId, $ahora, $tope);
+                        $this->aplicarValor($c, $in, $tope, $etq, $puede['valor'], $userId);
+                    } else {
+                        $this->aplicarValor($c, $in, $tope, $etq, $puede['valor'], $userId);
+                        $this->aplicarAprobacion($c, $in, $etq, $puede['aprob'], $userId, $ahora, $tope);
+                    }
+                    $this->aplicarFecha($c, $in, $etq, $puede['fecha'], $userId);
+
+                    $itemsGuardados[$idx] = array_merge($itemsGuardados[$idx], $c);
                 }
-
-                $etq  = 'Ítem "' . ($items[$idx]['concepto'] ?? ($idx + 1)) . '"';
-                // CAMBIO: helpers mudados a PlanillaEntregables
-                $tope = PlanillaEntregables::montoItem($items[$idx], $valorBase);
-                $c    = PlanillaEntregables::normalizarCobro($items[$idx]);
-
-                $revierte = array_key_exists('aprobacion', $in)
-                    && $in['aprobacion'] !== null
-                    && (int) $in['aprobacion'] === 0
-                    && $c['aprobacion'] > 0;
-
-                if ($revierte) {
-                    $this->aplicarAprobacion($c, $in, $etq, $puede['aprob'], $userId, $ahora, $tope);
-                    $this->aplicarValor($c, $in, $tope, $etq, $puede['valor'], $userId);
-                } else {
-                    $this->aplicarValor($c, $in, $tope, $etq, $puede['valor'], $userId);
-                    $this->aplicarAprobacion($c, $in, $etq, $puede['aprob'], $userId, $ahora, $tope);
-                }
-                $this->aplicarFecha($c, $in, $etq, $puede['fecha'], $userId);
-
-                $items[$idx] = array_merge($items[$idx], $c);
+                $planilla->items = array_values($itemsGuardados);
+                $planilla->save();
             }
-
-            // CAMBIO: cast array → asignación directa (Laravel serializa)
-            $cfg3->items = array_values($items);
-            $cfg3->save();
-
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Cobros guardados correctamente.'
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Cobros guardados.']);
         } catch (\DomainException $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar los cobros.',
-                'error'   => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 
     private function aplicarValor(array &$c, array $in, int $tope, string $etq, bool $rolPuede, int $userId): void
     {
-        if (!array_key_exists('valor_cobrar', $in)) {
-            return;
-        }
+        if (!array_key_exists('valor_cobrar', $in)) return;
 
         $nuevo = ($in['valor_cobrar'] === null || $in['valor_cobrar'] === '' || (float) $in['valor_cobrar'] <= 0)
-            ? null
-            : (int) round((float) $in['valor_cobrar']);
+            ? null : (int) round((float) $in['valor_cobrar']);
 
-        if ($nuevo === $c['valor_cobrar']) {
-            return;
-        }
+        if ($nuevo === $c['valor_cobrar']) return;
 
         if (!$rolPuede || $c['fecha_pago'] !== null || $c['aprobacion'] > 0) {
             throw new \DomainException("$etq: el valor a cobrar ya no se puede modificar. Recargue la página.");
@@ -351,15 +259,11 @@ class PlanillaController extends Controller
 
     private function aplicarAprobacion(array &$c, array $in, string $etq, bool $rolPuede, int $userId, string $ahora, int $tope): void
     {
-        if (!array_key_exists('aprobacion', $in) || $in['aprobacion'] === null) {
-            return;
-        }
+        if (!array_key_exists('aprobacion', $in) || $in['aprobacion'] === null) return;
 
         $nuevo = (int) $in['aprobacion'];
 
-        if ($nuevo === $c['aprobacion']) {
-            return;
-        }
+        if ($nuevo === $c['aprobacion']) return;
 
         if (!$rolPuede || $c['fecha_pago'] !== null) {
             throw new \DomainException("$etq: la aprobación ya no se puede modificar. Recargue la página.");
@@ -369,7 +273,6 @@ class PlanillaController extends Controller
             throw new \DomainException("$etq: aún no tiene valor a cobrar registrado.");
         }
 
-        // NUEVO: Validación del 50% sobre 50%
         if ($nuevo === 50 && $c['valor_cobrar'] == ($tope / 2)) {
             throw new \DomainException("$etq: si el valor a cobrar es el 50%, la aprobación debe ser Sin aprobar (0) o 100%.");
         }
@@ -381,24 +284,16 @@ class PlanillaController extends Controller
 
     private function aplicarFecha(array &$c, array $in, string $etq, bool $rolPuede, int $userId): void
     {
-        if (!array_key_exists('fecha_pago', $in)) {
-            return;
-        }
+        if (!array_key_exists('fecha_pago', $in)) return;
 
-        // Si viene vacío o nulo, lo convertimos a null
         $nueva = !empty($in['fecha_pago']) ? $in['fecha_pago'] : null;
 
-        if ($nueva === $c['fecha_pago']) {
-            return;
-        }
+        if ($nueva === $c['fecha_pago']) return;
 
-        // CAMBIO: Solo bloqueamos si el rol no puede. 
-        // Si es Admin ($rolPuede = true), puede cambiarla o borrarla.
         if (!$rolPuede) {
             throw new \DomainException("$etq: la fecha de pago no se puede modificar.");
         }
 
-        // Si está asignando una fecha (no la está borrando), validar que tenga aprobación y valor
         if ($nueva !== null && ($c['aprobacion'] <= 0 || $c['valor_cobrar'] === null)) {
             throw new \DomainException("$etq: la fecha de pago requiere valor a cobrar y aprobación (50% o 100%).");
         }
@@ -420,9 +315,7 @@ class PlanillaController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->isAdmin) {
-            return;
-        }
+        if ($user->isAdmin) return;
 
         $permitido = ($user->isColab && (int) $proyecto->id_user === (int) $user->id)
             || ($user->isContratista && (int) $proyecto->id_user_obra_blanca === (int) $user->id);
@@ -430,99 +323,82 @@ class PlanillaController extends Controller
         abort_unless($permitido, 403, 'No tiene acceso a este proyecto.');
     }
 
-    /**
-     * CAMBIO: recibe ahora dos fuentes por separado.
-     *  - $valorProyecto   = fila PlanillaValorProyecto.tipo=1 (puede ser null)
-     *  - $entregableTipo5 = fila PlanillaEntregables.tipo=5   (puede ser null)
-     */
-    private function armarCobros($valorProyecto, $entregableTipo5): array
+    private function armarCobros($valorProyecto, $planillasDb): array
     {
         $resultado = [
-            'activo'       => false,
+            'activo'       => true, // Forzamos a true para que la tabla siempre se muestre
             'hay'          => false,
             'puedeGuardar' => false,
-            'items'        => [],
-            'totales'      => [
-                'cobrado'     => 0,
-                'aprobado'    => 0,
-                'pagado'      => 0,
-                'por_pagar'   => 0,
-                'n_aprobados' => 0,
-            ],
+            'entregables'  => [],
+            'tipo5'        => [],
+            'totales'      => ['cobrado' => 0, 'aprobado' => 0, 'pagado' => 0, 'por_pagar' => 0, 'n_aprobados' => 0],
         ];
 
-        if (!$valorProyecto || !$entregableTipo5) {
-            return $resultado;
-        }
-
         $puede     = $this->permisosCobroPorRol(Auth::user());
-        $valorBase = (float) $valorProyecto->valor;
+        $valorBase = $valorProyecto ? (float) $valorProyecto->valor : 0; 
 
-        $resultado['activo'] = true;
+        foreach ($planillasDb as $planilla) {
+            $tipo = $planilla->tipo;
+            $esTipo5 = ($tipo == 5);
+            $bloqueadoGrupo = false;
 
-        foreach ($entregableTipo5->items as $idx => $item) {
-            // NUEVO: Calcular el tope por cada ítem
-            $tope = PlanillaEntregables::montoItem($item, $valorBase);
-            
-            $c = PlanillaEntregables::normalizarCobro($item);
-
-            $bloqueado  = $c['fecha_pago'] !== null;
-            $tieneValor = $c['valor_cobrar'] !== null;
-
-            $canValor = $puede['valor'] && !$bloqueado && $c['aprobacion'] === 0;
-            $canAprob = $puede['aprob'] && !$bloqueado && $tieneValor;
-            //$canFecha = $puede['fecha'] && !$bloqueado && $tieneValor && $c['aprobacion'] > 0;
-            $canFecha = $puede['fecha'] && $tieneValor && $c['aprobacion'] > 0;
-            $aprobado = PlanillaEntregables::valorAprobado($c['valor_cobrar'], $c['aprobacion']);
-
-            if ($bloqueado) {
-                $estado = 'pagado';
-            } elseif ($c['aprobacion'] > 0) {
-                $estado = 'aprobado';
-            } elseif ($tieneValor) {
-                $estado = 'cobrado';
-            } else {
-                $estado = 'pendiente';
-            }
-
-            if ($tieneValor) {
-                $resultado['hay'] = true;
-                $resultado['totales']['cobrado'] += $c['valor_cobrar'];
-            }
-
-            if ($c['aprobacion'] > 0) {
-                $resultado['totales']['n_aprobados']++;
-                $resultado['totales']['aprobado'] += $aprobado;
-
-                if ($bloqueado) {
-                    $resultado['totales']['pagado'] += $aprobado;
-                } else {
-                    $resultado['totales']['por_pagar'] += $aprobado;
+            foreach ($planilla->items as $item) {
+                $c = PlanillaEntregables::normalizarCobro($item);
+                if ($c['valor_cobrar'] !== null || $c['aprobacion'] > 0 || $c['fecha_pago'] !== null) {
+                    $bloqueadoGrupo = true;
+                    break;
                 }
             }
 
-            if ($canValor || $canAprob || $canFecha) {
-                $resultado['puedeGuardar'] = true;
+            foreach ($planilla->items as $idx => $item) {
+                $tope = $esTipo5 ? PlanillaEntregables::montoItem($item, $valorBase) : (int)round(($item['cantidad'] ?? 0) * ($item['valor_uni'] ?? 0));
+                $c = PlanillaEntregables::normalizarCobro($item);
+                
+                $bloqueado  = $c['fecha_pago'] !== null;
+                $tieneValor = $c['valor_cobrar'] !== null;
+
+                $canValor = $puede['valor'] && !$bloqueado && $c['aprobacion'] === 0;
+                $canAprob = $puede['aprob'] && !$bloqueado && $tieneValor;
+                $canFecha = $puede['fecha'] && $tieneValor && $c['aprobacion'] > 0;
+
+                $aprobado = PlanillaEntregables::valorAprobado($c['valor_cobrar'], $c['aprobacion']);
+                $estado = $bloqueado ? 'pagado' : ($c['aprobacion'] > 0 ? 'aprobado' : ($tieneValor ? 'cobrado' : 'pendiente'));
+
+                if ($tieneValor) { $resultado['hay'] = true; $resultado['totales']['cobrado'] += $c['valor_cobrar']; }
+                if ($c['aprobacion'] > 0) {
+                    $resultado['totales']['n_aprobados']++;
+                    $resultado['totales']['aprobado'] += $aprobado;
+                    if ($bloqueado) $resultado['totales']['pagado'] += $aprobado;
+                    else $resultado['totales']['por_pagar'] += $aprobado;
+                }
+                if ($canValor || $canAprob || $canFecha) $resultado['puedeGuardar'] = true;
+
+                $datosItem = [
+                    'tipo'           => $tipo,
+                    'idx'            => $idx,
+                    'concepto'       => $esTipo5 ? ($item['concepto'] ?? 'Sin concepto') : ($item['descripccion'] ?? ''),
+                    'en_pesos'       => $esTipo5 && (int)($item['en_pesos'] ?? 0) === 1,
+                    'cantidad'       => $esTipo5 ? 0 : (float)($item['cantidad'] ?? 0),
+                    'unidad'         => $esTipo5 ? 0 : (int)($item['unidad'] ?? 1),
+                    'valor_uni'      => $esTipo5 ? 0 : (int)($item['valor_uni'] ?? 0),
+                    'porcentage'     => (float)($item['porcentage'] ?? 0), // Ahora aplica para todos
+                    'tope'           => $tope,
+                    'valor_cobrar'   => $c['valor_cobrar'],
+                    'esMitad'        => $tieneValor && ($c['valor_cobrar'] == ($tope / 2)),
+                    'aprobacion'     => $c['aprobacion'],
+                    'fecha_pago'     => $c['fecha_pago'],
+                    'valor_aprobado' => $aprobado,
+                    'estado'         => $estado,
+                    'canValor'       => $canValor,
+                    'canAprob'       => $canAprob,
+                    'canFecha'       => $canFecha,
+                    'puedeEditar'    => !$bloqueadoGrupo,
+                ];
+
+                if ($esTipo5) $resultado['tipo5'][] = $datosItem;
+                else $resultado['entregables'][$tipo][] = $datosItem;
             }
-
-            $resultado['items'][] = [
-                'idx'            => $idx,
-                'concepto'       => $item['concepto'] ?? 'Sin concepto',
-                'en_pesos'       => (int) ($item['en_pesos'] ?? 0) === 1,
-                'porcentage'     => (float) ($item['porcentage'] ?? 0),
-                'tope'           => $tope, // Usa el tope calculado aquí
-                'valor_cobrar'   => $c['valor_cobrar'],
-                'esMitad'        => $tieneValor && ($c['valor_cobrar'] == ($tope / 2)), // Usa el tope correcto
-                'aprobacion'     => $c['aprobacion'],
-                'fecha_pago'     => $c['fecha_pago'],
-                'valor_aprobado' => $aprobado,
-                'estado'         => $estado,
-                'canValor'       => $canValor,
-                'canAprob'       => $canAprob,
-                'canFecha'       => $canFecha,
-            ];
         }
-
         return $resultado;
     }
 
@@ -531,37 +407,21 @@ class PlanillaController extends Controller
         Gate::authorize('planilla.pdfConfigPlanilla');
 
         $proyecto = Proyecto::findOrFail($idProyecto);
-
-        // CAMBIO: valores numéricos vienen de PlanillaValorProyecto
         $valoresProyecto = PlanillaValorProyecto::where('id_proyecto', $idProyecto)->get()->keyBy('tipo');
-
-        // CAMBIO: los porcentajes (antes tipo 3 de config) vienen de PlanillaEntregables.tipo=5
         $entregableTipo5 = PlanillaEntregables::where('id_proyecto', $idProyecto)->where('tipo', 5)->first();
 
-        // 1. Obtener el valor base del Tipo 1 o Tipo 2
         $valorBase = 0;
-        if ($tipo == 1 && isset($valoresProyecto[1])) {
-            $valorBase = $valoresProyecto[1]->valor;
-        } elseif ($tipo == 2 && isset($valoresProyecto[2])) {
-            $valorBase = $valoresProyecto[2]->valor;
-        }
+        if ($tipo == 1 && isset($valoresProyecto[1])) $valorBase = $valoresProyecto[1]->valor;
+        elseif ($tipo == 2 && isset($valoresProyecto[2])) $valorBase = $valoresProyecto[2]->valor;
 
-        // 2. Calcular los porcentajes del tipo 5 aplicados al valor base
         $porcentajes = [];
         $totalDesglose = 0;
-
-        // CAMBIO: $txTipo viene ahora de PlanillaValorProyecto
         $txTipo = PlanillaValorProyecto::$txTipo[$tipo] ?? 'Configuración General';
 
         if ($entregableTipo5) {
             foreach ($entregableTipo5->items as $item) {
                 $porcentaje = (float) ($item['porcentage'] ?? 0);
-
-                if ((int) ($item['en_pesos'] ?? 0) === 0) {
-                    $montoCalculado = $valorBase * ($porcentaje / 100);
-                } else {
-                    $montoCalculado = $porcentaje;
-                }
+                $montoCalculado = ((int) ($item['en_pesos'] ?? 0) === 0) ? $valorBase * ($porcentaje / 100) : $porcentaje;
 
                 $porcentajes[] = [
                     'concepto'   => $item['concepto'] ?? 'Sin concepto',
@@ -569,33 +429,21 @@ class PlanillaController extends Controller
                     'monto'      => $montoCalculado,
                     'en_pesos'   => $item['en_pesos'] ?? 0,
                 ];
-
                 $totalDesglose += $montoCalculado;
             }
         }
 
-        // CAMBIO: entregables vienen de la nueva tabla con items JSON
-        $dataEntrePlanilla = PlanillaEntregables::where('id_proyecto', $idProyecto)
-            ->whereIn('tipo', [1, 2, 3, 4])
-            ->get();
-
+        $dataEntrePlanilla = PlanillaEntregables::where('id_proyecto', $idProyecto)->whereIn('tipo', [1, 2, 3, 4])->get();
         $txTipoEntre = PlanillaEntregables::$txTipo;
         $arr = [];
         $valorTotal = 0;
 
         foreach ($dataEntrePlanilla as $row) {
             $area = $txTipoEntre[$row->tipo] ?? '';
-            if (!isset($arr[$area])) {
-                $arr[$area] = [
-                    "espacio"  => $area,
-                    "items"    => [],
-                    "subtotal" => 0,
-                ];
-            }
+            if (!isset($arr[$area])) $arr[$area] = ["espacio" => $area, "items" => [], "subtotal" => 0];
 
             foreach ($row->items ?? [] as $item) {
                 $val = (int) ($item['valor_uni'] ?? 0) * (float) ($item['cantidad'] ?? 0);
-
                 $arr[$area]["items"][] = [
                     "descripcion"    => $item['descripccion'] ?? '',
                     "cantidad"       => $item['cantidad'] ?? 0,
@@ -608,7 +456,6 @@ class PlanillaController extends Controller
             }
         }
         $adicionales = $arr;
-
         $unidades = Otrosi::$unidades;
 
         $pdf = Pdf::loadView('planilla.pdfPlanillaConfig',
@@ -617,5 +464,4 @@ class PlanillaController extends Controller
 
         return $pdf->stream('configuracion-planilla-proyecto-' . $proyecto->id . '.pdf');
     }
-
 }

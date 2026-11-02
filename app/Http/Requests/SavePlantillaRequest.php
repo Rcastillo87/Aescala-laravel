@@ -19,7 +19,8 @@ class SavePlantillaRequest extends FormRequest
     {
         return [
             'id_proyecto' => 'required|exists:proyectos,id',
-            'entregables' => 'required|array|min:1',
+            // CAMBIO AQUÍ: Cambiar 'required|array|min:1' por 'nullable|array'
+            'entregables' => 'nullable|array', 
             'entregables.*.id' => 'nullable|integer',
             'entregables.*.id_area' => ['required','integer', Rule::in([1, 2, 3, 4])],
             'entregables.*.material' => 'required|string',

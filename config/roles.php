@@ -35,7 +35,7 @@ return [
         'comercial'     => ['isAdmin', 'isComer'],
         'cartera'       => ['isAdmin', 'iscartera'],
         'proyecto'      => ['isAdmin', 'isUser', 'isColab', 'isComer', 'isAnalista', 'isContratista', 'isAlmacenista', 'isDiseno'],
-        'otro_si'       => ['isAdmin', 'isUser', 'iscartera', 'isDiseno'],
+        'otro_si'       => ['isAdmin', 'isUser', 'iscartera', 'isDiseno', 'isColab', 'isContratista'],
         'tareas'        => ['isAdmin'],
 
         // ── Grupo Materiales ───────────────────────────────────

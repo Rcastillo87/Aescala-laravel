@@ -119,7 +119,6 @@
                 6 => ['label' => 'Excedente Enchap', 'suggested' => 0],
             ];
 
-            // Helpers para el bloque del Tipo 5
             $tipo5Count   = $entregableTipo5 ? count($entregableTipo5->items ?? []) : 0;
             $tipo5SumaPct = $entregableTipo5
                 ? collect($entregableTipo5->items ?? [])->where('en_pesos', 0)->sum('porcentage')
@@ -179,36 +178,16 @@
                             @if($dataValorArea)
                                 <div class="flex gap-1.5">
                                     <div class="w-full">
-                                        <input type="number"
-                                            min="0"
-                                            step="1"
-                                            class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]"
-                                            value="{{ $dataValorArea->valor_intervalo }}"
-                                            placeholder="Editable">
-                                        <p class="text-[10px] text-gray-500 mt-1">
-                                            Rango: {{ $dataValorArea->area_min }} m² -
-                                            {{ $dataValorArea->area_max }} m²
-                                            (año {{ $dataValorArea->año }})
-                                        </p>
+                                        <input type="number" min="0" step="1" class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]" value="{{ $dataValorArea->valor_intervalo }}" placeholder="Editable">
+                                        <p class="text-[10px] text-gray-500 mt-1">Rango: {{ $dataValorArea->area_min }} m² - {{ $dataValorArea->area_max }} m² (año {{ $dataValorArea->año }})</p>
                                     </div>
-                                    <button type="button"
-                                        class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0 self-start"
-                                        data-tipo="1"
-                                        title="Guardar">
-                                        💾 Guardar
-                                    </button>
+                                    <button type="button" class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0 self-start" data-tipo="1" title="Guardar">💾 Guardar</button>
                                 </div>
                             @else
-                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
-                                    <span class="text-sm text-gray-500">
-                                        No hay valor configurado para esta área.
-                                    </span>
-                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center"><span class="text-sm text-gray-500">No hay valor configurado para esta área.</span></div>
                             @endif
                         @else
-                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
-                                <span class="text-sm text-gray-500">Pendiente de configuración por el administrador.</span>
-                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center"><span class="text-sm text-gray-500">Pendiente de configuración por el administrador.</span></div>
                         @endcan
                     </div>
                 </div>
@@ -216,51 +195,28 @@
                 {{-- Bloque Porcentajes del Proyecto Planilla Base --}}
                 <div class="bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm">
                     <div class="flex items-center justify-between mb-1">
-                        <span class="font-bold text-[#242e68] text-xs">
-                            📊 Porcentajes del Proyecto Planilla Base
-                        </span>
-                        <span class="bg-green-50 text-green-700 text-[9px] font-medium px-2 py-0.2 rounded-full">
-                            Tipo 5
-                        </span>
+                        <span class="font-bold text-[#242e68] text-xs">📊 Porcentajes del Proyecto Planilla Base</span>
+                        <span class="bg-green-50 text-green-700 text-[9px] font-medium px-2 py-0.2 rounded-full">Tipo 5</span>
                     </div>
 
                     @if($entregableTipo5)
                         <div class="bg-green-50 border border-green-200 rounded-lg px-2.5 py-1.5 flex items-center justify-between">
-                            <span class="text-xs text-green-800 font-semibold">
-                                Aceptado · {{ $tipo5SumaPct }}% ({{ $tipo5Count }} {{ $tipo5Count === 1 ? 'concepto' : 'conceptos' }})
-                            </span>
+                            <span class="text-xs text-green-800 font-semibold">Aceptado · {{ $tipo5SumaPct }}% ({{ $tipo5Count }} {{ $tipo5Count === 1 ? 'concepto' : 'conceptos' }})</span>
                             <div class="flex items-center gap-1">
                                 @if($configProyecto->has(1))
-                                    <button type="button"
-                                        class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-medium"
-                                        x-on:click="$dispatch('open-modal', 'modalPorcentajesTipo5-modal')"
-                                        x-data="">
-                                        Ver
-                                    </button>
+                                    <button type="button" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-medium" x-on:click="$dispatch('open-modal', 'modalPorcentajesTipo5-modal')" x-data="">Ver</button>
                                 @endif
                                 @can('planilla.deleteConfigPlantilla')
-                                    <button type="button"
-                                        class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded text-xs"
-                                        data-tipo="3"
-                                        title="Eliminar">
-                                        🗑️
-                                    </button>
+                                    <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded text-xs" data-tipo="3" title="Eliminar">🗑️</button>
                                 @endcan
                             </div>
                         </div>
                     @else
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-2.5 py-1.5 flex items-center justify-between">
-                            <span class="text-xs text-yellow-800 font-semibold">
-                                Sin aceptar · {{ $sugeridosCount }} {{ $sugeridosCount === 1 ? 'concepto sugerido' : 'conceptos sugeridos' }}
-                            </span>
+                            <span class="text-xs text-yellow-800 font-semibold">Sin aceptar · {{ $sugeridosCount }} {{ $sugeridosCount === 1 ? 'concepto sugerido' : 'conceptos sugeridos' }}</span>
                             @can('planilla.saveConfigPlantilla')
                                 @if($sugeridosCount > 0)
-                                    <button type="button"
-                                        class="px-2 py-1 bg-[#242e68] hover:bg-[#1a2150] text-white rounded text-[11px] font-medium"
-                                        x-on:click="$dispatch('open-modal', 'modalPorcentajesTipo5-modal')"
-                                        x-data="">
-                                        Ver / Gestionar
-                                    </button>
+                                    <button type="button" class="px-2 py-1 bg-[#242e68] hover:bg-[#1a2150] text-white rounded text-[11px] font-medium" x-on:click="$dispatch('open-modal', 'modalPorcentajesTipo5-modal')" x-data="">Ver / Gestionar</button>
                                 @endif
                             @endcan
                         </div>
@@ -269,50 +225,24 @@
 
                 {{-- Tipos 2, 4, 5, 6 --}}
                 @foreach ($compactConfigs as $tipo => $cfg)
-                    <div class="config-block bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm"
-                        data-tipo="{{ $tipo }}"
-                        data-kind="simple">
+                    <div class="config-block bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm" data-tipo="{{ $tipo }}" data-kind="simple">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-[#242e68] text-xs">
-                                {{ $cfg['label'] }}:
-                            </span>
-                            <span class="bg-blue-50 text-blue-700 text-[9px] font-medium px-2 py-0.2 rounded-full">
-                                Tipo {{ $tipo }}
-                            </span>
+                            <span class="font-bold text-[#242e68] text-xs">{{ $cfg['label'] }}:</span>
+                            <span class="bg-blue-50 text-blue-700 text-[9px] font-medium px-2 py-0.2 rounded-full">Tipo {{ $tipo }}</span>
                         </div>
-
                         <div class="state-saved {{ isset($configProyecto[$tipo]) ? '' : 'hidden' }}">
                             <div class="bg-green-50 border border-green-200 rounded-lg px-2.5 py-1.5 flex items-center justify-between">
-                                <span class="saved-value text-xs font-bold text-green-800">
-                                    {{ isset($configProyecto[$tipo]) ? '$ ' . number_format($configProyecto[$tipo]->valor, 0, ',', '.') : '' }}
-                                </span>
+                                <span class="saved-value text-xs font-bold text-green-800">{{ isset($configProyecto[$tipo]) ? '$ ' . number_format($configProyecto[$tipo]->valor, 0, ',', '.') : '' }}</span>
                                 @can('planilla.deleteConfigPlantilla')
-                                    <button type="button"
-                                        class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded text-xs"
-                                        data-tipo="{{ $tipo }}"
-                                        title="Eliminar">
-                                        🗑️
-                                    </button>
+                                    <button type="button" class="btn-delete-config text-red-600 hover:bg-red-100 p-1 rounded text-xs" data-tipo="{{ $tipo }}" title="Eliminar">🗑️</button>
                                 @endcan
                             </div>
                         </div>
-
                         <div class="state-suggested {{ isset($configProyecto[$tipo]) ? 'hidden' : '' }}">
                             @can('planilla.saveConfigPlantilla')
                                 <div class="flex gap-1.5">
-                                    <div class="w-full">
-                                        <input type="number"
-                                            step="any"
-                                            class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]"
-                                            value="{{ $cfg['suggested'] }}"
-                                            placeholder="Editable">
-                                    </div>
-                                    <button type="button"
-                                        class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0"
-                                        data-tipo="{{ $tipo }}"
-                                        title="Guardar">
-                                        💾 Guardar
-                                    </button>
+                                    <div class="w-full"><input type="number" step="any" class="moneda-cop suggested-value-input w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#242e68]" value="{{ $cfg['suggested'] }}" placeholder="Editable"></div>
+                                    <button type="button" class="btn-accept-config bg-[#242e68] hover:bg-[#1a2150] text-white px-2.5 py-1 rounded-lg text-[11px] font-medium shrink-0" data-tipo="{{ $tipo }}" title="Guardar">💾 Guardar</button>
                                 </div>
                             @else
                                 <div class="flex gap-1.5"> ...input y botón Guardar... </div>
@@ -328,16 +258,11 @@
 
                 <div class="flex items-center justify-between px-3 py-2 bg-gray-50/80 rounded-lg border border-gray-100">
                     <span class="font-bold text-[#242e68] text-xs">Adicionales:</span>
-                    <span class="font-semibold text-gray-700 text-xs">
-                        $ {{ number_format($valOtrosis, 0, ',', '.') }}
-                    </span>
+                    <span class="font-semibold text-gray-700 text-xs">$ {{ number_format($valOtrosis, 0, ',', '.') }}</span>
                 </div>
             </div>
 
-            <form id="formAcceptConfig"
-                action="{{ route('planilla.saveConfigPlantilla') }}"
-                method="POST"
-                class="hidden">
+            <form id="formAcceptConfig" action="{{ route('planilla.saveConfigPlantilla') }}" method="POST" class="hidden">
                 @csrf
                 <input type="hidden" name="id_proyecto" value="{{ $proyecto->id }}">
                 <input type="hidden" name="tipo" id="accept-tipo">
@@ -346,11 +271,7 @@
                 <button type="submit"></button>
             </form>
 
-            <form id="formDeleteConfig"
-                action="#"
-                data-base-url="{{ url('/planilla/deleteConfigPlantilla/' . $proyecto->id) }}"
-                method="POST"
-                class="hidden">
+            <form id="formDeleteConfig" action="#" data-base-url="{{ url('/planilla/deleteConfigPlantilla/' . $proyecto->id) }}" method="POST" class="hidden">
                 @csrf
                 @method('DELETE')
                 <button type="submit"></button>
@@ -360,42 +281,26 @@
         <hr class="my-4 border-gray-200">
 
         {{-- ================================================== --}}
-        {{-- ENTREGABLES --}}
+        {{-- ENTREGABLES (Botón arriba) y COBROS (Tabla abajo) --}}
         {{-- ================================================== --}}
+        
         @can('planilla.savePlantilla')
-            <div class="flex justify-start w-full">
-                <x-secondary-button class="flex items-center gap-2 px-4 py-2 cursor-pointer" id="btn-open-modal"
-                    x-on:click="$dispatch('open-modal', 'modalPlanillaEntregable-modal')"
-                    x-data="">
+            <div class="flex items-center gap-3 w-full mb-3">
+                <x-secondary-button class="flex items-center gap-2 px-4 py-2 cursor-pointer" id="btn-open-modal" x-on:click="$dispatch('open-modal', 'modalPlanillaEntregable-modal')" x-data="">
                     <b>+</b>
                     <span>Agregar Entregable</span>
                 </x-secondary-button>
             </div>
         @endcan
 
-        <div id="entregables-container-padre" class="py-2 justify-start w-full space-y-2 @if(empty($planillaEntregables)) hidden @endif">
-            <h2 class="text-xl font-bold text-[#242e68]">Entregables Agregados</h2>
-
-            <form id="savePlantilla" action="{{ route('planilla.savePlantilla') }}" method="POST" class="w-full space-y-4">
-                <input type="hidden" name="id_proyecto" value="{{ $proyecto->id }}">
-
-                <div id="area-div" class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full [&>div]:w-full"></div>
-
-                @can('planilla.savePlantilla')
-                    <div class="w-full flex justify-end mt-4">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
-                            Guardar Entregables
-                        </button>
-                    </div>
-                @endcan
-            </form>
-        </div>
+        <form id="savePlantilla" action="{{ route('planilla.savePlantilla') }}" method="POST" class="hidden">
+            <input type="hidden" name="id_proyecto" value="{{ $proyecto->id }}">
+            <div id="area-div"></div>
+        </form>
 
         <hr class="my-4 border-gray-200">
 
-        {{-- ================================================== --}}
-        {{-- AQUÍ VA EL INCLUDE DE COBROS --}}
-        {{-- ================================================== --}}
+        {{-- Tabla de Cobros Unificada --}}
         @include('planilla.cobros')
 
         <hr class="my-4 border-gray-200">
@@ -403,9 +308,7 @@
         {{-- OTROSÍS --}}
         <div class="lg:grid-cols-2 gap-2 mb-2 @if($otroSi->isEmpty()) hidden @else grid @endif">
             <div class="rounded-xl border border-gray-200 shadow-md bg-white p-4">
-                <h2 class="text-lg font-semibold mb-3">
-                    Otrosís del Proyecto
-                </h2>
+                <h2 class="text-lg font-semibold mb-3">Otrosís del Proyecto</h2>
                 <table class="w-full text-sm text-center">
                     <thead class="bg-green-700 text-white text-xs uppercase">
                         <tr>
@@ -421,19 +324,12 @@
                                 <td class="p-3">$ {{ number_format($dato->total_deve, 0, '.', ',') }}</td>
                                 <td class="p-1">
                                     <div class="flex items-center justify-center space-x-2">
-                                        <a data-tooltip-target="tooltip-hover-contratoPdf-{{ $dato->id }}"
-                                            data-tooltip-trigger="hover"
-                                            href="{{ route('otro_si.otroSiPdf', $dato->id) }}"
-                                            target="_blank"
-                                            class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4
-                                            focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
+                                        <a data-tooltip-target="tooltip-hover-contratoPdf-{{ $dato->id }}" data-tooltip-trigger="hover" href="{{ route('otro_si.otroSiPdf', $dato->id) }}" target="_blank" class="flex items-center justify-center w-10 h-10 text-white bg-slate-700 hover:bg-white hover:text-slate-800 border-2 border-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-full text-sm dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-800">
                                             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7h1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h11.5M7 14h6m-6 3h6m0-10h.5m-.5 3h.5M7 7h3v3H7V7Z"></path>
                                             </svg>
                                         </a>
-                                        <div id="tooltip-hover-contratoPdf-{{ $dato->id }}"
-                                            role="tooltip"
-                                            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0">
+                                        <div id="tooltip-hover-contratoPdf-{{ $dato->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium border-2 bg-white text-gray-900 rounded-lg shadow-xs tooltip dark:bg-gray-700 opacity-0">
                                             PDF Contrato
                                             <div class="tooltip-arrow" data-popper-arrow=""></div>
                                         </div>
@@ -449,14 +345,9 @@
     {{-- MODAL: Porcentajes del Proyecto Planilla Base --}}
     <x-modal name="modalPorcentajesTipo5-modal" maxWidth="2xl" :closeOnOutsideClick="false" :closeOnEscape="true">
         <div class="p-6 space-y-4">
-
             <div class="border-b pb-2">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                    Porcentajes del Proyecto Planilla Base
-                </h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    Porcentajes aplicados sobre el proyecto (administración, imprevistos, utilidad, etc.).
-                </p>
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Porcentajes del Proyecto Planilla Base</h2>
+                <p class="text-xs text-gray-500 mt-1">Porcentajes aplicados sobre el proyecto (administración, imprevistos, utilidad, etc.).</p>
             </div>
 
             @if($entregableTipo5)
@@ -468,9 +359,7 @@
                     <div class="bg-green-50/60 border border-green-200 rounded-lg p-3">
                         <span class="text-xs text-green-700 font-medium block mb-2">Desglose por porcentajes</span>
                         <div class="grid grid-cols-[minmax(0,1fr)_55px_95px] sm:grid-cols-[minmax(0,1fr)_70px_110px] md:grid-cols-[minmax(0,1fr)_80px_120px] gap-2 text-xs font-semibold text-gray-600 border-b border-green-200 pb-2 mb-1">
-                            <span>Concepto</span>
-                            <span class="text-right">%</span>
-                            <span class="text-right">Valor</span>
+                            <span>Concepto</span><span class="text-right">%</span><span class="text-right">Valor</span>
                         </div>
                         <ul class="space-y-1 mb-2">
                             @foreach($entregableTipo5->items as $item)
@@ -478,113 +367,63 @@
                                     $porcentajeItem = (float) ($item['porcentage'] ?? 0);
                                     $montoItem = $configProyecto[1]->valor * ($porcentajeItem / 100);
                                     $enPesos = $item['en_pesos'] ?? 0;
-
                                     $totalDesglose += ($enPesos == 1) ? $porcentajeItem : $montoItem;
                                     $totalPorcentaje += ($enPesos == 1) ? 0 : $porcentajeItem;
                                 @endphp
-
                                 <li class="grid grid-cols-[minmax(0,1fr)_55px_95px] sm:grid-cols-[minmax(0,1fr)_70px_110px] md:grid-cols-[minmax(0,1fr)_80px_120px] gap-2 text-sm items-start">
-                                    <span class="text-gray-700 min-w-0 break-words">
-                                        {{ $item['concepto'] ?? '' }}
-                                    </span>
-                                    <span class="text-right text-gray-700 whitespace-nowrap">
-                                        {{ ($enPesos == 0) ? $porcentajeItem . '%' : '-' }}
-                                    </span>
-                                    <span class="text-right font-semibold text-green-800 whitespace-nowrap">
-                                        $ {{ number_format((($enPesos == 0) ? $montoItem : $porcentajeItem), 0, ',', '.') }}
-                                    </span>
+                                    <span class="text-gray-700 min-w-0 break-words">{{ $item['concepto'] ?? '' }}</span>
+                                    <span class="text-right text-gray-700 whitespace-nowrap">{{ ($enPesos == 0) ? $porcentajeItem . '%' : '-' }}</span>
+                                    <span class="text-right font-semibold text-green-800 whitespace-nowrap">$ {{ number_format((($enPesos == 0) ? $montoItem : $porcentajeItem), 0, ',', '.') }}</span>
                                 </li>
                             @endforeach
                         </ul>
                         <div class="grid grid-cols-[minmax(0,1fr)_55px_95px] sm:grid-cols-[minmax(0,1fr)_70px_110px] md:grid-cols-[minmax(0,1fr)_80px_120px] gap-2 text-sm font-bold border-t border-green-200 pt-2">
                             <span class="text-gray-800">Total</span>
                             <span class="text-right text-gray-800 whitespace-nowrap">{{ $totalPorcentaje }}%</span>
-                            <span class="text-right text-green-800 whitespace-nowrap">
-                                $ {{ number_format($totalDesglose, 0, ',', '.') }}
-                            </span>
+                            <span class="text-right text-green-800 whitespace-nowrap">$ {{ number_format($totalDesglose, 0, ',', '.') }}</span>
                         </div>
                     </div>
                 @else
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
-                        <span class="text-sm text-gray-500">
-                            Acepta el Presupuesto Por Proyecto (Tipo 1) para ver el desglose con valores.
-                        </span>
+                        <span class="text-sm text-gray-500">Acepta el Presupuesto Por Proyecto (Tipo 1) para ver el desglose con valores.</span>
                     </div>
                 @endif
             @else
-                <div class="config-block"
-                    data-tipo="3"
-                    data-id-proyecto="{{ $proyecto->id }}"
-                    data-kind="multi">
-
+                <div class="config-block" data-tipo="3" data-id-proyecto="{{ $proyecto->id }}" data-kind="multi">
                     @if($dataConfigPorcentajes && $dataConfigPorcentajes->count())
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                            <span class="text-xs text-yellow-700 font-medium block mb-2">
-                                Porcentajes sugeridos
-                                ({{ $dataConfigPorcentajes->first()->año }})
-                            </span>
+                            <span class="text-xs text-yellow-700 font-medium block mb-2">Porcentajes sugeridos ({{ $dataConfigPorcentajes->first()->año }})</span>
                             <ul class="suggested-list space-y-1 mb-3">
                                 @foreach($dataConfigPorcentajes as $c)
-                                    <li class="suggested-item flex items-center justify-between gap-2 text-sm"
-                                        data-concepto="{{ $c->concepto }}">
-                                        <span class="text-gray-700 flex-1">
-                                            {{ $c->concepto }}
-                                        </span>
+                                    <li class="suggested-item flex items-center justify-between gap-2 text-sm" data-concepto="{{ $c->concepto }}">
+                                        <span class="text-gray-700 flex-1">{{ $c->concepto }}</span>
                                         <div class="flex items-center gap-1">
-                                            <input type="number"
-                                                min="0"
-                                                step="0.01"
-                                                class="suggested-porcentage-input w-16 text-right border border-yellow-300 rounded px-1 py-0.5 font-semibold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                                                value="{{ $c->porcentage }}">
-                                            @if ($c->en_pesos == 0)
-                                                <span class="text-gray-500">%</span>
-                                            @else
-                                                <span class="text-gray-500">$</span>
-                                            @endif
+                                            <input type="number" min="0" step="0.01" class="suggested-porcentage-input w-16 text-right border border-yellow-300 rounded px-1 py-0.5 font-semibold text-yellow-800 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400" value="{{ $c->porcentage }}">
+                                            @if ($c->en_pesos == 0) <span class="text-gray-500">%</span> @else <span class="text-gray-500">$</span> @endif
                                         </div>
-                                        <input type="hidden"
-                                            class="suggested-en-pesos"
-                                            value="{{ $c->en_pesos }}">
-                                        <button type="button"
-                                            class="remove-suggested-item text-red-500 hover:text-red-700 px-1"
-                                            title="Eliminar">
-                                            ✕
-                                        </button>
+                                        <input type="hidden" class="suggested-en-pesos" value="{{ $c->en_pesos }}">
+                                        <button type="button" class="remove-suggested-item text-red-500 hover:text-red-700 px-1" title="Eliminar">✕</button>
                                     </li>
                                 @endforeach
                             </ul>
-
                             <div class="flex justify-between text-sm font-bold border-t border-yellow-300 pt-2 mb-3">
                                 <span class="text-gray-800">Total</span>
-                                <span class="suggested-total text-yellow-800">
-                                    {{ $dataConfigPorcentajes->where('en_pesos', 0)->sum('porcentage') }}%
-                                </span>
+                                <span class="suggested-total text-yellow-800">{{ $dataConfigPorcentajes->where('en_pesos', 0)->sum('porcentage') }}%</span>
                             </div>
-
                             @can('planilla.saveConfigPlantilla')
-                                <button type="button"
-                                    class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2"
-                                    data-tipo="3">
-                                    Aceptar configuración
-                                </button>
+                                <button type="button" class="btn-accept-config w-full bg-[#242e68] hover:bg-[#1a2150] text-white text-sm font-medium rounded-lg px-3 py-2" data-tipo="3">Aceptar configuración</button>
                             @endcan
                         </div>
                     @else
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
-                            <span class="text-sm text-gray-500">
-                                No hay porcentajes configurados.
-                            </span>
+                            <span class="text-sm text-gray-500">No hay porcentajes configurados.</span>
                         </div>
                     @endif
                 </div>
             @endif
 
             <div class="flex justify-end pt-4 border-t">
-                <button type="button"
-                    x-on:click="$dispatch('close-modal', 'modalPorcentajesTipo5-modal')"
-                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded text-sm font-medium">
-                    Cerrar
-                </button>
+                <button type="button" x-on:click="$dispatch('close-modal', 'modalPorcentajesTipo5-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded text-sm font-medium">Cerrar</button>
             </div>
         </div>
     </x-modal>
