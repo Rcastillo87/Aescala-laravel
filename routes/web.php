@@ -256,6 +256,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/viewDocumento/{id}', [CarteraController::class, 'viewDocumento'])->name('viewDocumento');
         Route::post('/sendRC', [CarteraController::class, 'sendRC'])->name('sendRC');
         Route::post('/selectCobro', [CarteraController::class, 'selectCobro'])->name('selectCobro');
+        Route::delete('/deleteOtrosiRefe/{id}', [CarteraController::class, 'deleteOtrosiRefe'])->name('deleteOtrosiRefe');
     });
 
     Route::prefix('cobro')->name('cobro.')->middleware('role:cobro')->group(function () {

@@ -126,12 +126,18 @@ class CarteraController extends Controller
             $lineDeveTTOtroSi = [0, 0, 0, 0, 0, 0];
             $flag = 1;
             $otrosiNumeros = [];
+            $otrosiIds = []; // NUEVO: Para guardar los IDs
+            $otrosiTieneRefe = []; // <-- NUEVO
+            $tieneCobrosRefe = CobroRefe::where('id_proyecto', $id)->exists(); // NUEVO: Verificar si hay cobros
+
             $lineDeveOtrosi = Otrosi::with('otrosi_refe')
                 ->where('id_proyecto', $id)
                 ->where('estado', 1)
                 ->orderBy('numero', 'asc')
                 ->get()
-                ->map(function ($item) use (&$lineDeveTTOtroSi, &$flag, &$otrosiNumeros) {
+                ->map(function ($item) use (&$lineDeveTTOtroSi, &$flag, &$otrosiNumeros, &$otrosiIds, &$otrosiTieneRefe) {
+                    $otrosiIds[] = $item->id; // NUEVO: Guardar ID
+                    $otrosiTieneRefe[] = ($item->totalRefeOtroSi > 0);
                     $otrosiNumeros[] = $item->numero;
                     $b = $item->totalDeve;
                     $a = $item->totalRefeOtroSi;
@@ -216,6 +222,9 @@ class CarteraController extends Controller
                     "valance_pro" => $valance,
                     "soporteFact" => $proyecto->soporteFact,
                     'otrosi_numeros'  => $otrosiNumeros,
+                    'otrosi_ids'      => $otrosiIds, // NUEVO
+                    'otrosi_tiene_refe' => $otrosiTieneRefe, // <-- NUEVO
+                    'tiene_cobros_refe' => $tieneCobrosRefe, // NUEVO
                 ]
             ], 200);
         } catch (\Throwable $e) {
@@ -496,6 +505,29 @@ class CarteraController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Hubo un error al guardar el cobro: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteOtrosiRefe($id)
+    {
+        Gate::authorize('cartera.save'); // Usamos el mismo permiso de cartera
+
+        DB::beginTransaction();
+        try {
+            \App\Models\OtrosiRefe::where('id_otro_si', $id)->delete();
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Referencias de pago eliminadas correctamente.'
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error al eliminar las referencias.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

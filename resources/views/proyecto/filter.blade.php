@@ -111,6 +111,11 @@
                         });
                     </script>
 
+                    <div class="p-2 shrink-0 w-[40]">
+                        <x-input-label for="user_carpinteria" :value="__('Nombre Carpintero')" />
+                        <x-text-input id="user_carpinteria" class="block mt-1 w-full" type="text" name="user_carpinteria" :value="Request('user_carpinteria')"
+                         autofocus />
+                    </div>
 
                     <div class="p-2 shrink-0">
                         <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium

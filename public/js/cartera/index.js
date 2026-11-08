@@ -401,6 +401,8 @@ async function loadCartera(id) {
                 let tx = '';
                 let numReal = '';
                 const val = cantidad - index0;
+                let btnReset = ''; // Inicializamos el botón en vacío
+
                 if (index0 === 0) {
                     tx = txPro[0];
                 } else if (val === 2) {
@@ -413,12 +415,25 @@ async function loadCartera(id) {
                     color = 'text-blue-700 font-bold bg-blue-50';
                     tx = txPro[3];
                 } else if (val > 2) {
-                    //tx = 'Costo del Otrosi N ' + index0;
                     numReal = (data.otrosi_numeros ?? [])[index0 - 1];
+                    let idReal = (data.otrosi_ids ?? [])[index0 - 1];
+                    let tieneRefe = (data.otrosi_tiene_refe ?? [])[index0 - 1]; // <-- NUEVO
                     tx = 'Costo del Otrosi N ' + (numReal ?? index0);
+
+                    // CAMBIO: Agregamos la condición 'tieneRefe'
+                    if (!data.tiene_cobros_refe && idReal && tieneRefe) {
+                        btnReset = `
+                            <button onclick="deleteOtrosiRefe(${idReal})" class="ml-3 inline-flex items-center px-2 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded text-xs font-medium transition-colors" title="Restablecer Referencias de Pago">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                Restablecer
+                            </button>
+                        `;
+                    }
                 }
 
-                relacionHTML += `<tr class="border-t ${color}"><td class="p-3">${tx}</td>`;
+                // Imprimimos el <td> incluyendo el botón
+                relacionHTML += `<tr class="border-t ${color}"><td class="p-3 whitespace-nowrap">${tx} ${btnReset}</td>`;
+
                 item.forEach((valor, index) => {
 
                     if (flag == 1) {
@@ -744,4 +759,48 @@ function confirmarCobro(index, valor, id) {
             });
         }
     });
+}
+
+async function deleteOtrosiRefe(id) {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se eliminarán todas las referencias de pago de este Otrosí. Podrás volver a ingresarlas de nuevo.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, restablecer',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+        Swal.fire({
+            title: 'Restableciendo...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const response = await fetch(`/cartera/deleteOtrosiRefe/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            });
+            const resData = await response.json();
+            Swal.close();
+
+            if (resData.status) {
+                Swal.fire('Éxito', resData.message, 'success').then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire('Error', resData.message, 'error');
+            }
+        } catch (error) {
+            Swal.close();
+            Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+        }
+    }
 }

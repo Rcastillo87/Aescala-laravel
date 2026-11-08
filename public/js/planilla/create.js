@@ -62,11 +62,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (selectArea.tomselect) selectArea.tomselect.on("change", togglePorcentaje);
     }
 
-    itemsContainer.addEventListener("input", (e) => {
-        if (e.target.matches("input[name='porcentage'], input[name='porcentage[]']")) {
-            calcularSumaPorcentajes();
-        }
-    });
+    if (itemsContainer) {
+        itemsContainer.addEventListener("input", (e) => {
+            if (e.target.matches("input[name='porcentage'], input[name='porcentage[]']")) {
+                calcularSumaPorcentajes();
+            }
+        });
+    }
 
     function resetModal() {
         form.reset();
@@ -85,33 +87,37 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    addItemBtn.addEventListener("click", () => {
-        const clone = itemTemplate.cloneNode(true);
-        clone.querySelectorAll("input, textarea").forEach(e => {
-            if (e.name === 'porcentage' || e.name === 'porcentage[]') e.value = "0";
-            else e.value = "";
-        });
-        itemsContainer.appendChild(clone);
-        reindexItems();
-        togglePorcentaje();
-    });
-
-    itemsContainer.addEventListener("click", e => {
-        if (e.target.closest(".remove-item")) {
-            const items = document.querySelectorAll(".item-group");
-            if (items.length === 1) {
-                Swal.fire("Error", "Debe existir al menos un item", "warning");
-                return;
-            }
-            Swal.fire({ title: "¿Eliminar item?", icon: "warning", showCancelButton: true }).then(res => {
-                if (res.isConfirmed) {
-                    e.target.closest(".item-group").remove();
-                    reindexItems();
-                    calcularSumaPorcentajes();
-                }
+    if (addItemBtn) {
+        addItemBtn.addEventListener("click", () => {
+            const clone = itemTemplate.cloneNode(true);
+            clone.querySelectorAll("input, textarea").forEach(e => {
+                if (e.name === 'porcentage' || e.name === 'porcentage[]') e.value = "0";
+                else e.value = "";
             });
-        }
-    });
+            itemsContainer.appendChild(clone);
+            reindexItems();
+            togglePorcentaje();
+        });
+    }
+
+    if (itemsContainer) {
+        itemsContainer.addEventListener("click", e => {
+            if (e.target.closest(".remove-item")) {
+                const items = document.querySelectorAll(".item-group");
+                if (items.length === 1) {
+                    Swal.fire("Error", "Debe existir al menos un item", "warning");
+                    return;
+                }
+                Swal.fire({ title: "¿Eliminar item?", icon: "warning", showCancelButton: true }).then(res => {
+                    if (res.isConfirmed) {
+                        e.target.closest(".item-group").remove();
+                        reindexItems();
+                        calcularSumaPorcentajes();
+                    }
+                });
+            }
+        });
+    }
 
     function getModalData() {
         const id_area = selectArea.value;
@@ -168,57 +174,58 @@ document.addEventListener("DOMContentLoaded", () => {
         return entregables.some((e, i) => String(e.id_area) === String(id_area) && i !== editIndex);
     }
 
-    // --- LÓGICA DE GUARDADO AUTOMÁTICO ---
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
 
-        const data = getModalData();
-        if (!data) return;
+            const data = getModalData();
+            if (!data) return;
 
-        if (existsArea(data.id_area)) {
-            Swal.fire("Error", "Este tipo ya fue agregada", "warning");
-            return;
-        }
-
-        if (editIndex !== null) {
-            entregables[editIndex] = data;
-        } else {
-            entregables.push(data);
-        }
-
-        renderTable();
-        window.dispatchEvent(new CustomEvent('close-modal', { detail: modal }));
-
-        const formSave = document.getElementById('savePlantilla');
-        const formData = new FormData(formSave);
-
-        Swal.fire({
-            title: 'Guardando entregable...',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
-
-        fetch(formSave.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
+            if (existsArea(data.id_area)) {
+                Swal.fire("Error", "Este tipo ya fue agregada", "warning");
+                return;
             }
-        })
-        .then(response => response.json())
-        .then(res => {
-            if (res.success) {
-                window.location.reload(); 
+
+            if (editIndex !== null) {
+                entregables[editIndex] = data;
             } else {
-                Swal.fire('Error', res.error || 'Error al guardar', 'error');
+                entregables.push(data);
             }
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire('Error', 'Error de conexión con el servidor', 'error');
+
+            renderTable();
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: modal }));
+
+            const formSave = document.getElementById('savePlantilla');
+            const formData = new FormData(formSave);
+
+            Swal.fire({
+                title: 'Guardando entregable...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            fetch(formSave.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    window.location.reload(); 
+                } else {
+                    Swal.fire('Error', res.error || 'Error al guardar', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Error de conexión con el servidor', 'error');
+            });
         });
-    });
+    }
 
     function renderTable() {
         let html = "";
@@ -239,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        areaDiv.innerHTML = html;
+        if (areaDiv) areaDiv.innerHTML = html;
     }
 
     document.getElementById("btn-open-modal")?.addEventListener("click", () => {
@@ -251,11 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTable();
     }
 
-    // ==========================================
-    // ✏️ Editar y 🗑️ Eliminar desde la Tabla de Cobros
-    // ==========================================
     document.addEventListener('click', (e) => {
-        // EDITAR
         const editBtn = e.target.closest('.edit-entregable');
         if (editBtn) {
             const tipo = Number(editBtn.dataset.tipo);
@@ -285,7 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ELIMINAR
         const deleteBtn = e.target.closest('.delete-entregable');
         if (deleteBtn) {
             const tipo = Number(deleteBtn.dataset.tipo);
@@ -328,4 +330,103 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+});
+
+// --- LÓGICA DE CONFIGURACIÓN DEL PROYECTO ---
+document.addEventListener("DOMContentLoaded", () => {
+    const formAccept = document.getElementById("formAcceptConfig");
+    const formDelete = document.getElementById("formDeleteConfig");
+
+    const nombresTipo = {
+        1: "Valor Área Proyecto", 2: "Valor Área Enchape", 3: "Porcentajes del Proyecto",
+        4: "Obra Blanca", 5: "Carpintería", 6: "Excedente Enchape",
+    };
+
+    if (formAccept) {
+        FormManager.init(formAccept, {
+            confirmText: (form) => form.dataset.confirmMsg ?? "Se guardará esta configuración.",
+            acepAlertText: "Sí, aceptar", loadingText: "Guardando configuración...", autoRedirect: true,
+        });
+
+        document.querySelectorAll(".btn-accept-config").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const block = btn.closest(".config-block");
+                const tipo = block.dataset.tipo;
+                const kind = block.dataset.kind;
+
+                document.getElementById("accept-tipo").value = tipo;
+
+                if (kind === "simple") {
+                    const input = block.querySelector(".suggested-value-input");
+                    const valor = input ? input.value.trim() : "";
+                    if (valor === "" || isNaN(Number(valor))) {
+                        Swal.fire("Error", "Ingrese un valor numérico válido", "error");
+                        return;
+                    }
+                    document.getElementById("accept-valor").value = valor;
+                    document.getElementById("accept-conceptos").value = "";
+                } else {
+                    const conceptos = [];
+                    let hasError = false;
+                    block.querySelectorAll(".suggested-item").forEach(li => {
+                        const concepto = li.dataset.concepto;
+                        const input = li.querySelector(".suggested-porcentage-input");
+                        const porcentage = input.value.trim();
+                        const enPesosInput = li.querySelector(".suggested-en-pesos");
+                        if (porcentage === "" || isNaN(Number(porcentage))) { hasError = true; return; }
+                        conceptos.push({ concepto, porcentage: Number(porcentage), en_pesos: Number(enPesosInput.value) });
+                    });
+                    if (hasError) { Swal.fire("Error", "Todos los porcentajes deben ser válidos", "error"); return; }
+                    if (conceptos.length === 0) { Swal.fire("Error", "Debe existir al menos un concepto", "warning"); return; }
+                    document.getElementById("accept-valor").value = "";
+                    document.getElementById("accept-conceptos").value = JSON.stringify(conceptos);
+                }
+                formAccept.dataset.confirmMsg = `Se guardará la configuración de "${nombresTipo[tipo]}".`;
+                formAccept.requestSubmit();
+            });
+        });
+    }
+
+    function updateSuggestedTotal(list) {
+        const totalEl = list.closest(".config-block").querySelector(".suggested-total");
+        if (!totalEl) return;
+        let total = 0;
+        list.querySelectorAll(".suggested-porcentage-input").forEach(input => {
+            const val = Number(input.value);
+            if (!isNaN(val)) total += val;
+        });
+        totalEl.innerText = `${total}%`;
+    }
+
+    document.querySelectorAll('.config-block[data-kind="multi"] .suggested-list').forEach(list => {
+        list.addEventListener("input", e => {
+            if (e.target.classList.contains("suggested-porcentage-input")) updateSuggestedTotal(list);
+        });
+        list.addEventListener("click", e => {
+            const removeBtn = e.target.closest(".remove-suggested-item");
+            if (!removeBtn) return;
+            const items = list.querySelectorAll(".suggested-item");
+            if (items.length === 1) { Swal.fire("Error", "Debe existir al menos un concepto", "warning"); return; }
+            removeBtn.closest(".suggested-item").remove();
+            updateSuggestedTotal(list);
+        });
+    });
+
+    if (formDelete) {
+        FormManager.init(formDelete, {
+            confirmText: (form) => form.dataset.confirmMsg ?? "Se eliminará esta configuración.",
+            acepAlertText: "Sí, eliminar", cancelColor: "#fa376c", loadingText: "Eliminando configuración...", autoRedirect: true,
+        });
+
+        document.querySelectorAll(".btn-delete-config").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const block = btn.closest(".config-block");
+                const tipo = btn.dataset.tipo || block?.dataset.tipo;
+                formDelete.action = `${formDelete.dataset.baseUrl}/${tipo}`;
+                const advertencia = (window.hayCobros && ["1", "3"].includes(String(tipo))) ? " Se perderán también los cobros y aprobaciones ya registrados." : "";
+                formDelete.dataset.confirmMsg = `Se eliminará la configuración de "${nombresTipo[tipo]}" y volverá a mostrarse el valor sugerido.${advertencia}`;
+                formDelete.requestSubmit();
+            });
+        });
+    }
 });

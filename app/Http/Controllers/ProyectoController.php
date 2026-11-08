@@ -70,6 +70,9 @@ class ProyectoController extends Controller
             ->when(request('nombre_cliente'), function ($query, $nombre_cliente) {
                 return $query->whereRaw('LOWER(nombre_cliente) LIKE LOWER(?)', ["%$nombre_cliente%"]);
             })
+            ->when(request('user_carpinteria'), function ($query, $user_carpinteria) {
+                return $query->whereRaw('LOWER(user_carpinteria) LIKE LOWER(?)', ["%$user_carpinteria%"]);
+            })
             ->when(!empty($est), function ($query) use ($est) {
                 return $query->whereIn('id_estado', $est);
             })
