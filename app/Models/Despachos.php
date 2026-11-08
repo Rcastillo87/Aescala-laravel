@@ -112,6 +112,7 @@ class Despachos extends Model
                         ->get()
                         ->map(function ($item) {
                             return [
+                                'tipo' => $item->tipo, // <-- AGREGADO
                                 'codigo' => $item->codigo,
                                 'createdAt' => $item->formattedDate,
                                 'spanEstado' => $item->spanEstado,
@@ -131,10 +132,11 @@ class Despachos extends Model
                         ->when($codigo, function ($query, $codigo) {
                             return $query->where('codigo', $codigo);
                         })
-                        ->select('id', 'id_ref_devolucion', 'codigo', 'id_material', 'cantidad', 'valor_unidad', 'cobro')
+                        ->select('id', 'id_ref_devolucion', 'codigo', 'tipo', 'id_material', 'cantidad', 'valor_unidad', 'cobro') // <-- AGREGADO 'tipo'
                         ->get()
                         ->map(function ($item) {
                             return [
+                                'tipo' => $item->tipo, // <-- AGREGADO
                                 'codigo' => $item->codigo,
                                 'id_material' => $item->id_material,
                                 'cantidad' => $item->cantidad,
@@ -151,7 +153,8 @@ class Despachos extends Model
         foreach ($lista as $val1) {
             $despacho = [];
             foreach ($items as $val2) {
-                if($val1['codigo'] == $val2['codigo']){
+                // CAMBIO CLAVE: Validar código Y tipo para que no se mezclen
+                if($val1['codigo'] == $val2['codigo'] && $val1['tipo'] == $val2['tipo']){
                     $despacho[] = $val2;
                 }
             }

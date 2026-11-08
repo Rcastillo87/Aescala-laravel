@@ -388,7 +388,7 @@ document.getElementById('botonDescarga').addEventListener('click', function() {
 async function renderDespachos(despachos, id) {
 
     const container = document.getElementById('listaDespachos');
-    container.innerHTML= '';
+    container.innerHTML = '';
 
     const boton = document.getElementById('botonDescarga');
 
@@ -408,11 +408,16 @@ async function renderDespachos(despachos, id) {
         document.getElementById('totalFacturado').innerHTML = '';
         return;
     }
+    
     boton.setAttribute('data-id', id);
     boton.classList.remove('hidden');
 
     let total_fact = 0;
+    
     despachos.forEach(despacho => {
+        // Validamos si el bloque es una devolución o un despacho
+        const esDevolucion = despacho.spanEstado.includes('Devolucion');
+
         const card = document.createElement('div');
         card.className = 'w-full max-w-full';
 
@@ -450,7 +455,7 @@ async function renderDespachos(despachos, id) {
                                     <th class="px-3 py-2">Tipo</th>
                                 </tr>
                             </thead>
-                            <tbody id="items-${despacho.codigo}">
+                            <tbody>
                                 <!-- Items se insertarán aquí -->
                             </tbody>
                         </table>
@@ -461,9 +466,10 @@ async function renderDespachos(despachos, id) {
 
         container.appendChild(card);
 
-        // Renderizar items
-        const tbody = document.getElementById(`items-${despacho.codigo}`);
+        // Renderizar items (Usamos querySelector en la card para evitar conflictos de ID con el mismo código)
+        const tbody = card.querySelector('tbody');
         let suma = 0;
+        
         despacho.items.forEach(item => {
             const row = document.createElement('tr');
             row.className = 'bg-white border-b';
@@ -477,20 +483,29 @@ async function renderDespachos(despachos, id) {
             suma += item.cantidad * item.valor_unidad;
             tbody.appendChild(row);
         });
-        total_fact += suma;
+
+        // FILA DEL SUBTOTAL DEL BLOQUE
         const row = document.createElement('tr');
         row.className = 'bg-white border-b font-bold text-md';
         row.innerHTML = `
-            <td class="px-3 py-2 text-red-500">Total: </td>
-            <td colspan="4" class="px-3 py-2">$ ${suma.toLocaleString()}</td>
+            <td class="px-3 py-2 ${esDevolucion ? 'text-green-600' : 'text-red-500'}">Total ${esDevolucion ? 'Devolución' : 'Despacho'}: </td>
+            <td colspan="4" class="px-3 py-2 ${esDevolucion ? 'text-green-600' : 'text-black'}">$ ${suma.toLocaleString()}</td>
         `;
         tbody.appendChild(row);
+
+        // LOGICA DE SUMA O RESTA AL TOTAL GENERAL
+        if (esDevolucion) {
+            total_fact -= suma;
+        } else {
+            total_fact += suma;
+        }
     });
 
+    // MOSTRAR EL TOTAL NETO EN LA PARTE INFERIOR
     const txtotalFacturado = document.getElementById('totalFacturado');
     const htmlfacturado = `
-        <div class="bg-white border border-gray-200 rounded-lg shadow p-3">
-            <h2 class="text-red-500 text-lg font-semibold">Total Facturado en Despachos: <span class="text-black">$ ${total_fact.toLocaleString()}</span></h2>
+        <div class="bg-white border border-gray-200 rounded-lg shadow p-3 w-full text-center">
+            <h2 class="text-lg font-semibold text-gray-800">Total Neto Facturado: <span class="text-blue-700">$ ${total_fact.toLocaleString()}</span></h2>
         </div>
     `;
     txtotalFacturado.innerHTML = htmlfacturado;
