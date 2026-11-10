@@ -454,7 +454,7 @@
                     ])->toArray();
                 @endphp
 
-                @if($otrosiFirmados->count() > 0 && (Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isColab))
+                @if($otrosiFirmados->count() > 0 && (Auth::user()->isAdmin || Auth::user()->isContratista || Auth::user()->isColab || Auth::user()->isUser))
                     <div class="relative">
                         <a tabindex="0"
                         data-tooltip-target="tooltip-hover-otrosi-{{$item->id}}"
